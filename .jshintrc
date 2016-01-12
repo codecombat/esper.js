@@ -1,0 +1,9 @@
+{
+	"noyield": true,
+	"node": true,
+	"strict": true,
+	"esnext": true,
+	"globals": {
+    	"Promise"   : true
+	}
+}

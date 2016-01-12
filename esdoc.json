@@ -1,0 +1,8 @@
+{
+  "source": "./src",
+  "destination": "./esdoc",
+  "plugins": [
+    {"name": "./contrib/doc-compat.js"}
+  ],
+  "unexportIdentifier": false
+}
