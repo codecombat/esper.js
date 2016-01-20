@@ -55,7 +55,7 @@ function main($scope, $timeout) {
 
 
 	$scope.start = function() {
-		var epr = new Esper();
+		var epr = new Esper.Engine();
 		try {
 			epr.load($scope.code);
 		} catch ( e ) {

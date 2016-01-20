@@ -7,6 +7,7 @@
 const Scope = require('./Scope');
 const Value = require('./Value');
 
+
 class EvalFunction extends Value {
 	*call(evaluator, thiz, args, childScope) {
 		let code = args[0].toNative().toString();
@@ -34,7 +35,11 @@ class Environment {
 	}
 	
 	constructor(options) {
-		
+
+		this.false = this.valueFromNative(false);
+		this.true = this.valueFromNative(true);
+		this.NaN = this.valueFromNative(NaN);
+
 		/** @type {Value} */
 		this.console = this.valueFromNative(console);
 		/** @type {Value} */
@@ -50,6 +55,9 @@ class Environment {
 		});
 		scope.set('print', printer);
 		scope.set('log', printer);
+		scope.set('NaN', this.valueFromNative(NaN));
+		scope.set('Infinity', this.valueFromNative(Infinity));
+
 		scope.set('console', this.console);
 		scope.set('JSON', this.valueFromNative(JSON));
 		scope.set('Math', this.Math);

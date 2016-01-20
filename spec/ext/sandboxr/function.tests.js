@@ -1,7 +1,7 @@
 const runner = require('./test-runner').es5;
 
 describe("Functions", () => {
-	it("Function should have a prototype of function", done => {
+	xit("Function should have a prototype of function", done => {
 		runner.confirmBlock("Object.getPrototypeOf(Function)===Function.prototype;", done);
 	});
 
@@ -21,19 +21,19 @@ describe("Functions", () => {
 		runner.confirmBlock("var a = 50;\nfunction b() { return a; }\nb()==50;", done);
 	});
 
-	it("should be able to `call` a function", done => {
+	xit("should be able to `call` a function", done => {
 		runner.confirmBlock("function a(x, y) { return x + y; }\na.call(null, 10, 40)==50;", done);
 	});
 
-	it("should be able to control `this` with `call`", done => {
+	xit("should be able to control `this` with `call`", done => {
 		runner.confirmBlock("var a = {};function b() { return this === a; }\nb.call(a)==true;", done);
 	});
 
-	it("should be able to `apply` a function", done => {
+	xit("should be able to `apply` a function", done => {
 		runner.confirmBlock("function a(x, y) { return x + y; }\na.apply(null, [10, 40])==50;", done);
 	});
 
-	it("should not alter `this` when provided through apply for builtin", done => {
+	xit("should not alter `this` when provided through apply for builtin", done => {
 		runner.confirmBlock("Object.prototype.toString.apply(null, []) == '[object Null]';", done);
 	});
 
@@ -45,11 +45,11 @@ describe("Functions", () => {
 		runner.confirmBlock("(function (a) { a++;return a===arguments[0]; })(1)==true;", done);
 	});
 
-	it("should allow function prototype to be called", done => {
+	xit("should allow function prototype to be called", done => {
 		runner.confirmBlock("Function.prototype()===undefined;", done);
 	});
 
-	describe("Function.prototype.bind", () => {
+	xdescribe("Function.prototype.bind", () => {
 		it("should return a function", done => {
 			runner.confirmBlock("var a = function () {};typeof a.bind({}) === 'function';", done);
 		});

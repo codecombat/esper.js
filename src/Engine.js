@@ -11,6 +11,7 @@ const Evaluator = require('./Evaluator');
 const Environment = require('./Environment');
 const Scope = require('./Scope');
 const Value = require('./Value');
+const ASTPreprocessor = require('./ASTPreprocessor');
 
 function log(what) {
 	console.log("LOG", what);
@@ -44,19 +45,22 @@ class Engine {
 	evalAST(ast) {
 		//console.log(escodegen.generate(ast));
 		this.loadAST(ast);
-		let value = this.generator.next();
-		let steps = 0;
-		while ( !value.done ) {
-			value = this.generator.next();
-			if ( ++steps > 100000 ) throw "Inf loop. detected";
-		}
+		
+		let value = this.run();
 		delete this.generator;
-		return Promise.resolve(value.value);
+		return Promise.resolve(value);
 	}
 
+	evalASTSync(ast) {
+		this.loadAST(ast);
+		let value = this.run();
+		delete this.generator;
+		return value;
+	}
 
 	loadAST(ast) {
-		this.evaluator = new Evaluator(this.env, ast, this.globalScope);
+		let past = ASTPreprocessor.process(ast);
+		this.evaluator = new Evaluator(this.env, past, this.globalScope);
 		this.generator = this.evaluator.generator();
 	}
 
@@ -71,17 +75,17 @@ class Engine {
 		return value.done;
 	}
 
-	evalASTSync(ast) {
-		this.loadAST(ast);
-		let value = this.generator.next();
+	run() {
 		let steps = 0;
+		let value = this.generator.next();
 		while ( !value.done ) {
 			value = this.generator.next();
-			if ( ++steps > 100000 ) throw "Inf loop. detected";
+			if ( ++steps > 10000000 ) throw "Inf loop. detected";
 		}
-		delete this.generator;
 		return value.value;
 	}
+
+
 
 	/**
 	 * @return {Scope}

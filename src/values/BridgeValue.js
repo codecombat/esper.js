@@ -8,8 +8,8 @@ const Value = require('../Value');
  */
 class BridgeValue extends Value {
 	
-	constructor(value) {
-		super();
+	constructor(env, value) {
+		super(env);
 		this.native = value;
 	}
 
@@ -66,6 +66,12 @@ class BridgeValue extends Value {
 	}
 
 
+	*observableProperties() {
+		for ( var p in this.native ) {
+			yield this.fromNative(p);
+		}
+		return;
+	}
 
 	/**
 	 *

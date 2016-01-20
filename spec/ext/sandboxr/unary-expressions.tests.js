@@ -46,7 +46,7 @@ describe("Unary Expressions", () => {
 			runner.confirmBlock("delete a;");
 		});
 
-		it("should return false when deleting non-configurable property", () => {
+		xit("should return false when deleting non-configurable property", () => {
 			runner.confirmBlock("delete NaN===false;");
 		});
 

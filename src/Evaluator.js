@@ -60,7 +60,6 @@ class Evaluator {
 				return Value.undef;
 			}
 		}
-		console.log("PANIC");
 		let line = -1;
 		if ( this.frames[0].ast.attr) {
 			this.frames[0].ast.attr.pos.start_line;
@@ -74,7 +73,7 @@ class Evaluator {
 				let iref = s.ref(n.name);
 				if ( !iref ) {
 					if ( !create ) throw new ReferenceError(`${n.name} not defined`);
-					s.set(n.name, Value.undef);
+					s.global.set(n.name, Value.undef);
 					iref = s.ref(n.name);
 				}
 				return iref;
@@ -102,7 +101,6 @@ class Evaluator {
 				return ref.ref(idx);
 
 			default:
-				console.log("PANIC!");
 				throw new Error("Couldnt resolve ref component: " + n.type);
 		}
 	}
@@ -119,9 +117,11 @@ class Evaluator {
 	*evaluateAssignmentExpression(n,s) {
 		//TODO: Account for not-strict mode
 		let ref;
+		var env = s.env;
 		try {
 			ref = yield * this.resolveRef(n.left, s, n.operator === "=");
 		} catch ( e ) {
+			console.log(e, this);
 			return yield * this.throw(this.fromNative(e));
 		}
 
@@ -136,44 +136,44 @@ class Evaluator {
 				value = argument;
 				break;
 			case "+=":
-				value = yield * ref.value.add(argument);
+				value = yield * ref.value.add(argument, env);
 				break;
 			case "-=":
-				value = yield * ref.value.subtract(argument);
+				value = yield * ref.value.subtract(argument, env);
 				break;
 			case "*=":
-				value = yield * ref.value.multiply(argument);
+				value = yield * ref.value.multiply(argument, env);
 				break;
 			case "/=":
-				value = yield * ref.value.divide(argument);
+				value = yield * ref.value.divide(argument, env);
 				break;
 			case "%=":
-				value = yield * ref.value.mod(argument);
+				value = yield * ref.value.mod(argument, env);
 				break;
 			case "<<=":
-				value = yield * ref.value.shiftLeft(argument);
+				value = yield * ref.value.shiftLeft(argument, env);
 				break;
 			case ">>=":
-				value = yield * ref.value.shiftRight(argument);
+				value = yield * ref.value.shiftRight(argument, env);
 				break;
 			case ">>>=":
-				value = yield * ref.value.shiftRightZF(argument);
+				value = yield * ref.value.shiftRightZF(argument, env);
 				break;
 			case "|=":
-				value = yield * ref.value.bitOr(argument);
+				value = yield * ref.value.bitOr(argument, env);
 				break;
 			case "&=":
-				value = yield * ref.value.bitAnd(argument);
+				value = yield * ref.value.bitAnd(argument, env);
 				break;
 			case "^=":
-				value = yield * ref.value.bitXor(argument);
+				value = yield * ref.value.bitXor(argument, env);
 				break;
 			default:
 				throw new Error("Unknown assignment operator: " + n.operator);
 		}
 
 		if ( ref ) ref.value = value;
-		else s.assign( n.left.name, value);
+		else s.assign(n.left.name, value);
 
 		return value;
 	}
@@ -181,28 +181,29 @@ class Evaluator {
 	*evaulateBinaryExpression(n,s) {
 		let left = yield * this.branch(n.left,s);
 		let right = yield * this.branch(n.right,s);
+		var env = this.env;
 		switch ( n.operator ) {
-			case '==': return yield * left.doubleEquals(right);
-			case '!=': return yield * left.notEquals(right);
-			case '===': return yield * left.tripleEquals(right);
-			case '!==': return yield * left.doubleNotEquals(right);
-			case '+': return yield * left.add(right);
-			case '-': return yield * left.subtract(right);
-			case '*': return yield * left.multiply(right);
-			case '/': return yield * left.divide(right);
-			case '%': return yield * left.mod(right);
-			case '|': return yield * left.bitOr(right);
-			case '^': return yield * left.bitXor(right);
-			case '&': return yield * left.bitAnd(right);
-			case 'in': return yield * left.inOperator(right);
-			case 'instanceof': return yield * left.instanceOf(right);
-			case '>': return yield * left.gt(right);
-			case '<': return yield * left.lt(right);
-			case '>=': return yield * left.gte(right);
-			case '<=': return yield * left.lte(right);
-			case '<<': return yield * left.shiftLeft(right);
-			case '>>': return yield * left.shiftRight(right);
-			case '>>>': return yield * left.shiftRightZF(right);
+			case '==': return yield * left.doubleEquals(right, env);
+			case '!=': return yield * left.notEquals(right, env);
+			case '===': return yield * left.tripleEquals(right, env);
+			case '!==': return yield * left.doubleNotEquals(right, env);
+			case '+': return yield * left.add(right, env);
+			case '-': return yield * left.subtract(right, env);
+			case '*': return yield * left.multiply(right, env);
+			case '/': return yield * left.divide(right, env);
+			case '%': return yield * left.mod(right, env);
+			case '|': return yield * left.bitOr(right, env);
+			case '^': return yield * left.bitXor(right, env);
+			case '&': return yield * left.bitAnd(right, env);
+			case 'in': return yield * left.inOperator(right, env);
+			case 'instanceof': return yield * left.instanceOf(right, env);
+			case '>': return yield * left.gt(right, env);
+			case '<': return yield * left.lt(right, env);
+			case '>=': return yield * left.gte(right, env);
+			case '<=': return yield * left.lte(right, env);
+			case '<<': return yield * left.shiftLeft(right, env);
+			case '>>': return yield * left.shiftRight(right, env);
+			case '>>>': return yield * left.shiftRightZF(right, env);
 			default:
 				throw new Error("Unknown binary operator: " + n.operator);
 		}
@@ -426,12 +427,15 @@ class Evaluator {
 	}
 
 	*partialMemberExpression(left, n, s) {
+
 		if ( n.computed ) {
 			let right = yield * this.branch(n.property,s);
 			return yield * left.member(right.toNative());
 		} else if ( n.property.type == "Identifier") {
+			if ( !left ) throw `Cant index ${n.property.name} of undefined`;
 			return yield * left.member(n.property.name);
 		} else {
+			if ( !left ) throw `Cant index ${n.property.value.toString()} of undefined`;
 			return yield * left.member(n.property.value.toString());
 		}
 	}
@@ -451,7 +455,6 @@ class Evaluator {
 			}
 
 			let value = yield * this.branch(prop.value, s);
-			console.log(key, value);
 			nat.assign(key, value);
 		}
 		return nat;
@@ -459,6 +462,10 @@ class Evaluator {
 
 	*evaluateProgram(n,s) {
 		let result = Value.undef;
+		if ( n.vars )
+		for ( var v in n.vars ) {
+			s.add(v, Value.undef);
+		}
 		for ( let statement of n.body ) {
 			result = yield * this.branch(statement,s);
 		}
@@ -524,12 +531,20 @@ class Evaluator {
 
 	*evaulateUnaryExpression(n,s) {
 		if ( n.operator === "delete" ) {
+			let ref;
 			try {
-				let ref = yield * this.resolveRef(n.argument, s);
+				ref = yield * this.resolveRef(n.argument, s);
+				if ( n.argument.type !== "MemberExpression" ) {
+					return this.env.false;
+				}
+				
 			} catch ( e ) {
-				return Value.true;
+				if ( n.argument.type !== "MemberExpression" ) return this.env.true;
+				return yield * this.throw(this.fromNative(e));
 			}
-			return Value.true;
+			if ( !ref ) return this.env.false;
+			ref.del();
+			return this.env.true;
 		}
 
 		if ( n.operator === "typeof" ) {
@@ -590,6 +605,7 @@ class Evaluator {
 			case "BlockStatement": return this.evaluateBlockStatement(n,s);
 			case "CallExpression": return this.evaluateCallExpression(n,s);
 			case "ConditionalExpression": return this.evaluateConditionalExpression(n,s);
+			case "DebuggerStatement": return this.evaluateEmptyStatement(n,s);
 			case "DoWhileStatement": return this.evaluateDoWhileStatement(n,s);
 			case "ContinueStatement": return this.evaluateContinueStatement(n,s);
 			case "EmptyStatement": return this.evaluateEmptyStatement(n,s);
@@ -638,6 +654,7 @@ class Evaluator {
 			let down = yield result.value;
 			result = gen.next(down);
 		}
+
 		yield result.value;
 		this.frames[0].ast = oldAST;
 		//yield result.value;

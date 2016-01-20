@@ -1,5 +1,8 @@
 var path = require('path');
+var webpack = require('webpack');
+
 var target = 'web';
+
 var plugins = ['babel-plugin-transform-es2015-modules-commonjs'];
 if ( target != 'node' ) {
 	plugins = plugins.concat([
@@ -28,7 +31,10 @@ if ( target != 'node' ) {
 console.log(plugins);
 
 module.exports = {
-	entry: './src/index.js',
+	entry: [
+		'babel-polyfill',
+		'./src/index.js'
+	],	
 	output: {
 		path: __dirname,
 		filename: 'esper.js'

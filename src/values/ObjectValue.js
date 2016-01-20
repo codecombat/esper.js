@@ -22,9 +22,15 @@ class ObjectValue extends Value {
 	assign(name, value) {
 		let variable = this.properties[name];
 		if ( variable ) variable.value = value;
-		else this.properties[name] = new Variable(value);
+		var v = new Variable(value, this);
+		v.del = () => this.delete(name);
+		this.properties[name] = v;
 	}
 
+	delete(name) {
+		delete this.properties[name];
+	}
+	
 	toNative() {
 		var out = {};
 		for ( var name in this.properties ) {
@@ -40,9 +46,9 @@ class ObjectValue extends Value {
 		return Value.undef;
 	}
 
-	*instanceOf(other) {
-		if ( other.toNative() === Object ) return Value.true;
-		else return Value.false;
+	*instanceOf(other, env) {
+		if ( other.toNative() === Object ) return env.true;
+		else return env.false;
 	}
 
 	*call(evaluator, thiz, args) {

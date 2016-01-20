@@ -4,7 +4,7 @@
 let serial = 0;
 
 class Variable {
-	constructor(value) {
+	constructor(value, owner) {
 		this.value = value;
 		this.serial = serial++;
 	}

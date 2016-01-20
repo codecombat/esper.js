@@ -9,15 +9,15 @@ describe("TinyJS Tests", function() {
 	for ( var i = 0; i < files.length; ++i ) {
 		var file = files[i];
 		if ( !/^test\d+\.js/.test(file) ) continue;
-		if ( /029|032|029|026|023|022|021|019|016|014/.test(file) ) continue;
+		if ( /019|022|032|029|023|022|021|016/.test(file) ) continue;
 		(function(file) {
 			
 			var Engine = require('../src/index.js');
 			var src = fs.readFileSync(path.join(dir,file), 'utf8');
 
 			it(file, function() {
-				console.log("\n");
-				console.log(file);
+				//console.log("\n");
+				//console.log(file);
 				var engine = new Engine({strict: false});
 				engine.eval(src);
 				var result = engine.globalScope.get('result');

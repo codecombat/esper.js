@@ -23,13 +23,13 @@ const es6 = {
 		try {
 			getRunner(code, {ecmaVersion: 6});
 
-			expect(false).to.be.true;
+			expect(false).toBe(true);
 		} catch (err) {
 			// if (typeof err === "object" && err.toNative) {
 			// 	err = err.toNative();
 			// }
 			
-			expect(err).to.be.instanceOf(errType);
+			expect(err).toEqual(jasmine.any(errType));
 		}
 	},
 	

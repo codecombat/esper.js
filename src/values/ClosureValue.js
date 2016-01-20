@@ -38,6 +38,10 @@ class ClosureValue extends ObjectValue {
 		return "function";
 	}
 
+	*doubleEquals(other) {
+		return other === this ? this.env.true : this.env.false;
+	}
+
 	/**
 	 *
 	 * @param {Evaluator} evaulator
@@ -48,12 +52,18 @@ class ClosureValue extends ObjectValue {
 		//TODO: This way of scoping is entirelly wrong.
 		let invokeScope = this.scope.createChild();
 		invokeScope.thiz = this.thiz || thiz;
+
+		if ( this.func.vars ) 
+		for ( var v in this.func.vars ) {
+			invokeScope.add(v, Value.undef);
+		}
+
 		for ( let i = 0; i < this.func.params.length; ++i ) {
 			let name = this.func.params[i].name;
 			if ( i < args.length ) {
 				invokeScope.add(name, args[i]);
 			} else {
-				invokeScope.add(name, Value.undefined);
+				invokeScope.add(name, Value.undef);
 			}
 		}
 		

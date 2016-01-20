@@ -1,11 +1,13 @@
+"use strict";
+
 const expect = require('chai').expect;
 const runner = require('./test-runner').es5;
 
 describe("Scope", () => {
-	describe("strict mode", () => {
+	xdescribe("strict mode", () => {
 		it("should detect 'use strict' literal and set scope to strict mode", () => {
 			let scope = runner.getScope("'use strict';");
-			expect(scope.isStrict()).to.be.true;
+			expect(scope.isStrict()).toBe(true);
 		});
 	});
 

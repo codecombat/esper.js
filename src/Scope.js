@@ -10,6 +10,7 @@ class Scope {
 		this.variables = Object.create(null);
 		this.strict = true;
 		this.env = env;
+		this.global = this;
 	}
 
 	/**
@@ -67,6 +68,7 @@ class Scope {
 		child.parent = this;
 		child.strict = this.strict;
 		child.env = this.env;
+		child.global = this.global;
 		return child;
 	}
 

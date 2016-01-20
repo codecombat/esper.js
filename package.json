@@ -51,6 +51,7 @@
     "babel-plugin-transform-es2015-typeof-symbol": "^6.3.13",
     "babel-plugin-transform-es2015-unicode-regex": "^6.3.13",
     "babel-plugin-transform-regenerator": "^6.3.13",
+    "babel-polyfill": "^6.3.14",
     "babel-register": "^6.3.13",
     "chai": "^3.4.1",
     "jasmine": "^2.4.1",

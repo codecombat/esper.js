@@ -3,7 +3,7 @@
 
 
 
-var undef, nil, tru, fals, nan;
+var undef, nil;
 var cache = new WeakMap();
 var bookmarks = new WeakMap();
 
@@ -25,11 +25,11 @@ class Value {
 			return bookmarks.get(value);
 		}
 
-		if ( typeof value !== "object" ) return new BridgeValue(value);
+		if ( typeof value !== "object" ) return new BridgeValue(env, value);
 		//TODO: Implement a real envirionemnt
 		//TODO: Is this cache dangerous?
 		if ( !cache.has(value) ) {
-			let nue = new BridgeValue(value);
+			let nue = new BridgeValue(env, value);
 			cache.set(value, nue);
 			return nue;
 		}
@@ -52,25 +52,17 @@ class Value {
 		return nil;
 	}
 
-	static get NaN() {
-		return nan;
-	}
-
-
-	static get true() {
-		return tru;
-	}
-
-	static get false() {
-		return fals;
-	}
-
 
 	static createNativeBookmark(v) {
 		var out = {type: 'Bookmark'};
 		bookmarks.set(out, v);
 		return out;
 	}
+
+	constructor(env) {
+		this.env = env;
+	}
+	
 
 	/**
 	 * Converts this value to a native javascript value.
@@ -82,7 +74,7 @@ class Value {
 	}
 
 	debugString() { 
-		let native = this.toNative()
+		let native = this.toNative();
 		return native ? native.toString() : '???';
 	}
 
@@ -107,21 +99,25 @@ class Value {
 	}
 
 	*not() {
-		return !this.truthy ? Value.true : Value.false;
+		return !this.truthy ? this.env.true : this.env.false;
 	}
 
 	*typeOf() {
 		return Value.fromNative(this.jsTypeName);
 	}
 
-	*notEquals(other) {
-		var result = yield * this.doubleEquals(other);
+	*notEquals(other, env) {
+		var result = yield * this.doubleEquals(other, env);
 		return yield * result.not();
 	}
 
-	*doubleNotEquals(other) {
-		var result = yield * this.tripleEquals(other);
+	*doubleNotEquals(other, env) {
+		var result = yield * this.tripleEquals(other, env);
 		return yield * result.not();
+	}
+
+	*tripleEquals(other, env) {
+		return other === this ? env.true : env.false;
 	}
 
 	/**
@@ -142,41 +138,10 @@ module.exports = Value;
 var BridgeValue = require('./values/BridgeValue');
 if ( BridgeValue.default ) BridgeValue = BridgeValue.default;
 
-class EmptyValue extends Value {
-	get truthy() { return false; }
 
-	*not() { return Value.fromNative(true); }
+const UndefinedValue = require('./values/UndefinedValue');
+const NullValue = require('./values/NullValue');
 
-	*doubleEquals(other) {
-		if ( other instanceof EmptyValue ) return true;
-		else if ( other instanceof ProxyValue ) return this.toNative() == other.toNative();
-	}
-
-	*call(evaluator, thiz, args) {
-		return yield * evaluator.throw("Can't call undefined or null.");
-	}
-
-}
-
-class UndefinedValue extends EmptyValue {
-	toNative() { return undefined; }
-	get jsTypeName() { return "undefined"; }
-	*tripleEquals(other) {
-		return other instanceof UndefinedValue ? Value.true : Value.false;
-	}
-}
-
-class NullValue extends EmptyValue {
-	toNative() { return null; }
-	get jsTypeName() { return "object"; }
-	*tripleEquals(other) {
-		return other instanceof NullValue ? Value.true : Value.false;
-	}
-}
-
-tru = new BridgeValue(true);
-fals = new BridgeValue(false);
-nan = new BridgeValue(NaN);
 undef = new UndefinedValue();
 nil = new NullValue();
 
