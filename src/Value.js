@@ -1,7 +1,7 @@
 "use strict";
 /* @flow */
 
-
+const CompletionRecord = require('./CompletionRecord');
 
 var undef, nil;
 var cache = new WeakMap();
@@ -90,7 +90,7 @@ class Value {
 	 * @param {Value[]} args
 	 */
 	*call(evaluator, thiz, args) {
-		return yield * evaluator.throw("Can't call that type");
+		return new CompletionRecord(CompletionRecord.THROW, evaluator.fromNative(new TypeError("Don't know how to call that type.")));
 	}
 
 

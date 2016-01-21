@@ -3,6 +3,7 @@
 
 const Value = require('../Value');
 const Variable = require('./Variable');
+const CompletionRecord = require('../CompletionRecord');
 
 /**
  * Represents a value that maps directly to an untrusted local value.
@@ -84,9 +85,8 @@ class ObjectValue extends Value {
 		else return env.false;
 	}
 
-	*call(evaluator, thiz, args) {
-		return yield evaluator.throw("Can't call a non-function object.");
-
+	*call(thiz, args) {
+		return new CompletionRecord(CompletionRecord.THROW, new TypeError("Can't call a non-function object."));
 	}
 
 	*observableProperties() {

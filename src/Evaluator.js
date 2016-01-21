@@ -1,6 +1,7 @@
 "use strict";
 
 const Value = require('./Value');
+const CompletionRecord = require('./CompletionRecord');
 const RuntimeError = require('./RuntimeError');
 const ClosureValue = require('./values/ClosureValue');
 const ObjectValue = require('./values/ObjectValue');
@@ -9,7 +10,7 @@ class Evaluator {
 	constructor(env, n, s) {
 		this.env = env;
 		let that = this;
-		let lastValue = null;
+		this.lastValue = null;
 		/** 
 		 * @type {Object[]} 
 		 * @property {Generator} generator
@@ -17,23 +18,98 @@ class Evaluator {
 		 * @property {ast} ast
 		 */
 		this.frames = [];
-		this.nextFn = function next() {
-			let top = that.frames[0];
-			let result = top.generator.next(lastValue);
-			lastValue = result.value;
-			if ( result.done ) {
-				let lastFrame = that.popFrame();
-
-				// Latient values can't cross function calls.
-				// Dont do this, and you get coffeescript mode.
-				if ( lastFrame.type === "function" ) lastValue = Value.undef;
-
-				if ( that.frames.length === 0 ) return {done: true, value: result.value};
-			} 
-			
-			return {done: false, val: lastValue};
-		};
 		this.pushFrame({generator: this.dispatch(n,s), type: 'program', scope: s});
+	}
+
+	unwindStack(target, canCrossFxBounds) {
+		let finallyFrames = [];
+		for ( let i = 0; i < this.frames.length; ++i ) {
+			let t = this.frames[i].type;
+			if ( t == target || (target == 'return' && t == 'function' )) {
+				let j = i+1;
+				for (; j < this.frames.length; ++j ) if ( this.frames[j].type != "finally" ) break;
+				let fr = this.frames[j];
+				this.frames.splice(0,i+1);
+				Array.prototype.unshift.apply(this.frames, finallyFrames);
+				return fr;
+			} else if ( target == 'return' && this.frames[i].retValue ) {
+				let fr = this.frames[i];
+				this.frames.splice(0, i);
+				Array.prototype.unshift.apply(this.frames, finallyFrames);
+				return fr;
+			} else if ( !canCrossFxBounds && this.frames[i].type == 'function' ) {
+				break;
+			} else if ( t == "finally" ) {
+				finallyFrames.push(this.frames[i]);
+			}
+		}
+		return false;
+	}
+
+	next() {
+		let that = this;
+		let top = that.frames[0];
+		let result;
+		//console.log(top.type, top.ast && top.ast.type);
+
+		if ( top.exception ) {
+			this.lastValue = top.exception;
+			delete top.exception;
+		} else if ( top.retValue ) {
+			this.lastValue = top.retValue;
+			delete top.retValue;
+		}
+
+	 	result = top.generator.next(this.lastValue);
+		
+		let val = result.value;
+
+		if ( (val instanceof CompletionRecord) ) {
+			if ( !(val.value instanceof Value) ) val.value = this.fromNative(val.value);
+			switch ( val.type ) {
+				case CompletionRecord.CONTINUE:
+					if ( this.unwindStack('continue', false) ) return {done:false, val: val.value};
+					throw new Error('Cant find matching loop frame for continue');
+				case CompletionRecord.BREAK:
+					if ( this.unwindStack('loop', false) ) return {done:false, val: val.value};
+					throw new Error('Cant find matching loop frame for break');
+				case CompletionRecord.RETURN:
+					let rfr = this.unwindStack('return', false);
+					if ( rfr ) {
+						rfr.retValue = val.value;
+						return {done:false, val: val.value};
+					}
+					throw new Error('Cant find function bounds.');
+				case CompletionRecord.THROW:
+					let tfr = this.unwindStack('catch', true);
+					if ( tfr ) {
+						tfr.exception = val;
+						this.lastValue = val;
+						return {done:false, val: val.value};
+					} 
+					let line = -1;
+					if ( this.frames[0].ast && this.frames[0].ast.attr) {
+						line = this.frames[0].ast.attr.pos.start_line;
+					}
+					throw val.value.toNative();
+				case CompletionRecord.NORMAL:
+					val = val.value;
+			}
+			
+		} 
+
+		this.lastValue = val;
+		if ( result.done ) {
+			let lastFrame = that.popFrame();
+
+			// Latient values can't cross function calls.
+			// Dont do this, and you get coffeescript mode.
+			if ( lastFrame.type === "function" ) this.lastValue = Value.undef;
+
+			if ( that.frames.length === 0 ) return {done: true, value: result.value};
+		} 
+		
+		return {done: false, val: this.lastValue};
 	}
 
 	pushFrame(frame) {
@@ -51,6 +127,7 @@ class Evaluator {
 	}
 
 	*throw(what) {
+		throw new Error("Rewrite Me!");
 		for ( let i = 0; i < this.frames.length; ++i ) {
 			if ( this.frames[i].type == 'catch' ) {
 				this.frames.splice(0,i+1);
@@ -120,11 +197,11 @@ class Evaluator {
 			ref = yield * this.resolveRef(n.left, s, n.operator === "=");
 		} catch ( e ) {
 			console.log(e, this);
-			return yield * this.throw(this.fromNative(e));
+			return new CompletionRecord(CompletionRecord.THROW, this.fromNative(e));
 		}
 
-		if ( !ref && scope.strict ) {
-			return yield * this.throw(this.fromNative(new ReferenceError(`target not defined`)));
+		if ( !ref && s.strict ) {
+			return new CompletionRecord(CompletionRecord.THROW, this.fromNative(new ReferenceError(`target not defined`)));
 		}
 
 		let argument = yield * this.branch(n.right, s);
@@ -217,15 +294,7 @@ class Evaluator {
 
 
 	*evaluateBreakStatement(n,s) {
-		for ( let i = 0; i < this.frames.length; ++i ) {
-			if ( this.frames[i].type == 'function' ) break;
-			else if ( this.frames[i].type == 'loop' ) {
-				this.frames.splice(0,i+1);
-				yield;
-				return;
-			}
-		}
-		throw new Error('Cant find matching loop frame for break');
+		return new CompletionRecord(CompletionRecord.BREAK, Value.undef);
 	}
 
 
@@ -253,10 +322,10 @@ class Evaluator {
 		}
 
 		if ( typeof callee.call !== "function" ) {
-			return yield * this.throw("Cant call " + require('util').inspect(callee));
+			return new CompletionRecord(CompletionRecord.THROW, "Cant call " + require('util').inspect(callee));
 		}
 
-		let result = yield * callee.call(this, thiz, args, s);
+		let result = yield * callee.call(thiz, args, this);
 		if ( n.type === "NewExpression" ) {
 			return thiz;
 		} else {
@@ -278,17 +347,7 @@ class Evaluator {
 
 
 	*evaluateContinueStatement(n,s) {
-		for ( let i = 0; i < this.frames.length; ++i ) {
-			if ( this.frames[i].type == 'function' ) break;
-			else if ( this.frames[i].type == 'continue' ) {
-				this.frames.splice(0,i+1);
-				yield;
-				return;
-			} else if ( this.frames[i].type == 'loop') {
-				throw new Error('Somehow missing continue frame.');
-			}
-		}
-		throw new Error('Cant find matching loop frame for break');
+		return new CompletionRecord(CompletionRecord.CONTINUE, Value.undef);
 	}
 
 	*evaluateDoWhileStatement(n,s) {
@@ -320,7 +379,7 @@ class Evaluator {
 		if ( !s.has(n.name) ) {
 			// Allow undeclared varibles to be null?
 			if ( false ) return Value.undef;
-			return yield * this.throw(this.fromNative(new ReferenceError(`${n.name} is not defined`)));
+			return new CompletionRecord(CompletionRecord.THROW, this.fromNative(new ReferenceError(`${n.name} is not defined`)));
 		}
 		return s.get(n.name);
 	}
@@ -476,8 +535,7 @@ class Evaluator {
 
 	*evaluateReturnStatement(n,s) {
 		let retVal = yield * this.branch(n.argument,s);
-		this.popFrame();
-		yield retVal;
+		return new CompletionRecord(CompletionRecord.RETURN, retVal);
 	}
 
 	*evaluateSequenceExpression(n,s) {
@@ -495,18 +553,20 @@ class Evaluator {
 
 	*evaluateThrowStatement(n,s) {
 		let value = yield * this.branch(n.argument, s);
-		return yield * this.throw(value);
+		return new CompletionRecord(CompletionRecord.THROW, value);
 	}
 
 	*evaluateTryStatement(n,s) {
+		if ( n.finalizer ) this.pushFrame({generator: this.branch(n.finalizer,s), type: 'finally', scope: s});
 		let result = yield this.branchFrame('catch', n.block, s);
-		if ( result.error ) {
+		if ( result instanceof CompletionRecord && result.type == CompletionRecord.THROW ) {
+			if ( !n.handler ) {
+				console.log("No catch..., throwing", result.obj);
+				return result;
+			}
 			let handlerScope = s.createChild();
-			handlerScope.add(n.handler.param.name, result.obj);
+			handlerScope.add(n.handler.param.name, result.value);
 			return yield * this.branch(n.handler.body, handlerScope);
-		}
-		if ( n.finalizer ) {
-			yield * this.branch(n.finalizer, s);
 		}
 		return result;
 	}
@@ -517,7 +577,7 @@ class Evaluator {
 		try {
 			ref = yield * this.resolveRef(n.argument, s, true);
 		} catch ( e ) {
-			return yield * this.throw(this.fromNative(e));
+			return new CompletionRecord(CompletionRecord.THROW, this.fromNative(e));
 		}
 		let old = ref.value ? ref.value : Value.NaN;
 		switch (n.operator) {
@@ -542,7 +602,7 @@ class Evaluator {
 				
 			} catch ( e ) {
 				if ( n.argument.type !== "MemberExpression" ) return this.env.true;
-				return yield * this.throw(this.fromNative(e));
+				return new CompletionRecord(CompletionRecord.THROW, this.fromNative(e));
 			}
 			if ( !ref ) return this.env.false;
 			ref.del();
@@ -640,13 +700,16 @@ class Evaluator {
 	}
 
 	generator() {
-		return {next: this.nextFn, throw: (e) => { throw e; }};
+		return {next: this.next.bind(this), throw: (e) => { throw e; }};
+	}
+
+	breakFrames() {
+
 	}
 
 	/**
 	 * @private
 	 */
-
 	*branch(n,s) {
 		let gen = this.dispatch(n,s);
 		let oldAST = this.frames[0].ast;

@@ -79,7 +79,7 @@ class BridgeValue extends Value {
 	 * @param {Value} thiz
 	 * @param {Value[]} args
 	 */
-	*call(evaluator, thiz, args) {
+	*call(thiz, args) {
 		let realArgs = new Array(args.length);
 		for ( let i = 0; i < args.length; ++i ) {
 			realArgs[i] = args[i].toNative();

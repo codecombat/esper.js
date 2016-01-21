@@ -48,7 +48,7 @@ class ClosureValue extends ObjectValue {
 	 * @param {Value} thiz
 	 * @param {Value[]} args
 	 */
-	*call(evaulator, thiz, args) {
+	*call(thiz, args, evaulator) {
 		//TODO: This way of scoping is entirelly wrong.
 		let invokeScope = this.scope.createChild();
 		invokeScope.thiz = this.thiz || thiz;
