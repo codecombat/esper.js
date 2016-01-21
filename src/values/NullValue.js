@@ -6,7 +6,10 @@ class NullValue extends EmptyValue {
 	toNative() { return null; }
 	get jsTypeName() { return "object"; }
 	*tripleEquals(other, env) {
-		return other instanceof NullValue ? env.true : env.false;
+		return other instanceof NullValue ? Value.true : Value.false;
+	}
+		*asString() {
+		return "null";
 	}
 }
 

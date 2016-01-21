@@ -43,10 +43,19 @@
 	}
 	.frames {
 		border: 1px solid #cccccc; border-radius: 4px; 
-		height: 140px; overflow: auto;
+		height: 500px; overflow: auto;
 		background-color: #141414;
 		padding: 10px;
 		font: 12px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+	}
+	.output {
+		border: 1px solid #cccccc; border-radius: 4px; 
+		height: 140px; overflow: auto;
+		background-color: #141414;
+		padding: 10px;
+		margin-top: 20px;
+		font: 12px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+		color: white;
 	}
 	.el {
 		border-left: 3px solid #c0c0c0; margin-left: 1px; padding-left: 5px;
@@ -58,12 +67,27 @@
 <body ng-app="MyApp" ng-controller="main">
 
 	<div class="container">
+		
 		<div class="header">
 			<ul class="nav nav-pills pull-right">
-			 <li class="active"><a href="#" data-toggle="modal" data-target="#options">Options</a></li>
+				<li class="active"><a href="#" data-toggle="modal" data-target="#options">Options</a></li>
 			</ul>
+
 			<input style="float: right; margin-top: 10px; margin-right: 20px; width: 200px" ng-model="speed" type="range" min="0" max="10" step="1" />
 			<h3 class="text-muted">esper.js</h3>
+		</div>
+
+		<div style="position: relative; top: -50px; margin-bottom: -40px; margin-left: 150px; margin-right: 300px">
+			<div ng-if="!esper" style="margin-top: 10px;"><a href="#" ng-click="start()" class="btn btn-success"><i class="glyphicon glyphicon-play"></i></a> </div>
+			<div ng-if="esper" style="margin-top: 10px;">
+				<div  class="btn-group" role="group">
+				<a ng-if="!auto" href="#" ng-click="play()" class="btn btn-success"><i class="glyphicon glyphicon-play"></i></a>
+				<a ng-if="auto" href="#" ng-click="pause()" class="btn btn-info"><i class="glyphicon glyphicon-pause"></i></a>
+				<a href="#" ng-click="step()" class="btn btn-warning"><i class="glyphicon glyphicon-step-forward"></i></a>
+				<a href="#" ng-click="stop()" class="btn btn-danger"><i class="glyphicon glyphicon-stop"></i></a>
+				</div>
+
+			</div>
 		</div>
 
 		<div class="row" style="padding-top: 10px">
@@ -76,26 +100,12 @@
 					 onLoad: aceLoaded,
 					 onChange: aceChanged,
 				 }"></div>
-				<div>
-					<div ng-if="!esper" style="margin-top: 10px; text-align: center"><a href="#" ng-click="start()" class="btn btn-success"><i class="glyphicon glyphicon-play"></i></a> </div>
-					<div ng-if="esper" style="margin-top: 10px; text-align: center">
-						<div  class="btn-group" role="group">
-						<a ng-if="!auto" href="#" ng-click="play()" class="btn btn-success"><i class="glyphicon glyphicon-play"></i></a>
-						<a ng-if="auto" href="#" ng-click="pause()" class="btn btn-info"><i class="glyphicon glyphicon-pause"></i></a>
-						<a href="#" ng-click="step()" class="btn btn-warning"><i class="glyphicon glyphicon-step-forward"></i></a>
-						<a href="#" ng-click="stop()" class="btn btn-danger"><i class="glyphicon glyphicon-stop"></i></a>
-						</div>
-
-					</div>
 				
-				</div>
 		 	</div>
 			<div class="col-sm-6">
-				<pre ng-if="!error" class="x ace_editor ace_dark ace-twilight">{{output}}</pre>
-				<pre ng-if="error" style="color: red !important" class="x ace_editor ace_dark ace-twilight">{{error}}</pre>
 				<div class="frames">
 					<div ng-repeat="frame in frames">
-						{{frame.id}} - {{frame.type}} ({{frame.node}}@{{frame.loc}})
+						{{frame.id}} - {{frame.name}}:{{frame.type}} ({{frame.node}}@{{frame.loc}}) [<span style="color: lime">{{frame.value}}</span>]
 						<div class="el" ng-repeat="(k,v) in frame.vars">
 							<span style="color: cyan">{{k}}</span> = <span style="color: lime">{{v}}</span>
 						</div>
@@ -103,6 +113,8 @@
 				</div>
 			</div>
 		</div>
+		<pre ng-if="error" style="color: red !important" class="output">{{error}}</pre>
+		<pre ng-if="!error" class="output">{{output}}</pre>
 		<div class="footer">
 			<p>&copy; basicer 2016</p>
 		</div>

@@ -4,9 +4,6 @@
  * @flow
  */
 
-const esprima = require('esprima');
-//let escodegen = require('escodegen');
-
 const Evaluator = require('./Evaluator');
 const Environment = require('./Environment');
 const Scope = require('./Scope');
@@ -25,7 +22,6 @@ class Engine {
 
 	constructor(options) {
 		options = options || {};
-		this.parser = (code) => esprima.parse(code, {loc: true});
 		this.env = new Environment(options);
 	}
 
@@ -36,7 +32,7 @@ class Engine {
 	 * @return {Promise<*>} - The result of execution, as a promise.
 	 */
 	eval(code) {
-		let ast = this.parser(code);
+		let ast = this.env.parser(code);
 		return this.evalAST(ast);
 	}
 
@@ -65,7 +61,7 @@ class Engine {
 	}
 
 	load(code) {
-		let ast = this.parser(code);
+		let ast = this.env.parser(code);
 		this.loadAST(ast);
 	}
 

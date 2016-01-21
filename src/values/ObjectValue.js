@@ -10,10 +10,11 @@ const CompletionRecord = require('../CompletionRecord');
  */
 class ObjectValue extends Value {
 	
-	constructor(scope) {
-		super();
-		this.env = scope.env;
+	constructor(env) {
+		super(env);
+		this.env = env;
 		this.properties = Object.create(null);
+		this.setPrototype(this.env.ObjectPrototype);
 	}
 
 	ref(name) {
@@ -21,7 +22,7 @@ class ObjectValue extends Value {
 			return this.properties[name];
 		}
 		var existing = this.properties[name];
-		var ret = {};
+		var ret = {set: (v) => this.set(name,v)};
 		let get;
 		if ( existing ) {
 			Object.defineProperty(ret, 'value', {
@@ -30,6 +31,7 @@ class ObjectValue extends Value {
 					this.set(name, v);
 				}
 			});
+
 		} else {
 			Object.defineProperty(ret, 'value', {
 				get: () => Value.undef,
@@ -66,11 +68,7 @@ class ObjectValue extends Value {
 	}
 	
 	toNative() {
-		var out = {};
-		for ( var name in this.properties ) {
-			out[name] = this.properties[name].value.toNative();
-		}
-		return out;
+		return Value.createNativeBookmark();
 	}
 
 
@@ -81,22 +79,27 @@ class ObjectValue extends Value {
 	}
 
 	*instanceOf(other, env) {
-		if ( other.toNative() === Object ) return env.true;
-		else return env.false;
-	}
-
-	*call(thiz, args) {
-		return new CompletionRecord(CompletionRecord.THROW, new TypeError("Can't call a non-function object."));
+		if ( other.toNative() === Object ) return Value.true;
+		else return Value.false;
 	}
 
 	*observableProperties() {
 		for ( var p in this.properties ) {
+			if ( !this.properties[p].enumerable ) return;
 			yield this.fromNative(p);
 		}
 		return;
 	}
 
+	hasOwnProperty(name) {
+		return Object.prototype.hasOwnProperty.call(this.properties, name);
+	}
+
 	setPrototype(val) {
+		if ( val == null ) {
+			Object.setPrototypeOf(this.properties, null);	
+			return;
+		}
 		this.proto = val;
 		Object.setPrototypeOf(this.properties, val.properties);
 	}
@@ -106,7 +109,8 @@ class ObjectValue extends Value {
 	}
 
 	get jsTypeName() {
-		return "object";
+		if ( typeof this.call !== "function" ) return "object";
+		return "function";
 	}
 }
 

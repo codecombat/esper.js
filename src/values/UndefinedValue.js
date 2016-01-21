@@ -1,14 +1,19 @@
 "use strict";
 const EmptyValue = require('./EmptyValue');
+const Value = require('../Value');
 
 class UndefinedValue extends EmptyValue {
 	toNative() { return undefined; }
 	get jsTypeName() { return "undefined"; }
 	*tripleEquals(other, env) {
-		return other instanceof UndefinedValue ? env.true : env.false;
+		return other instanceof UndefinedValue ? Value.true : Value.false;
 	}
 
 	*add(other) { return this.fromNative(undefined + other.toNative()); }
+
+	*asString() {
+		return "undefined";
+	}
 }
 
 module.exports = UndefinedValue;

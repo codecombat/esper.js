@@ -1,3 +1,4 @@
+"use strict";
 const runner = require('./test-runner').es5;
 
 describe("Try-Catch-Finally", () => {

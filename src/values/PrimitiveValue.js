@@ -2,18 +2,19 @@
 /* @flow */
 
 const Value = require('../Value');
+const CompletionRecord = require('../CompletionRecord');
 
 /**
  * Represents a value that maps directly to an untrusted local value.
  */
-class BridgeValue extends Value {
+class PrimitiveValue extends Value {
 	
-	constructor(env, value) {
-		super(env);
+	constructor(value) {
+		super(null);
 		this.native = value;
 	}
 
-	ref(name) {
+	ref(name, env) {
 		let out = Object.create(null);
 		let str = (value) => this.native[name] = value.toNative();
 		Object.defineProperty(out, 'value', {
@@ -25,8 +26,8 @@ class BridgeValue extends Value {
 		return out;
 	}
 
-	assign(name, value) {
-		this.native[name] = value.toNative();
+	assign(name, value, env) {
+		
 	}
 
 	toNative() {
@@ -60,7 +61,7 @@ class BridgeValue extends Value {
 	*lte(other) { return this.fromNative(this.native <= other.toNative()); }
 
 	*inOperator(other) { return this.fromNative(this.native in other.toNative()); }
-	*instanceOf(other) { return this.fromNative(this.native instanceof other.toNative()); }
+	*instanceOf(other) { return Value.false; }
 	
 	*unaryPlus() { return this.fromNative(+this.native); }
 	*unaryMinus() { return this.fromNative(-this.native); }
@@ -68,36 +69,18 @@ class BridgeValue extends Value {
 
 
 
-	*member(name) { 
-		return this.fromNative(this.native[name]); 
+	*member(name, env) { 
+		return env.fromNative(this.native[name]); 
 	}
+
 
 
 	*observableProperties() {
-		for ( var p in this.native ) {
-			yield this.fromNative(p);
-		}
-		return;
-	}
-
-	/**
-	 *
-	 * @param {Evaluator} evaluator
-	 * @param {Value} thiz
-	 * @param {Value[]} args
-	 */
-	*call(thiz, args) {
-		let realArgs = new Array(args.length);
-		for ( let i = 0; i < args.length; ++i ) {
-			realArgs[i] = args[i].toNative();
-		}
-		let result = this.native.apply(thiz ? thiz.toNative() : undefined, realArgs);
-		return this.fromNative(result);
-
+		throw new Error("Dont do this yet");
 	}
 
 	*makeThisForNew() {
-		return this.fromNative(Object.create(this.native.prototype));
+		throw new Error("Naw");
 	}
 
 	get truthy() {
@@ -109,4 +92,4 @@ class BridgeValue extends Value {
 	}
 }
 
-module.exports = BridgeValue;
+module.exports = PrimitiveValue;

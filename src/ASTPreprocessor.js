@@ -54,12 +54,21 @@ class ASTPreprocessor {
 				yield * me(ast.body);
 				invokeCB(cbs, 'exitFunction', ast);
 				break;
-
+			case "Identifier":
+				break;
 			default:
+				
 				for (var p in ast) {
+					let n = ast[p];
 					if ( p === "parent" ) continue;
-					if ( !ast[p] ) continue;
-					if ( ast[p].type ) yield * me(ast[p]);
+					if ( p === "loc" ) continue;
+					if ( p === "type" ) continue;
+					if ( p === "nodeID" ) continue;
+					if ( n === null ) continue;
+					if ( typeof n.type !== "string" ) {
+						continue;
+					}
+					yield * me(n);
 				}				
 		}
 
@@ -114,6 +123,26 @@ class ASTPreprocessor {
 		a.vars = Object.create(null);
 		this.varStack.unshift(a.vars);
 	}
+
+	exitIdentifier(a) {
+		a.srcName = a.name;
+	}
+
+	exitMemberExpression(a) {
+		let left = a.object.srcName || '??';
+		let right = a.property.srcName || '(intermediate value)';
+		if (!a.computed) a.srcName = left + '.' + right;
+		else a.srcName = a.srcName = left + '[' + right + ']';
+	}
+
+	exitLiteral(a) {
+		a.srcName = a.raw;
+	}
+
+	exitCallExpression(a) {
+		a.srcName = a.callee.srcName;
+	}
+
 
 	exitFunction(a) {
 		this.scopeStack.shift();

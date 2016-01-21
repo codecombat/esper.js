@@ -10,7 +10,7 @@ describe("TinyJS Tests", function() {
 		var file = files[i];
 		if ( !/^test\d+\.js/.test(file) ) continue;
 
-		if ( /019|022|032|029|023|022|021|016/.test(file) ) {
+		if ( /019|022|032|029|022|016/.test(file) ) {
 			xit(file, function() {});
 			continue;
 		}

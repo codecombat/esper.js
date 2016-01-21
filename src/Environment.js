@@ -7,21 +7,25 @@
 const Scope = require('./Scope');
 const Value = require('./Value');
 const esprima = require('esprima');
+const CompletionRecord = require('./CompletionRecord');
+const ObjectValue = require('./values/ObjectValue');
+const ASTPreprocessor = require('./ASTPreprocessor');
 
 class EvalFunction extends Value {
-	*call(evaluator, thiz, args, childScope) {
+	*call(thiz, args, evaluator, scope) {
 		let code = args[0].toNative().toString();
 		let ast;
 		try {
-			ast = esprima.parse(code, {loc: true});
-			console.log(ast);
+			let oast = scope.env.parser(code, {loc: true});
+			ast = ASTPreprocessor.process(oast);
 		} catch ( e ) {
 			var eo = e;
 			if ( eo.description == "Invalid left-hand side in assignment" ) eo = new ReferenceError(eo.description);
-			let tr = yield * evaluator.throw(this.fromNative(eo));
-			return tr;
+			return new CompletionRecord(CompletionRecord.THROW, this.fromNative(eo));
 		}
-		return yield evaluator.branchFrame('eval', ast, childScope);
+		let bak = yield evaluator.branchFrame('eval', ast, scope);
+		console.log("EVALED: ", bak);
+		return bak;
 	}
 }
 
@@ -35,17 +39,19 @@ class Environment {
 	}
 	
 	constructor(options) {
-
-		this.false = this.valueFromNative(false);
-		this.true = this.valueFromNative(true);
+		this.parser = this.parser = (code) => esprima.parse(code, {loc: true});
 		this.NaN = this.valueFromNative(NaN);
 
 		/** @type {Value} */
 		this.console = this.valueFromNative(console);
 		/** @type {Value} */
-		this.Math = this.valueFromNative(Math);
+		this.Math = new (require('./stdlib/Math.js'))(this);
 		/** @type {Value} */
-		this.Object = this.valueFromNative(Object);
+		
+		this.ObjectPrototype =  new (require('./stdlib/ObjectPrototype.js'))(this);
+		this.FunctionPrototype = new (require('./stdlib/FunctionPrototype.js'))(this);
+		this.Object =  new (require('./stdlib/Object.js'))(this);
+		this.ObjectPrototype.set('constructor', this.Object); //Chickens and egs...
 
 		let scope = new Scope(this);
 		scope.strict = options.strict || true;
@@ -63,7 +69,7 @@ class Environment {
 		scope.set('Math', this.Math);
 		scope.set('parseInt', this.valueFromNative(parseInt));
 		scope.set('Number', this.valueFromNative(Number));
-		scope.set('Object', this.valueFromNative(Object));
+		scope.set('Object', this.Object);
 		scope.set('Array', this.valueFromNative(Array));
 		scope.set('String', this.valueFromNative(String));
 		scope.set('TypeError', this.valueFromNative(TypeError));
@@ -77,6 +83,9 @@ class Environment {
 	}
 
 	valueFromNative(native) {
+		return Value.fromNative(native, this);
+	}
+	fromNative(native) {
 		return Value.fromNative(native, this);
 	}
 };

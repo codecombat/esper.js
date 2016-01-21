@@ -18,11 +18,6 @@ class EmptyValue extends Value {
 		else if ( other instanceof BridgeValue ) return this.fromNative(this.toNative() == other.toNative());
 	}
 
-	*call(thiz, args) {
-		return new CompletionRecord(CompletionRecord.THROW, new TypeError("Can't call undefined or null."));
-	}
-
-
 }
 
 module.exports = EmptyValue;

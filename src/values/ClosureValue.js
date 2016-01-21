@@ -19,6 +19,7 @@ class ClosureValue extends ObjectValue {
 		this.env = scope.env;
 		this.func = func;
 		this.scope = scope;
+		this.setPrototype(scope.env.FunctionPrototype);
 		this.properties['prototype'] = new Variable(new ObjectValue(scope));
 	}
 
@@ -34,12 +35,8 @@ class ClosureValue extends ObjectValue {
 		return !true;
 	}
 
-	get jsTypeName() {
-		return "function";
-	}
-
 	*doubleEquals(other) {
-		return other === this ? this.env.true : this.env.false;
+		return other === this ? Value.true : Value.false;
 	}
 
 	/**
@@ -70,13 +67,6 @@ class ClosureValue extends ObjectValue {
 		var result = yield evaulator.branchFrame('function', this.func.body, invokeScope);
 		return result;
 	}
-
-	*makeThisForNew() {
-		var nue = new ObjectValue(this.env);
-		nue.setPrototype(this.properties['prototype'].value);
-		return nue;
-	}
-
 
 }
 

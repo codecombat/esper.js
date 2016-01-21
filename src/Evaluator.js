@@ -81,6 +81,10 @@ class Evaluator {
 					}
 					throw new Error('Cant find function bounds.');
 				case CompletionRecord.THROW:
+					//TODO: Fix this nonsense:
+					let e = val.value.toNative();
+					if ( e instanceof Error ) e.stack = this.buildStacktrace(e) + "\n-------------\n" + e.stack;
+
 					let tfr = this.unwindStack('catch', true);
 					if ( tfr ) {
 						tfr.exception = val;
@@ -91,6 +95,8 @@ class Evaluator {
 					if ( this.frames[0].ast && this.frames[0].ast.attr) {
 						line = this.frames[0].ast.attr.pos.start_line;
 					}
+					console.log("Yah dun messed up...");
+					console.log(this.buildStacktrace(val.value.toNative()));
 					throw val.value.toNative();
 				case CompletionRecord.NORMAL:
 					val = val.value;
@@ -112,6 +118,19 @@ class Evaluator {
 		return {done: false, val: this.lastValue};
 	}
 
+	buildStacktrace(e) {
+		let lines = [e.toString()];
+		for ( var f of this.frames ) {
+			//if ( f.type !== 'function' ) continue;
+			let line = 'at ';
+			if ( f.ast ) {
+				if ( f.ast ) line += (f.ast.srcName || f.ast.type) + ' ';
+				if ( f.ast.loc ) line += '(<src>:' + f.ast.loc.start.line + ":" + f.ast.loc.start.column + ')';
+			}
+			lines.push(line);
+		}
+		return lines.join('\n    ');
+	}
 	pushFrame(frame) {
 		this.frames.unshift(frame);
 	}
@@ -196,7 +215,6 @@ class Evaluator {
 		try {
 			ref = yield * this.resolveRef(n.left, s, n.operator === "=");
 		} catch ( e ) {
-			console.log(e, this);
 			return new CompletionRecord(CompletionRecord.THROW, this.fromNative(e));
 		}
 
@@ -247,8 +265,10 @@ class Evaluator {
 				throw new Error("Unknown assignment operator: " + n.operator);
 		}
 
-		if ( ref ) ref.value = value;
-		else s.assign(n.left.name, value);
+		if ( ref ) ref.set(value);
+		else {
+			s.assign(n.left.name, value);
+		}
 
 		return value;
 	}
@@ -306,12 +326,20 @@ class Evaluator {
 		if ( n.callee.type === "MemberExpression" ) {
 			thiz = yield * this.branch(n.callee.object, s);
 			callee = yield * this.partialMemberExpression(thiz, n.callee, s);
+			if ( callee instanceof CompletionRecord ) {
+				if ( callee.type == CompletionRecord.THROW ) return callee;
+				callee = callee.value;
+			}
 		} else {
 			callee = yield * this.branch(n.callee, s);
 		}
 
 		if ( n.type === "NewExpression" ) {
 			thiz = yield * callee.makeThisForNew();
+			if ( thiz instanceof CompletionRecord ) {
+				if ( thiz.type == CompletionRecord.THROW ) return thiz;
+				thiz = thiz.value;
+			}
 		}
 
 		//console.log("Calling", callee, callee.call);
@@ -321,11 +349,12 @@ class Evaluator {
 			args[i] = yield * this.branch(n.arguments[i],s);
 		}
 
+		let name = n.callee.srcName || callee.jsTypeName;
 		if ( typeof callee.call !== "function" ) {
-			return new CompletionRecord(CompletionRecord.THROW, "Cant call " + require('util').inspect(callee));
+			return new CompletionRecord(CompletionRecord.THROW, new TypeError("" + name + " is not a function"));
 		}
 
-		let result = yield * callee.call(thiz, args, this);
+		let result = yield * callee.call(thiz, args, this, s);
 		if ( n.type === "NewExpression" ) {
 			return thiz;
 		} else {
@@ -491,19 +520,19 @@ class Evaluator {
 
 		if ( n.computed ) {
 			let right = yield * this.branch(n.property,s);
-			return yield * left.member(right.toNative());
+			return yield * left.member(right.toNative(), this.env);
 		} else if ( n.property.type == "Identifier") {
 			if ( !left ) throw `Cant index ${n.property.name} of undefined`;
-			return yield * left.member(n.property.name);
+			return yield * left.member(n.property.name, this.env);
 		} else {
 			if ( !left ) throw `Cant index ${n.property.value.toString()} of undefined`;
-			return yield * left.member(n.property.value.toString());
+			return yield * left.member(n.property.value.toString(), this.env);
 		}
 	}
 
 	*evaluateObjectExpression(n,s) {
 		//TODO: Need to wire up native prototype
-		var nat = new ObjectValue(s);
+		var nat = new ObjectValue(s.env);
 		for ( let i = 0; i < n.properties.length; ++i ) {
 			let prop = n.properties[i];
 			let key;
@@ -597,16 +626,16 @@ class Evaluator {
 			try {
 				ref = yield * this.resolveRef(n.argument, s);
 				if ( n.argument.type !== "MemberExpression" ) {
-					return this.env.false;
+					return Value.false;
 				}
 				
 			} catch ( e ) {
-				if ( n.argument.type !== "MemberExpression" ) return this.env.true;
+				if ( n.argument.type !== "MemberExpression" ) return Value.true;
 				return new CompletionRecord(CompletionRecord.THROW, this.fromNative(e));
 			}
-			if ( !ref ) return this.env.false;
+			if ( !ref ) return Value.false;
 			ref.del();
-			return this.env.true;
+			return Value.true;
 		}
 
 		if ( n.operator === "typeof" ) {
@@ -715,6 +744,10 @@ class Evaluator {
 		let oldAST = this.frames[0].ast;
 		this.frames[0].ast = n;
 		let result = gen.next();
+		
+		let val = result.value;
+		if ( val instanceof CompletionRecord ) val = val.value;
+		this.frames[0].value = val;
 		while ( !result.done ) {
 			let down = yield result.value;
 			result = gen.next(down);
