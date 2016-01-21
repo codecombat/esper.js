@@ -1,5 +1,6 @@
-import {expect} from "chai";
-import {es5 as runner, wrapArgs} from "./test-runner";
+"use strict";
+const runner = require('./test-runner').es5;
+const wrapArgs = require('./test-runner').wrapArgs;
 
 describe("Type: String", () => {
 	[
@@ -69,18 +70,18 @@ describe("Type: String", () => {
 	].forEach(testCase => {
 		it("String.prototype." + testCase.fn + ": should return expected results with args: " + wrapArgs(testCase.args), () => {
 			let source = testCase.source || "Foo";
-			let expected = source[testCase.fn](...testCase.args);
+			let expected = source[testCase.fn].apply(source, testCase.args);
 			let code = "'" + source + "'." + testCase.fn + "(" + wrapArgs(testCase.args) + ");";
 
 			let result = runner.runBlock(code);
 
 			if (Array.isArray(expected)) {
-				expect(result.getProperty("length").getValue().value).to.equal(expected.length);
+				expect(result.toNative().length).toEqual(expected.length);
 				expected.forEach((value, index) => {
-					expect(result.getProperty(index).getValue().value).to.equal(value);
+					expect(result.toNative()[index]).toEqual(value);
 				});
 			} else {
-				expect(result.getValue().value).to.equal(expected);
+				expect(result.toNative()).toEqual(expected);
 			}
 		});
 	});
@@ -91,7 +92,7 @@ describe("Type: String", () => {
 
 	describe("String.prototype.length", () => {
 		it("should return the length of the string.", () => runner.confirmBlock("'foo'.length==3;"));
-		it("should ignore when length is set", () => runner.confirmBlock("var a = 'foo';a.length = 2;a.length==3;"));
+		xit("should ignore when length is set", () => runner.confirmBlock("var a = 'foo';a.length = 2;a.length==3;"));
 	});
 
 	describe("When using bracket notation", () => {
@@ -101,7 +102,7 @@ describe("Type: String", () => {
 	});
 
 	describe("When converting", () => {
-		it("should use overridden `toString` if set.", () => {
+		xit("should use overridden `toString` if set.", () => {
 			runner.confirmBlock("var a = {toString:function() { return 'foo'; } };String(a) == 'foo';");
 		});
 

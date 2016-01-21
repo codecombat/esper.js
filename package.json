@@ -6,13 +6,13 @@
   "scripts": {
     "doc": "esdoc -c esdoc.json",
     "lint": "jshint src --show-non-errors",
-    "test": "jasmine",
+    "test": "node contrib/jasmine.js",
     "repl": "node contrib/repl.js",
     "webpack": "webpack"
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/codecombat/esper.git"
+    "url": "git+ssh://git@github.com/codecombat/esper-staging.git"
   },
   "keywords": [
     "esper",
@@ -24,9 +24,9 @@
   "author": "Rob Blanckaert",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/codecombat/esper/issues"
+    "url": "https://github.com/codecombat/esper-staging/issues"
   },
-  "homepage": "https://github.com/codecombat/esper#readme",
+  "homepage": "https://github.com/codecombat/esper-staging#readme",
   "devDependencies": {
     "babel": "^5.8.34",
     "babel-core": "^6.4.0",
@@ -55,11 +55,12 @@
     "babel-register": "^6.3.13",
     "chai": "^3.4.1",
     "jasmine": "^2.4.1",
+    "jasmine-core": "^2.4.1",
+    "jasmine-spec-reporter": "^2.4.0",
     "webpack": "^1.12.11"
   },
   "dependencies": {
     "escodegen": "^1.8.0",
-    "esprima": "^2.7.1",
-    "regenerator": "^0.8.42"
+    "esprima": "^2.7.1"
   }
 }

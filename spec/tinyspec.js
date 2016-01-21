@@ -9,7 +9,12 @@ describe("TinyJS Tests", function() {
 	for ( var i = 0; i < files.length; ++i ) {
 		var file = files[i];
 		if ( !/^test\d+\.js/.test(file) ) continue;
-		if ( /019|022|032|029|023|022|021|016/.test(file) ) continue;
+
+		if ( /019|022|032|029|023|022|021|016/.test(file) ) {
+			xit(file, function() {});
+			continue;
+		}
+
 		(function(file) {
 			
 			var Engine = require('../src/index.js');

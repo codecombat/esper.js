@@ -6,22 +6,22 @@
 
 const Scope = require('./Scope');
 const Value = require('./Value');
-
+const esprima = require('esprima');
 
 class EvalFunction extends Value {
 	*call(evaluator, thiz, args, childScope) {
 		let code = args[0].toNative().toString();
 		let ast;
 		try {
-			ast = esprima.parse(code);
+			ast = esprima.parse(code, {loc: true});
 			console.log(ast);
 		} catch ( e ) {
-			let eo = new SyntaxError(e.description);
+			var eo = e;
+			if ( eo.description == "Invalid left-hand side in assignment" ) eo = new ReferenceError(eo.description);
 			let tr = yield * evaluator.throw(this.fromNative(eo));
-			yield tr;
 			return tr;
 		}
-		return yield evaluator.branchFrame('function', ast, childScope);
+		return yield evaluator.branchFrame('eval', ast, childScope);
 	}
 }
 
@@ -62,6 +62,7 @@ class Environment {
 		scope.set('JSON', this.valueFromNative(JSON));
 		scope.set('Math', this.Math);
 		scope.set('parseInt', this.valueFromNative(parseInt));
+		scope.set('Number', this.valueFromNative(Number));
 		scope.set('Object', this.valueFromNative(Object));
 		scope.set('Array', this.valueFromNative(Array));
 		scope.set('String', this.valueFromNative(String));

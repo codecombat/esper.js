@@ -1,7 +1,7 @@
 "use strict";
 
 const parser = require('./ast-parser');
-const Engine = require('../../../src/index')
+const Engine = require('../../../src/index');
 
 function getRunner (code, options) {
 	let ast = parser.parse(code, options);
@@ -78,5 +78,6 @@ const es5 = {
 
 module.exports = {
 	es5: es5,
-	es6: es6
+	es6: es6,
+	wrapArgs: wrapArgs
 }

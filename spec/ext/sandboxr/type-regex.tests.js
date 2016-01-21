@@ -1,7 +1,7 @@
-import {expect} from "chai";
-import {es5 as runner} from "./test-runner";
+"use strict";
+const runner = require('./test-runner').es5;
 
-describe("Type: RegExp", () => {
+xdescribe("Type: RegExp", () => {
 	it("should evaluate as typeof object", () => {
 		runner.confirmBlock("typeof /a/ == 'object';");
 	});

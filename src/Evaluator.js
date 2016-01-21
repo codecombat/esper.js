@@ -401,7 +401,11 @@ class Evaluator {
 	}
 
 	*evaulateLiteral(n,s) {
-		return this.fromNative(n.value);
+		if ( n.regex ) {
+			return this.fromNative(new RegExp(n.regex.pattern, n.regex.flags));
+		} else {
+			return this.fromNative(n.value);
+		}
 	}
 
 	*evaluateLogicalExpression(n,s) {

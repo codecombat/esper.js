@@ -1,6 +1,7 @@
-import {es5 as runner} from "./test-runner";
+"use strict";
+const runner = require('./test-runner').es5;
 
-describe("Type: Array", () => {
+xdescribe("Type: Array", () => {
 	it("should create an array for an array literal", done => {
 		runner.confirmBlock("Array.isArray([]);", done);
 	});

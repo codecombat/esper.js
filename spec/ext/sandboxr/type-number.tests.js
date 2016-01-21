@@ -1,4 +1,5 @@
-import {es5 as runner} from "./test-runner";
+"use strict";
+const runner = require('./test-runner').es5;
 
 describe("Type: Number", () => {
 	it("should show 'number' as typeof", () => runner.confirmBlock("typeof 5==='number';"));

@@ -9,7 +9,7 @@ describe("Sandboxr Tests", function() {
 	for ( var i = 0; i < files.length; ++i ) {
 		var file = files[i];
 		//if ( !/assignment|binary|logical|function|sequence|update-|unary-/.test(file) ) continue;
-		if ( /api|async|ast|eval|import|label|switch|test-runner|type-|with-|json/.test(file) ) continue;
+		if ( /api|async|ast|eval|import|label|switch|test-runner|with-|json/.test(file) ) continue;
 		(function(file) {
 
 			describe(file, function() {
