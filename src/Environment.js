@@ -70,7 +70,7 @@ class Environment {
 		scope.set('isNaN', this.valueFromNative(isNaN));
 		scope.set('Date', this.valueFromNative(Date));
 		scope.set('eval', new EvalFunction());
-		scope.thiz = scope;
+		scope.thiz = scope.object;
 		/** @type {Scope} */
 		this.globalScope = scope;
 	}

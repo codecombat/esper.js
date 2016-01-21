@@ -27,6 +27,22 @@ class ObjectValue extends Value {
 		this.properties[name] = v;
 	}
 
+	get(name) {
+		let ref = this.ref(name);
+		if ( ref ) return ref.value;
+		return Value.undef;
+	}
+
+	set(name, value) {
+		var v = new Variable(value, this);
+		v.del = () => this.delete(name);
+		this.properties[name] = v;
+	}
+
+	has(name) {
+		return name in this.properties;
+	}
+
 	delete(name) {
 		delete this.properties[name];
 	}

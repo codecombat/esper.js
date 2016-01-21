@@ -105,10 +105,11 @@ function main($scope, $timeout) {
 			
 			function readScope(scope) {
 				var vars = {};
-				var varz = Object.getOwnPropertyNames(scope.variables);
+				var props = scope.object.properties;
+				var varz = Object.getOwnPropertyNames(props);
 				for ( var z in varz ) {
 					var vname = varz[z];
-					var val = scope.variables[vname].value;
+					var val = props[vname].value;
 					vars[vname] = (val && val.debugString) ? val.debugString() : val;
 				}
 				return vars;
@@ -130,7 +131,6 @@ function main($scope, $timeout) {
 				}
 				lines.push(o);
 			}
-			lines.push({type: 'global', id: 0, vars: readScope($scope.esper.env.globalScope)});
 			
 
 			if ( ast ) {

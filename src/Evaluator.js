@@ -33,9 +33,7 @@ class Evaluator {
 			
 			return {done: false, val: lastValue};
 		};
-		var scop = s.createChild();
-		scop.thiz = s.thiz;
-		this.pushFrame({generator: this.dispatch(n,scop), type: 'program', scope: scop});
+		this.pushFrame({generator: this.dispatch(n,s), type: 'program', scope: s});
 	}
 
 	pushFrame(frame) {

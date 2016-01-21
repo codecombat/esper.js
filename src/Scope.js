@@ -2,12 +2,14 @@
 /* @flow */
 
 const Variable = require("./values/Variable");
+
 const Value = require("./Value");
+const ObjectValue = require("./values/ObjectValue");
 
 class Scope {
 	constructor(env) {
 		this.parent = null;
-		this.variables = Object.create(null);
+		this.object = new ObjectValue(this);
 		this.strict = true;
 		this.env = env;
 		this.global = this;
@@ -18,15 +20,15 @@ class Scope {
 	 * @returns {Value}
 	 */
 	get(name) {
-		return this.variables[name].value;
+		return this.object.get(name);
 	}
 
 	ref(name) {
-		return this.variables[name];
+		return this.object.ref(name);
 	}
 
 	add(name, value) {
-		this.variables[name] = new Variable(value);
+		this.object.set(name,value);
 	}
 
 	/**
@@ -35,9 +37,7 @@ class Scope {
 	 * @param {Value} value - Value to set
 	 */
 	set(name, value) {
-		let variable = this.variables[name];
-		if ( variable ) variable.value = value;
-		else this.variables[name] = new Variable(value);
+		this.object.assign(name, value);
 	}
 
 	unset(name) {
@@ -45,26 +45,19 @@ class Scope {
 	}
 
 	has(name) {
-		return !!this.variables[name];
+		return this.object.has(name);
 	}
 
 	/**
 	 * Set the identifier in its nearest scope, or create a global.
 	 */
 	assign(name, value) {
-		let existing = this.variables[name];
-		if ( existing ) {
-			existing.value = value;
-			return;
-		}
-		let parent = this;
-		while ( parent.parent ) parent = parent.parent;
-		parent.add(name, value);
+		this.object.assign(name, value);
 	}
 
 	createChild() {
 		let child = new Scope();
-		child.variables = Object.create(this.variables);
+		child.object.setPrototype(this.object);
 		child.parent = this;
 		child.strict = this.strict;
 		child.env = this.env;
