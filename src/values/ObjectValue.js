@@ -16,19 +16,36 @@ class ObjectValue extends Value {
 	}
 
 	ref(name) {
-		return this.properties[name];
+		if ( Object.prototype.hasOwnProperty.call(this.properties, name) ) {
+			return this.properties[name];
+		}
+		var existing = this.properties[name];
+		var ret = {};
+		let get;
+		if ( existing ) {
+			Object.defineProperty(ret, 'value', {
+				get: () => existing.value,
+				set: (v) => {
+					this.set(name, v);
+				}
+			});
+		} else {
+			Object.defineProperty(ret, 'value', {
+				get: () => Value.undef,
+				set: (v) => {
+					this.set(name, v);
+				}
+			});
+		}
+		return ret;
 	}
 
 	assign(name, value) {
-		let variable = this.properties[name];
-		if ( variable ) variable.value = value;
-		var v = new Variable(value, this);
-		v.del = () => this.delete(name);
-		this.properties[name] = v;
+		return this.set(name, value);
 	}
 
 	get(name) {
-		let ref = this.ref(name);
+		let ref = this.properties[name];
 		if ( ref ) return ref.value;
 		return Value.undef;
 	}

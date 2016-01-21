@@ -35,3 +35,4 @@ node_modules
 
 esper.js
 esdoc/*
+spec/ext/duktape/*

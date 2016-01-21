@@ -24,7 +24,7 @@ class Scope {
 	}
 
 	ref(name) {
-		return this.object.ref(name);
+		return this.object.properties[name];
 	}
 
 	add(name, value) {
@@ -52,7 +52,14 @@ class Scope {
 	 * Set the identifier in its nearest scope, or create a global.
 	 */
 	assign(name, value) {
-		this.object.assign(name, value);
+		let variable = this.object.properties[name];
+		if ( variable ) {
+			variable.value = value;
+			return;
+		}
+		var v = new Variable(value, this);
+		v.del = () => this.delete(name);
+		this.properties[name] = v;
 	}
 
 	createChild() {
