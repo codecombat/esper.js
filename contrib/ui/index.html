@@ -17,15 +17,18 @@
 		<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
 		<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 	<![endif]-->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.0.1/lodash.js"></script>
 	<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.2/ace.js"></script>
 	<script src="http://angular-ui.github.io/ui-ace/dist/ui-ace.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.1.0/ui-bootstrap.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.1.0/ui-bootstrap-tpls.min.js"></script>
 	<script src="esper.js"></script>
 	<script src="https://estools.github.io/escodegen/escodegen.browser.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.2/mode-lua.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.2/mode-javascript.js"></script>
-	<script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+	<!-- <script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script> -->
 	<style>
 	.ace_editor { height: 500px; background-color: black; }
 	textarea { width:100%; height: 100px; font-size: 14pt }
@@ -37,13 +40,20 @@
 	.executing {
 		background-color: rgba(255,105,180,0.72); padding: 2px; position: absolute; z-index: 8;
 	}
+	.nav-tabs { border: none; }
+	.nav-tabs > li.active > a, .nav-tabs > li.active > a:active, .nav-tabs > li.active > a:focus { 
+		border-color: #cccccc; 
+		border-bottom-color: transparent;
+		background-color: black;
+	}
 	.ace_gutter-layer .ace_breakpoint {
 	    background-image: url(breakpoint.png);
 	    background-position: 3px center;
 	}
-	.frames {
+	.tab-content {
 		border: 1px solid #cccccc; border-radius: 4px; 
-		height: 500px; overflow: auto;
+		border-top-left-radius: 0px;
+		height: 460px; overflow: auto;
 		background-color: #141414;
 		padding: 10px;
 		font: 12px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
@@ -78,8 +88,8 @@
 		</div>
 
 		<div style="position: relative; top: -50px; margin-bottom: -40px; margin-left: 150px; margin-right: 300px">
-			<div ng-if="!esper" style="margin-top: 10px;"><a href="#" ng-click="start()" class="btn btn-success"><i class="glyphicon glyphicon-play"></i></a> </div>
-			<div ng-if="esper" style="margin-top: 10px;">
+			<div ng-if="!runMode()" style="margin-top: 10px;"><a href="#" ng-click="start()" class="btn btn-success"><i class="glyphicon glyphicon-play"></i></a> </div>
+			<div ng-if="runMode()" style="margin-top: 10px;">
 				<div  class="btn-group" role="group">
 				<a ng-if="!auto" href="#" ng-click="play()" class="btn btn-success"><i class="glyphicon glyphicon-play"></i></a>
 				<a ng-if="auto" href="#" ng-click="pause()" class="btn btn-info"><i class="glyphicon glyphicon-pause"></i></a>
@@ -92,7 +102,7 @@
 
 		<div class="row" style="padding-top: 10px">
 			<div class="col-sm-6">
-				<div ng-model="code" ng-readonly="esper" ui-ace="{
+				<div ng-model="code" ng-readonly="runMode()" ui-ace="{
 					 useWrapMode : true,
 					 showGutter: true,
 					 theme:'twilight',
@@ -103,63 +113,55 @@
 				
 		 	</div>
 			<div class="col-sm-6">
-				<div class="frames">
-					<div ng-repeat="frame in frames">
-						{{frame.id}} - {{frame.name}}:{{frame.type}} ({{frame.node}}@{{frame.loc}}) [<span style="color: lime">{{frame.value}}</span>]
-						<div class="el" ng-repeat="(k,v) in frame.vars">
-							<span style="color: cyan">{{k}}</span> = <span style="color: lime">{{v}}</span>
+				<div uib-tabset>
+					<uib-tab heading="Frames">
+						<div class="frames">
+							<div ng-repeat="frame in frames">
+								{{frame.id}} - {{frame.name}}:{{frame.type}} ({{frame.node}}@{{frame.loc}}) [<span style="color: lime">{{frame.value}}</span>]
+								<div class="el" ng-repeat="(k,v) in frame.vars">
+									<span style="color: cyan">{{k}}</span> = <span style="color: lime">{{v}}</span>
+								</div>
+							</div>
 						</div>
-					</div>
+					</uib-tab>
+					<uib-tab heading="AST">
+						A note from our sponsor:
+						<div ng-include="'ast-node.html'">
+
+						</div>
+					</uib-tab>
 				</div>
 			</div>
+
 		</div>
 		<pre ng-if="error" style="color: red !important" class="output">{{error}}</pre>
 		<pre ng-if="!error" class="output">{{output}}</pre>
 		<div class="footer">
 			<p>&copy; basicer 2016</p>
 		</div>
+
+
 	</div> <!-- /container -->
-<div class="modal fade" id="options">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-				<h4 class="modal-title">Parser Options</h4>
-			</div>
-			<div class="modal-body">
-				<h5>JavaScript Compat</h5>
-				<hr />
-				<div class="row">
-					<div class="col-sm-6">
-						<div class="checkbox"><label><input type="checkbox" ng-model="opts.forceVar"> Force 'var' instead of 'let'</label></div>
-						<div class="checkbox"><label><input type="checkbox" ng-model="opts.luaOperators"> Use library functions for operators</label></div>
-						<div class="checkbox"><label><input type="checkbox" ng-model="opts.encloseWithFunctions"> Enclose scopes in functions</label></div>
-					</div>
-					<div class="col-sm-6">
-						<div class="checkbox"><label><input type="checkbox" ng-model="opts.decorateLuaObjects"> Decorate Lua objects</label></div>
-						<div class="checkbox"><label><input type="checkbox" ng-model="opts.luaCalls"> Proxy function calls </label></div>
-						<div class="checkbox"><label><input type="checkbox" ng-model="opts.noMutliReturnSquish"> Dont unpack mutli returns </label></div>
-					</div>
-				</div>
-				
-				<h5>Error Handeling</h5>
-				<hr />
-				<div class="row">
-					<div class="col-sm-6">
-						<div class="checkbox"><label><input type="checkbox" ng-model="opts.loose"> Loose Mode</label></div>
-					</div>
-					<div class="col-sm-6">
-						<div class="checkbox"><label><input type="checkbox" ng-model="opts.useStrict"> Use Strict</label></div>
-					</div>
-				</div>
-			</div>
-			<div class="modal-footer">
-				 <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-			</div>
-		</div><!-- /.modal-content -->
-	</div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+
+
 <script type="text/javascript" src="app.js"></script>
+<script type="text/ng-template" id="ast-node.html">
+	<div >
+		<div ng-click="tgl(ast)" style="cursor: pointer;">
+			<span ng-show="!isASTOpen(ast)">[+]</span>
+			<span ng-show="isASTOpen(ast)">[-]</span>
+			 <b style="color: cyan"> {{ast.type}}</b>  ({{ast.nodeID}})  <i style="color:lime">{{ast.srcName}}</i>
+		</div>
+		<div ng-show="isASTOpen(ast)" style="border-left: 2px solid white; margin-left: 10px; padding-left: 5px;">
+			<div ng-if="ast.vars"> &nbsp; vars = {{names(ast.vars)}}</div>
+			<div ng-if="ast.upvars"> &nbsp; upvars = {{names(ast.upvars)}}</div>
+			<div ng-if="ast.freevars"> &nbsp; freevars = {{names(ast.freevars)}}</div>
+			<div ng-if="ast.refs"> &nbsp; refs = {{names(ast.refs)}}</div>
+			<div ng-repeat="ast in getChildNodes(ast)" ng-include="'ast-node.html'"></div>
+		</div>
+	</div>
+</script>
+
 <pre style="display:none" id="exampleCode">
 print("Okay!");
 

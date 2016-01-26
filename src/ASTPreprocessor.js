@@ -49,6 +49,7 @@ class ASTPreprocessor {
 				invokeCB(cbs, 'exitFunction', ast);
 				break;
 
+			case "ArrowFunctionExpression":
 			case "FunctionExpression":
 				invokeCB(cbs, 'enterFunction', ast);
 				yield * me(ast.body);
@@ -88,6 +89,7 @@ class ASTPreprocessor {
 		this.depth = 0;
 		this.scopeStack = [];
 		this.varStack = [];
+		this.funcStack = [];
 		for ( var x of this.gen ) {
 
 		}
@@ -105,6 +107,11 @@ class ASTPreprocessor {
 		this.log("Entering", a.type);
 	}
 
+	enterIdentifier(a) {
+		let fn = this.funcStack[0];
+		fn.refs[a.name] = true;
+	}
+
 	decl(a) {
 		if ( a.parent.type == "VariableDeclaration" && a.parent.kind != "var" ) return;
 		this.varStack[0][a.id.name] = a;
@@ -113,19 +120,36 @@ class ASTPreprocessor {
 	enterProgram(a) {
 		let scope = Object.create(null);
 		a.vars = Object.create(null);
+		this.funcStack.unshift(a);
 		this.scopeStack.unshift(scope);
 		this.varStack.unshift(a.vars);
+		a.refs = Object.create(null);
 	}
 
 	enterFunction(a) {
+		this.funcStack.unshift(a);
 		let scope = Object.create(this.scopeStack[0]);
 		this.scopeStack.unshift(scope);
 		a.vars = Object.create(null);
+		a.refs = Object.create(null);
+		for ( var o of a.params ) {
+			a.vars[o.name] = a;
+		}
 		this.varStack.unshift(a.vars);
 	}
 
 	exitIdentifier(a) {
 		a.srcName = a.name;
+	}
+
+	exitLiteral(a) {
+		if ( typeof a.value === 'string' ) a.srcName = '"' + a.rawValue + '"';
+		else a.srcName = a.value.toString();
+	}
+
+
+	exitBinaryExpression(a) {
+		a.srcName = a.left.srcName + a.operator + a.right.srcName;
 	}
 
 	exitMemberExpression(a) {
@@ -135,25 +159,37 @@ class ASTPreprocessor {
 		else a.srcName = a.srcName = left + '[' + right + ']';
 	}
 
-	exitLiteral(a) {
-		a.srcName = a.raw;
-	}
-
 	exitCallExpression(a) {
-		a.srcName = a.callee.srcName;
+		a.srcName = a.callee.srcName + '(...)';
 	}
 
 
 	exitFunction(a) {
-		this.scopeStack.shift();
 		var vars = this.varStack.shift();
-		this.log("VARS:", Object.getOwnPropertyNames(a.vars).join(', '));
+		var free = {};
+		var upvars = {};		
+		for ( var r in a.refs ) {
+			if ( r in vars ) {
+				//Local refrence
+			} else if ( r in this.varStack[0] ) {
+				upvars[r] = true;
+			} else {
+				free[r] = true;
+			}
+		}
+		a.upvars = upvars;
+		a.freevars = free;
+
+		this.scopeStack.shift();	
+		this.funcStack.shift();
+		delete a.refs;
+		//this.log("VARS:", Object.getOwnPropertyNames(a.vars).join(', '));
 	}
 
 	exitProgram(a) {
 		this.scopeStack.shift();
 		var vars = this.varStack.shift();
-		this.log("VARS:", Object.getOwnPropertyNames(a.vars).join(', '));
+		//this.log("VARS:", Object.getOwnPropertyNames(a.vars).join(', '));
 	}
 
 	exit(a) {

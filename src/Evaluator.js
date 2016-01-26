@@ -11,6 +11,7 @@ class Evaluator {
 		this.env = env;
 		let that = this;
 		this.lastValue = null;
+		this.ast = n;
 		/** 
 		 * @type {Object[]} 
 		 * @property {Generator} generator
@@ -18,7 +19,7 @@ class Evaluator {
 		 * @property {ast} ast
 		 */
 		this.frames = [];
-		this.pushFrame({generator: this.dispatch(n,s), type: 'program', scope: s});
+		this.pushFrame({generator: this.dispatch(n,s), type: 'program', scope: s, ast: n});
 	}
 
 	unwindStack(target, canCrossFxBounds) {

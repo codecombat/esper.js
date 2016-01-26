@@ -2,15 +2,19 @@
 
 /*global $:false, angular:false, window:false, ace:false, Esper:false, document:false */
 
-var myAppModule = angular.module('MyApp', ['ui.ace']);
+var myAppModule = angular.module('MyApp', ['ui.ace', 'ui.bootstrap']);
 
-function main($scope, $timeout) { 
+myAppModule.controller('main', function ($scope, $timeout) { 
 	$scope.brekpoints = [];
 	$scope.code = window.localStorage.code || document.getElementById("exampleCode").innerText;
 	$scope.opts = {forceVar: true, decorateLuaObjects: true, luaCalls: true, luaOperators: true,
 		encloseWithFunctions: false, useStrict: false, noMutliReturnSquish: false };
 
 	$scope.fix = function(c) { return c.reverse(); };
+
+	$scope.runMode = function() {
+		return typeof $scope.frames !== 'undefined';
+	};
 
 	$scope.aceLoaded = function(ai) {
 		$scope.ace = ai;
@@ -53,8 +57,45 @@ function main($scope, $timeout) {
 	};
 	$timeout(timer, 100);
 
+	$scope.names = function(o) {
+		return Object.getOwnPropertyNames(o).join(", ");
+	};
 
-	$scope.start = function() {
+	$scope.isASTOpen = function(ast) {
+		if (!ast) return false;
+		return ast._open !== false;
+	};
+
+	$scope.tgl = function(ast) {
+		if ( ast._open === false ) delete ast._open;
+		else ast._open = false;
+	};
+
+	$scope.getChildNodes = function(ast) {
+		var out = [];
+		for (var p in ast) {
+			let n = ast[p];
+			if ( p === "parent" ) continue;
+			if ( p === "loc" ) continue;
+			if ( p === "type" ) continue;
+			if ( p === "nodeID" ) continue;
+			if ( n === null ) continue;
+			if ( angular.isArray(n) ) {
+				for ( var i in n ) {
+					if ( typeof n[i].type === "string" ) out.push(n[i]);
+				}
+				continue;
+			}
+			if ( typeof n.type !== "string" ) {
+				continue;
+			}
+			if ( n.type === "Identifier" || n.type === "Literal" ) continue;
+			out.push(n);
+		}
+		return out;		
+	};
+
+	$scope.compile = function() {
 		var epr = new Esper.Engine();
 		try {
 			epr.load($scope.code);
@@ -68,6 +109,12 @@ function main($scope, $timeout) {
 		};
 		delete $scope.error;
 		$scope.esper = epr;
+		$scope.ast = $scope.esper.evaluator.ast;
+		window.esper = epr;
+	};
+
+	$scope.start = function() {
+		$scope.compile();
 		$scope.auto = true;
 	};
 
@@ -166,14 +213,17 @@ function main($scope, $timeout) {
 		$scope.clear();
 		delete $scope.esper;
 		delete $scope.gen;
+		delete $scope.frames;
+		$scope.auto = false;
 	};
 
-	$scope.aceChanged = function() {
+	$scope.aceChanged = _.debounce(function() {
 		window.localStorage.code = $scope.code;
 		$scope.clear();
-	};
+		$scope.compile();
+	},200);
 	
 	$scope.$watch('opts', function() {
 		$scope.stop();
 	}, true);
-}
+});
