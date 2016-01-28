@@ -10,10 +10,25 @@ if (!argv[2]) {
 	process.exit(1);
 }
 
-var string = fs.readFileSync(argv[2]);
-engine.eval(string).then(function(result) {
-	process.exit();
-});
+var toEval = [];
+
+for ( var i = 2; i < argv.length; ++i ) {
+	toEval.push(argv[i]);
+}
+
+function next() {
+	if ( toEval.length === 0 ) return process.exit();
+	var fn = toEval.shift();
+	var code = fs.readFileSync(fn);
+	return engine.eval(code).then(function(val) {
+		return next();
+	}).catch(function (e) {
+		console.log(e.stack);
+	});
+}
+
+next();
+
 
 
 

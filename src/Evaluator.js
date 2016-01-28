@@ -355,7 +355,16 @@ class Evaluator {
 			return new CompletionRecord(CompletionRecord.THROW, new TypeError("" + name + " is not a function"));
 		}
 
-		let result = yield * callee.call(thiz, args, this, s);
+		let callResult = callee.call(thiz, args, this, s);
+
+		if ( callResult instanceof CompletionRecord ) return callResult;
+
+		if ( typeof callResult.next !== "function" ) {
+			console.log(callResult);
+			return new CompletionRecord(CompletionRecord.THROW, new TypeError("" + name + " didnt make a generator"));
+		}
+		
+		let result = yield * callResult;
 		if ( n.type === "NewExpression" ) {
 			return thiz;
 		} else {
@@ -564,7 +573,8 @@ class Evaluator {
 	}
 
 	*evaluateReturnStatement(n,s) {
-		let retVal = yield * this.branch(n.argument,s);
+		let retVal = Value.undef;
+		if ( n.argument ) retVal = yield * this.branch(n.argument,s);
 		return new CompletionRecord(CompletionRecord.RETURN, retVal);
 	}
 

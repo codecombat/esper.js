@@ -45,15 +45,22 @@ class ClosureValue extends ObjectValue {
 	 * @param {Value} thiz
 	 * @param {Value[]} args
 	 */
-	*call(thiz, args, evaulator) {
+	*call(thiz, args, evaulator, scope) {
 		//TODO: This way of scoping is entirelly wrong.
-		let invokeScope = this.scope.createChild();
+		let invokeScope = scope.createChild();
 		invokeScope.thiz = this.thiz || thiz;
 
 		if ( this.func.vars ) 
 		for ( var v in this.func.vars ) {
 			invokeScope.add(v, Value.undef);
 		}
+
+		if ( this.func.upvars ) 
+		for ( var n in this.func.upvars ) {
+			//TODO: There should be a method that does this.
+			invokeScope.object.properties[n] = this.scope.object.properties[n];
+		}
+
 
 		for ( let i = 0; i < this.func.params.length; ++i ) {
 			let name = this.func.params[i].name;

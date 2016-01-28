@@ -71,7 +71,7 @@ class Value {
 
 
 	static createNativeBookmark(v) {
-		var out = {type: 'Bookmark'};
+		var out = function Bookmark() { throw "Atempted to invoke bookmark for " + v.toString(); };
 		bookmarks.set(out, v);
 		return out;
 	}

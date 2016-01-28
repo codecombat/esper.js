@@ -2,7 +2,7 @@
 /* @flow */
 
 const Value = require('../Value');
-
+const CompletionRecord = require('../CompletionRecord');
 /**
  * Represents a value that maps directly to an untrusted local value.
  */
@@ -91,8 +91,13 @@ class BridgeValue extends Value {
 		for ( let i = 0; i < args.length; ++i ) {
 			realArgs[i] = args[i].toNative();
 		}
-		let result = this.native.apply(thiz ? thiz.toNative() : undefined, realArgs);
-		return this.fromNative(result);
+		try {
+			let result = this.native.apply(thiz ? thiz.toNative() : undefined, realArgs);
+			return this.fromNative(result);
+		} catch ( e ) {
+			let result = this.fromNative(e);
+			return new CompletionRecord(CompletionRecord.THROW, result);
+		}
 
 	}
 

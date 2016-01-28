@@ -11,7 +11,12 @@ const CompletionRecord = require('./CompletionRecord');
 const ObjectValue = require('./values/ObjectValue');
 const ASTPreprocessor = require('./ASTPreprocessor');
 
-class EvalFunction extends Value {
+class EvalFunction extends ObjectValue {
+
+	constructor(env) {
+		super(env);
+	}
+
 	*call(thiz, args, evaluator, scope) {
 		let code = args[0].toNative().toString();
 		let ast;
@@ -24,7 +29,7 @@ class EvalFunction extends Value {
 			return new CompletionRecord(CompletionRecord.THROW, this.fromNative(eo));
 		}
 		let bak = yield evaluator.branchFrame('eval', ast, scope);
-		console.log("EVALED: ", bak);
+		//console.log("EVALED: ", bak);
 		return bak;
 	}
 }
@@ -40,43 +45,46 @@ class Environment {
 	
 	constructor(options) {
 		this.parser = this.parser = (code) => esprima.parse(code, {loc: true});
-		this.NaN = this.valueFromNative(NaN);
+		this.NaN = this.fromNative(NaN);
 
 		/** @type {Value} */
-		this.console = this.valueFromNative(console);
+		this.console = this.fromNative(console);
 		/** @type {Value} */
 		this.Math = new (require('./stdlib/Math.js'))(this);
 		/** @type {Value} */
 		
-		this.ObjectPrototype =  new (require('./stdlib/ObjectPrototype.js'))(this);
-		this.FunctionPrototype = new (require('./stdlib/FunctionPrototype.js'))(this);
-		this.Object =  new (require('./stdlib/Object.js'))(this);
+		this.ObjectPrototype =  new (require('./stdlib/ObjectPrototype'))(this);
+		this.FunctionPrototype = new (require('./stdlib/FunctionPrototype'))(this);
+		this.Object = new (require('./stdlib/Object.js'))(this);
 		this.ObjectPrototype.set('constructor', this.Object); //Chickens and egs...
+		this.Function = new (require('./stdlib/Function'))(this);
+		this.Array = new (require('./stdlib/Array'))(this);
 
 		let scope = new Scope(this);
 		scope.strict = options.strict || true;
 		let that = this;
-		var printer = this.valueFromNative(function() {
+		var printer = this.fromNative(function() {
 			that.print.apply(that, arguments);
 		});
 		scope.set('print', printer);
 		scope.set('log', printer);
-		scope.set('NaN', this.valueFromNative(NaN));
-		scope.set('Infinity', this.valueFromNative(Infinity));
+		scope.set('NaN', this.fromNative(NaN));
+		scope.set('Infinity', this.fromNative(Infinity));
 
 		scope.set('console', this.console);
-		scope.set('JSON', this.valueFromNative(JSON));
+		scope.set('JSON', this.fromNative(JSON));
 		scope.set('Math', this.Math);
-		scope.set('parseInt', this.valueFromNative(parseInt));
-		scope.set('Number', this.valueFromNative(Number));
+		scope.set('parseInt', this.fromNative(parseInt));
+		scope.set('Number', this.fromNative(Number));
 		scope.set('Object', this.Object);
-		scope.set('Array', this.valueFromNative(Array));
-		scope.set('String', this.valueFromNative(String));
-		scope.set('TypeError', this.valueFromNative(TypeError));
-		scope.set('Error', this.valueFromNative(TypeError));
-		scope.set('isNaN', this.valueFromNative(isNaN));
-		scope.set('Date', this.valueFromNative(Date));
-		scope.set('eval', new EvalFunction());
+		scope.set('Function', this.Function);
+		scope.set('Array', this.Array);
+		scope.set('String', this.fromNative(String));
+		scope.set('TypeError', this.fromNative(TypeError));
+		scope.set('Error', this.fromNative(TypeError));
+		scope.set('isNaN', this.fromNative(isNaN));
+		scope.set('Date', this.fromNative(Date));
+		scope.set('eval', new EvalFunction(this));
 		scope.thiz = scope.object;
 		/** @type {Scope} */
 		this.globalScope = scope;

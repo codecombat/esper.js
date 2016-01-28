@@ -143,8 +143,15 @@ class ASTPreprocessor {
 	}
 
 	exitLiteral(a) {
-		if ( typeof a.value === 'string' ) a.srcName = '"' + a.rawValue + '"';
-		else a.srcName = a.value.toString();
+		if ( a.regex ) {
+			a.srcName = '/' + a.regex.pattern + '/' + a.regex.flags;
+		} else if ( typeof a.value === 'string' ) {
+			a.srcName = '"' + a.rawValue + '"';
+		} else if ( a.value === null ) {
+			a.srcName = 'null';
+		} else {
+			a.srcName = a.value.toString();
+		}
 	}
 
 
