@@ -3,10 +3,10 @@
 
 const CompletionRecord = require('./CompletionRecord');
 
-let undef, nil, tru, fals;
+let undef, nil, tru, fals, nan;
 let cache = new WeakMap();
 let bookmarks = new WeakMap();
-let ObjectValue, PrimitiveValue;
+let ObjectValue, PrimitiveValue, StringValue;
 
 /**
  * Represents a value a variable could take.
@@ -27,7 +27,8 @@ class Value {
 
 
 		if ( typeof value === "number" ) return new PrimitiveValue(value);
-		if ( typeof value === "string" ) return new PrimitiveValue(value);
+		if ( typeof value === "string" ) return new StringValue(value);
+		if ( typeof value === "boolean" ) return new PrimitiveValue(value);
 		//TODO: Implement a real envirionemnt
 		//TODO: Is this cache dangerous?
 
@@ -69,6 +70,9 @@ class Value {
 		return fals;
 	}
 
+	static get nan() {
+		return nan;
+	}
 
 	static createNativeBookmark(v) {
 		var out = function Bookmark() { throw "Atempted to invoke bookmark for " + v.toString(); };
@@ -146,6 +150,18 @@ class Value {
 	get jsTypeName() {
 		throw new Error('Unimplemented: Value#jsTypeName');
 	}
+
+	get specTypeName() {
+		return this.jsTypeName;
+	}
+
+
+	*toNumberValue() { throw new Error('Unimplemented: Value#toNumberValue'); }
+	*toStringValue() { throw new Error('Unimplemented: Value#toNumberValue'); }
+	*toBooleanValue() { return this.truthy ? tru : fals; }
+	
+	*toPrimitiveValue(preferedType) { throw new Error('Unimplemented: Value#jsTypeName'); }
+	
 }
 module.exports = Value;
 
@@ -155,6 +171,7 @@ if ( BridgeValue.default ) BridgeValue = BridgeValue.default;
 
 ObjectValue = require('./values/ObjectValue');
 PrimitiveValue = require('./values/PrimitiveValue');
+StringValue = require('./values/StringValue');
 const UndefinedValue = require('./values/UndefinedValue');
 const NullValue = require('./values/NullValue');
 
@@ -162,4 +179,5 @@ undef = new UndefinedValue();
 nil = new NullValue();
 tru = new PrimitiveValue(true);
 fals = new PrimitiveValue(false);
+nan = new PrimitiveValue(NaN);
 

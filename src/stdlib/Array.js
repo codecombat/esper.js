@@ -4,7 +4,7 @@ const EasyObjectValue = require('../values/EasyObjectValue');
 const ObjectValue = require('../values/ObjectValue');
 
 
-class Array extends EasyObjectValue {
+class mArray extends EasyObjectValue {
 	*call(thiz, args) {
 		return this.fromNative("Ok?");
 	}
@@ -16,6 +16,10 @@ class Array extends EasyObjectValue {
 		console.log("Arrayt#foreach called");
 		return new ObjectValue(this.env);
 	}
+
+	static *isArray(thiz, args) {
+		return Array.isArray(args[0].toNative());
+	}
 }
 
-module.exports = Array;
+module.exports = mArray;

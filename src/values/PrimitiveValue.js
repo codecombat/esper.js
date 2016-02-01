@@ -16,14 +16,23 @@ class PrimitiveValue extends Value {
 
 	ref(name, env) {
 		let out = Object.create(null);
-		let str = (value) => this.native[name] = value.toNative();
+		let str = (value) => {};
+		let pt = this.derivePrototype(env);
 		Object.defineProperty(out, 'value', {
-			get: () => this.fromNative(this.native[name]),
+			get: () => pt.get(name),
 			set: str
 		});
 		out.set = str;
 
 		return out;
+	}
+
+	derivePrototype(env) {
+		switch ( typeof this.native ) {
+			case "string": return env.StringPrototype;
+			case "number": return env.NumberPrototype;
+			case "boolean": return env.BooleanPrototype;
+		}
 	}
 
 	assign(name, value, env) {
@@ -70,10 +79,9 @@ class PrimitiveValue extends Value {
 
 
 	*member(name, env) { 
-		return env.fromNative(this.native[name]); 
+		let pt = this.derivePrototype(env);
+		return yield * pt.member(name, env);
 	}
-
-
 
 	*observableProperties() {
 		throw new Error("Dont do this yet");
@@ -90,6 +98,17 @@ class PrimitiveValue extends Value {
 	get jsTypeName() {
 		return typeof this.native;
 	}
+
+	*toPrimitiveValue(preferedType) { return this; }
+	*toStringValue() { 
+		if ( typeof this.native === "string" ) return this;
+		return this.fromNative(String(this.native));
+	}
+	*toNumberValue() { 
+		if ( typeof this.native === "number" ) return this;
+		return this.fromNative(Number(this.native));
+	}
+
 }
 
 module.exports = PrimitiveValue;

@@ -53,6 +53,10 @@ class ObjectValue extends Value {
 		return Value.undef;
 	}
 
+	rawSetProperty(name, value) {
+		this.properties[name] = value;
+	}
+
 	set(name, value) {
 		var v = new Variable(value, this);
 		v.del = () => this.delete(name);
@@ -71,6 +75,8 @@ class ObjectValue extends Value {
 		return Value.createNativeBookmark();
 	}
 
+
+	*add(other) { return yield * (yield * this.toPrimitiveValue()).add(other); }
 
 	*member(name) { 
 		let ref = this.ref(name);
@@ -102,6 +108,38 @@ class ObjectValue extends Value {
 		}
 		this.proto = val;
 		Object.setPrototypeOf(this.properties, val.properties);
+	}
+
+	*toPrimitiveValue(preferedType) { 
+		let methodNames;
+		if ( preferedType == 'string') {
+			methodNames = ['toString', 'valueOf'];
+		} else {
+			methodNames = ['valueOf', 'toString'];
+		}
+
+		for ( let name of methodNames ) {
+			let method = yield * this.member(name);
+			if ( method && method.call ) {
+				let rescr = yield * method.call(this, [], this.env.evaluator);
+				let res = Value.undef;
+				if ( rescr.type == CompletionRecord.RETURN ) res = rescr.value;
+				else if ( rescr.type != CompletionRecord.NORMAL ) continue;
+				if ( res.specTypeName !== 'object' ) return res;
+			}
+		}
+		throw new TypeError('Cannot convert object to primitive value');
+	}
+
+	*toNumberValue() { 
+		let prim = yield * this.toPrimitiveValue('number');
+		return yield * prim.toNumberValue();
+	}
+
+
+	*toStringValue() { 
+		let prim = yield * this.toPrimitiveValue('string');
+		return yield * prim.toNumberValue();
 	}
 
 	get truthy() {

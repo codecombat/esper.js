@@ -64,8 +64,10 @@ class Evaluator {
 	 	result = top.generator.next(this.lastValue);
 		
 		let val = result.value;
-
-		if ( (val instanceof CompletionRecord) ) {
+		if ( Array.isArray(val) ) {
+			val.shift();
+			this.branchFrame.apply(this, val);
+		} else if ( (val instanceof CompletionRecord) ) {
 			if ( !(val.value instanceof Value) ) val.value = this.fromNative(val.value);
 			switch ( val.type ) {
 				case CompletionRecord.CONTINUE:
@@ -165,11 +167,11 @@ class Evaluator {
 	*resolveRef(n, s, create) {
 		switch (n.type) {
 			case "Identifier":
-				let iref = s.ref(n.name);
+				let iref = s.ref(n.name, s.env);
 				if ( !iref ) {
 					if ( !create ) throw new ReferenceError(`${n.name} not defined`);
 					s.global.set(n.name, Value.undef);
-					iref = s.ref(n.name);
+					iref = s.ref(n.name, s.env);
 				}
 				return iref;
 			case "MemberExpression":
@@ -189,7 +191,7 @@ class Evaluator {
 					throw "Cant write property of non-object type: " + idx;
 				}
 
-				let result = ref.ref(idx);
+				let result = ref.ref(idx, s.env);
 				if ( result ) return result;
 
 				ref.assign(idx, Value.undef);
@@ -355,7 +357,7 @@ class Evaluator {
 			return new CompletionRecord(CompletionRecord.THROW, new TypeError("" + name + " is not a function"));
 		}
 
-		let callResult = callee.call(thiz, args, this, s);
+		let callResult = callee.call(thiz, args, s);
 
 		if ( callResult instanceof CompletionRecord ) return callResult;
 
@@ -366,6 +368,7 @@ class Evaluator {
 		
 		let result = yield * callResult;
 		if ( n.type === "NewExpression" ) {
+			//TODO: If a constructor returns, you actually use that value
 			return thiz;
 		} else {
 			return result;
@@ -437,12 +440,15 @@ class Evaluator {
 
 	*evaluateForStatement(n,s) {
 		let last = Value.undef;
-		yield * this.branch(n.init,s);
+		if ( n.init ) yield * this.branch(n.init,s);
 		let that = this;
 		var gen = function*() {
-			while ( (yield * that.branch(n.test,s)).truthy ) {
+			let test = Value.true;
+			if ( n.test ) test = yield * that.branch(n.test,s);
+			while ( test.truthy ) {
 				last = yield that.branchFrame('continue', n.body, s);
-				yield * that.branch(n.update,s);
+				if ( n.update ) yield * that.branch(n.update,s);
+				if ( n.test ) test = yield * that.branch(n.test,s);
 			}
 		};
 		this.pushFrame({generator: gen(), type: 'loop'});
@@ -461,9 +467,9 @@ class Evaluator {
 
 		if ( n.left.type === "VariableDeclaration" ) {
 			s.assign(n.left.declarations[0].id.name, Value.undef);
-			ref = s.ref(n.left.declarations[0].id.name);
+			ref = s.ref(n.left.declarations[0].id.name, s.env);
 		} else {
-			ref = s.ref(n.left.name);
+			ref = s.ref(n.left.name, s.env);
 		}
 
 		var gen = function*() {
@@ -767,7 +773,9 @@ class Evaluator {
 		yield result.value;
 		this.frames[0].ast = oldAST;
 		//yield result.value;
-		return result.value;
+		let vout = result.value;
+		while ( vout instanceof CompletionRecord ) vout = vout.value;
+		return vout;
 	}
 
 	branchFrame(type, n,s) {

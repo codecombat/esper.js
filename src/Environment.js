@@ -17,7 +17,7 @@ class EvalFunction extends ObjectValue {
 		super(env);
 	}
 
-	*call(thiz, args, evaluator, scope) {
+	*call(thiz, args, scope) {
 		let code = args[0].toNative().toString();
 		let ast;
 		try {
@@ -28,7 +28,7 @@ class EvalFunction extends ObjectValue {
 			if ( eo.description == "Invalid left-hand side in assignment" ) eo = new ReferenceError(eo.description);
 			return new CompletionRecord(CompletionRecord.THROW, this.fromNative(eo));
 		}
-		let bak = yield evaluator.branchFrame('eval', ast, scope);
+		let bak = yield ['branch', 'eval', ast, scope];
 		//console.log("EVALED: ", bak);
 		return bak;
 	}
@@ -58,10 +58,18 @@ class Environment {
 		this.Object = new (require('./stdlib/Object.js'))(this);
 		this.ObjectPrototype.set('constructor', this.Object); //Chickens and egs...
 		this.Function = new (require('./stdlib/Function'))(this);
+
+		this.NumberPrototype = new (require('./stdlib/NumberPrototype'))(this);
+		this.StringPrototype = new (require('./stdlib/StringPrototype'))(this);
+
 		this.Array = new (require('./stdlib/Array'))(this);
+		this.String = new (require('./stdlib/String'))(this);
+		this.Number = new (require('./stdlib/Number'))(this);
+
+		this.Esper = new (require('./stdlib/Esper'))(this);
 
 		let scope = new Scope(this);
-		scope.strict = options.strict || true;
+		scope.strict = options.strict || false;
 		let that = this;
 		var printer = this.fromNative(function() {
 			that.print.apply(that, arguments);
@@ -73,13 +81,14 @@ class Environment {
 
 		scope.set('console', this.console);
 		scope.set('JSON', this.fromNative(JSON));
+		scope.set('Esper', this.Esper);
 		scope.set('Math', this.Math);
 		scope.set('parseInt', this.fromNative(parseInt));
-		scope.set('Number', this.fromNative(Number));
+		scope.set('Number', this.Number);
 		scope.set('Object', this.Object);
 		scope.set('Function', this.Function);
 		scope.set('Array', this.Array);
-		scope.set('String', this.fromNative(String));
+		scope.set('String', this.String);
 		scope.set('TypeError', this.fromNative(TypeError));
 		scope.set('Error', this.fromNative(TypeError));
 		scope.set('isNaN', this.fromNative(isNaN));

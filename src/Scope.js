@@ -10,7 +10,7 @@ class Scope {
 	constructor(env) {
 		this.parent = null;
 		this.object = new ObjectValue(this);
-		this.strict = true;
+		this.strict = false;
 		this.env = env;
 		this.global = this;
 	}
@@ -76,9 +76,9 @@ class Scope {
 	//      but we could do it better.
 
 	toNative() { return this; }
-
+	fromNative(w) { return this.env.fromNative(w); }
 	*member(name) { 
-		let ref = this.ref(name);
+		let ref = this.ref(name, this.env);
 		if ( ref ) return ref.value;
 		return Value.undef;
 	}

@@ -1,5 +1,7 @@
 "use strict";
 
+const Value = require('./Value');
+
 class CompletionRecord {
 	constructor(type, value, target) {
 		if ( value === undefined ) {
@@ -10,6 +12,12 @@ class CompletionRecord {
 		this.type = type;
 		this.value = value;
 		this.target = target;
+	}
+
+	get abrupt() { return this.type !== CompletionRecord.NORMAL; }
+
+	static makeTypeError(env) {
+		return new CompletionRecord(CompletionRecord.THROW, Value.fromNative(new TypeError(), env));
 	}
 }
 

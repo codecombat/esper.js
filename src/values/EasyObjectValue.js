@@ -13,11 +13,11 @@ class EasyNativeFunction extends ObjectValue {
 	}
 
 	*call(thiz, argz) {
-		console.log("Invoked", this.fn);
 		try {
-			let o = yield * this.fn.apply(this.binding, arguments);
-			if ( !(o instanceof Value) ) return this.fromNative(o);
-			return o;
+			let o = yield yield * this.fn.apply(this.binding, arguments);
+			if ( o instanceof CompletionRecord ) return o;
+			if ( !(o instanceof Value) ) o = this.fromNative(o);
+			return new CompletionRecord(CompletionRecord.NORMAL, o);
 		} catch ( e ) {
 			return new CompletionRecord(CompletionRecord.THROW, this.env.fromNative(e));
 		}

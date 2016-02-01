@@ -92,7 +92,7 @@ describe("Type: String", () => {
 
 	describe("String.prototype.length", () => {
 		it("should return the length of the string.", () => runner.confirmBlock("'foo'.length==3;"));
-		xit("should ignore when length is set", () => runner.confirmBlock("var a = 'foo';a.length = 2;a.length==3;"));
+		it("should ignore when length is set", () => runner.confirmBlock("var a = 'foo';a.length = 2;a.length==3;"));
 	});
 
 	describe("When using bracket notation", () => {
@@ -102,7 +102,7 @@ describe("Type: String", () => {
 	});
 
 	describe("When converting", () => {
-		xit("should use overridden `toString` if set.", () => {
+		it("should use overridden `toString` if set.", () => {
 			runner.confirmBlock("var a = {toString:function() { return 'foo'; } };String(a) == 'foo';");
 		});
 
