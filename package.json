@@ -6,7 +6,7 @@
   "scripts": {
     "doc": "esdoc -c esdoc.json",
     "lint": "jshint src --show-non-errors",
-    "test": "node contrib/jasmine.js",
+    "test": "mocha",
     "repl": "node contrib/repl.js",
     "webpack": "webpack",
     "demo": "webpack && node contrib/ui.js",
@@ -57,9 +57,7 @@
     "babel-register": "^6.3.13",
     "chai": "^3.4.1",
     "esdoc": "^0.4.3",
-    "jasmine": "^2.4.1",
-    "jasmine-core": "^2.4.1",
-    "jasmine-spec-reporter": "^2.4.0",
+    "mocha": "^2.4.5",
     "webpack": "^1.12.11"
   },
   "dependencies": {

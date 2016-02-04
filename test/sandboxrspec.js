@@ -4,6 +4,8 @@ var fs = require('fs');
 var path = require('path');
 var dir = path.join(__dirname, 'ext', 'sandboxr');
 
+global.expect = require('chai').expect;
+
 describe("Sandboxr Tests", function() {
 	var files = fs.readdirSync(dir);
 	for ( var i = 0; i < files.length; ++i ) {

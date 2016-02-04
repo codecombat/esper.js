@@ -23,13 +23,13 @@ const es6 = {
 		try {
 			getRunner(code, {ecmaVersion: 6});
 
-			expect(false).toBe(true);
+			expect(false).to.be.true;
 		} catch (err) {
 			// if (typeof err === "object" && err.toNative) {
 			// 	err = err.toNative();
 			// }
 			
-			expect(err).toEqual(jasmine.any(errType));
+			expect(err).to.be.instanceOf(errType);
 		}
 	},
 	
@@ -46,7 +46,7 @@ const es5 = {
 
 	confirmBlock (code, done) {
 		let value = this.runBlock(code);
-		expect(value.toNative()).toBe(true);
+		expect(value.toNative()).to.be.true;
 		done && done();
 	},
 
@@ -61,7 +61,7 @@ const es5 = {
 			// 	err = err.toNative();
 			// }
 			
-			expect(err).toEqual(jasmine.any(errType));
+			expect(err).to.be.instanceOf(errType);
 			done && done();
 		}
 	},

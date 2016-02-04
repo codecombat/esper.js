@@ -1,13 +1,14 @@
 var fs = require('fs');
 var path = require('path')
 var dir = path.join(__dirname, 'ext', 'duktape');
-
+var expect = require('chai').expect;
 
 describe("Duk Tests", function() {
+	if ( !fs.existsSync(dir) ) return;
 	var files = fs.readdirSync(dir);
 
 	function test(file) {
-		console.log(file);
+		
 		var Engine = require('../src/index.js');
 		var src = fs.readFileSync(path.join(dir,file), 'utf8');
 		var expected = "";
@@ -17,7 +18,8 @@ describe("Duk Tests", function() {
 			return '';
 		});
 
-		it(file, function() {
+		console.log(file);
+		it('duk-' + file, function() {
 			var out = '';
 			function print() {
 				var list = new Array(arguments.length);
@@ -33,12 +35,12 @@ describe("Duk Tests", function() {
 			engine.eval(src);
 			fs.writeFileSync("/tmp/E", expected);
 			fs.writeFileSync("/tmp/A", engine.out);
-			expect(out).toBe(expected);
+			expect(out).to.equal(expected);
 		});
 	}
 
 	for ( var i = 0; i < files.length; ++i ) {
-		if ( !/misc-hello|^test-spec-program/.test(files[i]) ) continue;
+		if ( !/misc-hello|^test-spec-program|expr/.test(files[i]) ) continue;
 		test(files[i]);
 	}
 });

@@ -76,12 +76,12 @@ describe("Type: String", () => {
 			let result = runner.runBlock(code);
 
 			if (Array.isArray(expected)) {
-				expect(result.toNative().length).toEqual(expected.length);
+				expect(result.toNative().length).to.equal(expected.length);
 				expected.forEach((value, index) => {
-					expect(result.toNative()[index]).toEqual(value);
+					expect(result.toNative()[index]).to.equal(value);
 				});
 			} else {
-				expect(result.toNative()).toEqual(expected);
+				expect(result.toNative()).to.equal(expected);
 			}
 		});
 	});

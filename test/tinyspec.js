@@ -3,6 +3,7 @@
 var fs = require('fs');
 var path = require('path');
 var dir = path.join(__dirname, 'ext', 'tiny-js');
+var expect = require('chai').expect;
 
 describe("TinyJS Tests", function() {
 	var files = fs.readdirSync(dir);
@@ -26,7 +27,7 @@ describe("TinyJS Tests", function() {
 				var engine = new Engine({strict: false});
 				engine.eval(src);
 				var result = engine.globalScope.get('result');
-				expect(result.truthy).toBe(true);
+				expect(result.truthy).to.be.true;
 			});
 		})(files[i]);
 	}
