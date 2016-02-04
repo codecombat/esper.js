@@ -73,6 +73,8 @@ class EasyObjectValue extends ObjectValue {
 		}
 		
 	}
+
+	get jsTypeName() { return typeof this.call === "function" ? 'function' : 'object'; }
 }
 
 module.exports = EasyObjectValue;

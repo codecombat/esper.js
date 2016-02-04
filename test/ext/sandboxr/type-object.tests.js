@@ -1,7 +1,7 @@
 "use strict";
 const runner = require('./test-runner').es5;
 
-xdescribe("Type: Object", () => {
+describe("Type: Object", () => {
 	it("should show `typeof` as 'object'", done => {
 		runner.confirmBlock("typeof {}=='object';", done);
 	});
@@ -152,7 +152,7 @@ xdescribe("Type: Object", () => {
 		});
 	});
 
-	xdescribe("Object.prototype.toString", () => {
+	describe("Object.prototype.toString", () => {
 		it("should return expected value", done => {
 			runner.confirmBlock("({}).toString()=='[object Object]';", done);
 		});

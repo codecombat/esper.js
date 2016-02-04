@@ -78,6 +78,11 @@ class ObjectValue extends Value {
 
 	*add(other) { return yield * (yield * this.toPrimitiveValue()).add(other); }
 
+	*inOperator(str) {
+		let svalue = yield * str.toStringValue();
+		return this.has(svalue.toNative()) ? Value.true : Value.false;
+	}
+
 	*member(name) { 
 		let ref = this.ref(name);
 		if ( ref ) return ref.value;
@@ -85,8 +90,17 @@ class ObjectValue extends Value {
 	}
 
 	*instanceOf(other, env) {
-		if ( other.toNative() === Object ) return Value.true;
-		else return Value.false;
+		let target = yield * other.member('prototype');
+		let pt = this.getPrototype(env);
+		let checked = [];
+
+		while ( pt ) {
+			if ( pt === target ) return Value.true;
+			checked.push(pt);
+			pt = pt.getPrototype();
+			if ( checked.indexOf(pt) !== -1 ) return Value.false;
+		}
+		return Value.false;
 	}
 
 	*observableProperties() {
@@ -110,6 +124,10 @@ class ObjectValue extends Value {
 		Object.setPrototypeOf(this.properties, val.properties);
 	}
 
+	getPrototype() {
+		return this.proto;
+	}
+
 	*toPrimitiveValue(preferedType) { 
 		let methodNames;
 		if ( preferedType == 'string') {
@@ -121,9 +139,10 @@ class ObjectValue extends Value {
 		for ( let name of methodNames ) {
 			let method = yield * this.member(name);
 			if ( method && method.call ) {
-				let rescr = yield * method.call(this, [], this.env.evaluator);
+				let rescr = yield (yield * method.call(this, [], this.env.evaluator));
 				let res = Value.undef;
-				if ( rescr.type == CompletionRecord.RETURN ) res = rescr.value;
+				if ( !(rescr instanceof CompletionRecord) ) res = rescr;
+				else if ( rescr.type == CompletionRecord.RETURN ) res = rescr.value;
 				else if ( rescr.type != CompletionRecord.NORMAL ) continue;
 				if ( res.specTypeName !== 'object' ) return res;
 			}

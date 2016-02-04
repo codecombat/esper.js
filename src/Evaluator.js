@@ -98,8 +98,7 @@ class Evaluator {
 					if ( this.frames[0].ast && this.frames[0].ast.attr) {
 						line = this.frames[0].ast.attr.pos.start_line;
 					}
-					console.log("Yah dun messed up...");
-					console.log(this.buildStacktrace(val.value.toNative()));
+					//console.log(this.buildStacktrace(val.value.toNative()));
 					throw val.value.toNative();
 				case CompletionRecord.NORMAL:
 					val = val.value;
@@ -293,7 +292,7 @@ class Evaluator {
 			case '|': return yield * left.bitOr(right, env);
 			case '^': return yield * left.bitXor(right, env);
 			case '&': return yield * left.bitAnd(right, env);
-			case 'in': return yield * left.inOperator(right, env);
+			case 'in': return yield * right.inOperator(left, env);
 			case 'instanceof': return yield * left.instanceOf(right, env);
 			case '>': return yield * left.gt(right, env);
 			case '<': return yield * left.lt(right, env);
@@ -357,7 +356,9 @@ class Evaluator {
 			return new CompletionRecord(CompletionRecord.THROW, new TypeError("" + name + " is not a function"));
 		}
 
-		let callResult = callee.call(thiz, args, s);
+		let callResult = callee.call(thiz, args, s, {
+			asConstructor: n.type === "NewExpression"
+		});
 
 		if ( callResult instanceof CompletionRecord ) return callResult;
 
@@ -369,6 +370,10 @@ class Evaluator {
 		let result = yield * callResult;
 		if ( n.type === "NewExpression" ) {
 			//TODO: If a constructor returns, you actually use that value
+			if ( result instanceof Value ) {
+				if ( result.specTypeName === 'undefined' ) return thiz;
+				return result;
+			}
 			return thiz;
 		} else {
 			return result;

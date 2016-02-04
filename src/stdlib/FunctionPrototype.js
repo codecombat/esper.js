@@ -11,9 +11,15 @@ class FunctionPrototype extends EasyObjectValue {
 
 	static *apply(thiz, args) { throw "Rob still needs to write this..."; }
 	static *bind(thiz, args) { throw "Rob still needs to write this..."; }
-	static *call(thiz, args) { throw "Rob still needs to write this..."; }
+	static *call(thiz, args, s) {
+		let vthis = args.shift();
+		return yield * thiz.call(vthis, args, s);
+	}
 	static *toString(thiz, args) { throw "Rob still needs to write this..."; }
 
+	*call(thiz, args, s) {
+		return EasyObjectValue.undef;
+	}
 	
 }
 

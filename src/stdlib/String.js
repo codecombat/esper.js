@@ -4,10 +4,17 @@ const EasyObjectValue = require('../values/EasyObjectValue');
 const CompletionRecord = require('../CompletionRecord');
 
 class StringObject extends EasyObjectValue {
-	*call(thiz, args, env, scope) {
-		if ( thiz.specTypeName === "null" ) {
+	*call(thiz, args, scope, ext) {
+		let asConstructor = ext && ext.asConstructor;
+		if ( !asConstructor ) {
 			//Called as a function...
 			return yield * args[0].toStringValue();
+		}
+		if ( args.length > 0 ) {
+			let pv = yield * args[0].toStringValue();
+			thiz.primativeValue = pv;
+		} else {
+			thiz.primativeValue = EasyObjectValue.emptyString;
 		}
 	}
 

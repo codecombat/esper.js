@@ -5,10 +5,13 @@ const CompletionRecord = require('../CompletionRecord');
 
 
 class NumberObject extends EasyObjectValue {
-	*call(thiz, args, env, scope) {
-		if ( thiz.specTypeName === "null" ) {
+	*call(thiz, args, scope, ext) {
+		let asConstructor = ext && ext.asConstructor;
+		if ( !asConstructor ) {
 			return yield * args[0].toNumberValue();
 		}
+		let pv = yield * args[0].toNumberValue();
+		thiz.primativeValue = pv;
 	}
 
 	callPrototype(env) { return env.NumberPrototype; }

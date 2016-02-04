@@ -23,13 +23,16 @@ class StringPrototype extends EasyObjectValue {
 	
 	static *valueOf(thiz) {
 		if ( thiz.specTypeName === "string" ) return thiz;
-		return EasyObjectValue.undef;
+		if ( thiz.specTypeName === "object" ) {
+			let pv = thiz.primativeValue;
+			if ( pv.specTypeName == 'string' ) return pv;
+		}
+		throw new TypeError('Couldnt get there.');
 	}	
 
 
 	static *toString(thiz) {
-		let sv = yield * this.toStringValue();
-		return sv;
+		return yield * valueOf(thiz);
 	}	
 }
 

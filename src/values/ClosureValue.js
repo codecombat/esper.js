@@ -94,6 +94,9 @@ class ClosureValue extends ObjectValue {
 		return result;
 	}
 
+	get jsTypeName() { return 'function'; }
+	get specTypeName() { return 'object'; }
+
 }
 
 module.exports = ClosureValue;

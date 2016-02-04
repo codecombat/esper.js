@@ -6,8 +6,12 @@ const CompletionRecord = require('../CompletionRecord');
 const ASTPreprocessor = require('../ASTPreprocessor');
 
 class Function extends EasyObjectValue {
-	*call(thiz, args, env, scope) {
-		let code = 'function name() {\n' + args[args.length - 1].toNative().toString() + '\n}';
+	*call(thiz, args, scope) {
+		let an = new Array(args.length - 1);
+		for ( let i = 0; i < args.length - 1; ++i ) {
+			an[i] = (yield * args[i].toStringValue()).toNative()
+		}
+		let code = 'function name(' + an.join(', ') + ') {\n' + args[args.length - 1].toNative().toString() + '\n}';
 		let ast;
 		try {
 			let oast = scope.env.parser(code, {loc: true});

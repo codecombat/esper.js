@@ -3,7 +3,7 @@
 
 const CompletionRecord = require('./CompletionRecord');
 
-let undef, nil, tru, fals, nan;
+let undef, nil, tru, fals, nan, emptyString;
 let cache = new WeakMap();
 let bookmarks = new WeakMap();
 let ObjectValue, PrimitiveValue, StringValue;
@@ -72,6 +72,10 @@ class Value {
 
 	static get nan() {
 		return nan;
+	}
+
+	static get emptyString() {
+		return emptyString;
 	}
 
 	static createNativeBookmark(v) {
@@ -180,4 +184,5 @@ nil = new NullValue();
 tru = new PrimitiveValue(true);
 fals = new PrimitiveValue(false);
 nan = new PrimitiveValue(NaN);
+emptyString = new PrimitiveValue('');
 

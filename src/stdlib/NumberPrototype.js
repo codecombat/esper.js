@@ -11,6 +11,10 @@ class NumberPrototype extends EasyObjectValue {
 		return EasyObjectValue.undef;
 	}	
 
+	static *toString(thiz) {
+		let sv = yield * thiz.toStringValue();
+		return sv;
+	}
 
 }
 
