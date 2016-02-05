@@ -65,6 +65,8 @@ class ASTPreprocessor {
 					if ( p === "loc" ) continue;
 					if ( p === "type" ) continue;
 					if ( p === "nodeID" ) continue;
+					if ( p === "parentFunction" ) continue;
+					if ( p === "funcs" ) continue;
 					if ( n === null ) continue;
 					if ( typeof n.type !== "string" ) {
 						continue;
@@ -114,16 +116,20 @@ class ASTPreprocessor {
 
 	decl(a) {
 		if ( a.parent.type == "VariableDeclaration" && a.parent.kind != "var" ) return;
-		this.varStack[0][a.id.name] = a;
+		let stack = this.varStack[0];
+		stack[a.id.name] = a;
 	}
 
 	enterProgram(a) {
 		let scope = Object.create(null);
+		
+		a.refs = Object.create(null);
 		a.vars = Object.create(null);
+		a.funcs = Object.create(null);
+
 		this.funcStack.unshift(a);
 		this.scopeStack.unshift(scope);
 		this.varStack.unshift(a.vars);
-		a.refs = Object.create(null);
 	}
 
 	enterFunction(a) {
@@ -132,10 +138,17 @@ class ASTPreprocessor {
 		this.scopeStack.unshift(scope);
 		a.vars = Object.create(null);
 		a.refs = Object.create(null);
+		a.funcs = Object.create(null);
 		for ( var o of a.params ) {
 			a.vars[o.name] = a;
 		}
 		this.varStack.unshift(a.vars);
+	}
+
+	enterFunctionDeclaration(a) {
+		let parent = this.funcStack[0];
+		//a.parentFunction = parent.nodeID;
+		parent.funcs[a.id.name] = a;
 	}
 
 	exitIdentifier(a) {

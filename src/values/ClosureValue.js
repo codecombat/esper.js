@@ -67,6 +67,14 @@ class ClosureValue extends ObjectValue {
 			}
 		}
 
+		if ( this.func.funcs ) {
+			for ( let fn in this.func.funcs ) {
+				let n = this.func.funcs[fn];
+				let closure = new ClosureValue(n, scope);
+				invokeScope.add(n.id.name, closure);
+			}
+		}
+
 		let argvars = new Array(args.length);
 		let args_obj = new ObjectValue(scope.env);
 

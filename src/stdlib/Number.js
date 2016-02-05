@@ -8,6 +8,7 @@ class NumberObject extends EasyObjectValue {
 	*call(thiz, args, scope, ext) {
 		let asConstructor = ext && ext.asConstructor;
 		if ( !asConstructor ) {
+			if ( args.length < 1 ) return EasyObjectValue.zero;
 			return yield * args[0].toNumberValue();
 		}
 		let pv = yield * args[0].toNumberValue();

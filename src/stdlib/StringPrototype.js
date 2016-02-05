@@ -32,7 +32,7 @@ class StringPrototype extends EasyObjectValue {
 
 
 	static *toString(thiz) {
-		return yield * valueOf(thiz);
+		return yield * StringPrototype.valueOf(thiz);
 	}	
 }
 

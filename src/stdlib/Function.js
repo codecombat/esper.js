@@ -9,7 +9,7 @@ class Function extends EasyObjectValue {
 	*call(thiz, args, scope) {
 		let an = new Array(args.length - 1);
 		for ( let i = 0; i < args.length - 1; ++i ) {
-			an[i] = (yield * args[i].toStringValue()).toNative()
+			an[i] = (yield * args[i].toStringValue()).toNative();
 		}
 		let code = 'function name(' + an.join(', ') + ') {\n' + args[args.length - 1].toNative().toString() + '\n}';
 		let ast;
@@ -20,7 +20,7 @@ class Function extends EasyObjectValue {
 			return new CompletionRecord(CompletionRecord.THROW, e);
 		}
 
-		return new ClosureValue(ast.body[0], scope);
+		return new ClosureValue(ast.body[0], scope.env.globalScope);
 	}
 
 	callPrototype(env) { return env.FunctionPrototype; }

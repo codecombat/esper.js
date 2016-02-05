@@ -116,7 +116,7 @@ class ObjectValue extends Value {
 	}
 
 	setPrototype(val) {
-		if ( val == null ) {
+		if ( val === null || val === undefined ) {
 			Object.setPrototypeOf(this.properties, null);	
 			return;
 		}
@@ -145,7 +145,7 @@ class ObjectValue extends Value {
 				else if ( rescr.type == CompletionRecord.RETURN ) res = rescr.value;
 				else if ( rescr.type != CompletionRecord.NORMAL ) continue;
 				if ( res.specTypeName !== 'object' ) return res;
-			}
+			} 
 		}
 		throw new TypeError('Cannot convert object to primitive value');
 	}

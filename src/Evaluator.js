@@ -685,6 +685,7 @@ class Evaluator {
 		for ( let decl of n.declarations ) {
 			let value = Value.undef;
 			if ( decl.init ) value = yield * this.branch(decl.init,s);
+			else if ( s.has(decl.id.name) ) continue;
 			s.add(decl.id.name, value);
 		}
 		return Value.undef;

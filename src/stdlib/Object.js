@@ -5,8 +5,11 @@ const ObjectValue = require('../values/ObjectValue');
 
 
 class mObject extends EasyObjectValue {
-	*call(thiz, args) {
-		return this.fromNative("Ok?");
+	*call(thiz, args, s, ext) {
+		let asConstructor = ext && ext.asConstructor;
+		if ( asConstructor ) {
+			return new ObjectValue(s.env);
+		}
 	}
 
 	callPrototype(env) { return env.ObjectPrototype; }
