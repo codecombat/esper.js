@@ -5,7 +5,6 @@ const EasyObjectValue = require('../values/EasyObjectValue');
 
 class FunctionPrototype extends EasyObjectValue {
 	static get caller$cew() { return null; }
-	static get caller$cew() { return null; }
 	static get length$ew() { return "?"; }
 	static get name$ew() { return ""; }
 

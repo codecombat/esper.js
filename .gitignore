@@ -37,3 +37,4 @@ esper.js
 esdoc/*
 test/ext/duktape/*
 test/ext/test262/*
+coverage/*

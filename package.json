@@ -10,6 +10,7 @@
     "repl": "node contrib/repl.js",
     "webpack": "webpack",
     "demo": "webpack && node contrib/ui.js",
+    "cover": "isparta cover --report text --report html node_modules/mocha/bin/_mocha -- --reporter dot",
     "dev-server": "webpack-dev-server src/index.js --content-base contrib/ui"
   },
   "repository": {
@@ -57,6 +58,7 @@
     "babel-register": "^6.3.13",
     "chai": "^3.4.1",
     "esdoc": "^0.4.3",
+    "isparta": "^4.0.0",
     "mocha": "^2.4.5",
     "webpack": "^1.12.11",
     "webpack-dev-server": "^1.14.1"

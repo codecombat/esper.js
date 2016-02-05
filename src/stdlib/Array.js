@@ -1,10 +1,10 @@
-"use strict"
+"use strict";
 
 const EasyObjectValue = require('../values/EasyObjectValue');
 const ObjectValue = require('../values/ObjectValue');
 
 
-class mArray extends EasyObjectValue {
+class ArrayObject extends EasyObjectValue {
 	*call(thiz, args) {
 		return this.fromNative("Ok?");
 	}
@@ -22,4 +22,4 @@ class mArray extends EasyObjectValue {
 	}
 }
 
-module.exports = mArray;
+module.exports = ArrayObject;

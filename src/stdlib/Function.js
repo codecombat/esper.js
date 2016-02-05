@@ -5,7 +5,7 @@ const ClosureValue = require('../values/ClosureValue');
 const CompletionRecord = require('../CompletionRecord');
 const ASTPreprocessor = require('../ASTPreprocessor');
 
-class Function extends EasyObjectValue {
+class FunctionObject extends EasyObjectValue {
 	*call(thiz, args, scope) {
 		let an = new Array(args.length - 1);
 		for ( let i = 0; i < args.length - 1; ++i ) {
@@ -27,4 +27,4 @@ class Function extends EasyObjectValue {
 	//objPrototype(env) { return env.Function; }
 }
 
-module.exports = Function;
+module.exports = FunctionObject;

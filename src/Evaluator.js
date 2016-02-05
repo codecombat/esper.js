@@ -147,22 +147,6 @@ class Evaluator {
 		return this.env.valueFromNative(native);
 	}
 
-	*throw(what) {
-		throw new Error("Rewrite Me!");
-		for ( let i = 0; i < this.frames.length; ++i ) {
-			if ( this.frames[i].type == 'catch' ) {
-				this.frames.splice(0,i+1);
-				yield {error: true, obj: what};
-				return Value.undef;
-			}
-		}
-		let line = -1;
-		if ( this.frames[0].ast.attr) {
-			this.frames[0].ast.attr.pos.start_line;
-		}
-		throw what.toNative();
-	}
-
 	*resolveRef(n, s, create) {
 		switch (n.type) {
 			case "Identifier":

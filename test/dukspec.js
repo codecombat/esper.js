@@ -33,8 +33,6 @@ describe("Duk Tests", function() {
 			var engine = new Engine();
 			engine.env.print = print;
 			engine.eval(src);
-			fs.writeFileSync("/tmp/E", expected);
-			fs.writeFileSync("/tmp/A", engine.out);
 			expect(out).to.equal(expected);
 		});
 	}

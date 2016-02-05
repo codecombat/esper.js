@@ -1,10 +1,10 @@
-"use strict"
+"use strict";
 
 const EasyObjectValue = require('../values/EasyObjectValue');
 const ObjectValue = require('../values/ObjectValue');
 
 
-class mObject extends EasyObjectValue {
+class ObjectObject extends EasyObjectValue {
 	*call(thiz, args, s, ext) {
 		let asConstructor = ext && ext.asConstructor;
 		if ( asConstructor ) {
@@ -21,4 +21,4 @@ class mObject extends EasyObjectValue {
 	}
 }
 
-module.exports = mObject;
+module.exports = ObjectObject;
