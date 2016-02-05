@@ -6,7 +6,7 @@ const CompletionRecord = require('./CompletionRecord');
 let undef, nil, tru, fals, nan, emptyString, zero;
 let cache = new WeakMap();
 let bookmarks = new WeakMap();
-let ObjectValue, PrimitiveValue, StringValue;
+let ObjectValue, PrimitiveValue, StringValue, NumberValue;
 
 /**
  * Represents a value a variable could take.
@@ -26,7 +26,7 @@ class Value {
 
 
 
-		if ( typeof value === "number" ) return new PrimitiveValue(value);
+		if ( typeof value === "number" ) return new NumberValue(value);
 		if ( typeof value === "string" ) return new StringValue(value);
 		if ( typeof value === "boolean" ) return new PrimitiveValue(value);
 		//TODO: Implement a real envirionemnt
@@ -178,6 +178,7 @@ if ( BridgeValue.default ) BridgeValue = BridgeValue.default;
 ObjectValue = require('./values/ObjectValue');
 PrimitiveValue = require('./values/PrimitiveValue');
 StringValue = require('./values/StringValue');
+NumberValue = require('./values/NumberValue');
 const UndefinedValue = require('./values/UndefinedValue');
 const NullValue = require('./values/NullValue');
 

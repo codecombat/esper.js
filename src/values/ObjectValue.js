@@ -4,6 +4,7 @@
 const Value = require('../Value');
 const Variable = require('./Variable');
 const CompletionRecord = require('../CompletionRecord');
+const PrimitiveValue = require('./PrimitiveValue');
 
 /**
  * Represents a value that maps directly to an untrusted local value.
@@ -58,9 +59,15 @@ class ObjectValue extends Value {
 	}
 
 	set(name, value) {
-		var v = new Variable(value, this);
-		v.del = () => this.delete(name);
-		this.properties[name] = v;
+		let v;
+		if ( Object.prototype.hasOwnProperty.call(this.properties, name) ) {
+			v = this.properties[name];
+			v.value = value;
+		} else {
+			v = new Variable(value, this);
+			v.del = () => this.delete(name);
+			this.properties[name] = v;
+		}
 	}
 
 	has(name) {
@@ -77,7 +84,14 @@ class ObjectValue extends Value {
 
 
 	*add(other) { return yield * (yield * this.toPrimitiveValue()).add(other); }
-
+	*doubleEquals(other) {
+		if ( other instanceof PrimitiveValue ) {
+			let pv = yield * this.toPrimitiveValue();
+			return yield * pv.doubleEquals(other);
+		}
+		let pthis = yield * this.toPrimitiveValue();
+		return yield * pthis.doubleEquals(other);
+	}
 	*inOperator(str) {
 		let svalue = yield * str.toStringValue();
 		return this.has(svalue.toNative()) ? Value.true : Value.false;
@@ -158,7 +172,7 @@ class ObjectValue extends Value {
 
 	*toStringValue() { 
 		let prim = yield * this.toPrimitiveValue('string');
-		return yield * prim.toNumberValue();
+		return yield * prim.toStringValue();
 	}
 
 	get truthy() {

@@ -64,6 +64,7 @@ class ClosureValue extends ObjectValue {
 		if ( this.func.vars ) {
 			for ( let v in this.func.vars ) {
 				invokeScope.add(v, Value.undef);
+				invokeScope.object.properties[v].isVariable = true;
 			}
 		}
 

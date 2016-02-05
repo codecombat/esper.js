@@ -21,6 +21,7 @@ class NumberObject extends EasyObjectValue {
 	static get MIN_VALUE$cew() { return Number.MIN_VALUE; }
 	static get POSITIVE_INFINITY$cew() { return Number.POSITIVE_INFINITY; }
 	static get NEGATIVE_INFINITY$cew() { return Number.NEGATIVE_INFINITY; }
+	static get NaN$cew() { return EasyObjectValue.nan; }
 
 }
 

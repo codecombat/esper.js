@@ -3,6 +3,7 @@
 
 const Value = require('../Value');
 const CompletionRecord = require('../CompletionRecord');
+let StringValue;
 
 /**
  * Represents a value that maps directly to an untrusted local value.
@@ -47,7 +48,24 @@ class PrimitiveValue extends Value {
 		return this.native.toString();
 	}
 
-	*doubleEquals(other) { return this.fromNative(this.native == other.toNative()); }
+	*doubleEquals(other) { 
+		let native = this.native;
+		if ( other instanceof PrimitiveValue) {
+			return Value.fromNative(this.native == other.native);
+		} else if ( typeof native === 'number' ) {
+			if ( other instanceof StringValue ) {
+				let num = yield * other.toNumberValue();
+				return Value.from(native === num.toNative());
+			} else {
+				return Value.false;
+			}
+		} else if ( typeof native == 'boolean' ) {
+			return yield * this.toNumberValue().doubleEquals(other);
+		}
+
+		return Value.false;
+
+	}
 	*tripleEquals(other) { return this.fromNative(this.native === other.toNative()); }
 
 	*add(other) { return this.fromNative(this.native + other.toNative()); }
@@ -110,5 +128,8 @@ class PrimitiveValue extends Value {
 	}
 
 }
-
 module.exports = PrimitiveValue;
+
+StringValue = require('./StringValue');
+
+

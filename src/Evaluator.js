@@ -647,15 +647,13 @@ class Evaluator {
 			let ref;
 			try {
 				ref = yield * this.resolveRef(n.argument, s);
-				if ( n.argument.type !== "MemberExpression" ) {
-					return Value.false;
-				}
 				
 			} catch ( e ) {
 				if ( n.argument.type !== "MemberExpression" ) return Value.true;
 				return new CompletionRecord(CompletionRecord.THROW, this.fromNative(e));
 			}
 			if ( !ref ) return Value.false;
+			if ( ref.isVariable ) { return Value.false; }
 			ref.del();
 			return Value.true;
 		}

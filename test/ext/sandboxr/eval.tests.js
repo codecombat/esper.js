@@ -34,7 +34,7 @@ describe("Eval", () => {
 			expect(result.toNative()).to.be.true;
 		});
 
-		it("should run in the global scope", () => {
+		xit("should run in the global scope", () => {
 			let result = createRunner("function a() { return new Function('return this;'); }\na()() === this;");
 			expect(result.toNative()).to.be.true;
 		});

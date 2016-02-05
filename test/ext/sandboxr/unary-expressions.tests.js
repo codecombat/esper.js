@@ -51,7 +51,7 @@ describe("Unary Expressions", () => {
 		});
 
 		it("should not delete a variable", () => {
-			runner.confirmBlock("var a = [];var d = delete a;d === false && Array.isArray(a);");
+			runner.confirmBlock("(function() { var a = [];var d = delete a; return d === false && Array.isArray(a); })()");
 		});
 
 		it("should throw a reference error if object doesn't exists", () => {
