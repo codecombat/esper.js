@@ -76,13 +76,20 @@ class ClosureValue extends ObjectValue {
 			}
 		}
 
-		let argvars = new Array(args.length);
+		let argn = Math.max(args.length, this.func.params.length);
+		let argvars = new Array(argn);
 		let args_obj = new ObjectValue(scope.env);
 
-		for ( let i = 0; i < args.length; ++i ) {
-			let v = new Variable(args[i]);
+		for ( let i = 0; i < argn; ++i ) {
+			let vv = Value.undef;
+			if ( i < args.length ) vv = args[i]
+			let v = new Variable(vv);
 			argvars[i] = v;
 			args_obj.rawSetProperty(i, v);
+		}
+
+		if ( !scope.strict ) {
+			args_obj.set('callee', this);
 		}
 
 		args_obj.set("length", this.fromNative(args.length));
@@ -91,12 +98,8 @@ class ClosureValue extends ObjectValue {
 
 		for ( let i = 0; i < this.func.params.length; ++i ) {
 			let name = this.func.params[i].name;
-			if ( i < args.length ) {
-				if ( scope.strict ) invokeScope.add(name, args[i]); //Scope is strict, so we make a copy for the args variable
-				else invokeScope.object.rawSetProperty(name, argvars[i]); //Scope isnt strict, magic happens.
-			} else {
-				invokeScope.add(name, Value.undef);
-			}
+			if ( scope.strict ) invokeScope.add(name, args[i]); //Scope is strict, so we make a copy for the args variable
+			else invokeScope.object.rawSetProperty(name, argvars[i]); //Scope isnt strict, magic happens.
 		}
 		
 		var result = yield ['branch','function', this.func.body, invokeScope];

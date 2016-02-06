@@ -52,17 +52,19 @@ class Environment {
 		/** @type {Value} */
 		this.console = this.fromNative(console);
 		/** @type {Value} */
-		this.Math = new (require('./stdlib/Math.js'))(this);
-		/** @type {Value} */
 		
 		this.ObjectPrototype =  new (require('./stdlib/ObjectPrototype'))(this);
 		this.FunctionPrototype = new (require('./stdlib/FunctionPrototype'))(this);
 		this.Object = new (require('./stdlib/Object.js'))(this);
-		
+		this.ObjectPrototype._init();
+
 		//TODO: Do this when we can make the property non enumerable.
 		//this.ObjectPrototype.set('constructor', this.Object); //Chickens and egs...
 		
 		this.Function = new (require('./stdlib/Function'))(this);
+
+		/** @type {Value} */
+		this.Math = new (require('./stdlib/Math.js'))(this);
 
 		this.NumberPrototype = new (require('./stdlib/NumberPrototype'))(this);
 		this.StringPrototype = new (require('./stdlib/StringPrototype'))(this);
@@ -75,6 +77,7 @@ class Environment {
 		this.Esper = new (require('./stdlib/Esper'))(this);
 
 		let scope = new Scope(this);
+		scope.object.clazz = "global";
 		scope.strict = options.strict || false;
 		let that = this;
 		var printer = this.fromNative(function() {
@@ -96,6 +99,7 @@ class Environment {
 		scope.set('Array', this.Array);
 		scope.set('String', this.String);
 		scope.set('TypeError', this.fromNative(TypeError));
+		scope.set('SyntaxError', this.fromNative(SyntaxError));
 		scope.set('ReferenceError', this.fromNative(ReferenceError));
 		scope.set('Error', this.fromNative(Error));
 		scope.set('isNaN', this.fromNative(isNaN));

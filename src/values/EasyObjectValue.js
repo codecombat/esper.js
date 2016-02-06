@@ -9,7 +9,7 @@ const CompletionRecord = require('../CompletionRecord');
 class EasyNativeFunction extends ObjectValue {
 	constructor(env) {
 		super(env);
-		this.setPrototype(null);
+		this.setPrototype(env.FunctionPrototype);
 	}
 
 	*call(thiz, argz) {
@@ -31,13 +31,24 @@ class EasyNativeFunction extends ObjectValue {
 class EasyObjectValue extends ObjectValue {
 	constructor(env) {
 		super(env);
-		var clazz = Object.getPrototypeOf(this);
+
+		
 
 		let objProto = env.ObjectPrototype;
-		if ( typeof this.objPrototype === "function" ) objProto = this.objPrototype(env);
-		else if ( typeof this.call === "function" ) objProto = env.FunctionPrototype;
-		this.setPrototype(objProto);
+		if ( typeof this.objPrototype === "function" ) {
+			objProto = this.objPrototype(env);
+		} else if ( typeof this.call === "function" ) {
+			objProto = env.FunctionPrototype;
+		}
+		if ( this.call == "function" ) this.clazz = 'Function';
+		this.setPrototype(objProto)
 
+		this._init();
+	}
+
+	_init() {
+		let env = this.env;
+		var clazz = Object.getPrototypeOf(this);
 		for ( let p of Object.getOwnPropertyNames(clazz.constructor) ) {
 			if ( p === 'length' ) continue;
 			if ( p === 'name' ) continue;

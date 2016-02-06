@@ -19,13 +19,18 @@ class ObjectValue extends Value {
 	}
 
 	ref(name) {
-		if ( Object.prototype.hasOwnProperty.call(this.properties, name) ) {
-			return this.properties[name];
-		}
 		var existing = this.properties[name];
-		var ret = {set: (v) => this.set(name,v)};
+		var ret = {
+			set: (v) => this.set(name,v),
+		};
+
 		let get;
 		if ( existing ) {
+			ret.isVariable = existing.isVariable;
+			ret.del = () => {
+				delete this.properties[name];
+				return true;
+			};
 			Object.defineProperty(ret, 'value', {
 				get: () => existing.value,
 				set: (v) => {
@@ -34,6 +39,8 @@ class ObjectValue extends Value {
 			});
 
 		} else {
+			ret.isVariable = false;
+			ret.del = () => false;
 			Object.defineProperty(ret, 'value', {
 				get: () => Value.undef,
 				set: (v) => {
@@ -143,6 +150,15 @@ class ObjectValue extends Value {
 		return this.proto;
 	}
 
+	get debugString() { 
+		let strProps = ['[', this.clazz,'{'];
+		if ( this.proto ) {
+			strProps.push('[[Prototype]]: ', this.proto.clazz);
+		}
+		strProps.push('}');
+		return strProps.join(' ');
+	}
+
 	*toPrimitiveValue(preferedType) { 
 		let methodNames;
 		if ( preferedType == 'string') {
@@ -185,5 +201,7 @@ class ObjectValue extends Value {
 		return "function";
 	}
 }
+
+ObjectValue.prototype.clazz = 'Object';
 
 module.exports = ObjectValue;

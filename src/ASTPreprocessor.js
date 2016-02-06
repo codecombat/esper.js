@@ -163,11 +163,11 @@ class ASTPreprocessor {
 		if ( a.regex ) {
 			a.srcName = '/' + a.regex.pattern + '/' + a.regex.flags;
 		} else if ( typeof a.value === 'string' ) {
-			a.srcName = '"' + a.rawValue + '"';
-		} else if ( a.value === null ) {
-			a.srcName = 'null';
+			a.srcName = a.raw;
+		} else if ( typeof a.value === 'undefined' ) {
+			a.srcName = 'undefiend';
 		} else {
-			a.srcName = a.value.toString();
+			a.srcName = a.raw;
 		}
 	}
 

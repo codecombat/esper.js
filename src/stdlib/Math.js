@@ -8,8 +8,8 @@ function makeNumber(num) {
 
 function wrapMathFunction(name) {
 	let fn = Math[name];
-	let length = fn.length;
 	return function*(thiz, args, env) {
+		let length = args.length;
 		let argz = new Array(length);
 		for ( let i = 0; i < length; ++i ) {
 			if ( i < args.length ) argz[i] = args[i].toNative();
@@ -67,9 +67,10 @@ MathObject.hypot = wrapMathFunction('hypot');
 MathObject.pow = wrapMathFunction('pow');
 MathObject.sinh = wrapMathFunction('sinh');
 MathObject.acos = wrapMathFunction('acos');
+MathObject.min = wrapMathFunction('min');
+MathObject.max = wrapMathFunction('max');
 
 
-
-
+MathObject.prototype.clazz = 'Math';
 
 module.exports = MathObject;

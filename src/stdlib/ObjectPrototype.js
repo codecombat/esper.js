@@ -21,7 +21,9 @@ class ObjectPrototype extends EasyObjectValue {
 	static *isPrototypeOf$e(thiz, args) { throw "Rob still needs to write this..."; }
 	static *propertyIsEnumerable$e(thiz, args) { throw "Rob still needs to write this..."; }
 	static *toLocaleString$e(thiz, args) { throw "Rob still needs to write this..."; }
-	static *toString$e(thiz, args) { return this.fromNative("[object Object]"); }
+	static *toString$e(thiz, args) { 
+		return this.fromNative("[object " + thiz.clazz + "]");
+	}
 	static *valueOf$e(thiz, args) { 
 		if ( thiz.specTypeName === 'object' ) return thiz;
 		//TODO: Need to follow the ToObject() conversion

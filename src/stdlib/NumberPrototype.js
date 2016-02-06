@@ -16,9 +16,33 @@ class NumberPrototype extends EasyObjectValue {
 	}	
 
 
-	static *toString(thiz) {
-		return yield * thiz.toStringValue(thiz);
+	static *toExponential(thiz, argz) {
+		let a = undefined;
+		if ( argz.length > 0 ) {
+			a = ( yield * argz[0].toNumberValue() ).toNative();
+		}
+		let num = yield * thiz.toNumberValue(thiz);
+		return this.fromNative(num.toNative().toExponential(a))
 	}	
+
+	static *toFixed(thiz, argz) {
+		let a = undefined;
+		if ( argz.length > 0 ) {
+			a = ( yield * argz[0].toNumberValue() ).toNative();
+		}
+		let num = yield * thiz.toNumberValue(thiz);
+		return this.fromNative(num.toNative().toFixed(a))
+	}
+
+	static *toString(thiz, argz) {
+		let a = undefined;
+		if ( argz.length > 0 ) {
+			a = ( yield * argz[0].toNumberValue() ).toNative();
+		}
+		let num = yield * thiz.toNumberValue(thiz);
+		return this.fromNative(num.toNative().toString(a))
+	}
+
 
 }
 

@@ -5,13 +5,14 @@ var path = require('path');
 var dir = path.join(__dirname, 'ext', 'jerry');
 var expect = require('chai').expect;
 
-describe.only("Jerty Tests", function() {
+describe("Jerry Tests", function() {
+	if ( !fs.existsSync(dir) ) return;
 	var files = fs.readdirSync(dir);
 	for ( var i = 0; i < files.length; ++i ) {
 		var file = files[i];
 		if ( !/.js$/.test(file) ) continue;
 
-		if ( /^sdasdf/.test(file) ) {
+		if ( /date|array-prototype|string-prototype|-with-blocks|object-prototype|regexp-|regression-|json|global/.test(file) ) {
 			xit(file, function() {});
 			continue;
 		}

@@ -157,7 +157,7 @@ myAppModule.controller('main', function ($scope, $timeout) {
 				for ( var z in varz ) {
 					var vname = varz[z];
 					var val = props[vname].value;
-					vars[vname] = (val && val.debugString) ? val.debugString() : val;
+					vars[vname] = (val && val.debugString) ? val.debugString : val;
 				}
 				return vars;
 			}

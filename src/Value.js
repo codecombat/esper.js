@@ -100,7 +100,7 @@ class Value {
 
 	}
 
-	debugString() { 
+	get debugString() { 
 		let native = this.toNative();
 		return native ? native.toString() : '???';
 	}
@@ -111,7 +111,8 @@ class Value {
 	}
 
 	*member(name) {
-		throw new Error("Can't access member " + name + " of that type: " + require('util').inspect(this));
+		let err = new TypeError("Can't access member " + name + " of that type: " + require('util').inspect(this));
+		return new CompletionRecord(CompletionRecord.TYPE, err);
 	}
 
 	*not() {

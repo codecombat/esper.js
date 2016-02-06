@@ -17,5 +17,6 @@ class ArrayPrototype extends EasyObjectValue {
 		return new ObjectValue(this.env);
 	}
 }
+ArrayPrototype.prototype.clazz = 'Array';
 
 module.exports = ArrayPrototype;

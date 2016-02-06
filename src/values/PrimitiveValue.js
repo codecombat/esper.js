@@ -44,6 +44,10 @@ class PrimitiveValue extends Value {
 		return this.native;
 	}
 
+	get debugString() { 
+		return JSON.stringify(this.native);
+	}
+
 	*asString() {
 		return this.native.toString();
 	}

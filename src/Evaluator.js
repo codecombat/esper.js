@@ -86,7 +86,11 @@ class Evaluator {
 				case CompletionRecord.THROW:
 					//TODO: Fix this nonsense:
 					let e = val.value.toNative();
-					if ( e instanceof Error ) e.stack = this.buildStacktrace(e) + "\n-------------\n" + e.stack;
+					let smallStack;
+					if ( e.stack ) smallStack = e.stack.split(/\n/).slice(0,2).join('\n');
+					let stk = e.stack = this.buildStacktrace(e);
+					if ( smallStack ) stk += "\n-------------\n" + smallStack;
+					if ( e instanceof Error )  e.stack = stk;
 
 					let tfr = this.unwindStack('catch', true);
 					if ( tfr ) {
@@ -491,13 +495,20 @@ class Evaluator {
 	}
 
 	*evaluateLabeledStatement(n,s) {
-		return yield * this.branch(n.body);
+		return yield * this.branch(n.body, s);
 	}
 
 	*evaulateLiteral(n,s) {
 		if ( n.regex ) {
 			return this.fromNative(new RegExp(n.regex.pattern, n.regex.flags));
-		} else {
+		} else if ( n.value === null ) {
+			if ( this.raw === 'null' ) return this.fromNative(null);
+
+			//Work around Esprima turning Infinity into null. =\
+			let tryFloat = parseFloat(n.raw);
+			if ( !isNaN(tryFloat) ) return this.fromNative(tryFloat);
+			return this.fromNative(null);
+	 	} else {
 			return this.fromNative(n.value);
 		}
 	}

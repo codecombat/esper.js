@@ -105,6 +105,10 @@ class BridgeValue extends Value {
 		return this.fromNative(Object.create(this.native.prototype));
 	}
 
+	get debugString() {
+		return '[Bridge: ' + this.native + ']';
+	}
+
 	get truthy() {
 		return !!this.native;
 	}
