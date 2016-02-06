@@ -30,6 +30,10 @@ class ASTPreprocessor {
 			case "BlockStatement":
 				for ( let e of ast.body ) yield * me(e);
 				break;
+			case "CallExpression":
+				for ( let e of ast.arguments ) yield * me(e);
+				yield * me(ast.callee);
+				break;
 			case "WhileStatement":
 			case "DoWhileStatement":
 				if ( ast.test ) yield * me(ast.test);
@@ -169,7 +173,7 @@ class ASTPreprocessor {
 
 
 	exitBinaryExpression(a) {
-		a.srcName = a.left.srcName + a.operator + a.right.srcName;
+		a.srcName = a.left.srcName + ' ' + a.operator + ' ' + a.right.srcName;
 	}
 
 	exitMemberExpression(a) {

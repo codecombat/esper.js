@@ -4,19 +4,18 @@ const EasyObjectValue = require('../values/EasyObjectValue');
 const ObjectValue = require('../values/ObjectValue');
 
 
-class ArrayObject extends EasyObjectValue {
+class ArrayPrototype extends EasyObjectValue {
 	*call(thiz, args) {
 		return this.fromNative("Ok?");
 	}
 
-	callPrototype(env) { return env.ObjectPrototype; }
+	callPrototype(env) { return env.ArrayPrototype; }
 	//objPrototype(env) { return env.Function; }
-
-
-
-	static *isArray(thiz, args) {
-		return Array.isArray(args[0].toNative());
+	
+	static *forEach(thiz, args) {
+		console.log("Arrayt#foreach called");
+		return new ObjectValue(this.env);
 	}
 }
 
-module.exports = ArrayObject;
+module.exports = ArrayPrototype;

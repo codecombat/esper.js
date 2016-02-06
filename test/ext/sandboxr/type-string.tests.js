@@ -26,10 +26,10 @@ describe("Type: String", () => {
 		{fn: "localeCompare", args: ["foo"]},
 		{fn: "localeCompare", args: ["bar"]},
 
-		{source: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", fn: "match", args: [/[A-E]/gi]},
-		{source: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", fn: "match", args: [/[0-9]/gi]},
+		//{source: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", fn: "match", args: [/[A-E]/gi]},
+		//{source: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", fn: "match", args: [/[0-9]/gi]},
 
-		{source: "Apples are round, and apples are juicy.", fn: "replace", args: [/apples/gi, "oranges"]},
+		//{source: "Apples are round, and apples are juicy.", fn: "replace", args: [/apples/gi, "oranges"]},
 		// {source: "ApplesAreRoundAndApplesAreJuicy", fn: "replace", args: [/[A-Z]/g, (match, p1) => " " + p1]},
 
 		{source: "The morning is upon us.", fn: "search", args: [/morn/]},

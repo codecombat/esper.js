@@ -118,8 +118,8 @@ class ObjectValue extends Value {
 	}
 
 	*observableProperties() {
-		for ( var p in this.properties ) {
-			if ( !this.properties[p].enumerable ) return;
+		for ( let p in this.properties ) {
+			if ( !this.properties[p].enumerable ) continue;
 			yield this.fromNative(p);
 		}
 		return;
@@ -131,7 +131,8 @@ class ObjectValue extends Value {
 
 	setPrototype(val) {
 		if ( val === null || val === undefined ) {
-			Object.setPrototypeOf(this.properties, null);	
+			Object.setPrototypeOf(this.properties, null);
+			this.proto = null;
 			return;
 		}
 		this.proto = val;

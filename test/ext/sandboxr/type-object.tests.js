@@ -106,9 +106,9 @@ describe("Type: Object", () => {
 		});
 	});
 
-	xdescribe("Object.keys", () => {
+	describe("Object.keys", () => {
 		it("should return an array of the objects enumerable properties", done => {
-			runner.confirmBlock("var a=Object.keys({a:1,b:2,c:3});a[0]=='a'&a[1]=='b'&&a[2]=='c';", done);
+			runner.confirmBlock("var a=Object.keys({a:1,b:2,c:3});a[0]=='a'&&a[1]=='b'&&a[2]=='c';", done);
 		});
 	});
 
@@ -158,7 +158,7 @@ describe("Type: Object", () => {
 		});
 	});
 
-	xdescribe("Object.getPrototypeOf", () => {
+	describe("Object.getPrototypeOf", () => {
 		it("should return the expected prototype", done => {
 			runner.confirmBlock("Object.getPrototypeOf({}) === Object.prototype;", done);
 		});

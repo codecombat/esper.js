@@ -341,7 +341,8 @@ class Evaluator {
 		}
 
 		let callResult = callee.call(thiz, args, s, {
-			asConstructor: n.type === "NewExpression"
+			asConstructor: n.type === "NewExpression",
+			callNode: n
 		});
 
 		if ( callResult instanceof CompletionRecord ) return callResult;
@@ -581,6 +582,49 @@ class Evaluator {
 		return last;
 	}
 
+	*evaluateSwitchStatement(n,s) {
+		let discriminant = yield * this.branch(n.discriminant, s);
+		let last = Value.undef;		
+		let that = this;
+		let matches = 0;
+		let matchVals = new Array(n.cases.length);
+		let matched = false;
+		
+		for ( let i = 0; i < n.cases.length; ++i ) {
+			let cas = n.cases[i];
+			if ( cas.test ) {
+				let testval = yield * that.branch(cas.test);
+				let equality = yield * testval.tripleEquals(discriminant);
+				if ( equality.truthy ) ++matches;
+				matchVals[i] = equality.truthy;
+			}
+		}
+
+		
+		let gen = function*() {
+
+			for ( let i = 0; i < n.cases.length; ++i ) {
+				let cas = n.cases[i];
+				if ( !matched ) {
+					if ( cas.test ) {
+						if ( !matchVals[i] ) continue;
+					} else {
+						if ( matches !== 0 ) continue;
+					}
+					matched = true;
+				}
+				for ( let statement of cas.consequent ) {
+					last = yield * that.branch(statement, s);	
+				}
+			}
+		};
+
+		this.pushFrame({generator: gen(), type: 'loop'});
+		let finished = yield;
+
+		return last;
+	}
+
 	*evaluateThisExpression(n,s) {
 		if ( s.thiz ) return s.thiz;
 		else return Value.undef;
@@ -721,6 +765,7 @@ class Evaluator {
 			case "Program": return this.evaluateProgram(n,s);
 			case "ReturnStatement": return this.evaluateReturnStatement(n,s);
 			case "SequenceExpression": return this.evaluateSequenceExpression(n,s);
+			case "SwitchStatement": return this.evaluateSwitchStatement(n,s);
 			case "ThisExpression": return this.evaluateThisExpression(n,s);
 			case "ThrowStatement": return this.evaluateThrowStatement(n,s);
 			case "TryStatement": return this.evaluateTryStatement(n,s);

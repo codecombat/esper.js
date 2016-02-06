@@ -34,6 +34,8 @@ class EvalFunction extends ObjectValue {
 	}
 }
 
+
+
 /**
  * Represents a javascript execution environment including
  * it's scopes and standard libraries.
@@ -56,12 +58,16 @@ class Environment {
 		this.ObjectPrototype =  new (require('./stdlib/ObjectPrototype'))(this);
 		this.FunctionPrototype = new (require('./stdlib/FunctionPrototype'))(this);
 		this.Object = new (require('./stdlib/Object.js'))(this);
-		this.ObjectPrototype.set('constructor', this.Object); //Chickens and egs...
+		
+		//TODO: Do this when we can make the property non enumerable.
+		//this.ObjectPrototype.set('constructor', this.Object); //Chickens and egs...
+		
 		this.Function = new (require('./stdlib/Function'))(this);
 
 		this.NumberPrototype = new (require('./stdlib/NumberPrototype'))(this);
 		this.StringPrototype = new (require('./stdlib/StringPrototype'))(this);
 
+		this.ArrayPrototype = new (require('./stdlib/ArrayPrototype'))(this);
 		this.Array = new (require('./stdlib/Array'))(this);
 		this.String = new (require('./stdlib/String'))(this);
 		this.Number = new (require('./stdlib/Number'))(this);
@@ -80,7 +86,7 @@ class Environment {
 		scope.set('Infinity', this.fromNative(Infinity));
 
 		scope.set('console', this.console);
-		scope.set('JSON', this.fromNative(JSON));
+		//scope.set('JSON', this.fromNative(JSON));
 		scope.set('Esper', this.Esper);
 		scope.set('Math', this.Math);
 		scope.set('parseInt', this.fromNative(parseInt));
@@ -90,10 +96,12 @@ class Environment {
 		scope.set('Array', this.Array);
 		scope.set('String', this.String);
 		scope.set('TypeError', this.fromNative(TypeError));
-		scope.set('Error', this.fromNative(TypeError));
+		scope.set('ReferenceError', this.fromNative(ReferenceError));
+		scope.set('Error', this.fromNative(Error));
 		scope.set('isNaN', this.fromNative(isNaN));
-		scope.set('Date', this.fromNative(Date));
+		//scope.set('Date', this.fromNative(Date));
 		scope.set('eval', new EvalFunction(this));
+		scope.set('assert', new (require('./stdlib/Assert'))(this));
 		scope.thiz = scope.object;
 		/** @type {Scope} */
 		this.globalScope = scope;
