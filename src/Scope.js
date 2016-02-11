@@ -28,7 +28,7 @@ class Scope {
 	}
 
 	add(name, value) {
-		this.object.set(name,value);
+		this.object.set(name, value);
 	}
 
 	/**

@@ -7,7 +7,7 @@ var engine = new Engine();
 
 function replEval(cmd, context, fn, cb) {
 	engine.eval(cmd).then(function(result) {
-		cb(null, result.toNative());
+		cb(null, result);
 	});
 }
 

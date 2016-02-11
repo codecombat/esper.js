@@ -52,7 +52,15 @@ class ObjectValue extends Value {
 	}
 
 	assign(name, value) {
-		return this.set(name, value);
+		let v;
+		if ( Object.prototype.hasOwnProperty.call(this.properties, name) ) {
+			v = this.properties[name];
+			v.value = value;
+		} else {
+			v = new Variable(value, this);
+			v.del = () => this.delete(name);
+			this.properties[name] = v;
+		}
 	}
 
 	get(name) {
@@ -65,6 +73,7 @@ class ObjectValue extends Value {
 		this.properties[name] = value;
 	}
 
+	
 	set(name, value) {
 		let v;
 		if ( Object.prototype.hasOwnProperty.call(this.properties, name) ) {
@@ -151,7 +160,7 @@ class ObjectValue extends Value {
 	}
 
 	get debugString() { 
-		let strProps = ['[', this.clazz,'{'];
+		let strProps = ['{','[', this.clazz,']'];
 		if ( this.proto ) {
 			strProps.push('[[Prototype]]: ', this.proto.clazz);
 		}
@@ -186,6 +195,7 @@ class ObjectValue extends Value {
 		return yield * prim.toNumberValue();
 	}
 
+	*toObjectValue(env) { return this; }
 
 	*toStringValue() { 
 		let prim = yield * this.toPrimitiveValue('string');

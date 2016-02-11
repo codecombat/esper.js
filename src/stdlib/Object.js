@@ -28,7 +28,6 @@ class ObjectObject extends EasyObjectValue {
 		if ( !(target instanceof ObjectValue ) ) throw new TypeError('Cannot convert to object');
 		let result = [];
 		for ( let p of target.observableProperties() ) {
-			console.log(p);
 			result.push(p);
 		}
 		return ArrayValue.make(result, s.env);

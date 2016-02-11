@@ -191,11 +191,12 @@ class Evaluator {
 
 	*evaluateArrayExpression(n,s) {
 		//let result = new ObjectValue();
-		let result = this.fromNative([]);
+		let result = new Array(n.elements.length);
 		for ( let i = 0; i < n.elements.length; ++i ) {
-			result.assign(i, yield * this.branch(n.elements[i],s));
+			result[i] = yield * this.branch(n.elements[i],s);
 		}
-		return result;
+		let ArrayValue = require('./values/ArrayValue');
+		return ArrayValue.make(result, this.env);
 	}
 
 	*evaluateAssignmentExpression(n,s) {
@@ -340,7 +341,7 @@ class Evaluator {
 		}
 
 		let name = n.callee.srcName || callee.jsTypeName;
-		if ( typeof callee.call !== "function" ) {
+		if ( !callee.isCallable ) {
 			return new CompletionRecord(CompletionRecord.THROW, new TypeError("" + name + " is not a function"));
 		}
 
@@ -352,7 +353,7 @@ class Evaluator {
 		if ( callResult instanceof CompletionRecord ) return callResult;
 
 		if ( typeof callResult.next !== "function" ) {
-			console.log(callResult);
+			console.log('Generator Failure', callResult);
 			return new CompletionRecord(CompletionRecord.THROW, new TypeError("" + name + " didnt make a generator"));
 		}
 		

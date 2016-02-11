@@ -81,7 +81,9 @@ class Value {
 	static get zero() { return zero; }
 
 	static createNativeBookmark(v) {
-		var out = function Bookmark() { throw "Atempted to invoke bookmark for " + v.toString(); };
+		var out = function Bookmark() { throw "Atempted to invoke bookmark for " + v.debugString; };
+		out.toString = function() { return v.debugString; };
+		out.inspect = function() { return v.debugString; };
 		bookmarks.set(out, v);
 		return out;
 	}
@@ -105,6 +107,7 @@ class Value {
 		return native ? native.toString() : '???';
 	}
 
+	inspect() { return this.debugString; }
 
 	fromNative(other) {
 		return Value.fromNative(other, this.env);
@@ -162,6 +165,9 @@ class Value {
 		return this.jsTypeName;
 	}
 
+	get isCallable() {
+		return ( typeof this.call === "function" );
+	}
 
 	*toNumberValue() { throw new Error('Unimplemented: Value#toNumberValue'); }
 	*toStringValue() { throw new Error('Unimplemented: Value#toNumberValue'); }

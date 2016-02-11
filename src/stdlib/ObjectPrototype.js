@@ -9,7 +9,6 @@ class ObjectPrototype extends EasyObjectValue {
 		super(env);
 		this.setPrototype(null);
 	}
-	static get pooja$e() { return "Happpy!"; }
 
 	static *hasOwnProperty$e(thiz, args) {
 		let name = yield * args[0].asString();
@@ -18,10 +17,28 @@ class ObjectPrototype extends EasyObjectValue {
 		return Value.false;
 	}
 
-	static *isPrototypeOf$e(thiz, args) { throw "Rob still needs to write this..."; }
-	static *propertyIsEnumerable$e(thiz, args) { throw "Rob still needs to write this..."; }
-	static *toLocaleString$e(thiz, args) { throw "Rob still needs to write this..."; }
+	static *isPrototypeOf$e(thiz, args) { 
+		if ( args.length < 1 ) return Value.false;
+		let target = args[1]; //TODO: Call ToObject();
+		let pt = thiz.getPrototype(thiz.env);
+		let checked = [];
+
+		while ( pt ) {
+			if ( pt === target ) return Value.true;
+			checked.push(pt);
+			pt = pt.getPrototype();
+			if ( checked.indexOf(pt) !== -1 ) return Value.false;
+		}
+		return Value.false;
+	}
+	static *propertyIsEnumerable$e(thiz, args) { 
+
+	}
+	
 	static *toString$e(thiz, args) { 
+		return this.fromNative("[object " + thiz.clazz + "]");
+	}
+	static *toLocaleString$e(thiz, args) { 
 		return this.fromNative("[object " + thiz.clazz + "]");
 	}
 	static *valueOf$e(thiz, args) { 
