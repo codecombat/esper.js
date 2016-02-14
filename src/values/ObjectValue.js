@@ -99,7 +99,7 @@ class ObjectValue extends Value {
 	}
 	
 	toNative() {
-		return Value.createNativeBookmark();
+		return Value.createNativeBookmark(this);
 	}
 
 
@@ -124,8 +124,12 @@ class ObjectValue extends Value {
 	}
 
 	*instanceOf(other, env) {
-		let target = yield * other.member('prototype');
-		let pt = this.getPrototype(env);
+		return yield * other.constructorOf(this, env);
+	}
+
+	*constructorOf(what, env) {
+		let target = yield * this.member('prototype');
+		let pt = what.getPrototype(env);
 		let checked = [];
 
 		while ( pt ) {
@@ -167,6 +171,12 @@ class ObjectValue extends Value {
 		let strProps = ['{','[', this.clazz,']'];
 		if ( this.proto ) {
 			strProps.push('[[Prototype]]: ', this.proto.clazz);
+		}
+		for ( let n in this.properties ) {
+			if ( !Object.prototype.hasOwnProperty.call(this.properties, n) ) continue;
+			let  val = this.properties[n].value;
+			if ( val.specTypeName === 'object' ) strProps.push(n + ': [Object]');
+			else strProps.push(n + ': ' + val.debugString);
 		}
 		strProps.push('} ]');
 		return strProps.join(' ');

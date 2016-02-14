@@ -9,15 +9,33 @@ const CompletionRecord = require('../CompletionRecord');
 class BoundFunction extends ObjectValue {
 	constructor(func, env) {
 		super(env);
+		this.setPrototype(env.FunctionPrototype);
 		this.func = func;
 		this.boundArgs = [];
 	}
 
-	*call(thiz, args, s) {
-		let tt = this.boundThis;
+	*call(thiz, args, s, ext) {
+		let tt = thiz;
+		let asConstructor = ext && ext.asConstructor;
+
+		if ( !asConstructor ) {
+			tt = this.boundThis;
+		}
+
 		let rargs = [].concat(this.boundArgs, args);
-		return yield * this.func.call(tt, rargs, s);
+		return yield * this.func.call(tt, rargs, s, ext);
 	}
+
+
+	*constructorOf(other, env) {
+		return yield * this.func.constructorOf(other, env);
+	}
+
+
+	*makeThisForNew() {
+		return yield * this.func.makeThisForNew();
+	}
+
 }
 
 class FunctionPrototype extends EasyObjectValue {
