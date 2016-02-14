@@ -45,6 +45,26 @@ class ArrayPrototype extends EasyObjectValue {
 		return this.fromNative(-1);
 	}
 
+	static *lastIndexOf(thiz, args) {
+		//TODO: Call ToObject() on thisz;
+		let l = yield * getLength(thiz);
+		let match = args[0] || EasyObjectValue.undef;
+		let startn = l;
+		if ( args[1] ) startn = yield * args[1].toIntNative();
+		
+		if ( isNaN(startn) ) startn = l;
+		else if ( startn < 0 ) startn = l + startn;
+
+		for ( let i = startn; i >= 0; --i ) {
+			let v = yield * thiz.member(i);
+			if ( !v ) v = EasyObjectValue.undef;
+			if ( (yield * v.tripleEquals(match)).truthy ) return this.fromNative(i);
+			
+		}
+
+		return this.fromNative(-1);
+	}
+
 	static *join(thiz, args) {
 		//TODO: Call ToObject() on thisz;
 		let l = yield * getLength(thiz);

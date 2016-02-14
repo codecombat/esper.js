@@ -166,7 +166,7 @@ describe("Type: Array", () => {
 		});
 	});
 
-	xdescribe("Array.prototype.lastIndexOf", () => {
+	describe("Array.prototype.lastIndexOf", () => {
 		it("should return last index if found", done => {
 			runner.confirmBlock("[2, 5, 9, 2].lastIndexOf(2)==3;", done);
 		});
