@@ -114,8 +114,8 @@ class Value {
 	}
 
 	*member(name) {
-		let err = new TypeError("Can't access member " + name + " of that type: " + require('util').inspect(this));
-		return new CompletionRecord(CompletionRecord.TYPE, err);
+		let err = "Can't access member " + name + " of that type: " + require('util').inspect(this);
+		return new CompletionRecord.makeTypeError(this.env, err);
 	}
 
 	*not() {
@@ -172,6 +172,16 @@ class Value {
 	*toNumberValue() { throw new Error('Unimplemented: Value#toNumberValue'); }
 	*toStringValue() { throw new Error('Unimplemented: Value#toNumberValue'); }
 	*toBooleanValue() { return this.truthy ? tru : fals; }
+	
+	*toUIntNative() { 
+		let nv = yield * this.toNumberValue();
+		return Math.floor(nv.native);
+	}
+	
+	*toIntNative() { 
+		let nv = yield * this.toNumberValue();
+		return Math.floor(nv.native);
+	}
 	
 	*toPrimitiveValue(preferedType) { throw new Error('Unimplemented: Value#jsTypeName'); }
 	

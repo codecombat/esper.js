@@ -3,6 +3,8 @@
 const ObjectValue = require('../values/ObjectValue');
 const EasyObjectValue = require('../values/EasyObjectValue');
 const Value = require('../Value');
+const NullValue = require('../values/NullValue');
+const UndefinedValue = require('../values/UndefinedValue');
 
 class ObjectPrototype extends EasyObjectValue {
 	constructor(env) {
@@ -16,6 +18,7 @@ class ObjectPrototype extends EasyObjectValue {
 		else if ( thiz.hasOwnProperty(name) ) return Value.true;
 		return Value.false;
 	}
+
 
 	static *isPrototypeOf$e(thiz, args) { 
 		if ( args.length < 1 ) return Value.false;
@@ -31,16 +34,16 @@ class ObjectPrototype extends EasyObjectValue {
 		}
 		return Value.false;
 	}
-	static *propertyIsEnumerable$e(thiz, args) { 
 
-	}
-	
-	static *toString$e(thiz, args) { 
+	static *propertyIsEnumerable$e(thiz, args) { throw "Rob still needs to write this..."; }
+	static *toLocaleString$e(thiz, args) { return yield * ObjectPrototype.toString$e(thiz, args); }
+
+	static *toString$e(thiz, args) {
+		if ( thiz instanceof UndefinedValue ) return this.fromNative('[object Undefined]');
+		if ( thiz instanceof NullValue ) return this.fromNative('[object Null]');
 		return this.fromNative("[object " + thiz.clazz + "]");
 	}
-	static *toLocaleString$e(thiz, args) { 
-		return this.fromNative("[object " + thiz.clazz + "]");
-	}
+
 	static *valueOf$e(thiz, args) { 
 		if ( thiz.specTypeName === 'object' ) return thiz;
 		//TODO: Need to follow the ToObject() conversion

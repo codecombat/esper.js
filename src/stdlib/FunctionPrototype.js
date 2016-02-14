@@ -1,7 +1,21 @@
 "use strict";
 
 const EasyObjectValue = require('../values/EasyObjectValue');
+const ClosureValue = require('../values/ClosureValue');
+const Value = require('../Value');
+const ObjectValue = require('../Value');
+const CompletionRecord = require('../CompletionRecord');
 
+class BoundFunction extends ObjectValue {
+	constructor(func, env) {
+		super(env);
+	}
+
+	*call(thiz, args, s) {
+		let tt = this.boundThis;
+		return yield * this.func.call(tt, args, s);
+	}
+}
 
 class FunctionPrototype extends EasyObjectValue {
 	static get caller$cew() { return null; }
@@ -21,12 +35,27 @@ class FunctionPrototype extends EasyObjectValue {
 		}
 		return yield * thiz.call(vthis, arga, s);
 	}
-	static *bind(thiz, args) { throw "Rob still needs to write this..."; }
+
+	static *bind(thiz, args) {
+		let bthis = Value.null;
+		if ( args.length > 0 ) bthis = args[0];
+		var out = new BoundFunction(thiz, this.env);
+		out.boundThis = bthis;
+		return out;
+	}
+
 	static *call(thiz, args, s) {
-		let vthis = args.shift();
+		let vthis = Value.undef;
+		if ( args.length > 0 ) vthis = args.shift();
 		return yield * thiz.call(vthis, args, s);
 	}
-	static *toString(thiz, args) { throw "Rob still needs to write this..."; }
+	static *toString(thiz, args, s) { 
+		if ( !(thiz instanceof ClosureValue) ) {
+			return CompletionRecord.makeTypeError(s.env, 'Function.prototype.toString is not generic');
+		}
+		
+		return this.fromNative('function() { [AST] }');
+	}
 
 	*call(thiz, args, s) {
 		return EasyObjectValue.undef;

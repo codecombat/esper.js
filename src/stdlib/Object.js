@@ -3,7 +3,8 @@
 const EasyObjectValue = require('../values/EasyObjectValue');
 const ObjectValue = require('../values/ObjectValue');
 const ArrayValue = require('../values/ArrayValue');
-
+const CompletionRecord = require('../CompletionRecord');
+const Value = require('../Value');
 
 class ObjectObject extends EasyObjectValue {
 	*call(thiz, args, s, ext) {
@@ -21,11 +22,40 @@ class ObjectObject extends EasyObjectValue {
 		return new ObjectValue(this.env);
 	}
 
+	static *seal$e(thiz, args, s) {
+		let target = args.length > 0 ? args[0] : Value.undef;
+		if (!(target instanceof ObjectValue) ) return CompletionRecord.makeTypeError(s.env, 'Need an object');
+		target.extensable = false;
+		for ( let p in target.properties ) {
+			if ( !Object.prototype.hasOwnProperty.call(target.properties, p) ) continue;
+			target.properties[p].configurable = false;
+		}
+		return target;
+	}
+
+	static *freeze$e(thiz, args, s) {
+		let target = args.length > 0 ? args[0] : Value.undef;
+		if (!(target instanceof ObjectValue) ) return CompletionRecord.makeTypeError(s.env, 'Need an object');
+		target.extensable = false;
+		for ( let p in target.properties ) {
+			if ( !Object.prototype.hasOwnProperty.call(target.properties, p) ) continue;
+			target.properties[p].configurable = false;
+			target.properties[p].writeable = false;
+		}
+		return target;
+	}
+
+
+	static *preventExtensions$e(thiz, args, s) {
+		let target = args.length > 0 ? args[0] : Value.undef;
+		if (!(target instanceof ObjectValue) ) return CompletionRecord.makeTypeError(s.env, 'Need an object');
+		target.extensable = false;
+		return target;
+	}
+
 	static *keys$e(thiz, args, s) {
-		//TODO: Convert args[0] to object;
-		let target = EasyObjectValue.undef;
-		if ( args.length > 0 ) target = args[0];
-		if ( !(target instanceof ObjectValue ) ) throw new TypeError('Cannot convert to object');
+		let target = args.length > 0 ? args[0] : Value.undef;
+		if (!(target instanceof ObjectValue) ) return CompletionRecord.makeTypeError(s.env, 'Need an object');
 		let result = [];
 		for ( let p of target.observableProperties() ) {
 			result.push(p);

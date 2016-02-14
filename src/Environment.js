@@ -57,6 +57,7 @@ class Environment {
 		this.FunctionPrototype = new (require('./stdlib/FunctionPrototype'))(this);
 		this.Object = new (require('./stdlib/Object.js'))(this);
 		this.ObjectPrototype._init();
+		this.FunctionPrototype._init();
 
 		//TODO: Do this when we can make the property non enumerable.
 		//this.ObjectPrototype.set('constructor', this.Object); //Chickens and egs...

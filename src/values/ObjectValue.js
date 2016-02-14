@@ -14,6 +14,7 @@ class ObjectValue extends Value {
 	constructor(env) {
 		super(env);
 		this.env = env;
+		this.extensable = true;
 		this.properties = Object.create(null);
 		this.setPrototype(this.env.ObjectPrototype);
 	}
@@ -164,7 +165,7 @@ class ObjectValue extends Value {
 		if ( this.proto ) {
 			strProps.push('[[Prototype]]: ', this.proto.clazz);
 		}
-		strProps.push('}');
+		strProps.push('} ]');
 		return strProps.join(' ');
 	}
 
@@ -187,7 +188,7 @@ class ObjectValue extends Value {
 				if ( res.specTypeName !== 'object' ) return res;
 			} 
 		}
-		throw new TypeError('Cannot convert object to primitive value');
+		return CompletionRecord.makeTypeError(this.env, 'Cannot convert object to primitive value');
 	}
 
 	*toNumberValue() { 
