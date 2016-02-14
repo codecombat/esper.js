@@ -37,7 +37,7 @@ class Scope {
 	 * @param {Value} value - Value to set
 	 */
 	set(name, value) {
-		this.object.assign(name, value);
+		this.object.set(name, value);
 	}
 
 	unset(name) {

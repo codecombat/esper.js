@@ -22,7 +22,7 @@ class ObjectValue extends Value {
 	ref(name) {
 		var existing = this.properties[name];
 		var ret = {
-			set: (v) => this.set(name,v),
+			set: (v) => this.assign(name,v),
 		};
 
 		let get;
