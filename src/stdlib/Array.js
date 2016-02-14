@@ -5,11 +5,11 @@ const ObjectValue = require('../values/ObjectValue');
 const ArrayValue = require('../values/ArrayValue');
 
 class ArrayObject extends EasyObjectValue {
-	*call(thiz, args) {
-		return this.fromNative("Ok?");
+	*call(thiz, args, s) {
+		return ArrayValue.make(args, s.env);
 	}
 
-	callPrototype(env) { return env.ObjectPrototype; }
+	callPrototype(env) { return env.ArrayPrototype; }
 	//objPrototype(env) { return env.Function; }
 
 

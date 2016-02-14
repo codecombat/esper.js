@@ -26,6 +26,10 @@ class EasyNativeFunction extends ObjectValue {
 	*makeThisForNew() {
 		return new CompletionRecord(CompletionRecord.THROW, "function is not a constructor");
 	}
+
+	get debugString() {
+		return 'function() { [Native Code] }';
+	}
 }
 
 class EasyObjectValue extends ObjectValue {
