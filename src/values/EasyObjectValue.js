@@ -41,7 +41,7 @@ class EasyObjectValue extends ObjectValue {
 			objProto = env.FunctionPrototype;
 		}
 		if ( this.call == "function" ) this.clazz = 'Function';
-		this.setPrototype(objProto)
+		this.setPrototype(objProto);
 
 		this._init();
 	}
@@ -79,8 +79,8 @@ class EasyObjectValue extends ObjectValue {
 
 		if ( this.callPrototype ) {
 			let pt = new Variable(this.callPrototype(env));
-			this.configurable = false;
-			this.enumerable = false;
+			pt.configurable = false;
+			pt.enumerable = false;
 			this.properties['prototype'] = pt;
 		}
 		

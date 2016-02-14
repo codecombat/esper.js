@@ -35,7 +35,11 @@ class ObjectPrototype extends EasyObjectValue {
 		return Value.false;
 	}
 
-	static *propertyIsEnumerable$e(thiz, args) { throw "Rob still needs to write this..."; }
+	static *propertyIsEnumerable$e(thiz, args) { 
+		let nam = yield * args[0].toStringNative();
+		let pd = thiz.properties[nam];
+		return this.fromNative(pd.enumerable);
+	}
 	static *toLocaleString$e(thiz, args) { return yield * ObjectPrototype.toString$e(thiz, args); }
 
 	static *toString$e(thiz, args) {
@@ -49,7 +53,6 @@ class ObjectPrototype extends EasyObjectValue {
 		//TODO: Need to follow the ToObject() conversion
 		return thiz; 
 	}
-
 
 }
 

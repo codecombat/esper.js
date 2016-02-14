@@ -6,15 +6,23 @@ const ArrayValue = require('../values/ArrayValue');
 const CompletionRecord = require('../CompletionRecord');
 const Value = require('../Value');
 const Variable = require('../values/Variable');
+const EmptyValue = require('../values/EmptyValue');
 
 function *defObjectProperty(obj, name, desc, env) {
 	if ( name instanceof Value ) {
 		name = (yield * name.toStringNative());
 	}
 
-	let value = yield * desc.member(name, env);
+	let value = yield * desc.member('value', env);
+
 
 	let v = new Variable(value);
+
+	let enu = yield * desc.member('enumerable', env);
+	if ( !(enu instanceof EmptyValue) ) {
+		v.enumerable = enu.truthy;
+	}
+
 	obj.rawSetProperty(name, v);
 	return true;
 }
@@ -55,7 +63,7 @@ class ObjectObject extends EasyObjectValue {
 	static *defineProperty(thiz, args, s) {
 		let target = yield * objOrThrow(args[0], s.env);
 		let name = yield * args[1].toStringNative();
-		let desc = args[1];
+		let desc = args[2];
 		yield * defObjectProperty(target, name, desc, s.env);
 		return Value.true;
 	}

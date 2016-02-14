@@ -130,7 +130,7 @@ describe("Type: Object", () => {
 		});
 	});
 
-	xdescribe("Object.defineProperty", () => {
+	describe("Object.defineProperty", () => {
 		it("should add the property to the object", done => {
 			runner.confirmBlock("var a = {}; Object.defineProperty(a, 'foo', { value: 42 }); 'foo' in a;", done);
 		});
@@ -139,15 +139,15 @@ describe("Type: Object", () => {
 			runner.confirmBlock("var a = {}; Object.defineProperty(a, 'foo', { value: 42 }); a.foo==42;", done);
 		});
 
-		it("should allow getter to be defined", done => {
+		xit("should allow getter to be defined", done => {
 			runner.confirmBlock("var a = {}; Object.defineProperty(a, 'foo', { get: function() { return 42; } });a.foo==42;", done);
 		});
 
-		it("should allow a setter to be defined", done => {
+		xit("should allow a setter to be defined", done => {
 			runner.confirmBlock("var a = {}, realValue = 1; Object.defineProperty(a, 'foo', { get: function () { return realValue; }, set: function (value) { realValue = value * 2; } });a.foo = 21;a.foo==42;", done);
 		});
 
-		it("should use the correct context for the getter/setter", done => {
+		xit("should use the correct context for the getter/setter", done => {
 			runner.confirmBlock("var a = {foo:true};Object.defineProperty(a, 'bar', { get: function () { return this.foo; } });a.bar==true;", done);
 		});
 	});
@@ -164,7 +164,7 @@ describe("Type: Object", () => {
 		});
 	});
 
-	xdescribe("Object.prototype.propertyIsEnumerable", () => {
+	describe("Object.prototype.propertyIsEnumerable", () => {
 		it("should return true if the property is enumerable", done => {
 			runner.confirmBlock("var a={foo:1};a.propertyIsEnumerable('foo');", done);
 		});
