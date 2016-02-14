@@ -3,17 +3,20 @@
 const EasyObjectValue = require('../values/EasyObjectValue');
 const ClosureValue = require('../values/ClosureValue');
 const Value = require('../Value');
-const ObjectValue = require('../Value');
+const ObjectValue = require('../values/ObjectValue');
 const CompletionRecord = require('../CompletionRecord');
 
 class BoundFunction extends ObjectValue {
 	constructor(func, env) {
 		super(env);
+		this.func = func;
+		this.boundArgs = [];
 	}
 
 	*call(thiz, args, s) {
 		let tt = this.boundThis;
-		return yield * this.func.call(tt, args, s);
+		let rargs = [].concat(this.boundArgs, args);
+		return yield * this.func.call(tt, rargs, s);
 	}
 }
 
@@ -40,6 +43,7 @@ class FunctionPrototype extends EasyObjectValue {
 		let bthis = Value.null;
 		if ( args.length > 0 ) bthis = args[0];
 		var out = new BoundFunction(thiz, this.env);
+		if ( args.length > 1 ) out.boundArgs = args.slice(1);
 		out.boundThis = bthis;
 		return out;
 	}

@@ -126,10 +126,12 @@ class PrimitiveValue extends Value {
 		if ( typeof this.native === "string" ) return this;
 		return this.fromNative(String(this.native));
 	}
+
 	*toNumberValue() { 
 		if ( typeof this.native === "number" ) return this;
 		return this.fromNative(Number(this.native));
 	}
+
 
 }
 module.exports = PrimitiveValue;

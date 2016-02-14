@@ -26,14 +26,23 @@ class ArrayValue extends ObjectValue {
 
 	}
 
-	set(name, v) {
-		if ( Number.isInteger(name) ) {
+	adjustLength(name) {
+		if ( !isNaN(parseInt(name)) ) {
 			let length = this.properties.length.value.native;
 			if ( name >= length ) {
 				this.properties.length.value.native = 1 + name;
 			}
 		}
+	}
+
+	set(name, v) {
+		this.adjustLength(name);
 		super.set(name, v);
+	}
+
+	assign(name, v) {
+		this.adjustLength(name);
+		super.assign(name, v);
 	}
 
 	static make(vals, env) {

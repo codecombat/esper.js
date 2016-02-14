@@ -191,7 +191,7 @@ class ObjectValue extends Value {
 				if ( res.specTypeName !== 'object' ) return res;
 			} 
 		}
-		return CompletionRecord.makeTypeError(this.env, 'Cannot convert object to primitive value');
+		return yield CompletionRecord.makeTypeError(this.env, 'Cannot convert object to primitive value');
 	}
 
 	*toNumberValue() { 
@@ -203,7 +203,9 @@ class ObjectValue extends Value {
 
 	*toStringValue() { 
 		let prim = yield * this.toPrimitiveValue('string');
-		return yield * prim.toStringValue();
+		console.log(typeof prim, prim);
+		let gen = prim.toStringValue();
+		return yield * gen;
 	}
 
 	get truthy() {

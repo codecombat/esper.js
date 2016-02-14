@@ -21,19 +21,19 @@ describe("Functions", () => {
 		runner.confirmBlock("var a = 50;\nfunction b() { return a; }\nb()==50;", done);
 	});
 
-	xit("should be able to `call` a function", done => {
+	it("should be able to `call` a function", done => {
 		runner.confirmBlock("function a(x, y) { return x + y; }\na.call(null, 10, 40)==50;", done);
 	});
 
-	xit("should be able to control `this` with `call`", done => {
+	it("should be able to control `this` with `call`", done => {
 		runner.confirmBlock("var a = {};function b() { return this === a; }\nb.call(a)==true;", done);
 	});
 
-	xit("should be able to `apply` a function", done => {
+	it("should be able to `apply` a function", done => {
 		runner.confirmBlock("function a(x, y) { return x + y; }\na.apply(null, [10, 40])==50;", done);
 	});
 
-	xit("should not alter `this` when provided through apply for builtin", done => {
+	it("should not alter `this` when provided through apply for builtin", done => {
 		runner.confirmBlock("Object.prototype.toString.apply(null, []) == '[object Null]';", done);
 	});
 
@@ -45,11 +45,11 @@ describe("Functions", () => {
 		runner.confirmBlock("(function (a) { a++;return a===arguments[0]; })(1)==true;", done);
 	});
 
-	xit("should allow function prototype to be called", done => {
+	it("should allow function prototype to be called", done => {
 		runner.confirmBlock("Function.prototype()===undefined;", done);
 	});
 
-	xdescribe("Function.prototype.bind", () => {
+	describe("Function.prototype.bind", () => {
 		it("should return a function", done => {
 			runner.confirmBlock("var a = function () {};typeof a.bind({}) === 'function';", done);
 		});

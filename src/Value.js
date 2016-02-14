@@ -170,7 +170,9 @@ class Value {
 	}
 
 	*toNumberValue() { throw new Error('Unimplemented: Value#toNumberValue'); }
-	*toStringValue() { throw new Error('Unimplemented: Value#toNumberValue'); }
+	*toStringValue() { throw new Error('Unimplemented: Value#StringValue'); }
+	*toStringNative() { return (yield * this.toStringValue()).native; }
+
 	*toBooleanValue() { return this.truthy ? tru : fals; }
 	
 	*toUIntNative() { 

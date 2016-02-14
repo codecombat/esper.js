@@ -65,6 +65,13 @@ class ArrayPrototype extends EasyObjectValue {
 		return this.fromNative(-1);
 	}
 
+
+	static *push(thiz, args) {
+		let l = yield * getLength(thiz);
+		thiz.assign(l, args[0]);
+		return this.fromNative(l+1);
+	}
+
 	static *join(thiz, args) {
 		//TODO: Call ToObject() on thisz;
 		let l = yield * getLength(thiz);

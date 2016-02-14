@@ -18,7 +18,7 @@ describe("Type: Array", () => {
 		runner.confirmBlock("var a = [1,2,3];a.length==3;", done);
 	});
 
-	xdescribe("Array.prototype.push", () => {
+	describe("Array.prototype.push", () => {
 		it("should add item to array", done => {
 			runner.confirmBlock("var a = [1,2,3];a.push(4);a[3]==4;", done);
 		});

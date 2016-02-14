@@ -5,6 +5,27 @@ const ObjectValue = require('../values/ObjectValue');
 const ArrayValue = require('../values/ArrayValue');
 const CompletionRecord = require('../CompletionRecord');
 const Value = require('../Value');
+const Variable = require('../values/Variable');
+
+function *defObjectProperty(obj, name, desc, env) {
+	if ( name instanceof Value ) {
+		name = (yield * name.toStringNative());
+	}
+
+	let value = yield * desc.member(name, env);
+
+	let v = new Variable(value);
+	obj.rawSetProperty(name, v);
+	return true;
+}
+
+function *objOrThrow(i, env) {
+	let val = i ? i : Value.undef;
+	if ( !(val instanceof ObjectValue) ) {
+		 return CompletionRecord.makeTypeError(env, 'Need an object');
+	}
+	return val;
+}
 
 class ObjectObject extends EasyObjectValue {
 	*call(thiz, args, s, ext) {
@@ -17,13 +38,30 @@ class ObjectObject extends EasyObjectValue {
 	callPrototype(env) { return env.ObjectPrototype; }
 	//objPrototype(env) { return env.Function; }
 
-	static *create$e(thiz, args) {
-		console.log("object#create called");
-		return new ObjectValue(this.env);
+	static *create$e(thiz, args, s) {
+		let v = new ObjectValue(this.env);
+		if ( args.length > 0 ) {
+			v.setPrototype(args[1]);
+		}
+		if ( args.length > 1 ) {
+			let propsobj = args[1];
+			for ( let p of propsobj.observableProperties() ) {
+				let podesc = yield * propsobj.member(p);
+				yield * defObjectProperty(v, p, podesc, s.env);
+			}
+		}
+	}
+
+	static *defineProperty(thiz, args, s) {
+		let target = yield * objOrThrow(args[0], s.env);
+		let name = yield * args[1].toStringNative();
+		let desc = args[1];
+		yield * defObjectProperty(target, name, desc, s.env);
+		return Value.true;
 	}
 
 	static *seal$e(thiz, args, s) {
-		let target = args.length > 0 ? args[0] : Value.undef;
+		let target = yield * objOrThrow(args[0], s.env);
 		if (!(target instanceof ObjectValue) ) return CompletionRecord.makeTypeError(s.env, 'Need an object');
 		target.extensable = false;
 		for ( let p in target.properties ) {
@@ -34,8 +72,7 @@ class ObjectObject extends EasyObjectValue {
 	}
 
 	static *freeze$e(thiz, args, s) {
-		let target = args.length > 0 ? args[0] : Value.undef;
-		if (!(target instanceof ObjectValue) ) return CompletionRecord.makeTypeError(s.env, 'Need an object');
+		let target = yield * objOrThrow(args[0], s.env);
 		target.extensable = false;
 		for ( let p in target.properties ) {
 			if ( !Object.prototype.hasOwnProperty.call(target.properties, p) ) continue;
@@ -47,21 +84,18 @@ class ObjectObject extends EasyObjectValue {
 
 
 	static *preventExtensions$e(thiz, args, s) {
-		let target = args.length > 0 ? args[0] : Value.undef;
-		if (!(target instanceof ObjectValue) ) return CompletionRecord.makeTypeError(s.env, 'Need an object');
+		let target = yield * objOrThrow(args[0], s.env);
 		target.extensable = false;
 		return target;
 	}
 
 	static *isExtensible$e(thiz, args, s) {
-		let target = args.length > 0 ? args[0] : Value.undef;
-		if (!(target instanceof ObjectValue) ) return CompletionRecord.makeTypeError(s.env, 'Need an object');
+		let target = yield * objOrThrow(args[0], s.env);
 		return this.fromNative(target.extensable);
 	}
 
 	static *keys$e(thiz, args, s) {
-		let target = args.length > 0 ? args[0] : Value.undef;
-		if (!(target instanceof ObjectValue) ) return CompletionRecord.makeTypeError(s.env, 'Need an object');
+		let target = yield * objOrThrow(args[0], s.env);
 		let result = [];
 		for ( let p of target.observableProperties() ) {
 			result.push(p);

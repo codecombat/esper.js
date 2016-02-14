@@ -3,6 +3,8 @@
 
 let serial = 0;
 
+//TODO: We should call this a PropertyDescriptor, not a variable.
+
 class Variable {
 	constructor(value) {
 		this.value = value;
