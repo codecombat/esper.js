@@ -62,7 +62,7 @@ describe("Type: Object", () => {
 		});
 	});
 
-	xdescribe("Object.preventExtensions", () => {
+	describe("Object.preventExtensions", () => {
 		it("Object.preventExtensions returns the object being made non-extensible.", done => {
 			runner.confirmBlock("var obj = {};var obj2 = Object.preventExtensions(obj);obj === obj2;", done);
 		});

@@ -53,6 +53,12 @@ class ObjectObject extends EasyObjectValue {
 		return target;
 	}
 
+	static *isExtensible$e(thiz, args, s) {
+		let target = args.length > 0 ? args[0] : Value.undef;
+		if (!(target instanceof ObjectValue) ) return CompletionRecord.makeTypeError(s.env, 'Need an object');
+		return this.fromNative(target.extensable);
+	}
+
 	static *keys$e(thiz, args, s) {
 		let target = args.length > 0 ? args[0] : Value.undef;
 		if (!(target instanceof ObjectValue) ) return CompletionRecord.makeTypeError(s.env, 'Need an object');

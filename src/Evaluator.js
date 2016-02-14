@@ -178,11 +178,7 @@ class Evaluator {
 					throw "Cant write property of non-object type: " + idx;
 				}
 
-				let result = ref.ref(idx, s.env);
-				if ( result ) return result;
-
-				ref.assign(idx, Value.undef);
-				return ref.ref(idx);
+				return ref.ref(idx, s.env);
 
 			default:
 				throw new Error("Couldnt resolve ref component: " + n.type);

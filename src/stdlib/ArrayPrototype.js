@@ -2,11 +2,11 @@
 
 const EasyObjectValue = require('../values/EasyObjectValue');
 const ObjectValue = require('../values/ObjectValue');
+const ArrayValue = require('../values/ArrayValue');
 
 function *getLength(v) {
 	let m = yield * v.member('length');
-	console.log(m);
-	return m.toNative();
+	return yield * m.toUIntNative();
 }
 
 var defaultSeperator = EasyObjectValue.fromNative(',');
@@ -27,7 +27,6 @@ class ArrayPrototype extends EasyObjectValue {
 	static *indexOf(thiz, args) {
 		//TODO: Call ToObject() on thisz;
 		let l = yield * getLength(thiz);
-		console.log(l);
 		let match = args[0] || EasyObjectValue.undef;
 		let start = args[1] || this.fromNative(0);
 		let startn = (yield * start.toNumberValue()).native;
@@ -37,7 +36,6 @@ class ArrayPrototype extends EasyObjectValue {
 
 		if ( l > startn ) {
 			for ( let i = startn; i < l; ++i ) {
-				console.log(i,l);
 				let v = yield * thiz.member(i);
 				if ( !v ) v = EasyObjectValue.undef;
 				if ( (yield * v.tripleEquals(match)).truthy ) return this.fromNative(i);
@@ -59,6 +57,29 @@ class ArrayPrototype extends EasyObjectValue {
 			else strings[i] = (yield * v.toStringValue()).native;
 		}
 		return this.fromNative(strings.join(sepstr));
+	}
+
+	static *slice(thiz, args, s) {
+		//TODO: Call ToObject() on thisz;
+		let length = yield * getLength(thiz);
+		let result = [];
+
+		let start = 0;
+		let end = length;
+
+
+		if ( args.length > 0 ) start = ( yield * args[0].toIntNative() );
+		if ( args.length > 1 ) end = ( yield * args[1].toIntNative() );
+
+		if ( start < 0 ) start = length + start;
+		if ( end < 0 ) end = length + end;
+
+		for ( let i = start; i < end; ++i ) {
+			result.push(yield * thiz.member('' + i ));
+		}
+
+
+		return ArrayValue.make(result, s.env);
 	}
 
 	static *toString(thiz, args) {

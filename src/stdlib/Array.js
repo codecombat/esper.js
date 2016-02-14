@@ -2,7 +2,7 @@
 
 const EasyObjectValue = require('../values/EasyObjectValue');
 const ObjectValue = require('../values/ObjectValue');
-
+const ArrayValue = require('../values/ArrayValue');
 
 class ArrayObject extends EasyObjectValue {
 	*call(thiz, args) {
@@ -15,7 +15,8 @@ class ArrayObject extends EasyObjectValue {
 
 
 	static *isArray(thiz, args) {
-		return Array.isArray(args[0].toNative());
+		if ( args.length < 1 ) return EasyObjectValue.false;
+		return EasyObjectValue.fromNative(args[0] instanceof ArrayValue);
 	}
 }
 

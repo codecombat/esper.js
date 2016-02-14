@@ -1,7 +1,7 @@
 "use strict";
 const runner = require('./test-runner').es5;
 
-xdescribe("Type: Array", () => {
+describe("Type: Array", () => {
 	it("should create an array for an array literal", done => {
 		runner.confirmBlock("Array.isArray([]);", done);
 	});
@@ -18,7 +18,7 @@ xdescribe("Type: Array", () => {
 		runner.confirmBlock("var a = [1,2,3];a.length==3;", done);
 	});
 
-	describe("Array.prototype.push", () => {
+	xdescribe("Array.prototype.push", () => {
 		it("should add item to array", done => {
 			runner.confirmBlock("var a = [1,2,3];a.push(4);a[3]==4;", done);
 		});
@@ -32,7 +32,7 @@ xdescribe("Type: Array", () => {
 		});
 	});
 
-	describe("Array.prototype.pop", () => {
+	xdescribe("Array.prototype.pop", () => {
 		it("should return the last item from the array", done => {
 			runner.confirmBlock("var a = [1,2,3];a.pop()==3;", done);
 		});
@@ -50,7 +50,7 @@ xdescribe("Type: Array", () => {
 		});
 	});
 
-	describe("Array.prototype.shift", () => {
+	xdescribe("Array.prototype.shift", () => {
 		it("should return the first item in the array", done => {
 			runner.confirmBlock("var a = [1,2,3];a.shift()==1;", done);
 		});
@@ -68,7 +68,7 @@ xdescribe("Type: Array", () => {
 		});
 	});
 
-	describe("Array.prototype.unshift", () => {
+	xdescribe("Array.prototype.unshift", () => {
 		it("should insert the items to the beginning of the array", done => {
 			runner.confirmBlock("var a = [1,2,3];a.unshift(-1, 0);a[1]==0", done);
 		});
@@ -116,7 +116,7 @@ xdescribe("Type: Array", () => {
 		});
 	});
 
-	describe("Array.prototype.splice", () => {
+	xdescribe("Array.prototype.splice", () => {
 		it("should insert the item at the position specified", done => {
 			runner.confirmBlock("var a = ['angel', 'clown', 'mandarin', 'surgeon'];var b=a.splice(2, 0, 'drum');a[2]=='drum' && a.length==5 && b.length==0;", done);
 		});
@@ -138,7 +138,7 @@ xdescribe("Type: Array", () => {
 		});
 	});
 
-	describe("Array.prototype.concat", () => {
+	xdescribe("Array.prototype.concat", () => {
 		it("should combine 2 arrays", done => {
 			runner.confirmBlock("var a = ['a', 'b', 'c'];var b=a.concat([1, 2, 3]);b.length==6 && b[3]==1;", done);
 		});
@@ -166,7 +166,7 @@ xdescribe("Type: Array", () => {
 		});
 	});
 
-	describe("Array.prototype.lastIndexOf", () => {
+	xdescribe("Array.prototype.lastIndexOf", () => {
 		it("should return last index if found", done => {
 			runner.confirmBlock("[2, 5, 9, 2].lastIndexOf(2)==3;", done);
 		});
@@ -202,7 +202,7 @@ xdescribe("Type: Array", () => {
 		});
 	});
 
-	describe("Array.prototype.forEach", () => {
+	xdescribe("Array.prototype.forEach", () => {
 		it("should iterate over the array", done => {
 			runner.confirmBlock("var counter=0;[1,2,3].forEach(function() { counter++; });counter==3;", done);
 		});
@@ -220,19 +220,19 @@ xdescribe("Type: Array", () => {
 		});
 	});
 
-	describe("Array.prototype.map", () => {
+	xdescribe("Array.prototype.map", () => {
 		it("should return the mapped values", done => {
 			runner.confirmBlock("var a=[1,2,3].map(function (i) { return i * 2; });a.length==3 && a[0]==2 && a[2]==6;", done);
 		});
 	});
 
-	describe("Array.prototype.filter", () => {
+	xdescribe("Array.prototype.filter", () => {
 		it("should filter values from the array", done => {
 			runner.confirmBlock("var a=[12, 5, 8, 130, 44].filter(function (v) { return v >= 10; });a.length==3 && a[0]==12 && a[1]==130;", done);
 		});
 	});
 
-	describe("Array.prototype.every", () => {
+	xdescribe("Array.prototype.every", () => {
 		it("should return true for an empty array", done => {
 			runner.confirmBlock("[].every(function () { return true; });", done);
 		});
@@ -246,7 +246,7 @@ xdescribe("Type: Array", () => {
 		});
 	});
 
-	describe("Array.prototype.some", () => {
+	xdescribe("Array.prototype.some", () => {
 		it("should return false for an empty array", done => {
 			runner.confirmBlock("!([].some(function() { return true; }));", done);
 		});
@@ -260,7 +260,7 @@ xdescribe("Type: Array", () => {
 		});
 	});
 
-	describe("Array.prototype.reduce", () => {
+	xdescribe("Array.prototype.reduce", () => {
 		it("should execute reduce callback", done => {
 			runner.confirmBlock("var a=[0, 1, 2, 3].reduce(function(a, b) { return a + b; });a==6;", done);
 		});
@@ -270,7 +270,7 @@ xdescribe("Type: Array", () => {
 		});
 	});
 
-	describe("Array.prototype.reverse", () => {
+	xdescribe("Array.prototype.reverse", () => {
 		it("should reverse the items in the array", done => {
 			runner.confirmBlock("var a=['one', 'two', 'three'].reverse();a[0]=='three' && a[2]=='one';", done);
 		});
@@ -280,7 +280,7 @@ xdescribe("Type: Array", () => {
 		});
 	});
 
-	describe("Array.prototype.sort", () => {
+	xdescribe("Array.prototype.sort", () => {
 		it("should return a reference to the array", done => {
 			runner.confirmBlock("var a = [1,2,3];a === a.sort()", done);
 		});

@@ -35,7 +35,7 @@ class ObjectValue extends Value {
 			Object.defineProperty(ret, 'value', {
 				get: () => existing.value,
 				set: (v) => {
-					this.set(name, v);
+					this.assign(name, v);
 				}
 			});
 
@@ -45,7 +45,7 @@ class ObjectValue extends Value {
 			Object.defineProperty(ret, 'value', {
 				get: () => Value.undef,
 				set: (v) => {
-					this.set(name, v);
+					this.assign(name, v);
 				}
 			});
 		}
@@ -57,10 +57,13 @@ class ObjectValue extends Value {
 		if ( Object.prototype.hasOwnProperty.call(this.properties, name) ) {
 			v = this.properties[name];
 			v.value = value;
-		} else {
+		} else if ( this.extensable ) {
 			v = new Variable(value, this);
 			v.del = () => this.delete(name);
 			this.properties[name] = v;
+		} else {
+			//TODO: Should we throw here in strict mode?
+			return;
 		}
 	}
 
