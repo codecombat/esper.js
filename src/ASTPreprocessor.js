@@ -143,15 +143,35 @@ class ASTPreprocessor {
 		a.vars = Object.create(null);
 		a.refs = Object.create(null);
 		a.funcs = Object.create(null);
-		for ( var o of a.params ) {
+
+		for ( let o of a.params ) {
 			a.vars[o.name] = a;
 		}
+
+		function prehoist(s) {
+			if ( s.type === 'VariableDeclaration' && s.kind == 'var' ) {
+				for ( var decl of s.declarations ) {
+					a.vars[decl.id.name] = decl;
+				}
+
+			} else if ( s.type === 'FunctionDeclaration' ) {
+				a.vars[s.id.name] = s;
+			}
+		}
+
+		if ( a.body.type === 'BlockStatement' ) {
+			for ( let stmt of a.body.body ) prehoist(stmt);
+		} else {
+			prehoist(a.body);
+		}
+
 		this.varStack.unshift(a.vars);
 	}
 
 	enterFunctionDeclaration(a) {
 		let parent = this.funcStack[0];
 		//a.parentFunction = parent.nodeID;
+		a.srcName = 'function ' + a.id.name + ' {'
 		parent.funcs[a.id.name] = a;
 	}
 

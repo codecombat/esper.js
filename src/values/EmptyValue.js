@@ -18,6 +18,10 @@ class EmptyValue extends Value {
 		else if ( other instanceof BridgeValue ) return this.fromNative(this.toNative() == other.toNative());
 	}
 
+	*observableProperties() {
+		return;
+	}
+
 }
 
 module.exports = EmptyValue;

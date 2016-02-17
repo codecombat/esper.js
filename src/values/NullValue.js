@@ -20,6 +20,8 @@ class NullValue extends EmptyValue {
 	*toPrimitiveValue(preferedType) { return this; }
 	*toNumberValue() { return Value.fromNative(0); }
 	*toStringValue() { return Value.fromNative('null'); }
+
+	get debugString() { return 'null'; }
 }
 
 module.exports = NullValue;

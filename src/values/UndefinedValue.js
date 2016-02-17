@@ -15,9 +15,10 @@ class UndefinedValue extends EmptyValue {
 		return "undefined";
 	}
 
-	get debugString() { return "undefined"; }
 	*toPrimitiveValue(preferedType) { return this; }
 	*toNumberValue() { return Value.nan; }
+
+	get debugString() { return "undefined"; }
 }
 
 module.exports = UndefinedValue;

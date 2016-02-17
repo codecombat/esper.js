@@ -71,12 +71,16 @@ class FunctionPrototype extends EasyObjectValue {
 		if ( args.length > 0 ) vthis = args.shift();
 		return yield * thiz.call(vthis, args, s);
 	}
-	static *toString(thiz, args, s) { 
-		if ( !(thiz instanceof ClosureValue) ) {
-			return CompletionRecord.makeTypeError(s.env, 'Function.prototype.toString is not generic');
+	static *toString(thiz, args) { 
+		if ( thiz instanceof ClosureValue ) {
+			return this.fromNative('function() { [AST] }');
+		} else if ( thiz instanceof BoundFunction ) {
+			return this.fromNative('function() { [bound function] }');
+		} else if ( thiz instanceof EasyObjectValue.EasyNativeFunction ) {
+			return this.fromNative('function() { [native code] }');
 		}
-		
-		return this.fromNative('function() { [AST] }');
+		return CompletionRecord.makeTypeError(this.env, 'Function.prototype.toString is not generic');		
+
 	}
 
 	*call(thiz, args, s) {
