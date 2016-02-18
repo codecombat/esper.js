@@ -90,8 +90,10 @@ class ArrayPrototype extends EasyObjectValue {
 
 	static *push$e(thiz, args) {
 		let l = yield * getLength(thiz);
-		thiz.assign(l, args[0]);
-		return this.fromNative(l+1);
+		for ( let i = 0; i < args.length; ++i ) {
+			thiz.assign(l+i, args[i]);
+		}
+		return this.fromNative(l+args.length);
 	}
 
 	static *pop$e(thiz, args) {
@@ -103,6 +105,9 @@ class ArrayPrototype extends EasyObjectValue {
 	}
 
 	static *shift$e(thiz, args) {
+		let l = yield * getLength(thiz);
+		if ( l < 1 ) return Value.undef;
+		
 		let val = yield * thiz.member(0);
 		yield * shiftLeft(thiz, 1, 1);
 		return val;
@@ -145,6 +150,10 @@ class ArrayPrototype extends EasyObjectValue {
 
 		if ( start < 0 ) start = length + start;
 		if ( end < 0 ) end = length + end;
+
+		if ( end > length ) end = length;
+		if ( start < 0 ) start = 0;
+
 
 		for ( let i = start; i < end; ++i ) {
 			result.push(yield * thiz.member('' + i ));

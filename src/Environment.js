@@ -110,6 +110,7 @@ class Environment {
 		scope.set('TypeError', this.fromNative(TypeError));
 		scope.set('SyntaxError', this.fromNative(SyntaxError));
 		scope.set('ReferenceError', this.fromNative(ReferenceError));
+		scope.set('RangeError', this.fromNative(RangeError));		
 		scope.set('Error', this.fromNative(Error));
 		scope.set('isNaN', this.fromNative(isNaN));
 		//scope.set('Date', this.fromNative(Date));
