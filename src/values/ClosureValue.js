@@ -50,7 +50,7 @@ class ClosureValue extends ObjectValue {
 		if ( !scope ) scope = this.scope;
 		let invokeScope = scope.createChild();
 		invokeScope.thiz = this.thiz || thiz;
-
+		if ( this.func.strict === true ) invokeScope.strict = true;
 
 		let obj = this.scope.object;
 		if ( this.func.upvars ) {
@@ -82,13 +82,19 @@ class ClosureValue extends ObjectValue {
 
 		for ( let i = 0; i < argn; ++i ) {
 			let vv = Value.undef;
-			if ( i < args.length ) vv = args[i]
+			if ( i < args.length ) vv = args[i];
+
 			let v = new Variable(vv);
 			argvars[i] = v;
-			args_obj.rawSetProperty(i, v);
+
+			if ( invokeScope.strict ) {
+				args_obj.assign(i, vv);
+			} else {
+				args_obj.rawSetProperty(i, v);
+			}
 		}
 
-		if ( !scope.strict ) {
+		if ( !invokeScope.strict ) {
 			args_obj.set('callee', this);
 		}
 

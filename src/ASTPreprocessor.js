@@ -165,6 +165,16 @@ class ASTPreprocessor {
 			prehoist(a.body);
 		}
 
+		if ( a.body.body && a.body.body.length > 0 ) {
+			let first = a.body.body[0];
+			if ( first.type === 'ExpressionStatement' ) {
+				let exp = first.expression;
+				if ( exp.type === 'Literal' && exp.value === 'use strict' ) {
+					a.strict = true;
+				}
+			}
+		}
+
 		this.varStack.unshift(a.vars);
 	}
 
