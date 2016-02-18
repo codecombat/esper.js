@@ -89,6 +89,16 @@ class Engine {
 	get globalScope() {
 		return this.env.globalScope;
 	}
+
+	addGlobal(name, what) {
+		this.globalScope.add(name, this.globalScope.fromNative(what));
+	}
+
+	addGlobalFx(name, what) {
+		const EasyNativeFunction = require('./values/EasyNativeFunction');
+		var x  = EasyNativeFunction.makeForNative(this.env, what);
+		this.globalScope.add(name, x);
+	}
 }
 
 module.exports = Engine;

@@ -7,11 +7,14 @@
     "doc": "esdoc -c esdoc.json",
     "lint": "jshint src --show-non-errors",
     "test": "mocha",
-    "repl": "node contrib/repl.js",
+    "repl": "node contrib/cli.js -i",
     "webpack": "webpack",
     "demo": "webpack && node contrib/ui.js",
     "cover": "isparta cover --report text --report html node_modules/mocha/bin/_mocha -- --reporter dot",
     "dev-server": "webpack-dev-server src/index.js --content-base contrib/ui"
+  },
+  "bin": {
+    "esper": "./contrib/cli.js"
   },
   "repository": {
     "type": "git",
@@ -59,11 +62,13 @@
     "chai": "^3.4.1",
     "esdoc": "^0.4.3",
     "isparta": "^4.0.0",
+    "lua2js": "0.0.11",
     "mocha": "^2.4.5",
     "webpack": "^1.12.11",
     "webpack-dev-server": "^1.14.1"
   },
   "dependencies": {
+    "commander": "^2.9.0",
     "escodegen": "^1.8.0",
     "esprima": "^2.7.1"
   }
