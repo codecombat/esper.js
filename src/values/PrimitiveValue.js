@@ -80,14 +80,6 @@ class PrimitiveValue extends Value {
 	*divide(other) { return this.fromNative(this.native / other.toNative()); }
 	*mod(other) { return this.fromNative(this.native % other.toNative()); }
 
-	*shiftLeft(other) { return this.fromNative(this.native << other.toNative()); }
-	*shiftRight(other) { return this.fromNative(this.native >> other.toNative()); }
-	*shiftRightZF(other) { return this.fromNative(this.native >>> other.toNative()); }
-
-	*bitAnd(other) { return this.fromNative(this.native & other.toNative()); }
-	*bitOr(other) { return this.fromNative(this.native | other.toNative()); }
-	*bitXor(other) { return this.fromNative(this.native ^ other.toNative()); }
-
 	*inOperator(other) { return this.fromNative(this.native in other.toNative()); }
 	*instanceOf(other) { return Value.false; }
 	

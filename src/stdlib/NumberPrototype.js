@@ -17,30 +17,39 @@ class NumberPrototype extends EasyObjectValue {
 
 
 	static *toExponential(thiz, argz) {
-		let a = undefined;
+		let a;
 		if ( argz.length > 0 ) {
-			a = ( yield * argz[0].toNumberValue() ).toNative();
+			a = yield * argz[0].toNumberNative();
 		}
-		let num = yield * thiz.toNumberValue(thiz);
-		return this.fromNative(num.toNative().toExponential(a))
+		let num = yield * thiz.toNumberNative(thiz);
+		return this.fromNative(num.toExponential(a));
 	}	
 
 	static *toFixed(thiz, argz) {
-		let a = undefined;
+		let a;
 		if ( argz.length > 0 ) {
-			a = ( yield * argz[0].toNumberValue() ).toNative();
+			a = yield * argz[0].toNumberNative();
 		}
-		let num = yield * thiz.toNumberValue(thiz);
-		return this.fromNative(num.toNative().toFixed(a))
+		let num = yield * thiz.toNumberNative(thiz);
+		return this.fromNative(num.toFixed(a));
+	}
+
+	static *toPrecision(thiz, argz) {
+		let a;
+		if ( argz.length > 0 ) {
+			a = yield * argz[0].toNumberNative();
+		}
+		let num = yield * thiz.toNumberNative(thiz);
+		return this.fromNative(num.toPrecision(a));
 	}
 
 	static *toString(thiz, argz) {
-		let a = undefined;
+		let a;
 		if ( argz.length > 0 ) {
-			a = ( yield * argz[0].toNumberValue() ).toNative();
+			a = yield * argz[0].toNumberNative();
 		}
-		let num = yield * thiz.toNumberValue(thiz);
-		return this.fromNative(num.toNative().toString(a))
+		let num = yield * thiz.toNumberNative(thiz);
+		return this.fromNative(num.toString(a));
 	}
 
 

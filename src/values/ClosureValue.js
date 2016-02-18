@@ -21,6 +21,10 @@ class ClosureValue extends ObjectValue {
 		this.scope = scope;
 		this.setPrototype(scope.env.FunctionPrototype);
 		this.properties['prototype'] = new Variable(new ObjectValue(scope));
+		this.properties['name'] = new Variable(this.fromNative(func.id ? func.id.name : undefined));
+		this.properties['length'] = new Variable(this.fromNative(func.params.length));
+		
+
 	}
 
 	toNative() {
