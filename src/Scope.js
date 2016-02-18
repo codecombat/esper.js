@@ -1,7 +1,7 @@
 "use strict";
 /* @flow */
 
-const Variable = require("./values/Variable");
+const PropertyDescriptor = require("./values/PropertyDescriptor");
 
 const Value = require("./Value");
 const ObjectValue = require("./values/ObjectValue");
@@ -63,7 +63,7 @@ class Scope {
 			variable.value = value;
 			return;
 		}
-		var v = new Variable(value, this);
+		var v = new PropertyDescriptor(value, this);
 		v.del = () => this.delete(name);
 		this.properties[name] = v;
 	}

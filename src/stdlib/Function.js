@@ -4,7 +4,7 @@ const EasyObjectValue = require('../values/EasyObjectValue');
 const ClosureValue = require('../values/ClosureValue');
 const CompletionRecord = require('../CompletionRecord');
 const ASTPreprocessor = require('../ASTPreprocessor');
-const Variable = require('../values/Variable');
+const PropertyDescriptor = require('../values/PropertyDescriptor');
 
 class FunctionObject extends EasyObjectValue {
 	*call(thiz, args, scope) {
@@ -26,7 +26,7 @@ class FunctionObject extends EasyObjectValue {
 
 	_init() {
 		super._init();
-		let cs = new Variable(this);
+		let cs = new PropertyDescriptor(this);
 		cs.configurable = false;
 		cs.enumerable = false;
 		this.properties['constructor'] = cs;

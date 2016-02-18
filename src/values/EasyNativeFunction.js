@@ -2,7 +2,6 @@
 /* @flow */
 
 const Value = require('../Value');
-const Variable = require('./Variable');
 const ObjectValue = require('./ObjectValue');
 const CompletionRecord = require('../CompletionRecord');
 

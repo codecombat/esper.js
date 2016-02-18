@@ -2,7 +2,7 @@
 /* @flow */
 
 const Value = require('../Value');
-const Variable = require('./Variable');
+const PropertyDescriptor = require('./PropertyDescriptor');
 const CompletionRecord = require('../CompletionRecord');
 const PrimitiveValue = require('./PrimitiveValue');
 
@@ -65,7 +65,7 @@ class ObjectValue extends Value {
 				throw new TypeError('Not STrict!')
 			}
 		} else if ( this.extensable ) {
-			v = new Variable(value, this);
+			v = new PropertyDescriptor(value, this);
 			v.del = () => this.delete(name);
 			this.properties[name] = v;
 		} else {
@@ -91,7 +91,7 @@ class ObjectValue extends Value {
 			v = this.properties[name];
 			v.value = value;
 		} else {
-			v = new Variable(value, this);
+			v = new PropertyDescriptor(value, this);
 			v.del = () => this.delete(name);
 			this.properties[name] = v;
 		}

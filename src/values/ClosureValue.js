@@ -2,7 +2,7 @@
 /* @flow */
 
 const Value = require('../Value');
-const Variable = require('./Variable');
+const PropertyDescriptor = require('./PropertyDescriptor');
 const ObjectValue = require('./ObjectValue');
 
 /**
@@ -20,9 +20,9 @@ class ClosureValue extends ObjectValue {
 		this.func = func;
 		this.scope = scope;
 		this.setPrototype(scope.realm.FunctionPrototype);
-		this.properties['prototype'] = new Variable(new ObjectValue(scope));
-		this.properties['name'] = new Variable(this.fromNative(func.id ? func.id.name : undefined));
-		this.properties['length'] = new Variable(this.fromNative(func.params.length));
+		this.properties['prototype'] = new PropertyDescriptor(new ObjectValue(scope));
+		this.properties['name'] = new PropertyDescriptor(this.fromNative(func.id ? func.id.name : undefined));
+		this.properties['length'] = new PropertyDescriptor(this.fromNative(func.params.length));
 		
 
 	}
@@ -88,7 +88,7 @@ class ClosureValue extends ObjectValue {
 			let vv = Value.undef;
 			if ( i < args.length ) vv = args[i];
 
-			let v = new Variable(vv);
+			let v = new PropertyDescriptor(vv);
 			argvars[i] = v;
 
 			if ( invokeScope.strict ) {

@@ -5,7 +5,7 @@ let serial = 0;
 
 //TODO: We should call this a PropertyDescriptor, not a variable.
 
-class Variable {
+class PropertyDescriptor {
 	constructor(value) {
 		this.value = value;
 		this.serial = serial++;
@@ -20,4 +20,4 @@ class Variable {
 	}
 }
 
-module.exports = Variable;
+module.exports = PropertyDescriptor;

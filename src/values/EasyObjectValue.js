@@ -2,7 +2,7 @@
 /* @flow */
 
 const Value = require('../Value');
-const Variable = require('./Variable');
+const PropertyDescriptor = require('./PropertyDescriptor');
 const ObjectValue = require('./ObjectValue');
 const CompletionRecord = require('../CompletionRecord');
 const EasyNativeFunction = require('./EasyNativeFunction');
@@ -35,7 +35,7 @@ class EasyObjectValue extends ObjectValue {
 			let name = parts[0];
 			let flags = parts[1] || '';
 			let d = Object.getOwnPropertyDescriptor(clazz.constructor, p);
-			let v = new Variable();
+			let v = new PropertyDescriptor();
 
 			if ( d.get ) {
 				//Its a property
@@ -53,13 +53,13 @@ class EasyObjectValue extends ObjectValue {
 		}
 
 		if ( this.callPrototype ) {
-			let pt = new Variable(this.callPrototype(realm));
+			let pt = new PropertyDescriptor(this.callPrototype(realm));
 			pt.configurable = false;
 			pt.enumerable = false;
 			this.properties['prototype'] = pt;
 		}
 		if ( realm.Function ) {
-			let cs = new Variable(realm.Function);
+			let cs = new PropertyDescriptor(realm.Function);
 			cs.configurable = false;
 			cs.enumerable = false;
 			this.properties['constructor'] = cs;

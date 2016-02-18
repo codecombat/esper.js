@@ -5,7 +5,7 @@ const ObjectValue = require('../values/ObjectValue');
 const ArrayValue = require('../values/ArrayValue');
 const CompletionRecord = require('../CompletionRecord');
 const Value = require('../Value');
-const Variable = require('../values/Variable');
+const PropertyDescriptor = require('../values/PropertyDescriptor');
 const EmptyValue = require('../values/EmptyValue');
 
 function *defObjectProperty(obj, name, desc, realm) {
@@ -16,7 +16,7 @@ function *defObjectProperty(obj, name, desc, realm) {
 	let value = yield * desc.member('value', realm);
 
 
-	let v = new Variable(value);
+	let v = new PropertyDescriptor(value);
 
 	let enu = yield * desc.member('enumerable', realm);
 	if ( !(enu instanceof EmptyValue) ) {
