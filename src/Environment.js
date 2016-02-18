@@ -50,8 +50,7 @@ class Environment {
 		this.parser = this.parser = (code) => esprima.parse(code, {loc: true});
 		this.NaN = this.fromNative(NaN);
 
-		/** @type {Value} */
-		this.console = this.fromNative(console);
+
 		/** @type {Value} */
 		
 		this.ObjectPrototype =  new (require('./stdlib/ObjectPrototype'))(this);
@@ -78,6 +77,9 @@ class Environment {
 		this.Number = new (require('./stdlib/Number'))(this);
 
 		this.Esper = new (require('./stdlib/Esper'))(this);
+
+		/** @type {Value} */
+		this.console = new (require('./stdlib/Console'))(this);
 
 		let scope = new Scope(this);
 		scope.object.clazz = "global";

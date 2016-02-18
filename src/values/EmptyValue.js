@@ -23,6 +23,10 @@ class EmptyValue extends Value {
 		return;
 	}
 
+	*instanceOf() {
+		return Value.false;
+	}
+
 }
 
 module.exports = EmptyValue;

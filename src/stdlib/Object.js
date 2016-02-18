@@ -58,6 +58,7 @@ class ObjectObject extends EasyObjectValue {
 				yield * defObjectProperty(v, p, podesc, s.env);
 			}
 		}
+		return v;
 	}
 
 	static *defineProperty(thiz, args, s) {
