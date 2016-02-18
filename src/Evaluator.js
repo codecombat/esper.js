@@ -158,6 +158,7 @@ class Evaluator {
 				let iref = s.ref(n.name, s.env);
 				if ( !iref ) {
 					if ( !create ) throw new ReferenceError(`${n.name} not defined`);
+					if ( s.strict ) throw new ReferenceError(`${n.name} not defined`);					
 					s.global.set(n.name, Value.undef);
 					iref = s.ref(n.name, s.env);
 				}
@@ -253,9 +254,9 @@ class Evaluator {
 				throw new Error("Unknown assignment operator: " + n.operator);
 		}
 
-		if ( ref ) ref.set(value);
+		if ( ref ) ref.set(value, s);
 		else {
-			s.assign(n.left.name, value);
+			s.assign(n.left.name, value, s);
 		}
 
 		return value;
@@ -307,7 +308,7 @@ class Evaluator {
 
 
 	*evaluateCallExpression(n,s,e) {
-		let thiz = Value.null;
+		let thiz = Value.undef;
 
 		let callee;
 
@@ -571,6 +572,7 @@ class Evaluator {
 		for ( var v in n.vars ) {
 			s.add(v, Value.undef);
 		}
+		if ( n.strict === true ) s.strict = true;
 		for ( let statement of n.body ) {
 			result = yield * this.branch(statement,s);
 		}

@@ -6,6 +6,17 @@ function invokeCB(o, name) {
 	o[name].apply(o, args);
 }
 
+function detectStrict(body) {
+	if ( !body || body.length < 1 ) return;
+	let first = body[0];
+	if ( first.type === 'ExpressionStatement' ) {
+		let exp = first.expression;
+		if ( exp.type === 'Literal' && exp.value === 'use strict' ) {
+			return true;
+		}
+	}
+}
+
 class ASTPreprocessor {
 
 	static process(ast) {
@@ -134,6 +145,9 @@ class ASTPreprocessor {
 		this.funcStack.unshift(a);
 		this.scopeStack.unshift(scope);
 		this.varStack.unshift(a.vars);
+
+		let strict = detectStrict(a.body);
+		if ( strict !== undefined ) a.strict = strict;
 	}
 
 	enterFunction(a) {
@@ -165,15 +179,8 @@ class ASTPreprocessor {
 			prehoist(a.body);
 		}
 
-		if ( a.body.body && a.body.body.length > 0 ) {
-			let first = a.body.body[0];
-			if ( first.type === 'ExpressionStatement' ) {
-				let exp = first.expression;
-				if ( exp.type === 'Literal' && exp.value === 'use strict' ) {
-					a.strict = true;
-				}
-			}
-		}
+		let strict = detectStrict(a.body.body);
+		if ( strict !== undefined ) a.strict = strict;
 
 		this.varStack.unshift(a.vars);
 	}

@@ -153,6 +153,7 @@
 			 <b style="color: cyan"> {{ast.type}}</b>  ({{ast.nodeID}})  <i style="color:lime">{{ast.srcName}}</i>
 		</div>
 		<div ng-show="isASTOpen(ast)" style="border-left: 2px solid white; margin-left: 10px; padding-left: 5px;">
+			<div ng-if="ast.strict !== undefined"> &nbsp; strict? = {{ast.strict}}</div>
 			<div ng-if="ast.vars"> &nbsp; vars = {{names(ast.vars)}}</div>
 			<div ng-if="ast.upvars"> &nbsp; upvars = {{names(ast.upvars)}}</div>
 			<div ng-if="ast.freevars"> &nbsp; freevars = {{names(ast.freevars)}}</div>

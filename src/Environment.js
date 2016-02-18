@@ -93,8 +93,9 @@ class Environment {
 		});
 		scope.set('print', printer);
 		scope.set('log', printer);
-		scope.set('NaN', this.fromNative(NaN));
-		scope.set('Infinity', this.fromNative(Infinity));
+
+		scope.addConst('NaN', this.fromNative(NaN));
+		scope.addConst('Infinity', this.fromNative(Infinity));
 
 		scope.set('console', this.console);
 		//scope.set('JSON', this.fromNative(JSON));
