@@ -67,7 +67,7 @@ describe("Expressions", () => {
 				runner.confirmBlock("!({} instanceof String);", done);
 			});
 
-			xit("should respect inheritance", done => {
+			it("should respect inheritance", done => {
 				runner.confirmBlock("function C(){}\nfunction D(){}\nD.prototype = new C();\nvar o = new D();(o instanceof C) && (o instanceof D);", done);
 			});
 

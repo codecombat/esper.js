@@ -30,7 +30,7 @@ describe("Expression", () => {
 				runner.confirmBlock("var a = {a:1,b:2,c:3},passed=true;\nfor(var prop in a) { if (prop == 'hasOwnProperty') { passed=false; } }\npassed;", done);
 			});
 
-			xit("should iterate through child properties", done => {
+			it("should iterate through child properties", done => {
 				let code = "var triangle = {a:1, b:2, c:3};\nfunction ColoredTriangle() {\n  this.color = 'red';\n}\n\nColoredTriangle.prototype = triangle;\n\nvar obj = new ColoredTriangle();\nvar passed = false;\n\nfor (var prop in obj) {\n	if (prop === 'a') {\n\n	passed = true;\n	}\n}\npassed;";
 				runner.confirmBlock(code, done);
 			});

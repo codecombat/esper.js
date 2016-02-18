@@ -1,7 +1,7 @@
 "use strict";
 const runner = require('./test-runner').es5;
 
-xdescribe("Type: RegExp", () => {
+describe("Type: RegExp", () => {
 	it("should evaluate as typeof object", () => {
 		runner.confirmBlock("typeof /a/ == 'object';");
 	});
@@ -16,7 +16,7 @@ xdescribe("Type: RegExp", () => {
 		});
 	});
 
-	describe("RegExp.prototype.exec", () => {
+	xdescribe("RegExp.prototype.exec", () => {
 		it("should return an array if matches", () => {
 			runner.confirmBlock("Array.isArray(/a/.exec('abc'));");
 		});

@@ -1,7 +1,7 @@
 const runner = require('./test-runner').es5;
 
 describe("Functions", () => {
-	xit("Function should have a prototype of function", done => {
+	it("Function should have a prototype of function", done => {
 		runner.confirmBlock("Object.getPrototypeOf(Function)===Function.prototype;", done);
 	});
 
