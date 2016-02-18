@@ -45,14 +45,14 @@ class Realm {
 	print() {
 		console.log.apply(console, arguments);
 	}
+
+	parser(code) {
+		return esprima.parse(code, {loc: true});
+	}
 	
 	constructor(options) {
-		this.parser = this.parser = (code) => esprima.parse(code, {loc: true});
-		this.NaN = this.fromNative(NaN);
 
-
-		/** @type {Value} */
-		
+		/** @type {Value} */	
 		this.ObjectPrototype =  new (require('./stdlib/ObjectPrototype'))(this);
 		this.FunctionPrototype = new (require('./stdlib/FunctionPrototype'))(this);
 		this.Object = new (require('./stdlib/Object.js'))(this);
@@ -78,6 +78,10 @@ class Realm {
 		this.Array = new (require('./stdlib/Array'))(this);
 		this.String = new (require('./stdlib/String'))(this);
 		this.Number = new (require('./stdlib/Number'))(this);
+
+
+		this.BooleanPrototype = new (require('./stdlib/BooleanPrototype'))(this);
+
 
 		this.RegExpPrototype = new (require('./stdlib/RegExpPrototype'))(this);
 		this.RegExp = new (require('./stdlib/RegExp'))(this);
@@ -111,10 +115,13 @@ class Realm {
 		scope.set('Array', this.Array);
 		scope.set('String', this.String);
 		scope.set('RegExp', this.RegExp);
+
 		scope.set('TypeError', this.fromNative(TypeError));
 		scope.set('SyntaxError', this.fromNative(SyntaxError));
 		scope.set('ReferenceError', this.fromNative(ReferenceError));
-		scope.set('RangeError', this.fromNative(RangeError));		
+		scope.set('RangeError', this.fromNative(RangeError));
+		scope.set('EvalError', this.fromNative(EvalError));
+		scope.set('URIError', this.fromNative(URIError));
 		scope.set('Error', this.fromNative(Error));
 
 		scope.set('parseInt', EasyNativeFunction.makeForNative(this, parseInt));
@@ -125,9 +132,28 @@ class Realm {
 		//scope.set('Date', this.fromNative(Date));
 		scope.set('eval', new EvalFunction(this));
 		scope.set('assert', new (require('./stdlib/Assert'))(this));
+
 		scope.thiz = scope.object;
 		/** @type {Scope} */
 		this.globalScope = scope;
+	}
+
+	lookupWellKnown(v) {
+		if ( v === Object ) return this.Object;
+		if ( v === Object.prototype ) return this.ObjectPrototype;		
+		if ( v === Function ) return this.Function;		
+		if ( v === Function.prototype ) return this.FunctionPrototype;
+		if ( v === Math ) return this.Math;
+		if ( v === Number ) return this.Number;
+		if ( v === Number.prototype ) return this.NumberPrototype;
+		if ( v === String ) return this.String;
+		if ( v === String.prototype ) return this.StringPrototype;
+		if ( v === Array ) return this.Array;
+		if ( v === Array.prototype ) return this.ArrayPrototype;
+		if ( v === RegExp ) return this.RegExp;
+		if ( v === RegExp.prototype ) return this.RegExpPrototype;
+		if ( v === console ) return this.console;
+
 	}
 
 	valueFromNative(native) {
@@ -136,6 +162,6 @@ class Realm {
 	fromNative(native) {
 		return Value.fromNative(native, this);
 	}
-};
+}
 
 module.exports = Realm;

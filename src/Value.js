@@ -12,23 +12,30 @@ let ObjectValue, PrimitiveValue, StringValue, NumberValue;
  * Represents a value a variable could take.
  */
 class Value {
-	
+
+	/**
+	 * Convert a native javascript primative value to a Value
+	 * @param {any} value - The value to convert
+	 */	
+	static fromPrimativeNative(value) {
+		if ( value === undefined ) return undef;
+		if ( value === null ) return nil;
+		if ( value === true ) return tru;
+		if ( value === false ) return fals;
+
+		if ( typeof value === "number" ) return new NumberValue(value);
+		if ( typeof value === "string" ) return new StringValue(value);
+		if ( typeof value === "boolean" ) return new PrimitiveValue(value);
+	}
+
 	/**
 	 * Convert a native javascript value to a Value
 	 * @param {any} value - The value to convert
 	 * @param {Realm} realm - The realm of the new value.
 	 */
 	static fromNative(value, realm) {
-		if ( value === undefined ) return undef;
-		if ( value === null ) return nil;
-		if ( value === true ) return tru;
-		if ( value === false ) return fals;
-
-
-
-		if ( typeof value === "number" ) return new NumberValue(value);
-		if ( typeof value === "string" ) return new StringValue(value);
-		if ( typeof value === "boolean" ) return new PrimitiveValue(value);
+		let prim = Value.fromPrimativeNative(value);
+		if ( prim ) return prim;
 		//TODO: Implement a real envirionemnt
 		//TODO: Is this cache dangerous?
 

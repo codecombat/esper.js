@@ -173,11 +173,11 @@ class Evaluator {
 				}
 
 				if ( !ref ) {
-					throw new Error("Cant write property of undefined: " + idx);
+					throw new TypeError("Cant write property of undefined: " + idx);
 				}
 
 				if ( !ref.ref ) {
-					throw new Error("Cant write property of non-object type: " + idx);
+					throw new TypeError("Cant write property of non-object type: " + idx);
 				}
 
 				return ref.ref(idx, s.realm);
@@ -262,11 +262,8 @@ class Evaluator {
 		return value;
 	}
 
-	*evaulateBinaryExpression(n,s) {
-		let left = yield * this.branch(n.left,s);
-		let right = yield * this.branch(n.right,s);
-		var realm = this.realm;
-		switch ( n.operator ) {
+	*doBinaryEvaluation(operator, left, right, realm) {
+		switch ( operator ) {
 			case '==': return yield * left.doubleEquals(right, realm);
 			case '!=': return yield * left.notEquals(right, realm);
 			case '===': return yield * left.tripleEquals(right, realm);
@@ -289,8 +286,15 @@ class Evaluator {
 			case '>>': return yield * left.shiftRight(right, realm);
 			case '>>>': return yield * left.shiftRightZF(right, realm);
 			default:
-				throw new Error("Unknown binary operator: " + n.operator);
+				throw new Error("Unknown binary operator: " + operator);
 		}
+	}
+
+	*evaulateBinaryExpression(n,s) {
+		let left = yield * this.branch(n.left,s);
+		let right = yield * this.branch(n.right,s);
+		var realm = this.realm;
+		return yield * this.doBinaryEvaluation(n.operator, left, right, realm);
 	}
 
 	*evaluateBlockStatement(n,s) {
@@ -329,6 +333,10 @@ class Evaluator {
 				if ( thiz.type == CompletionRecord.THROW ) return thiz;
 				thiz = thiz.value;
 			}
+		}
+
+		if ( typeof callee.rawCall === 'function' ) {
+			return yield * callee.rawCall(n, this, s);
 		}
 
 		//console.log("Calling", callee, callee.call);
