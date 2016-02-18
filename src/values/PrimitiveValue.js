@@ -45,7 +45,10 @@ class PrimitiveValue extends Value {
 	}
 
 	get debugString() { 
-		return JSON.stringify(this.native);
+		if ( typeof this.native === 'object' ) return '[native object]';
+		else if ( typeof this.native === 'function' ) return '[native function]';
+		else return '' + this.native;
+
 	}
 
 	*asString() {
@@ -73,7 +76,6 @@ class PrimitiveValue extends Value {
 	*tripleEquals(other) { return this.fromNative(this.native === other.toNative()); }
 
 	*add(other) { return this.fromNative(this.native + other.toNative()); }
-	*subtract(other) { return this.fromNative(this.native - other.toNative()); }
 	*multiply(other) { return this.fromNative(this.native * other.toNative()); }
 	*divide(other) { return this.fromNative(this.native / other.toNative()); }
 	*mod(other) { return this.fromNative(this.native % other.toNative()); }
@@ -85,11 +87,6 @@ class PrimitiveValue extends Value {
 	*bitAnd(other) { return this.fromNative(this.native & other.toNative()); }
 	*bitOr(other) { return this.fromNative(this.native | other.toNative()); }
 	*bitXor(other) { return this.fromNative(this.native ^ other.toNative()); }
-
-	*gt(other) { return this.fromNative(this.native > other.toNative()); }
-	*lt(other) { return this.fromNative(this.native < other.toNative()); }
-	*gte(other) { return this.fromNative(this.native >= other.toNative()); }
-	*lte(other) { return this.fromNative(this.native <= other.toNative()); }
 
 	*inOperator(other) { return this.fromNative(this.native in other.toNative()); }
 	*instanceOf(other) { return Value.false; }

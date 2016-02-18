@@ -3,6 +3,7 @@
 const EasyObjectValue = require('../values/EasyObjectValue');
 const ObjectValue = require('../values/ObjectValue');
 const ArrayValue = require('../values/ArrayValue');
+const Value = require('../Value');
 
 function *getLength(v) {
 	let m = yield * v.member('length');
@@ -11,6 +12,29 @@ function *getLength(v) {
 
 var defaultSeperator = EasyObjectValue.fromNative(',');
 
+function *shiftRight(arr, start, amt) {
+	amt = amt || 1;
+	let len = yield * getLength(arr);
+	for ( let i = len - 1; i >= start; --i ) {
+		let cur = yield * arr.member(i);
+		arr.assign(i+amt, cur);
+	}
+	arr.assign(start, Value.undef);
+}
+
+function *shiftLeft(arr, start, amt) {
+	let len = yield * getLength(arr);
+	for ( let i = start; i < len; ++i ) {
+		let cur = yield * arr.member(i);
+		arr.assign(i-amt, cur);
+	}
+	for ( let i = len-amt; i < len; ++i ) {
+		delete arr.properties[i];
+	}
+	arr.assign('length', Value.fromNative(len - amt));
+}
+
+
 class ArrayPrototype extends EasyObjectValue {
 
 
@@ -18,7 +42,7 @@ class ArrayPrototype extends EasyObjectValue {
 	//objPrototype(env) { return env.Function; }
 	
 	static *forEach$e(thiz, args) {
-		console.log("Arrayt#foreach called");
+		console.log("Array#foreach called");
 		return new ObjectValue(this.env);
 	}
 
@@ -68,6 +92,29 @@ class ArrayPrototype extends EasyObjectValue {
 		let l = yield * getLength(thiz);
 		thiz.assign(l, args[0]);
 		return this.fromNative(l+1);
+	}
+
+	static *pop$e(thiz, args) {
+		let l = yield * getLength(thiz);
+		if ( l < 1 ) return Value.undef;
+		let val = yield * thiz.member(l-1);
+		thiz.assign('length', Value.fromNative(l-1));
+		return val;
+	}
+
+	static *shift$e(thiz, args) {
+		let val = yield * thiz.member(0);
+		yield * shiftLeft(thiz, 1, 1);
+		return val;
+	}
+
+	static *unshift$e(thiz, args) {
+		let amt = args.length;
+		yield * shiftRight(thiz, 0, amt);
+		for ( let i = 0; i < amt; ++i ) {
+			thiz.assign(i, args[i]);
+		}
+		return yield * getLength(thiz);
 	}
 
 	static *join$e(thiz, args) {

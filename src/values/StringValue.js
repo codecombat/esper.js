@@ -27,6 +27,13 @@ class StringValue extends PrimitiveValue {
 		return Value.false;
 
 	}
+
+	*gt(other) { return this.fromNative(this.native > (yield * other.toStringNative())); }
+	*lt(other) { return this.fromNative(this.native < (yield * other.toStringNative())); }
+	*gte(other) { return this.fromNative(this.native >= (yield * other.toStringNative())); }
+	*lte(other) { return this.fromNative(this.native <= (yield * other.toStringNative())); }
+
+
 }
 
 module.exports = StringValue;

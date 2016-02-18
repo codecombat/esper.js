@@ -32,7 +32,7 @@ describe("Type: Array", () => {
 		});
 	});
 
-	xdescribe("Array.prototype.pop", () => {
+	describe("Array.prototype.pop", () => {
 		it("should return the last item from the array", done => {
 			runner.confirmBlock("var a = [1,2,3];a.pop()==3;", done);
 		});
@@ -50,7 +50,7 @@ describe("Type: Array", () => {
 		});
 	});
 
-	xdescribe("Array.prototype.shift", () => {
+	describe("Array.prototype.shift", () => {
 		it("should return the first item in the array", done => {
 			runner.confirmBlock("var a = [1,2,3];a.shift()==1;", done);
 		});
@@ -68,7 +68,7 @@ describe("Type: Array", () => {
 		});
 	});
 
-	xdescribe("Array.prototype.unshift", () => {
+	describe("Array.prototype.unshift", () => {
 		it("should insert the items to the beginning of the array", done => {
 			runner.confirmBlock("var a = [1,2,3];a.unshift(-1, 0);a[1]==0", done);
 		});

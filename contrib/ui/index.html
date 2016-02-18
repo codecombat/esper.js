@@ -157,6 +157,7 @@
 			<div ng-if="ast.upvars"> &nbsp; upvars = {{names(ast.upvars)}}</div>
 			<div ng-if="ast.freevars"> &nbsp; freevars = {{names(ast.freevars)}}</div>
 			<div ng-if="ast.refs"> &nbsp; refs = {{names(ast.refs)}}</div>
+			<div ng-if="ast.funcs"> &nbsp; funcs = {{names(ast.funcs)}}</div>
 			<div ng-repeat="ast in getChildNodes(ast)" ng-include="'ast-node.html'"></div>
 		</div>
 	</div>
