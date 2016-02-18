@@ -5,7 +5,7 @@
  */
 
 const Evaluator = require('./Evaluator');
-const Environment = require('./Environment');
+const Realm = require('./Realm');
 const Scope = require('./Scope');
 const Value = require('./Value');
 const ASTPreprocessor = require('./ASTPreprocessor');
@@ -22,7 +22,7 @@ class Engine {
 
 	constructor(options) {
 		options = options || {};
-		this.env = new Environment(options);
+		this.realm = new Realm(options);
 	}
 
 	/**
@@ -32,7 +32,7 @@ class Engine {
 	 * @return {Promise<*>} - The result of execution, as a promise.
 	 */
 	eval(code) {
-		let ast = this.env.parser(code);
+		let ast = this.realm.parser(code);
 		return this.evalAST(ast);
 	}
 
@@ -56,12 +56,12 @@ class Engine {
 
 	loadAST(ast) {
 		let past = ASTPreprocessor.process(ast);
-		this.evaluator = new Evaluator(this.env, past, this.globalScope);
+		this.evaluator = new Evaluator(this.realm, past, this.globalScope);
 		this.generator = this.evaluator.generator();
 	}
 
 	load(code) {
-		let ast = this.env.parser(code);
+		let ast = this.realm.parser(code);
 		this.loadAST(ast);
 	}
 
@@ -87,7 +87,7 @@ class Engine {
 	 * @return {Scope}
 	 */
 	get globalScope() {
-		return this.env.globalScope;
+		return this.realm.globalScope;
 	}
 
 	addGlobal(name, what) {
@@ -96,7 +96,7 @@ class Engine {
 
 	addGlobalFx(name, what) {
 		const EasyNativeFunction = require('./values/EasyNativeFunction');
-		var x  = EasyNativeFunction.makeForNative(this.env, what);
+		var x  = EasyNativeFunction.makeForNative(this.realm, what);
 		this.globalScope.add(name, x);
 	}
 }

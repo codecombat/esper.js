@@ -7,8 +7,8 @@ const NullValue = require('../values/NullValue');
 const UndefinedValue = require('../values/UndefinedValue');
 
 class ObjectPrototype extends EasyObjectValue {
-	constructor(env) {
-		super(env);
+	constructor(realm) {
+		super(realm);
 		this.setPrototype(null);
 	}
 
@@ -23,7 +23,7 @@ class ObjectPrototype extends EasyObjectValue {
 	static *isPrototypeOf$e(thiz, args) { 
 		if ( args.length < 1 ) return Value.false;
 		let target = args[1]; //TODO: Call ToObject();
-		let pt = thiz.getPrototype(thiz.env);
+		let pt = thiz.getPrototype(thiz.realm);
 		let checked = [];
 
 		while ( pt ) {

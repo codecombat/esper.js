@@ -16,10 +16,10 @@ class RegExpObject extends EasyObjectValue {
 		if ( args.length > 0 ) pattern = yield * args[0].toStringNative();
 		if ( args.length > 1 ) flags = yield * args[1].toStringNative();
 
-		return RegExpValue.make(new RegExp(pattern, flags), s.env);
+		return RegExpValue.make(new RegExp(pattern, flags), s.realm);
 	}
 	
-	callPrototype(env) { return env.RegExpPrototype; }	
+	callPrototype(realm) { return realm.RegExpPrototype; }	
 
 }
 

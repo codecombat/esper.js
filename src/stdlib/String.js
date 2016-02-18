@@ -18,7 +18,7 @@ class StringObject extends EasyObjectValue {
 		}
 	}
 
-	callPrototype(env) { return env.StringPrototype; }
+	callPrototype(realm) { return realm.StringPrototype; }
 
 	static *fromCharCode(thiz, args) {
 		let argz = new Array(args.length);

@@ -16,8 +16,8 @@ class CompletionRecord {
 
 	get abrupt() { return this.type !== CompletionRecord.NORMAL; }
 
-	static makeTypeError(env, msg) {
-		return new CompletionRecord(CompletionRecord.THROW, env.fromNative(new TypeError(msg), env));
+	static makeTypeError(realm, msg) {
+		return new CompletionRecord(CompletionRecord.THROW, realm.fromNative(new TypeError(msg), realm));
 	}
 }
 

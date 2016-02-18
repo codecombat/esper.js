@@ -6,13 +6,13 @@ let NumberValue;
 
 
 class StringValue extends PrimitiveValue {	
-	*member(name, env) {
+	*member(name, realm) {
 		let idx = Number(name);
 		if ( !isNaN(idx) ) {
 			return StringValue.fromNative(this.native[idx]);
 		}
 		if ( name === 'length' ) return StringValue.fromNative(this.native.length);
-		return yield * super.member(name, env);
+		return yield * super.member(name, realm);
 	}
 
 	*doubleEquals(other) { 

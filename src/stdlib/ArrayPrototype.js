@@ -36,14 +36,10 @@ function *shiftLeft(arr, start, amt) {
 
 
 class ArrayPrototype extends EasyObjectValue {
-
-
-	//callPrototype(env) { return env.ObjectPrototype; }
-	//objPrototype(env) { return env.Function; }
 	
 	static *forEach$e(thiz, args) {
 		console.log("Array#foreach called");
-		return new ObjectValue(this.env);
+		return new ObjectValue(this.realm);
 	}
 
 	static *indexOf$e(thiz, args) {
@@ -160,13 +156,13 @@ class ArrayPrototype extends EasyObjectValue {
 		}
 
 
-		return ArrayValue.make(result, s.env);
+		return ArrayValue.make(result, s.realm);
 	}
 
 	static *toString$e(thiz, args) {
 		let joinfn = yield * thiz.member('join');
 		if ( !joinfn || !joinfn.isCallable ) {
-			let ots = yield * this.env.ObjectPrototype.member('toString');
+			let ots = yield * this.realm.ObjectPrototype.member('toString');
 			return yield * ots.call(thiz, []);
 		} else {
 			return yield * joinfn.call(thiz, [defaultSeperator]);

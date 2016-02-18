@@ -8,15 +8,15 @@ const Value = require('../Value');
 
 class RegExpValue extends ObjectValue {
 
-	constructor(env) {
-		super(env);
-		this.setPrototype(this.env.RegExpPrototype);
+	constructor(realm) {
+		super(realm);
+		this.setPrototype(this.realm.RegExpPrototype);
 	}
 
 
-	static make(regexp, env) {
+	static make(regexp, realm) {
 
-		let av = new RegExpValue(env);
+		let av = new RegExpValue(realm);
 		av.regexp = regexp;
 		
 		return av;

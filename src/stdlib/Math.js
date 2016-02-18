@@ -8,7 +8,7 @@ function makeNumber(num) {
 
 function wrapMathFunction(name) {
 	let fn = Math[name];
-	return function*(thiz, args, env) {
+	return function*(thiz, args, realm) {
 		let length = args.length;
 		let argz = new Array(length);
 		for ( let i = 0; i < length; ++i ) {
@@ -16,7 +16,7 @@ function wrapMathFunction(name) {
 			else argz[i] = undefined;
 		}
 		let result = fn.apply(Math, argz);
-		return env.fromNative(result);
+		return realm.fromNative(result);
 	};
 
 }

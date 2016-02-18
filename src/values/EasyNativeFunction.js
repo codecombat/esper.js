@@ -7,20 +7,20 @@ const ObjectValue = require('./ObjectValue');
 const CompletionRecord = require('../CompletionRecord');
 
 class EasyNativeFunction extends ObjectValue {
-	constructor(env) {
-		super(env);
-		this.setPrototype(env.FunctionPrototype);
+	constructor(realm) {
+		super(realm);
+		this.setPrototype(realm.FunctionPrototype);
 	}
 
-	static make(env, fx, binding) {
-		let out = new EasyNativeFunction(env);
+	static make(realm, fx, binding) {
+		let out = new EasyNativeFunction(realm);
 		out.fn = fx;
 		out.binding = binding;
 		return out;
 	}
 
-	static makeForNative(env, fx) {
-		let out = new EasyNativeFunction(env);
+	static makeForNative(realm, fx) {
+		let out = new EasyNativeFunction(realm);
 		out.fn = function *(thiz, args) {
 			let rargs = new Array(args.length);
 			for ( let i = 0; i < args.length; ++i ) {
@@ -40,7 +40,7 @@ class EasyNativeFunction extends ObjectValue {
 			if ( !(o instanceof Value) ) o = this.fromNative(o);
 			return new CompletionRecord(CompletionRecord.NORMAL, o);
 		} catch ( e ) {
-			return new CompletionRecord(CompletionRecord.THROW, this.env.fromNative(e));
+			return new CompletionRecord(CompletionRecord.THROW, this.realm.fromNative(e));
 		}
 	}
 

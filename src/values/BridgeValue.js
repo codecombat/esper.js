@@ -8,8 +8,8 @@ const CompletionRecord = require('../CompletionRecord');
  */
 class BridgeValue extends Value {
 	
-	constructor(env, value) {
-		super(env);
+	constructor(realm, value) {
+		super(realm);
 		this.native = value;
 	}
 

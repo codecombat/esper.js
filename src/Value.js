@@ -16,9 +16,9 @@ class Value {
 	/**
 	 * Convert a native javascript value to a Value
 	 * @param {any} value - The value to convert
-	 * @param {Environment} value - The environment of the new value.
+	 * @param {Realm} realm - The realm of the new value.
 	 */
-	static fromNative(value, env) {
+	static fromNative(value, realm) {
 		if ( value === undefined ) return undef;
 		if ( value === null ) return nil;
 		if ( value === true ) return tru;
@@ -37,8 +37,8 @@ class Value {
 		}
 
 		if ( !cache.has(value) ) {
-			if ( !env ) throw new Error("We needed an env, but we didnt have one.  We were sad :(");
-			let nue = new BridgeValue(env, value);
+			if ( !realm ) throw new Error("We needed a realm, but we didnt have one.  We were sad :(");
+			let nue = new BridgeValue(realm, value);
 				
 			cache.set(value, nue);
 			return nue;
@@ -88,8 +88,8 @@ class Value {
 		return out;
 	}
 
-	constructor(env) {
-		this.env = env;
+	constructor(realm) {
+		this.realm = realm;
 	}
 	
 
@@ -110,12 +110,12 @@ class Value {
 	inspect() { return this.debugString; }
 
 	fromNative(other) {
-		return Value.fromNative(other, this.env);
+		return Value.fromNative(other, this.realm);
 	}
 
 	*member(name) {
 		let err = "Can't access member " + name + " of that type: " + require('util').inspect(this);
-		return new CompletionRecord.makeTypeError(this.env, err);
+		return new CompletionRecord.makeTypeError(this.realm, err);
 	}
 
 	*not() {
@@ -126,22 +126,22 @@ class Value {
 		return Value.fromNative(this.jsTypeName);
 	}
 
-	*notEquals(other, env) {
-		var result = yield * this.doubleEquals(other, env);
+	*notEquals(other, realm) {
+		var result = yield * this.doubleEquals(other, realm);
 		return yield * result.not();
 	}
 
-	*doubleNotEquals(other, env) {
-		var result = yield * this.tripleEquals(other, env);
+	*doubleNotEquals(other, realm) {
+		var result = yield * this.tripleEquals(other, realm);
 		return yield * result.not();
 	}
 
-	*tripleEquals(other, env) {
+	*tripleEquals(other, realm) {
 		return other === this ? Value.true : Value.false;
 	}
 
 	*makeThisForNew() {
-		var nue = new ObjectValue(this.env);
+		var nue = new ObjectValue(this.realm);
 		var p = this.properties['prototype'];
 		if ( p ) nue.setPrototype(p.value);
 		return nue;

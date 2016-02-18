@@ -8,17 +8,17 @@ const Value = require('../Value');
 const Variable = require('../values/Variable');
 const EmptyValue = require('../values/EmptyValue');
 
-function *defObjectProperty(obj, name, desc, env) {
+function *defObjectProperty(obj, name, desc, realm) {
 	if ( name instanceof Value ) {
 		name = (yield * name.toStringNative());
 	}
 
-	let value = yield * desc.member('value', env);
+	let value = yield * desc.member('value', realm);
 
 
 	let v = new Variable(value);
 
-	let enu = yield * desc.member('enumerable', env);
+	let enu = yield * desc.member('enumerable', realm);
 	if ( !(enu instanceof EmptyValue) ) {
 		v.enumerable = enu.truthy;
 	}
@@ -27,10 +27,10 @@ function *defObjectProperty(obj, name, desc, env) {
 	return true;
 }
 
-function *objOrThrow(i, env) {
+function *objOrThrow(i, realm) {
 	let val = i ? i : Value.undef;
 	if ( !(val instanceof ObjectValue) ) {
-		 return CompletionRecord.makeTypeError(env, 'Need an object');
+		 return CompletionRecord.makeTypeError(realm, 'Need an object');
 	}
 	return val;
 }
@@ -39,15 +39,15 @@ class ObjectObject extends EasyObjectValue {
 	*call(thiz, args, s, ext) {
 		let asConstructor = ext && ext.asConstructor;
 		if ( asConstructor ) {
-			return new ObjectValue(s.env);
+			return new ObjectValue(s.realm);
 		}
 	}
 
-	callPrototype(env) { return env.ObjectPrototype; }
-	//objPrototype(env) { return env.Function; }
+	callPrototype(realm) { return realm.ObjectPrototype; }
+	//objPrototype(realm) { return realm.Function; }
 
 	static *create$e(thiz, args, s) {
-		let v = new ObjectValue(this.env);
+		let v = new ObjectValue(this.realm);
 		if ( args.length > 0 ) {
 			v.setPrototype(args[1]);
 		}
@@ -55,23 +55,23 @@ class ObjectObject extends EasyObjectValue {
 			let propsobj = args[1];
 			for ( let p of propsobj.observableProperties() ) {
 				let podesc = yield * propsobj.member(p);
-				yield * defObjectProperty(v, p, podesc, s.env);
+				yield * defObjectProperty(v, p, podesc, s.realm);
 			}
 		}
 		return v;
 	}
 
 	static *defineProperty(thiz, args, s) {
-		let target = yield * objOrThrow(args[0], s.env);
+		let target = yield * objOrThrow(args[0], s.realm);
 		let name = yield * args[1].toStringNative();
 		let desc = args[2];
-		yield * defObjectProperty(target, name, desc, s.env);
+		yield * defObjectProperty(target, name, desc, s.realm);
 		return Value.true;
 	}
 
 	static *seal$e(thiz, args, s) {
-		let target = yield * objOrThrow(args[0], s.env);
-		if (!(target instanceof ObjectValue) ) return CompletionRecord.makeTypeError(s.env, 'Need an object');
+		let target = yield * objOrThrow(args[0], s.realm);
+		if (!(target instanceof ObjectValue) ) return CompletionRecord.makeTypeError(s.realm, 'Need an object');
 		target.extensable = false;
 		for ( let p in target.properties ) {
 			if ( !Object.prototype.hasOwnProperty.call(target.properties, p) ) continue;
@@ -81,7 +81,7 @@ class ObjectObject extends EasyObjectValue {
 	}
 
 	static *freeze$e(thiz, args, s) {
-		let target = yield * objOrThrow(args[0], s.env);
+		let target = yield * objOrThrow(args[0], s.realm);
 		target.extensable = false;
 		for ( let p in target.properties ) {
 			if ( !Object.prototype.hasOwnProperty.call(target.properties, p) ) continue;
@@ -93,29 +93,29 @@ class ObjectObject extends EasyObjectValue {
 
 
 	static *preventExtensions$e(thiz, args, s) {
-		let target = yield * objOrThrow(args[0], s.env);
+		let target = yield * objOrThrow(args[0], s.realm);
 		target.extensable = false;
 		return target;
 	}
 
 	static *isExtensible$e(thiz, args, s) {
-		let target = yield * objOrThrow(args[0], s.env);
+		let target = yield * objOrThrow(args[0], s.realm);
 		return this.fromNative(target.extensable);
 	}
 
 	static *keys$e(thiz, args, s) {
-		let target = yield * objOrThrow(args[0], s.env);
+		let target = yield * objOrThrow(args[0], s.realm);
 		let result = [];
 		for ( let p of target.observableProperties() ) {
 			result.push(p);
 		}
-		return ArrayValue.make(result, s.env);
+		return ArrayValue.make(result, s.realm);
 	}
 
 	static *getPrototypeOf(thiz, args, s) {
 		let target = EasyObjectValue.undef;
 		if ( args.length > 0 ) target = args[0];
-		let proto = target.getPrototype(s.env);
+		let proto = target.getPrototype(s.realm);
 		if ( proto ) return proto;
 		return EasyObjectValue.null;
 	}

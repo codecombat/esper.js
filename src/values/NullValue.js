@@ -9,7 +9,7 @@ class NullValue extends EmptyValue {
 	get jsTypeName() { return "object"; }
 	get specTypeName() { return "null"; }
 
-	*tripleEquals(other, env) {
+	*tripleEquals(other, realm) {
 		return other instanceof NullValue ? Value.true : Value.false;
 	}
 

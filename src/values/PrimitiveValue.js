@@ -15,10 +15,10 @@ class PrimitiveValue extends Value {
 		this.native = value;
 	}
 
-	ref(name, env) {
+	ref(name, realm) {
 		let out = Object.create(null);
 		let str = (value) => {};
-		let pt = this.derivePrototype(env);
+		let pt = this.derivePrototype(realm);
 		Object.defineProperty(out, 'value', {
 			get: () => pt.get(name),
 			set: str
@@ -28,15 +28,15 @@ class PrimitiveValue extends Value {
 		return out;
 	}
 
-	derivePrototype(env) {
+	derivePrototype(realm) {
 		switch ( typeof this.native ) {
-			case "string": return env.StringPrototype;
-			case "number": return env.NumberPrototype;
-			case "boolean": return env.BooleanPrototype;
+			case "string": return realm.StringPrototype;
+			case "number": return realm.NumberPrototype;
+			case "boolean": return realm.BooleanPrototype;
 		}
 	}
 
-	assign(name, value, env) {
+	assign(name, value, realm) {
 		
 	}
 
@@ -89,9 +89,9 @@ class PrimitiveValue extends Value {
 
 
 
-	*member(name, env) { 
-		let pt = this.derivePrototype(env);
-		return yield * pt.member(name, env);
+	*member(name, realm) { 
+		let pt = this.derivePrototype(realm);
+		return yield * pt.member(name, realm);
 	}
 
 	*observableProperties() {

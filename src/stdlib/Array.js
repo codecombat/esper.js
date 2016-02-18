@@ -6,11 +6,11 @@ const ArrayValue = require('../values/ArrayValue');
 
 class ArrayObject extends EasyObjectValue {
 	*call(thiz, args, s) {
-		return ArrayValue.make(args, s.env);
+		return ArrayValue.make(args, s.realm);
 	}
 
-	callPrototype(env) { return env.ArrayPrototype; }
-	//objPrototype(env) { return env.Function; }
+	callPrototype(realm) { return realm.ArrayPrototype; }
+	//objPrototype(realm) { return realm.Function; }
 
 
 

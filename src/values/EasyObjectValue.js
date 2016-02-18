@@ -8,14 +8,14 @@ const CompletionRecord = require('../CompletionRecord');
 const EasyNativeFunction = require('./EasyNativeFunction');
 
 class EasyObjectValue extends ObjectValue {
-	constructor(env) {
-		super(env);
+	constructor(realm) {
+		super(realm);
 
-		let objProto = env.ObjectPrototype;
+		let objProto = realm.ObjectPrototype;
 		if ( typeof this.objPrototype === "function" ) {
-			objProto = this.objPrototype(env);
+			objProto = this.objPrototype(realm);
 		} else if ( typeof this.call === "function" ) {
-			objProto = env.FunctionPrototype;
+			objProto = realm.FunctionPrototype;
 		}
 		if ( this.call == "function" ) this.clazz = 'Function';
 		this.setPrototype(objProto);
@@ -24,7 +24,7 @@ class EasyObjectValue extends ObjectValue {
 	}
 
 	_init() {
-		let env = this.env;
+		let realm = this.realm;
 		var clazz = Object.getPrototypeOf(this);
 		for ( let p of Object.getOwnPropertyNames(clazz.constructor) ) {
 			if ( p === 'length' ) continue;
@@ -43,7 +43,7 @@ class EasyObjectValue extends ObjectValue {
 				if ( val instanceof Value ) v.value = val;
 				else v.value = this.fromNative(val);
 			} else {
-				let rb = EasyNativeFunction.make(env, d.value, this);
+				let rb = EasyNativeFunction.make(realm, d.value, this);
 				v.value = rb;
 			}
 			if ( flags.indexOf('e') !== -1 ) v.enumerable = false;
@@ -53,13 +53,13 @@ class EasyObjectValue extends ObjectValue {
 		}
 
 		if ( this.callPrototype ) {
-			let pt = new Variable(this.callPrototype(env));
+			let pt = new Variable(this.callPrototype(realm));
 			pt.configurable = false;
 			pt.enumerable = false;
 			this.properties['prototype'] = pt;
 		}
-		if ( env.Function ) {
-			let cs = new Variable(env.Function);
+		if ( realm.Function ) {
+			let cs = new Variable(realm.Function);
 			cs.configurable = false;
 			cs.enumerable = false;
 			this.properties['constructor'] = cs;

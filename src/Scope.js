@@ -7,11 +7,11 @@ const Value = require("./Value");
 const ObjectValue = require("./values/ObjectValue");
 
 class Scope {
-	constructor(env) {
+	constructor(realm) {
 		this.parent = null;
 		this.object = new ObjectValue(this);
 		this.strict = false;
-		this.env = env;
+		this.realm = realm;
 		this.global = this;
 	}
 
@@ -29,6 +29,12 @@ class Scope {
 
 	add(name, value) {
 		this.object.set(name, value);
+	}
+
+	addConst(name, value) {
+		this.object.set(name, value);
+		this.object.properties[name].writeable = false;
+		this.object.properties[name].configurable = false;
 	}
 
 	/**
@@ -63,11 +69,10 @@ class Scope {
 	}
 
 	createChild() {
-		let child = new Scope();
+		let child = new Scope(this.realm);
 		child.object.setPrototype(this.object);
 		child.parent = this;
 		child.strict = this.strict;
-		child.env = this.env;
 		child.global = this.global;
 		return child;
 	}
@@ -76,9 +81,9 @@ class Scope {
 	//      but we could do it better.
 
 	toNative() { return this; }
-	fromNative(w) { return this.env.fromNative(w); }
+	fromNative(w) { return this.realm.fromNative(w); }
 	*member(name) { 
-		let ref = this.ref(name, this.env);
+		let ref = this.ref(name, this.realm);
 		if ( ref ) return ref.value;
 		return Value.undef;
 	}

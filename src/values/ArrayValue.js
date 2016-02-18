@@ -9,15 +9,15 @@ let NumberValue;
 
 class ArrayValue extends ObjectValue {
 
-	constructor(env) {
-		super(env);
-		this.setPrototype(this.env.ArrayPrototype);
+	constructor(realm) {
+		super(realm);
+		this.setPrototype(this.realm.ArrayPrototype);
 	}
 
 
-	*member(name, env) {
+	*member(name, realm) {
 		
-		return yield * super.member(name, env);
+		return yield * super.member(name, realm);
 	}
 
 	*doubleEquals(other) { 
@@ -45,16 +45,16 @@ class ArrayValue extends ObjectValue {
 		super.assign(name, v);
 	}
 
-	static make(vals, env) {
+	static make(vals, realm) {
 
-		let av = new ArrayValue(env);
+		let av = new ArrayValue(realm);
 		
 		av.set('length', Value.fromNative(0));
 		av.properties.length.enumerable = false;
 
 		for ( let i = 0; i < vals.length; ++i ) {
 			let v = vals[i];
-			if ( !(v instanceof Value) ) v = env.fromNative(v);
+			if ( !(v instanceof Value) ) v = realm.fromNative(v);
 			av.set(i, v);
 		}
 		return av;

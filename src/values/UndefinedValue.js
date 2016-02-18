@@ -5,7 +5,7 @@ const Value = require('../Value');
 class UndefinedValue extends EmptyValue {
 	toNative() { return undefined; }
 	get jsTypeName() { return "undefined"; }
-	*tripleEquals(other, env) {
+	*tripleEquals(other, realm) {
 		return other instanceof UndefinedValue ? Value.true : Value.false;
 	}
 

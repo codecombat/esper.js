@@ -6,14 +6,14 @@ const CompletionRecord = require('../CompletionRecord');
 const EasyObjectValue = require('../values/EasyObjectValue');
 
 function *proxy(op, thiz, args, s) {
-	let env = s.env;
-	let printer = env.print;
+	let realm = s.realm;
+	let printer = realm.print;
 	let strings = new Array(args.length);
 	for ( let i = 0; i < args.length; ++i ) {
 		strings[i] = yield * args[i].toStringNative();
 	}
 	//console[op].apply(console, strings);
-	printer.apply(env, strings);
+	printer.apply(realm, strings);
 	return Value.undef;
 }
 

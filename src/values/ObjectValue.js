@@ -11,18 +11,17 @@ const PrimitiveValue = require('./PrimitiveValue');
  */
 class ObjectValue extends Value {
 	
-	constructor(env) {
-		super(env);
-		this.env = env;
+	constructor(realm) {
+		super(realm);
 		this.extensable = true;
 		this.properties = Object.create(null);
-		this.setPrototype(this.env.ObjectPrototype);
+		this.setPrototype(this.realm.ObjectPrototype);
 	}
 
 	ref(name) {
 		var existing = this.properties[name];
 		var ret = {
-			set: (v) => this.assign(name,v),
+			set: (v,s) => this.assign(name,v,s),
 		};
 
 		let get;
@@ -34,8 +33,8 @@ class ObjectValue extends Value {
 			};
 			Object.defineProperty(ret, 'value', {
 				get: () => existing.value,
-				set: (v) => {
-					this.assign(name, v);
+				set: (v, s) => {
+					this.assign(name, v, s);
 				}
 			});
 
@@ -44,19 +43,27 @@ class ObjectValue extends Value {
 			ret.del = () => false;
 			Object.defineProperty(ret, 'value', {
 				get: () => Value.undef,
-				set: (v) => {
-					this.assign(name, v);
+				set: (v, s) => {
+					this.assign(name, v, s);
 				}
 			});
 		}
 		return ret;
 	}
 
-	assign(name, value) {
+	assign(name, value, s) {
 		let v;
 		if ( Object.prototype.hasOwnProperty.call(this.properties, name) ) {
 			v = this.properties[name];
-			v.value = value;
+			if ( v.writeable ) {
+				v.value = value;
+			} else if ( s && s.strict ) {
+				console.log("A");
+				throw new TypeError('Cant write to something thats not writeable');
+			} else {
+				console.log("B");
+				throw new TypeError('Not STrict!')
+			}
 		} else if ( this.extensable ) {
 			v = new Variable(value, this);
 			v.del = () => this.delete(name);
@@ -123,13 +130,13 @@ class ObjectValue extends Value {
 		return Value.undef;
 	}
 
-	*instanceOf(other, env) {
-		return yield * other.constructorOf(this, env);
+	*instanceOf(other, realm) {
+		return yield * other.constructorOf(this, realm);
 	}
 
-	*constructorOf(what, env) {
+	*constructorOf(what, realm) {
 		let target = yield * this.member('prototype');
-		let pt = what.getPrototype(env);
+		let pt = what.getPrototype(realm);
 		let checked = [];
 
 		while ( pt ) {
@@ -175,8 +182,9 @@ class ObjectValue extends Value {
 		for ( let n in this.properties ) {
 			if ( !Object.prototype.hasOwnProperty.call(this.properties, n) ) continue;
 			let  val = this.properties[n].value;
+
 			if ( val.specTypeName === 'object' ) strProps.push(n + ': [Object]');
-			else strProps.push(n + ': ' + val.debugString);
+			else strProps.push(n + ': ' + val.specTypeName);
 		}
 		strProps.push('} ]');
 		return strProps.join(' ');
@@ -193,7 +201,7 @@ class ObjectValue extends Value {
 		for ( let name of methodNames ) {
 			let method = yield * this.member(name);
 			if ( method && method.call ) {
-				let rescr = yield (yield * method.call(this, [], this.env.evaluator));
+				let rescr = yield (yield * method.call(this, [], this.realm.evaluator));
 				let res = Value.undef;
 				if ( !(rescr instanceof CompletionRecord) ) res = rescr;
 				else if ( rescr.type == CompletionRecord.RETURN ) res = rescr.value;
@@ -201,7 +209,7 @@ class ObjectValue extends Value {
 				if ( res.specTypeName !== 'object' ) return res;
 			} 
 		}
-		return yield CompletionRecord.makeTypeError(this.env, 'Cannot convert object to primitive value');
+		return yield CompletionRecord.makeTypeError(this.realm, 'Cannot convert object to primitive value');
 	}
 
 	*toNumberValue() { 
@@ -209,7 +217,7 @@ class ObjectValue extends Value {
 		return yield * prim.toNumberValue();
 	}
 
-	*toObjectValue(env) { return this; }
+	*toObjectValue(realm) { return this; }
 
 	*toStringValue() { 
 		let prim = yield * this.toPrimitiveValue('string');

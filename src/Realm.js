@@ -14,15 +14,15 @@ const EasyNativeFunction = require('./values/EasyNativeFunction');
 
 class EvalFunction extends ObjectValue {
 
-	constructor(env) {
-		super(env);
+	constructor(realm) {
+		super(realm);
 	}
 
 	*call(thiz, args, scope) {
 		let code = args[0].toNative().toString();
 		let ast;
 		try {
-			let oast = scope.env.parser(code, {loc: true});
+			let oast = scope.realm.parser(code, {loc: true});
 			ast = ASTPreprocessor.process(oast);
 		} catch ( e ) {
 			var eo = e;
@@ -41,7 +41,7 @@ class EvalFunction extends ObjectValue {
  * Represents a javascript execution environment including
  * it's scopes and standard libraries.
  */
-class Environment {
+class Realm {
 	print() {
 		console.log.apply(console, arguments);
 	}
@@ -130,4 +130,4 @@ class Environment {
 	}
 };
 
-module.exports = Environment;
+module.exports = Realm;

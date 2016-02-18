@@ -7,9 +7,9 @@ const ObjectValue = require('../values/ObjectValue');
 const CompletionRecord = require('../CompletionRecord');
 
 class BoundFunction extends ObjectValue {
-	constructor(func, env) {
-		super(env);
-		this.setPrototype(env.FunctionPrototype);
+	constructor(func, realm) {
+		super(realm);
+		this.setPrototype(realm.FunctionPrototype);
 		this.func = func;
 		this.boundArgs = [];
 	}
@@ -27,8 +27,8 @@ class BoundFunction extends ObjectValue {
 	}
 
 
-	*constructorOf(other, env) {
-		return yield * this.func.constructorOf(other, env);
+	*constructorOf(other, realm) {
+		return yield * this.func.constructorOf(other, realm);
 	}
 
 
@@ -58,11 +58,11 @@ class FunctionPrototype extends EasyObjectValue {
 	}
 
 	static *bind(thiz, args, s) {
-		let bthis = s.env.globalScope.object; //TODO: is this actually null in scrict mode?
+		let bthis = s.realm.globalScope.object; //TODO: is this actually null in scrict mode?
 		if ( args.length > 0 ) {
 			if ( args[0].jsTypeName !== 'undefined') bthis = args[0];
 		}
-		var out = new BoundFunction(thiz, this.env);
+		var out = new BoundFunction(thiz, this.realm);
 		if ( args.length > 1 ) out.boundArgs = args.slice(1);
 		out.boundThis = bthis;
 		return out;
@@ -81,7 +81,7 @@ class FunctionPrototype extends EasyObjectValue {
 		} else if ( thiz instanceof EasyObjectValue.EasyNativeFunction ) {
 			return this.fromNative('function() { [native code] }');
 		}
-		return CompletionRecord.makeTypeError(this.env, 'Function.prototype.toString is not generic');		
+		return CompletionRecord.makeTypeError(this.realm, 'Function.prototype.toString is not generic');		
 
 	}
 

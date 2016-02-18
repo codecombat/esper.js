@@ -8,8 +8,8 @@ const ObjectValue = require('./values/ObjectValue');
 const RegExpValue = require('./values/RegExpValue');
 
 class Evaluator {
-	constructor(env, n, s) {
-		this.env = env;
+	constructor(realm, n, s) {
+		this.realm = realm;
 		let that = this;
 		this.lastValue = null;
 		this.ast = n;
@@ -149,18 +149,18 @@ class Evaluator {
 	}
 
 	fromNative(native) {
-		return this.env.valueFromNative(native);
+		return this.realm.valueFromNative(native);
 	}
 
 	*resolveRef(n, s, create) {
 		switch (n.type) {
 			case "Identifier":
-				let iref = s.ref(n.name, s.env);
+				let iref = s.ref(n.name, s.realm);
 				if ( !iref ) {
 					if ( !create ) throw new ReferenceError(`${n.name} not defined`);
 					if ( s.strict ) throw new ReferenceError(`${n.name} not defined`);					
 					s.global.set(n.name, Value.undef);
-					iref = s.ref(n.name, s.env);
+					iref = s.ref(n.name, s.realm);
 				}
 				return iref;
 			case "MemberExpression":
@@ -180,7 +180,7 @@ class Evaluator {
 					throw new Error("Cant write property of non-object type: " + idx);
 				}
 
-				return ref.ref(idx, s.env);
+				return ref.ref(idx, s.realm);
 
 			default:
 				throw new Error("Couldnt resolve ref component: " + n.type);
@@ -194,13 +194,13 @@ class Evaluator {
 			result[i] = yield * this.branch(n.elements[i],s);
 		}
 		let ArrayValue = require('./values/ArrayValue');
-		return ArrayValue.make(result, this.env);
+		return ArrayValue.make(result, this.realm);
 	}
 
 	*evaluateAssignmentExpression(n,s) {
 		//TODO: Account for not-strict mode
 		let ref;
-		var env = s.env;
+		var realm = s.realm;
 		try {
 			ref = yield * this.resolveRef(n.left, s, n.operator === "=");
 		} catch ( e ) {
@@ -218,37 +218,37 @@ class Evaluator {
 				value = argument;
 				break;
 			case "+=":
-				value = yield * ref.value.add(argument, env);
+				value = yield * ref.value.add(argument, realm);
 				break;
 			case "-=":
-				value = yield * ref.value.subtract(argument, env);
+				value = yield * ref.value.subtract(argument, realm);
 				break;
 			case "*=":
-				value = yield * ref.value.multiply(argument, env);
+				value = yield * ref.value.multiply(argument, realm);
 				break;
 			case "/=":
-				value = yield * ref.value.divide(argument, env);
+				value = yield * ref.value.divide(argument, realm);
 				break;
 			case "%=":
-				value = yield * ref.value.mod(argument, env);
+				value = yield * ref.value.mod(argument, realm);
 				break;
 			case "<<=":
-				value = yield * ref.value.shiftLeft(argument, env);
+				value = yield * ref.value.shiftLeft(argument, realm);
 				break;
 			case ">>=":
-				value = yield * ref.value.shiftRight(argument, env);
+				value = yield * ref.value.shiftRight(argument, realm);
 				break;
 			case ">>>=":
-				value = yield * ref.value.shiftRightZF(argument, env);
+				value = yield * ref.value.shiftRightZF(argument, realm);
 				break;
 			case "|=":
-				value = yield * ref.value.bitOr(argument, env);
+				value = yield * ref.value.bitOr(argument, realm);
 				break;
 			case "&=":
-				value = yield * ref.value.bitAnd(argument, env);
+				value = yield * ref.value.bitAnd(argument, realm);
 				break;
 			case "^=":
-				value = yield * ref.value.bitXor(argument, env);
+				value = yield * ref.value.bitXor(argument, realm);
 				break;
 			default:
 				throw new Error("Unknown assignment operator: " + n.operator);
@@ -265,29 +265,29 @@ class Evaluator {
 	*evaulateBinaryExpression(n,s) {
 		let left = yield * this.branch(n.left,s);
 		let right = yield * this.branch(n.right,s);
-		var env = this.env;
+		var realm = this.realm;
 		switch ( n.operator ) {
-			case '==': return yield * left.doubleEquals(right, env);
-			case '!=': return yield * left.notEquals(right, env);
-			case '===': return yield * left.tripleEquals(right, env);
-			case '!==': return yield * left.doubleNotEquals(right, env);
-			case '+': return yield * left.add(right, env);
-			case '-': return yield * left.subtract(right, env);
-			case '*': return yield * left.multiply(right, env);
-			case '/': return yield * left.divide(right, env);
-			case '%': return yield * left.mod(right, env);
-			case '|': return yield * left.bitOr(right, env);
-			case '^': return yield * left.bitXor(right, env);
-			case '&': return yield * left.bitAnd(right, env);
-			case 'in': return yield * right.inOperator(left, env);
-			case 'instanceof': return yield * left.instanceOf(right, env);
-			case '>': return yield * left.gt(right, env);
-			case '<': return yield * left.lt(right, env);
-			case '>=': return yield * left.gte(right, env);
-			case '<=': return yield * left.lte(right, env);
-			case '<<': return yield * left.shiftLeft(right, env);
-			case '>>': return yield * left.shiftRight(right, env);
-			case '>>>': return yield * left.shiftRightZF(right, env);
+			case '==': return yield * left.doubleEquals(right, realm);
+			case '!=': return yield * left.notEquals(right, realm);
+			case '===': return yield * left.tripleEquals(right, realm);
+			case '!==': return yield * left.doubleNotEquals(right, realm);
+			case '+': return yield * left.add(right, realm);
+			case '-': return yield * left.subtract(right, realm);
+			case '*': return yield * left.multiply(right, realm);
+			case '/': return yield * left.divide(right, realm);
+			case '%': return yield * left.mod(right, realm);
+			case '|': return yield * left.bitOr(right, realm);
+			case '^': return yield * left.bitXor(right, realm);
+			case '&': return yield * left.bitAnd(right, realm);
+			case 'in': return yield * right.inOperator(left, realm);
+			case 'instanceof': return yield * left.instanceOf(right, realm);
+			case '>': return yield * left.gt(right, realm);
+			case '<': return yield * left.lt(right, realm);
+			case '>=': return yield * left.gte(right, realm);
+			case '<=': return yield * left.lte(right, realm);
+			case '<<': return yield * left.shiftLeft(right, realm);
+			case '>>': return yield * left.shiftRight(right, realm);
+			case '>>>': return yield * left.shiftRightZF(right, realm);
 			default:
 				throw new Error("Unknown binary operator: " + n.operator);
 		}
@@ -460,9 +460,9 @@ class Evaluator {
 
 		if ( n.left.type === "VariableDeclaration" ) {
 			s.assign(n.left.declarations[0].id.name, Value.undef);
-			ref = s.ref(n.left.declarations[0].id.name, s.env);
+			ref = s.ref(n.left.declarations[0].id.name, s.realm);
 		} else {
-			ref = s.ref(n.left.name, s.env);
+			ref = s.ref(n.left.name, s.realm);
 		}
 
 		var gen = function*() {
@@ -499,7 +499,7 @@ class Evaluator {
 
 	*evaulateLiteral(n,s) {
 		if ( n.regex ) {
-			return RegExpValue.make(new RegExp(n.regex.pattern, n.regex.flags), s.env);
+			return RegExpValue.make(new RegExp(n.regex.pattern, n.regex.flags), s.realm);
 		} else if ( n.value === null ) {
 			if ( this.raw === 'null' ) return this.fromNative(null);
 
@@ -536,19 +536,19 @@ class Evaluator {
 
 		if ( n.computed ) {
 			let right = yield * this.branch(n.property,s);
-			return yield * left.member(right.toNative(), this.env);
+			return yield * left.member(right.toNative(), this.realm);
 		} else if ( n.property.type == "Identifier") {
 			if ( !left ) throw `Cant index ${n.property.name} of undefined`;
-			return yield * left.member(n.property.name, this.env);
+			return yield * left.member(n.property.name, this.realm);
 		} else {
 			if ( !left ) throw `Cant index ${n.property.value.toString()} of undefined`;
-			return yield * left.member(n.property.value.toString(), this.env);
+			return yield * left.member(n.property.value.toString(), this.realm);
 		}
 	}
 
 	*evaluateObjectExpression(n,s) {
 		//TODO: Need to wire up native prototype
-		var nat = new ObjectValue(s.env);
+		var nat = new ObjectValue(s.realm);
 		for ( let i = 0; i < n.properties.length; ++i ) {
 			let prop = n.properties[i];
 			let key;

@@ -15,7 +15,7 @@ class NumberObject extends EasyObjectValue {
 		thiz.primativeValue = pv;
 	}
 
-	callPrototype(env) { return env.NumberPrototype; }
+	callPrototype(realm) { return realm.NumberPrototype; }
 
 	static get MAX_VALUE$cew() { return Number.MAX_VALUE; }
 	static get MIN_VALUE$cew() { return Number.MIN_VALUE; }

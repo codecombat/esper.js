@@ -16,10 +16,10 @@ class ClosureValue extends ObjectValue {
 	 */
 	constructor(func, scope) {
 		super(scope);
-		this.env = scope.env;
+		this.realm = scope.realm;
 		this.func = func;
 		this.scope = scope;
-		this.setPrototype(scope.env.FunctionPrototype);
+		this.setPrototype(scope.realm.FunctionPrototype);
 		this.properties['prototype'] = new Variable(new ObjectValue(scope));
 		this.properties['name'] = new Variable(this.fromNative(func.id ? func.id.name : undefined));
 		this.properties['length'] = new Variable(this.fromNative(func.params.length));
@@ -31,7 +31,7 @@ class ClosureValue extends ObjectValue {
 		return Value.createNativeBookmark(this);
 	}
 
-	debugString() { 
+	get debugString() { 
 		return "[Function]";
 	}
 
@@ -82,7 +82,7 @@ class ClosureValue extends ObjectValue {
 
 		let argn = Math.max(args.length, this.func.params.length);
 		let argvars = new Array(argn);
-		let args_obj = new ObjectValue(scope.env);
+		let args_obj = new ObjectValue(scope.realm);
 
 		for ( let i = 0; i < argn; ++i ) {
 			let vv = Value.undef;

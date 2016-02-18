@@ -15,13 +15,13 @@ class FunctionObject extends EasyObjectValue {
 		let code = 'function name(' + an.join(', ') + ') {\n' + args[args.length - 1].toNative().toString() + '\n}';
 		let ast;
 		try {
-			let oast = scope.env.parser(code, {loc: true});
+			let oast = scope.realm.parser(code, {loc: true});
 			ast = ASTPreprocessor.process(oast);
 		} catch ( e ) {
 			return new CompletionRecord(CompletionRecord.THROW, e);
 		}
 
-		return new ClosureValue(ast.body[0], scope.env.globalScope);
+		return new ClosureValue(ast.body[0], scope.realm.globalScope);
 	}
 
 	_init() {
@@ -32,8 +32,8 @@ class FunctionObject extends EasyObjectValue {
 		this.properties['constructor'] = cs;
 	}
 
-	callPrototype(env) { return env.FunctionPrototype; }
-	//objPrototype(env) { return env.Function; }
+	callPrototype(realm) { return realm.FunctionPrototype; }
+	//objPrototype(realm) { return realm.Function; }
 }
 
 module.exports = FunctionObject;

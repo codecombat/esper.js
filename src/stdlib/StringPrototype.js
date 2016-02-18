@@ -5,7 +5,7 @@ const CompletionRecord = require('../CompletionRecord');
 
 function wrapStringPrototype(name) {
 	let fx = String.prototype[name];
-	return function *(thiz, args, env) {
+	return function *(thiz, args, realm) {
 		let sv = yield * thiz.toStringValue();
 		var argz = new Array(args.length);
 		for ( let i = 0; i < args.length; ++i ) {
@@ -13,7 +13,7 @@ function wrapStringPrototype(name) {
 		}
 
 		let result = fx.apply(sv.toNative(), argz);
-		let nv = env.fromNative(result);
+		let nv = realm.fromNative(result);
 		return nv;
 	};
 }
