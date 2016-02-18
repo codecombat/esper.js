@@ -57,9 +57,11 @@ class FunctionPrototype extends EasyObjectValue {
 		return yield * thiz.call(vthis, arga, s);
 	}
 
-	static *bind(thiz, args) {
-		let bthis = Value.null;
-		if ( args.length > 0 ) bthis = args[0];
+	static *bind(thiz, args, s) {
+		let bthis = s.env.globalScope.object; //TODO: is this actually null in scrict mode?
+		if ( args.length > 0 ) {
+			if ( args[0].jsTypeName !== 'undefined') bthis = args[0];
+		}
 		var out = new BoundFunction(thiz, this.env);
 		if ( args.length > 1 ) out.boundArgs = args.slice(1);
 		out.boundThis = bthis;

@@ -147,6 +147,9 @@ class Value {
 		return nue;
 	}
 
+	*gte(other) { return this.fromNative((yield * this.toNumberNative()) >= (yield * other.toNumberNative())); }
+	*lte(other) { return this.fromNative((yield * this.toNumberNative()) <= (yield * other.toNumberNative())); }
+
 
 	/**
 	 * Is the value is truthy, i.e. `!!value`
@@ -185,6 +188,11 @@ class Value {
 		return Math.floor(nv.native);
 	}
 	
+	*toNumberNative() { 
+		let nv = yield * this.toNumberValue();
+		return nv.native;
+	}
+
 	*toPrimitiveValue(preferedType) { throw new Error('Unimplemented: Value#jsTypeName'); }
 	
 }

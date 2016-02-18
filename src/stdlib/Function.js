@@ -4,6 +4,7 @@ const EasyObjectValue = require('../values/EasyObjectValue');
 const ClosureValue = require('../values/ClosureValue');
 const CompletionRecord = require('../CompletionRecord');
 const ASTPreprocessor = require('../ASTPreprocessor');
+const Variable = require('../values/Variable');
 
 class FunctionObject extends EasyObjectValue {
 	*call(thiz, args, scope) {
@@ -21,6 +22,14 @@ class FunctionObject extends EasyObjectValue {
 		}
 
 		return new ClosureValue(ast.body[0], scope.env.globalScope);
+	}
+
+	_init() {
+		super._init();
+		let cs = new Variable(this);
+		cs.configurable = false;
+		cs.enumerable = false;
+		this.properties['constructor'] = cs;
 	}
 
 	callPrototype(env) { return env.FunctionPrototype; }

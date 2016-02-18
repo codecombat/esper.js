@@ -76,6 +76,9 @@ class Environment {
 		this.String = new (require('./stdlib/String'))(this);
 		this.Number = new (require('./stdlib/Number'))(this);
 
+		this.RegExpPrototype = new (require('./stdlib/RegExpPrototype'))(this);
+		this.RegExp = new (require('./stdlib/RegExp'))(this);
+
 		this.Esper = new (require('./stdlib/Esper'))(this);
 
 		/** @type {Value} */
@@ -103,6 +106,7 @@ class Environment {
 		scope.set('Function', this.Function);
 		scope.set('Array', this.Array);
 		scope.set('String', this.String);
+		scope.set('RegExp', this.RegExp);
 		scope.set('TypeError', this.fromNative(TypeError));
 		scope.set('SyntaxError', this.fromNative(SyntaxError));
 		scope.set('ReferenceError', this.fromNative(ReferenceError));

@@ -5,6 +5,7 @@ const CompletionRecord = require('./CompletionRecord');
 const RuntimeError = require('./RuntimeError');
 const ClosureValue = require('./values/ClosureValue');
 const ObjectValue = require('./values/ObjectValue');
+const RegExpValue = require('./values/RegExpValue');
 
 class Evaluator {
 	constructor(env, n, s) {
@@ -171,11 +172,11 @@ class Evaluator {
 				}
 
 				if ( !ref ) {
-					throw "Cant write property of undefined: " + idx;
+					throw new Error("Cant write property of undefined: " + idx);
 				}
 
 				if ( !ref.ref ) {
-					throw "Cant write property of non-object type: " + idx;
+					throw new Error("Cant write property of non-object type: " + idx);
 				}
 
 				return ref.ref(idx, s.env);
@@ -497,7 +498,7 @@ class Evaluator {
 
 	*evaulateLiteral(n,s) {
 		if ( n.regex ) {
-			return this.fromNative(new RegExp(n.regex.pattern, n.regex.flags));
+			return RegExpValue.make(new RegExp(n.regex.pattern, n.regex.flags), s.env);
 		} else if ( n.value === null ) {
 			if ( this.raw === 'null' ) return this.fromNative(null);
 

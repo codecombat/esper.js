@@ -115,7 +115,9 @@ class ObjectObject extends EasyObjectValue {
 	static *getPrototypeOf(thiz, args, s) {
 		let target = EasyObjectValue.undef;
 		if ( args.length > 0 ) target = args[0];
-		return target.getPrototype(s.env);
+		let proto = target.getPrototype(s.env);
+		if ( proto ) return proto;
+		return EasyObjectValue.null;
 	}
 }
 

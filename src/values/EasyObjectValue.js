@@ -58,7 +58,13 @@ class EasyObjectValue extends ObjectValue {
 			pt.enumerable = false;
 			this.properties['prototype'] = pt;
 		}
-		
+		if ( env.Function ) {
+			let cs = new Variable(env.Function);
+			cs.configurable = false;
+			cs.enumerable = false;
+			this.properties['constructor'] = cs;
+		}
+
 	}
 
 	get jsTypeName() { return typeof this.call === "function" ? 'function' : 'object'; }
