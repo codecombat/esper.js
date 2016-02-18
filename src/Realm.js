@@ -65,10 +65,13 @@ class Realm {
 		
 		this.Function = new (require('./stdlib/Function'))(this);
 
-		/** @type {Value} */
+		/** @type {Math} */
 		this.Math = new (require('./stdlib/Math.js'))(this);
 
+		/** @type {NumberPrototype} */
 		this.NumberPrototype = new (require('./stdlib/NumberPrototype'))(this);
+
+		/** @type {StringPrototype} */
 		this.StringPrototype = new (require('./stdlib/StringPrototype'))(this);
 
 		this.ArrayPrototype = new (require('./stdlib/ArrayPrototype'))(this);
@@ -101,7 +104,7 @@ class Realm {
 		//scope.set('JSON', this.fromNative(JSON));
 		scope.set('Esper', this.Esper);
 		scope.set('Math', this.Math);
-		scope.set('parseInt', this.fromNative(parseInt));
+		
 		scope.set('Number', this.Number);
 		scope.set('Object', this.Object);
 		scope.set('Function', this.Function);
@@ -113,7 +116,12 @@ class Realm {
 		scope.set('ReferenceError', this.fromNative(ReferenceError));
 		scope.set('RangeError', this.fromNative(RangeError));		
 		scope.set('Error', this.fromNative(Error));
-		scope.set('isNaN', this.fromNative(isNaN));
+
+		scope.set('parseInt', EasyNativeFunction.makeForNative(this, parseInt));
+		scope.set('parseFloat', EasyNativeFunction.makeForNative(this, parseFloat));
+		scope.set('isNaN', EasyNativeFunction.makeForNative(this, isNaN));
+		scope.set('isFinite', EasyNativeFunction.makeForNative(this, isFinite));
+
 		//scope.set('Date', this.fromNative(Date));
 		scope.set('eval', new EvalFunction(this));
 		scope.set('assert', new (require('./stdlib/Assert'))(this));
