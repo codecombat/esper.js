@@ -170,7 +170,7 @@ class ObjectValue extends Value {
 	get debugString() { 
 		let strProps = ['{','[', this.clazz,']'];
 		if ( this.proto ) {
-			strProps.push('[[Prototype]]: ', this.proto.clazz);
+			strProps.push('[[Prototype]]: ', this.proto.wellKnownName || this.proto.clazz);
 		}
 		for ( let n in this.properties ) {
 			if ( !Object.prototype.hasOwnProperty.call(this.properties, n) ) continue;
@@ -213,7 +213,6 @@ class ObjectValue extends Value {
 
 	*toStringValue() { 
 		let prim = yield * this.toPrimitiveValue('string');
-		console.log(typeof prim, prim);
 		let gen = prim.toStringValue();
 		return yield * gen;
 	}

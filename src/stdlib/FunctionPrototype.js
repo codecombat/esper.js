@@ -89,5 +89,7 @@ class FunctionPrototype extends EasyObjectValue {
 
 }
 
+FunctionPrototype.prototype.wellKnownName = '%FunctionPrototype%';
+
 
 module.exports = FunctionPrototype;

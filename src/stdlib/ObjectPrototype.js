@@ -55,5 +55,6 @@ class ObjectPrototype extends EasyObjectValue {
 	}
 
 }
+ObjectPrototype.prototype.wellKnownName = '%ObjectPrototype%';
 
 module.exports = ObjectPrototype;

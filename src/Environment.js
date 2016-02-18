@@ -10,6 +10,7 @@ const esprima = require('esprima');
 const CompletionRecord = require('./CompletionRecord');
 const ObjectValue = require('./values/ObjectValue');
 const ASTPreprocessor = require('./ASTPreprocessor');
+const EasyNativeFunction = require('./values/EasyNativeFunction');
 
 class EvalFunction extends ObjectValue {
 
@@ -82,7 +83,7 @@ class Environment {
 		scope.object.clazz = "global";
 		scope.strict = options.strict || false;
 		let that = this;
-		var printer = this.fromNative(function() {
+		var printer = EasyNativeFunction.makeForNative(this, function() {
 			that.print.apply(that, arguments);
 		});
 		scope.set('print', printer);

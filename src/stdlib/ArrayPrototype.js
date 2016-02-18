@@ -12,19 +12,17 @@ function *getLength(v) {
 var defaultSeperator = EasyObjectValue.fromNative(',');
 
 class ArrayPrototype extends EasyObjectValue {
-	*call(thiz, args) {
-		return this.fromNative("Ok?");
-	}
 
-	callPrototype(env) { return env.ArrayPrototype; }
+
+	//callPrototype(env) { return env.ObjectPrototype; }
 	//objPrototype(env) { return env.Function; }
 	
-	static *forEach(thiz, args) {
+	static *forEach$e(thiz, args) {
 		console.log("Arrayt#foreach called");
 		return new ObjectValue(this.env);
 	}
 
-	static *indexOf(thiz, args) {
+	static *indexOf$e(thiz, args) {
 		//TODO: Call ToObject() on thisz;
 		let l = yield * getLength(thiz);
 		let match = args[0] || EasyObjectValue.undef;
@@ -45,7 +43,7 @@ class ArrayPrototype extends EasyObjectValue {
 		return this.fromNative(-1);
 	}
 
-	static *lastIndexOf(thiz, args) {
+	static *lastIndexOf$e(thiz, args) {
 		//TODO: Call ToObject() on thisz;
 		let l = yield * getLength(thiz);
 		let match = args[0] || EasyObjectValue.undef;
@@ -66,13 +64,13 @@ class ArrayPrototype extends EasyObjectValue {
 	}
 
 
-	static *push(thiz, args) {
+	static *push$e(thiz, args) {
 		let l = yield * getLength(thiz);
 		thiz.assign(l, args[0]);
 		return this.fromNative(l+1);
 	}
 
-	static *join(thiz, args) {
+	static *join$e(thiz, args) {
 		//TODO: Call ToObject() on thisz;
 		let l = yield * getLength(thiz);
 		let seperator = args[0] || defaultSeperator;
@@ -86,7 +84,7 @@ class ArrayPrototype extends EasyObjectValue {
 		return this.fromNative(strings.join(sepstr));
 	}
 
-	static *slice(thiz, args, s) {
+	static *slice$e(thiz, args, s) {
 		//TODO: Call ToObject() on thisz;
 		let length = yield * getLength(thiz);
 		let result = [];
@@ -109,7 +107,7 @@ class ArrayPrototype extends EasyObjectValue {
 		return ArrayValue.make(result, s.env);
 	}
 
-	static *toString(thiz, args) {
+	static *toString$e(thiz, args) {
 		let joinfn = yield * thiz.member('join');
 		if ( !joinfn || !joinfn.isCallable ) {
 			let ots = yield * this.env.ObjectPrototype.member('toString');
@@ -120,6 +118,7 @@ class ArrayPrototype extends EasyObjectValue {
 		
 	}
 }
-ArrayPrototype.prototype.clazz = 'Array';
+
+ArrayPrototype.prototype.wellKnownName = '%ArrayPrototype%';
 
 module.exports = ArrayPrototype;

@@ -74,7 +74,7 @@ class BridgeValue extends Value {
 
 
 	*observableProperties() {
-		for ( var p in this.native ) {
+		for ( let p in this.native ) {
 			yield this.fromNative(p);
 		}
 		return;

@@ -5,38 +5,11 @@ const Value = require('../Value');
 const Variable = require('./Variable');
 const ObjectValue = require('./ObjectValue');
 const CompletionRecord = require('../CompletionRecord');
-
-class EasyNativeFunction extends ObjectValue {
-	constructor(env) {
-		super(env);
-		this.setPrototype(env.FunctionPrototype);
-	}
-
-	*call(thiz, argz) {
-		try {
-			let o = yield yield * this.fn.apply(this.binding, arguments);
-			if ( o instanceof CompletionRecord ) return o;
-			if ( !(o instanceof Value) ) o = this.fromNative(o);
-			return new CompletionRecord(CompletionRecord.NORMAL, o);
-		} catch ( e ) {
-			return new CompletionRecord(CompletionRecord.THROW, this.env.fromNative(e));
-		}
-	}
-
-	*makeThisForNew() {
-		return new CompletionRecord(CompletionRecord.THROW, "function is not a constructor");
-	}
-
-	get debugString() {
-		return 'function() { [Native Code] }';
-	}
-}
+const EasyNativeFunction = require('./EasyNativeFunction');
 
 class EasyObjectValue extends ObjectValue {
 	constructor(env) {
 		super(env);
-
-		
 
 		let objProto = env.ObjectPrototype;
 		if ( typeof this.objPrototype === "function" ) {
@@ -70,9 +43,7 @@ class EasyObjectValue extends ObjectValue {
 				if ( val instanceof Value ) v.value = val;
 				else v.value = this.fromNative(val);
 			} else {
-				var rb = new EasyNativeFunction(env);
-				rb.fn = d.value;
-				rb.binding = this;
+				let rb = EasyNativeFunction.make(env, d.value, this);
 				v.value = rb;
 			}
 			if ( flags.indexOf('e') !== -1 ) v.enumerable = false;

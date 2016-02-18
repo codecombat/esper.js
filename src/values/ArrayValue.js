@@ -46,18 +46,22 @@ class ArrayValue extends ObjectValue {
 	}
 
 	static make(vals, env) {
+
 		let av = new ArrayValue(env);
+		
+		av.set('length', Value.fromNative(0));
+		av.properties.length.enumerable = false;
+
 		for ( let i = 0; i < vals.length; ++i ) {
 			let v = vals[i];
-			if ( !(v instanceof Value) ) v = this.fromNative(v);
+			if ( !(v instanceof Value) ) v = env.fromNative(v);
 			av.set(i, v);
 		}
-		av.set('length', Value.fromNative(vals.length));
 		return av;
 	}
 
 	get debugString() {
-
+		if ( !this.properties.length ) return super.debugString;
 		let length = this.properties.length.value.native;
 		let r = new Array(length);
 		for ( let i = 0; i < length; ++i ) {
