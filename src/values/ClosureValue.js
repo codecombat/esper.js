@@ -31,7 +31,8 @@ class ClosureValue extends ObjectValue {
 		return Value.createNativeBookmark(this);
 	}
 
-	get debugString() { 
+	get debugString() {
+		if ( this.func.id.name ) return `[Function ${this.func.id.name}]`
 		return "[Function]";
 	}
 

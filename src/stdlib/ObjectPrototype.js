@@ -13,7 +13,7 @@ class ObjectPrototype extends EasyObjectValue {
 	}
 
 	static *hasOwnProperty$e(thiz, args) {
-		let name = yield * args[0].asString();
+		let name = yield * args[0].toStringNative();
 		if ( !(thiz instanceof ObjectValue) ) return Value.false;
 		else if ( thiz.hasOwnProperty(name) ) return Value.true;
 		return Value.false;

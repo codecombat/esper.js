@@ -120,9 +120,9 @@ class Value {
 		return Value.fromNative(other, this.realm);
 	}
 
-	*member(name) {
+	*member(name, realm) {
 		let err = "Can't access member " + name + " of that type: " + require('util').inspect(this);
-		return new CompletionRecord.makeTypeError(this.realm, err);
+		return CompletionRecord.makeTypeError(realm || this.realm, err);
 	}
 
 	*not() {

@@ -18,11 +18,23 @@ function *defObjectProperty(obj, name, desc, realm) {
 
 	let v = new PropertyDescriptor(value);
 
+
 	if ( desc.has('enumerable') ) {
 		let enu = yield * desc.member('enumerable', realm);
 		if ( !(enu instanceof EmptyValue) ) {
 			v.enumerable = enu.truthy;
 		}
+	} else {
+		v.enumerable = false;
+	}
+
+	if ( desc.has('writeable') ) {
+		let wri = yield * desc.member('writeable', realm);
+		if ( !(wri instanceof EmptyValue) ) {
+			v.writeable = enu.truthy;
+		}
+	} else {
+		v.writeable = false;
 	}
 
 	if ( desc.has('get') ) {
@@ -70,7 +82,8 @@ class ObjectObject extends EasyObjectValue {
 		if ( args.length > 1 ) {
 			let propsobj = args[1];
 			for ( let p of propsobj.observableProperties() ) {
-				let podesc = yield * propsobj.member(p);
+				let strval = p.native;
+				let podesc = yield * propsobj.member(strval, s.realm);
 				yield * defObjectProperty(v, p, podesc, s.realm);
 			}
 		}

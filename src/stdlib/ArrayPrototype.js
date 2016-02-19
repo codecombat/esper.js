@@ -198,7 +198,7 @@ class ArrayPrototype extends EasyObjectValue {
 			comp = function *(left, right) {
 				let res = yield * fx.call(Value.undef, [left, right], s);
 				return ( yield * res.lt(Value.fromNative(0)) ).truthy;
-			}
+			};
 		}
 
 		let nue = yield * sortValArray(vals, comp);
