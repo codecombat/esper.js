@@ -8,6 +8,27 @@ const Value = require('../Value');
 function *getLength(v) {
 	let m = yield * v.member('length');
 	return yield * m.toUIntNative();
+
+}
+
+function *sortValArray(arr, comp) {
+	if ( arr.length < 2 ) return arr;
+	let mid = Math.floor(arr.length / 2);
+	let left = yield * sortValArray(arr.slice(0,mid), comp);
+	let right = yield * sortValArray(arr.slice(mid, arr.length), comp);
+	return yield * mergeValArray(left, right, comp);
+}
+
+function *mergeValArray(l, r, comp) {
+	var result = [];
+	while ( l.length && r.length ) {
+		if ( yield * comp(l[0], r[0]) ) result.push(l.shift());
+		else result.push(r.shift());
+	}
+
+	while (l.length) result.push(l.shift());
+	while (r.length) result.push(r.shift());
+	return result;
 }
 
 var defaultSeperator = EasyObjectValue.fromNative(',');
@@ -157,6 +178,36 @@ class ArrayPrototype extends EasyObjectValue {
 
 
 		return ArrayValue.make(result, s.realm);
+	}
+
+	static *sort$e(thiz,args, s) {
+		let length = yield * getLength(thiz);
+		let vals = new Array(length);
+		for ( let i = 0; i < length; ++i ) {
+			vals[i] = yield * thiz.member(i);
+		}
+
+		let comp = function *(left, right) {
+			let l = yield * left.toStringValue();
+			let r = yield * right.toStringValue();
+			return (yield * l.lt(r)).truthy;
+		};
+
+		if ( args.length > 0 ) {
+			let fx = args[0];
+			comp = function *(left, right) {
+				let res = yield * fx.call(Value.undef, [left, right], s);
+				return ( yield * res.lt(Value.fromNative(0)) ).truthy;
+			}
+		}
+
+		let nue = yield * sortValArray(vals, comp);
+		console.log(nue);
+
+		for ( let i = 0; i < length; ++i ) {
+			thiz.assign(i, nue[i]);
+		}
+		return thiz;
 	}
 
 	static *toString$e(thiz, args) {

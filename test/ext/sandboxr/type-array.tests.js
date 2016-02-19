@@ -280,7 +280,7 @@ describe("Type: Array", () => {
 		});
 	});
 
-	xdescribe("Array.prototype.sort", () => {
+	describe("Array.prototype.sort", () => {
 		it("should return a reference to the array", done => {
 			runner.confirmBlock("var a = [1,2,3];a === a.sort()", done);
 		});
