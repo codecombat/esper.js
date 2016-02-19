@@ -30,11 +30,11 @@ class PropertyDescriptor {
 	}
 
 	*setValue(thiz, to) {
-		if ( !this.writeable ) return;
 		thiz = thiz || Value.null;
 		if ( this.getter ) {
 			return yield * this.setter.call(thiz, [to]);
 		}
+		if ( !this.writeable ) return this.value;
 		this.value = to;
 		return this.value;
 	}
