@@ -202,8 +202,6 @@ class ArrayPrototype extends EasyObjectValue {
 		}
 
 		let nue = yield * sortValArray(vals, comp);
-		console.log(nue);
-
 		for ( let i = 0; i < length; ++i ) {
 			thiz.assign(i, nue[i]);
 		}
