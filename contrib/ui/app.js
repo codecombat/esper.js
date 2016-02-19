@@ -104,7 +104,7 @@ myAppModule.controller('main', function ($scope, $timeout) {
 			return;
 		}
 		$scope.output = "";
-		epr.env.print = function() {
+		epr.realm.print = function() {
 			$scope.output += Array.prototype.join.call(arguments," ") + "\n";
 		};
 		delete $scope.error;
