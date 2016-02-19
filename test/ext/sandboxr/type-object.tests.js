@@ -112,7 +112,7 @@ describe("Type: Object", () => {
 		});
 	});
 
-	xdescribe("Object.getOwnPropertyNames", () => {
+	describe("Object.getOwnPropertyNames", () => {
 		it("should return an array", done => {
 			runner.confirmBlock("Array.isArray(Object.getOwnPropertyNames({}));", done);
 		});
@@ -139,15 +139,15 @@ describe("Type: Object", () => {
 			runner.confirmBlock("var a = {}; Object.defineProperty(a, 'foo', { value: 42 }); a.foo==42;", done);
 		});
 
-		xit("should allow getter to be defined", done => {
+		it("should allow getter to be defined", done => {
 			runner.confirmBlock("var a = {}; Object.defineProperty(a, 'foo', { get: function() { return 42; } });a.foo==42;", done);
 		});
 
-		xit("should allow a setter to be defined", done => {
+		it("should allow a setter to be defined", done => {
 			runner.confirmBlock("var a = {}, realValue = 1; Object.defineProperty(a, 'foo', { get: function () { return realValue; }, set: function (value) { realValue = value * 2; } });a.foo = 21;a.foo==42;", done);
 		});
 
-		xit("should use the correct context for the getter/setter", done => {
+		it("should use the correct context for the getter/setter", done => {
 			runner.confirmBlock("var a = {foo:true};Object.defineProperty(a, 'bar', { get: function () { return this.foo; } });a.bar==true;", done);
 		});
 	});

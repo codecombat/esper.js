@@ -14,12 +14,15 @@ class BridgeValue extends Value {
 	}
 
 	ref(name) {
+		let that = this;
 		let out = Object.create(null);
-		let str = (value) => this.native[name] = value.toNative();
+		let str = (value) => that.native[name] = value.toNative();
 		Object.defineProperty(out, 'value', {
 			get: () => this.fromNative(this.native[name]),
 			set: str
 		});
+		out.getValue = function *() { return that.native[name]; }
+		out.setValue = function *(to) { return str(to); }
 		out.set = str;
 
 		return out;

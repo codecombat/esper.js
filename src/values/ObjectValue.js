@@ -31,10 +31,12 @@ class ObjectValue extends Value {
 				delete this.properties[name];
 				return true;
 			};
+			ret.getValue = existing.getValue.bind(existing, this);
+			ret.setValue = existing.setValue.bind(existing, this);
 			Object.defineProperty(ret, 'value', {
 				get: () => existing.value,
-				set: (v, s) => {
-					this.assign(name, v, s);
+				set: (v) => {
+					this.assign(name, v);
 				}
 			});
 
@@ -43,10 +45,12 @@ class ObjectValue extends Value {
 			ret.del = () => false;
 			Object.defineProperty(ret, 'value', {
 				get: () => Value.undef,
-				set: (v, s) => {
-					this.assign(name, v, s);
+				set: (v) => {
+					this.assign(name, v);
 				}
 			});
+			ret.getValue = function *() { return Value.undef; };
+			ret.setValue = function *(to) { return ret.value = to; };
 		}
 		return ret;
 	}
@@ -126,7 +130,7 @@ class ObjectValue extends Value {
 
 	*member(name) { 
 		let ref = this.ref(name);
-		if ( ref ) return ref.value;
+		if ( ref ) return yield * ref.getValue(this);
 		return Value.undef;
 	}
 

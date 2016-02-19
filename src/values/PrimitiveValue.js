@@ -23,6 +23,8 @@ class PrimitiveValue extends Value {
 			get: () => pt.get(name),
 			set: str
 		});
+		out.getValue = function *() { yield * pt.member(name); };
+		out.setValue = function *(to) { };
 		out.set = str;
 
 		return out;

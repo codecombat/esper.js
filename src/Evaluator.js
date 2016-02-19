@@ -88,7 +88,7 @@ class Evaluator {
 					//TODO: Fix this nonsense:
 					let e = val.value.toNative();
 					let smallStack;
-					if ( e.stack ) smallStack = e.stack.split(/\n/).slice(0,2).join('\n');
+					if ( e.stack ) smallStack = e.stack.split(/\n/).slice(0,4).join('\n');
 					let stk = e.stack = this.buildStacktrace(e);
 					if ( smallStack ) stk += "\n-------------\n" + smallStack;
 					if ( e instanceof Error )  e.stack = stk;
@@ -213,49 +213,62 @@ class Evaluator {
 
 		let argument = yield * this.branch(n.right, s);
 		let value;
+		let cur;
 		switch ( n.operator ) {
 			case "=":
 				value = argument;
 				break;
 			case "+=":
-				value = yield * ref.value.add(argument, realm);
+				cur = yield * ref.getValue();
+				value = yield * cur.add(argument, realm);
 				break;
 			case "-=":
-				value = yield * ref.value.subtract(argument, realm);
+				cur = yield * ref.getValue();
+				value = yield * cur.subtract(argument, realm);
 				break;
 			case "*=":
-				value = yield * ref.value.multiply(argument, realm);
+				cur = yield * ref.getValue();
+				value = yield * cur.multiply(argument, realm);
 				break;
 			case "/=":
-				value = yield * ref.value.divide(argument, realm);
+				cur = yield * ref.getValue();
+				value = yield * cur.divide(argument, realm);
 				break;
 			case "%=":
-				value = yield * ref.value.mod(argument, realm);
+				cur = yield * ref.getValue();
+				value = yield * cur.mod(argument, realm);
 				break;
 			case "<<=":
-				value = yield * ref.value.shiftLeft(argument, realm);
+				cur = yield * ref.getValue();
+				value = yield * cur.shiftLeft(argument, realm);
 				break;
 			case ">>=":
-				value = yield * ref.value.shiftRight(argument, realm);
+				cur = yield * ref.getValue();
+				value = yield * cur.shiftRight(argument, realm);
 				break;
 			case ">>>=":
-				value = yield * ref.value.shiftRightZF(argument, realm);
+				cur = yield * ref.getValue();
+				value = yield * cur.shiftRightZF(argument, realm);
 				break;
 			case "|=":
-				value = yield * ref.value.bitOr(argument, realm);
+				cur = yield * ref.getValue();
+				value = yield * cur.bitOr(argument, realm);
 				break;
 			case "&=":
-				value = yield * ref.value.bitAnd(argument, realm);
+				cur = yield * ref.getValue();
+				value = yield * cur.bitAnd(argument, realm);
 				break;
 			case "^=":
-				value = yield * ref.value.bitXor(argument, realm);
+				cur = yield * ref.getValue();
+				value = yield * cur.bitXor(argument, realm);
 				break;
 			default:
 				throw new Error("Unknown assignment operator: " + n.operator);
 		}
 
-		if ( ref ) ref.set(value, s);
-		else {
+		if ( ref ) {
+			yield * ref.setValue(value, s);
+		} else {
 			s.assign(n.left.name, value, s);
 		}
 
@@ -677,13 +690,15 @@ class Evaluator {
 		} catch ( e ) {
 			return new CompletionRecord(CompletionRecord.THROW, this.fromNative(e));
 		}
-		let old = ref.value ? ref.value : Value.NaN;
+		let old = Value.nan;
+		if ( ref ) old = yield * ref.getValue();
+		if ( old === undefined ) old = Value.nan;
 		switch (n.operator) {
 			case "++": nue = yield * old.add(this.fromNative(1)); break;
 			case "--": nue = yield * old.subtract(this.fromNative(1)); break;
 			default: throw new Error("Unknown update expression type: " + n.operator);
 		}
-		if ( ref ) ref.value = nue;
+		if ( ref ) yield * ref.setValue(nue, s);
 
 		if ( n.prefix ) return nue;
 		return old;

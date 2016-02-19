@@ -18,9 +18,25 @@ function *defObjectProperty(obj, name, desc, realm) {
 
 	let v = new PropertyDescriptor(value);
 
-	let enu = yield * desc.member('enumerable', realm);
-	if ( !(enu instanceof EmptyValue) ) {
-		v.enumerable = enu.truthy;
+	if ( desc.has('enumerable') ) {
+		let enu = yield * desc.member('enumerable', realm);
+		if ( !(enu instanceof EmptyValue) ) {
+			v.enumerable = enu.truthy;
+		}
+	}
+
+	if ( desc.has('get') ) {
+		let get = yield * desc.member('get', realm);
+		if ( !(get instanceof EmptyValue) ) {
+			v.getter = get;
+		}
+	}
+
+	if ( desc.has('set') ) {
+		let set = yield * desc.member('set', realm);
+		if ( !(set instanceof EmptyValue) ) {
+			v.setter = set;
+		}
 	}
 
 	obj.rawSetProperty(name, v);
@@ -30,7 +46,7 @@ function *defObjectProperty(obj, name, desc, realm) {
 function *objOrThrow(i, realm) {
 	let val = i ? i : Value.undef;
 	if ( !(val instanceof ObjectValue) ) {
-		 return CompletionRecord.makeTypeError(realm, 'Need an object');
+		 return yield CompletionRecord.makeTypeError(realm, 'Need an object');
 	}
 	return val;
 }
@@ -112,6 +128,16 @@ class ObjectObject extends EasyObjectValue {
 		return ArrayValue.make(result, s.realm);
 	}
 
+	static *getOwnPropertyNames$e(thiz, args, s) {
+		let target = yield * objOrThrow(args[0], s.realm);
+		let result = [];
+		for ( let p in target.properties ) {
+			if ( !Object.hasOwnProperty.call(target.properties,p) ) continue;
+			result.push(this.fromNative(p));
+		}
+		return ArrayValue.make(result, s.realm);
+	}
+
 	static *getPrototypeOf(thiz, args, s) {
 		let target = EasyObjectValue.undef;
 		if ( args.length > 0 ) target = args[0];
@@ -119,6 +145,8 @@ class ObjectObject extends EasyObjectValue {
 		if ( proto ) return proto;
 		return EasyObjectValue.null;
 	}
+
+	toNativeCounterpart() { return Object; }
 }
 
 module.exports = ObjectObject;

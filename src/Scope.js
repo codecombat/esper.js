@@ -24,7 +24,20 @@ class Scope {
 	}
 
 	ref(name) {
-		return this.object.properties[name];
+		var vhar = this.object.properties[name];
+		if (!vhar) return undefined;
+		var that = this;
+		var o = {
+			setValue: vhar.setValue.bind(vhar, this),
+			getValue: vhar.getValue.bind(vhar, this),
+			set: (o, s) => vhar.value = o,
+			isVariable: true
+		};
+		Object.defineProperty(o, 'value', {
+			get: () => vhar.value,
+			set: (v) => vhar.value = v
+		});
+		return o;
 	}
 
 	add(name, value) {
@@ -64,7 +77,6 @@ class Scope {
 			return;
 		}
 		var v = new PropertyDescriptor(value, this);
-		v.del = () => this.delete(name);
 		this.properties[name] = v;
 	}
 
