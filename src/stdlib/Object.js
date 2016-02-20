@@ -100,13 +100,22 @@ class ObjectObject extends EasyObjectValue {
 
 	static *seal$e(thiz, args, s) {
 		let target = yield * objOrThrow(args[0], s.realm);
-		if (!(target instanceof ObjectValue) ) return CompletionRecord.makeTypeError(s.realm, 'Need an object');
+
 		target.extensable = false;
-		for ( let p in target.properties ) {
-			if ( !Object.prototype.hasOwnProperty.call(target.properties, p) ) continue;
+		for ( let p of Object.keys(target.properties) ) {
 			target.properties[p].configurable = false;
 		}
 		return target;
+	}
+
+	static *isSealed(thiz, args, s) {
+		let target = yield * objOrThrow(args[0], s.realm);
+		if ( target.extensable ) return Value.false;
+		for ( let p of Object.keys(target.properties) ) {
+			let ps = target.properties[p];
+			if ( ps.configurable ) return Value.false;
+		}
+		return Value.true;
 	}
 
 	static *freeze$e(thiz, args, s) {
@@ -120,6 +129,16 @@ class ObjectObject extends EasyObjectValue {
 		return target;
 	}
 
+	static *isFrozen(thiz, args, s) {
+		let target = yield * objOrThrow(args[0], s.realm);
+		if ( target.extensable ) return Value.false;
+		for ( let p of Object.keys(target.properties) ) {
+			let ps = target.properties[p];
+			if ( ps.configurable ) return Value.false;
+			if ( ps.writeable ) return Value.false;
+		}
+		return Value.true;
+	}
 
 	static *preventExtensions$e(thiz, args, s) {
 		let target = yield * objOrThrow(args[0], s.realm);

@@ -28,6 +28,7 @@ class ObjectValue extends Value {
 		if ( existing ) {
 			ret.isVariable = existing.isVariable;
 			ret.del = () => {
+				if ( !this.properties[name].configurable ) return false;
 				delete this.properties[name];
 				return true;
 			};
