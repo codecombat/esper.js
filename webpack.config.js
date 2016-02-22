@@ -77,7 +77,7 @@ console.log(entry);
 module.exports = cfg = {
 	entry: entry,
 	output: {
-		library: 'esper',
+		library: 'Esper',
 		libraryTarget: libraryTarget,
 		path: __dirname,
 		filename: file
