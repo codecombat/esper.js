@@ -31,6 +31,9 @@ class EasyObjectValue extends ObjectValue {
 			if ( p === 'name' ) continue;
 			if ( p === 'prototype' ) continue;
 			if ( p === 'constructor' ) continue;
+			if ( p === 'caller' ) continue;
+			if ( p === 'callee') continue;
+			if ( p === 'arguments' ) continue;
 			let parts = p.split(/\$/);
 			let name = parts[0];
 			let flags = parts[1] || '';

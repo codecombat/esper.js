@@ -36,7 +36,7 @@ describe("Type: Object", () => {
 		});
 	});
 
-	xdescribe("Object.freeze", () => {
+	describe("Object.freeze", () => {
 		it("should show isFrozen as false if not frozen", done => {
 			runner.confirmBlock("!Object.isFrozen({});", done);
 		});
@@ -80,7 +80,7 @@ describe("Type: Object", () => {
 		});
 	});
 
-	xdescribe("Object.seal", () => {
+	describe("Object.seal", () => {
 		it("should return the object being modified", done => {
 			runner.confirmBlock("var obj1={};var obj2=Object.seal(obj1);obj1===obj2;", done);
 		});
