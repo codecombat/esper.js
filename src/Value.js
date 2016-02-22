@@ -8,6 +8,7 @@ let cache = new WeakMap();
 let bookmarks = new WeakMap();
 let ObjectValue, PrimitiveValue, StringValue, NumberValue;
 
+let serial = 0;
 /**
  * Represents a value a variable could take.
  */
@@ -97,6 +98,7 @@ class Value {
 
 	constructor(realm) {
 		this.realm = realm;
+		this.serial = serial++;
 	}
 	
 
@@ -106,7 +108,7 @@ class Value {
 	 * @returns {*}
 	 */
 	toNative() {
-
+		throw new Error("Unimplemented: Value#toNative");
 	}
 
 	get debugString() { 

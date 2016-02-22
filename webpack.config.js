@@ -3,17 +3,21 @@ var webpack = require('webpack');
 
 var target;
 var profile = process.env.ESPER_PROFILE || 'web';
-
+var libraryTarget = 'umd';
 var args = process.argv.slice(0);
+var min = false;
+console.log(args);
 
 while ( args.length ) {
 	var opt = args.shift();
-	if ( !/^--[a-z]+=/.test(opt) ) continue;
+	if ( !/^--[a-z]+=?/.test(opt) ) continue;
 	var parts = opt.split(/=/,2);
 	switch ( parts[0] ) {
 		case '--profile':
 			profile = parts[1];
 			break;
+		case '--min':
+			min = true;
 	}
 }
 
@@ -24,6 +28,7 @@ var polyfill = [];
 switch ( profile ) {
 	case 'node':
 		target = 'node';
+		libraryTarget = 'umd';
 		break;
 	case 'lean':
 	case 'nashorn':
@@ -61,14 +66,19 @@ if ( profile != 'node' ) {
 }
 
 var cfg;
-var file = 'esper.js';
-if ( profile != 'web' ) file = 'esper.' + profile + '.js';
+var parts = ['esper'];
+if ( profile != 'web' ) parts.push(profile);
+if ( min ) parts.push('min');
+parts.push('js');
+var file = process.env.ESPER_PROFILE ? 'esper.js' : parts.join('.');
 
 var entry = polyfill.concat(['./src/index.js']);
 console.log(entry);
 module.exports = cfg = {
 	entry: entry,
 	output: {
+		library: 'esper',
+		libraryTarget: libraryTarget,
 		path: __dirname,
 		filename: file
 	},
@@ -84,12 +94,16 @@ module.exports = cfg = {
 		]
 	},
 	plugins: [
-		//new webpack.optimize.UglifyJsPlugin({minimize: true, beautify: 'beautify=false,semicolons=false,indent-level:1'})
-		//new webpack.optimize.UglifyJsPlugin({minimize: true})
+		
 	],
 	resolve: { alias: {} },
 	target: target
 };
+
+if ( min ) {
+	//new webpack.optimize.UglifyJsPlugin({minimize: true, beautify: 'beautify=false,semicolons=false,indent-level:1'})
+	cfg.plugins.push(new webpack.optimize.UglifyJsPlugin({minimize: true}));
+}
 
 if ( profile == 'nashorn' ) {
 	cfg.resolve.alias['esprima'] = path.join(__dirname, 'contrib', 'nash-esprima.js');

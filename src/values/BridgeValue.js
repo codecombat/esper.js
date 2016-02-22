@@ -21,8 +21,8 @@ class BridgeValue extends Value {
 			get: () => this.fromNative(this.native[name]),
 			set: str
 		});
-		out.getValue = function *() { return that.native[name]; }
-		out.setValue = function *(to) { return str(to); }
+		out.getValue = function *() { return that.native[name]; };
+		out.setValue = function *(to) { return str(to); };
 		out.set = str;
 
 		return out;

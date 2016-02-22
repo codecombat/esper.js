@@ -4,6 +4,7 @@ const EasyObjectValue = require('../values/EasyObjectValue');
 const ObjectValue = require('../values/ObjectValue');
 const ArrayValue = require('../values/ArrayValue');
 const Value = require('../Value');
+const _g = require('../GenDash');
 
 function *getLength(v) {
 	let m = yield * v.member('length');
@@ -11,25 +12,7 @@ function *getLength(v) {
 
 }
 
-function *sortValArray(arr, comp) {
-	if ( arr.length < 2 ) return arr;
-	let mid = Math.floor(arr.length / 2);
-	let left = yield * sortValArray(arr.slice(0,mid), comp);
-	let right = yield * sortValArray(arr.slice(mid, arr.length), comp);
-	return yield * mergeValArray(left, right, comp);
-}
 
-function *mergeValArray(l, r, comp) {
-	var result = [];
-	while ( l.length && r.length ) {
-		if ( yield * comp(l[0], r[0]) ) result.push(l.shift());
-		else result.push(r.shift());
-	}
-
-	while (l.length) result.push(l.shift());
-	while (r.length) result.push(r.shift());
-	return result;
-}
 
 var defaultSeperator = EasyObjectValue.fromNative(',');
 
@@ -201,7 +184,8 @@ class ArrayPrototype extends EasyObjectValue {
 			};
 		}
 
-		let nue = yield * sortValArray(vals, comp);
+		let nue = yield * _g.sort(vals, comp);
+		
 		for ( let i = 0; i < length; ++i ) {
 			thiz.assign(i, nue[i]);
 		}
