@@ -172,7 +172,7 @@ myAppModule.controller('main', function ($scope, $timeout) {
 				if ( f.ast ) o.node = f.ast.type;
 				if ( f.ast ) o.name = f.ast.srcName;
 				if ( f.ast ) o.loc = f.ast.loc.start.line + ":" + f.ast.loc.start.column;
-				if ( f.value ) o.value = f.value.toNative();
+				if ( f.value ) o.value = f.value.debugString;
 				if ( f.scope ) {
 					o.vars = readScope(f.scope);
 					o.vars['this'] = f.scope.thiz && JSON.stringify(f.scope.thiz.toString());

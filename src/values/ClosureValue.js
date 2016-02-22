@@ -32,7 +32,7 @@ class ClosureValue extends ObjectValue {
 	}
 
 	get debugString() {
-		if ( this.func.id.name ) return `[Function ${this.func.id.name}]`
+		if ( this.func && this.func.id ) return `[Function ${this.func.id.name}]`
 		return "[Function]";
 	}
 
