@@ -9,6 +9,7 @@ const Value = require('./Value');
 const esprima = require('esprima');
 const CompletionRecord = require('./CompletionRecord');
 const ObjectValue = require('./values/ObjectValue');
+const LinkValue = require('./values/LinkValue');
 const ASTPreprocessor = require('./ASTPreprocessor');
 const EasyNativeFunction = require('./values/EasyNativeFunction');
 
@@ -162,6 +163,10 @@ class Realm {
 	fromNative(native) {
 		return Value.fromNative(native, this);
 	}
+
+	makeLink(native) {
+		return LinkValue.make(native, this)
+;	}
 }
 
 module.exports = Realm;
