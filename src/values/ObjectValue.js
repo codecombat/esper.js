@@ -120,7 +120,8 @@ class ObjectValue extends Value {
 					var c = this.properties[p].value;
 					return c === undefined ? undefined : c.toNative();
 				},
-				set: (v) => { this.properties[p].value = Value.fromNative(v, this.realm); }
+				set: (v) => { this.properties[p].value = Value.fromNative(v, this.realm); },
+				enumerable: this.properties[p].enumerable, writeable: this.properties[p].writeable, configurable: this.properties[p].configurable
 			});
 		}
 		return bk;
