@@ -111,7 +111,19 @@ class ObjectValue extends Value {
 	}
 	
 	toNative() {
-		return Value.createNativeBookmark(this);
+		var bk = Value.createNativeBookmark(this);
+		for ( let p in this.properties ) {
+			if ( Object.prototype.hasOwnProperty.call(bk, p) ) continue;
+			//TODO: Worry about getter and setter functions.
+			Object.defineProperty(bk, p, {
+				get: () => {
+					var c = this.properties[p].value;
+					return c === undefined ? undefined : c.toNative();
+				},
+				set: (v) => { this.properties[p].value = Value.fromNative(v, this.realm); }
+			});
+		}
+		return bk;
 	}
 
 

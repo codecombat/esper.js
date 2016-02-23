@@ -119,6 +119,7 @@ class Engine {
 		var val = this.globalScope.get(name);
 		var realm = this.realm;
 		var scope = this.globalScope;
+		var that = this;
 		if ( !val ) return;
 
 		return function() {
@@ -130,8 +131,8 @@ class Engine {
 
 
 			let c = val.call(realThis, realArgs, scope);
-			let e = new Evaluator(realm, c, realm.globalScope);
-			let gen = e.generator();
+			that.evaluator.pushFrame({generator: c, type: 'program', scope: scope, ast: null});
+			let gen = that.evaluator.generator();
 
 			let value = gen.next();
 			let steps = 0;

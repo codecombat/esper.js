@@ -21,6 +21,10 @@ class LinkValue extends Value {
 		let wellKnown = realm.lookupWellKnown(native);
 		if ( wellKnown ) return wellKnown;
 
+		if ( Value.hasBookmark(native) ) {
+			return Value.getBookmark(native);
+		}
+
 		return new LinkValue(realm, native);
 	}
 

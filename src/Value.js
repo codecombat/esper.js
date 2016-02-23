@@ -29,6 +29,9 @@ class Value {
 		if ( typeof value === "boolean" ) return new PrimitiveValue(value);
 	}
 
+	static hasBookmark(native) { return bookmarks.has(native); }
+	static getBookmark(native) { return bookmarks.get(native); }
+
 	/**
 	 * Convert a native javascript value to a Value
 	 * @param {any} value - The value to convert
@@ -40,8 +43,8 @@ class Value {
 		//TODO: Implement a real envirionemnt
 		//TODO: Is this cache dangerous?
 
-		if ( bookmarks.has(value) ) {
-			return bookmarks.get(value);
+		if ( Value.hasBookmark(value) ) {
+			return Value.getBookmark(value);
 		}
 
 		if ( !cache.has(value) ) {
@@ -89,7 +92,7 @@ class Value {
 	static get zero() { return zero; }
 
 	static createNativeBookmark(v) {
-		var out = function Bookmark() { throw "Atempted to invoke bookmark for " + v.debugString; };
+		var out = function Bookmark() { throw new Error("Atempted to invoke bookmark for " + v.debugString); };
 		out.toString = function() { return v.debugString; };
 		out.inspect = function() { return v.debugString; };
 		bookmarks.set(out, v);
