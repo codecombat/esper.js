@@ -3,6 +3,7 @@
 const EasyObjectValue = require('../values/EasyObjectValue');
 const ObjectValue = require('../values/ObjectValue');
 const ArrayValue = require('../values/ArrayValue');
+const PrimitiveValue = require('../values/PrimitiveValue');
 const Value = require('../Value');
 const _g = require('../GenDash');
 
@@ -12,9 +13,7 @@ function *getLength(v) {
 
 }
 
-
-
-var defaultSeperator = EasyObjectValue.fromNative(',');
+var defaultSeperator = Value.fromNative(',');
 
 function *shiftRight(arr, start, amt) {
 	amt = amt || 1;
@@ -40,16 +39,135 @@ function *shiftLeft(arr, start, amt) {
 
 
 class ArrayPrototype extends EasyObjectValue {
-	
-	static *forEach$e(thiz, args) {
-		console.log("Array#foreach called");
-		return new ObjectValue(this.realm);
+
+	static *concat$e(thiz, args, s) {
+		let fx = Value.undef;
+		let targ = Value.undef;
+		if ( args.length > 0 ) fx = args[0];
+		if ( args.length > 1 ) targ = args[1];
+
+		var out = [];
+		var toCopy = [thiz].concat(args);
+
+		let idx = 0;
+		for ( let arr of toCopy ) {
+			if ( arr instanceof PrimitiveValue ) {
+				out[idx++] = arr;
+			} else {
+				let l = yield * getLength(arr);
+				for ( let i = 0; i < l; ++i ) {
+					let tv = yield * arr.member(i, s.realm);
+					out[idx++] = tv;
+				}
+			}
+		}	
+
+		return ArrayValue.make(out, s.realm);
+	}
+
+	static *filter$e(thiz, args, s) {
+		let fx = Value.undef;
+		let targ = Value.undef;
+		if ( args.length > 0 ) fx = args[0];
+		if ( args.length > 1 ) targ = args[1];
+
+		let test = function *(v) {
+			let res = yield * fx.call(targ, [v], s);
+			return res.truthy;
+		};
+
+		var out = [];
+
+		let l = yield * getLength(thiz);
+		for ( let i = 0; i < l; ++i ) {
+			let tv = yield * thiz.member(i);
+			let tru = yield * test(tv);
+			if ( tru ) out.push(tv);
+		}
+
+		return ArrayValue.make(out, s.realm);
+	}
+
+	static *every$e(thiz, args, s) {
+		let fx = Value.undef;
+		let targ = Value.undef;
+		if ( args.length > 0 ) fx = args[0];
+		if ( args.length > 1 ) targ = args[1];
+
+		let test = function *(v) {
+			let res = yield * fx.call(targ, [v], s);
+			return res.truthy;
+		};
+
+		let l = yield * getLength(thiz);
+		for ( let i = 0; i < l; ++i ) {
+			let tv = yield * thiz.member(i);
+			let tru = yield * test(tv);
+			if ( !tru ) return Value.false;
+		}
+
+		return Value.true;
+	}
+
+	static *some$e(thiz, args, s) {
+		let fx = Value.undef;
+		let targ = Value.undef;
+		if ( args.length > 0 ) fx = args[0];
+		if ( args.length > 1 ) targ = args[1];
+
+		let test = function *(v) {
+			let res = yield * fx.call(targ, [v], s);
+			return res.truthy;
+		};
+
+		let l = yield * getLength(thiz);
+		for ( let i = 0; i < l; ++i ) {
+			let tv = yield * thiz.member(i);
+			let tru = yield * test(tv);
+			if ( tru ) return Value.true;
+		}
+
+		return Value.false;
+	}
+
+	static *map$e(thiz, args, s) {
+		let fx = Value.undef;
+		let targ = Value.undef;
+		if ( args.length > 0 ) fx = args[0];
+		if ( args.length > 1 ) targ = args[1];
+
+		let l = yield * getLength(thiz);
+		let out = new Array(l);
+		for ( let i = 0; i < l; ++i ) {
+			let tv = yield * thiz.member(i);
+			let v = yield * fx.call(targ, [tv, Value.fromNative(i), thiz], s);
+			out[i] = v;
+		}
+
+
+		return ArrayValue.make(out, s.realm);
+	}
+
+	static *forEach$e(thiz, args, s) {
+		let fx = Value.undef;
+		let targ = Value.undef;
+		if ( args.length > 0 ) fx = args[0];
+		if ( args.length > 1 ) targ = args[1];
+
+		let l = yield * getLength(thiz);
+		for ( let i = 0; i < l; ++i ) {
+			if ( !thiz.has(i) ) continue;
+			let v = yield * thiz.member(i);
+			let res = yield * fx.call(targ, [v, Value.fromNative(i), thiz], s);
+		}
+
+		return Value.undef;
 	}
 
 	static *indexOf$e(thiz, args) {
 		//TODO: Call ToObject() on thisz;
 		let l = yield * getLength(thiz);
-		let match = args[0] || EasyObjectValue.undef;
+		let match = args[0] || Value.undef;
 		let start = args[1] || this.fromNative(0);
 		let startn = (yield * start.toNumberValue()).native;
 		
@@ -59,7 +177,7 @@ class ArrayPrototype extends EasyObjectValue {
 		if ( l > startn ) {
 			for ( let i = startn; i < l; ++i ) {
 				let v = yield * thiz.member(i);
-				if ( !v ) v = EasyObjectValue.undef;
+				if ( !v ) v = Value.undef;
 				if ( (yield * v.tripleEquals(match)).truthy ) return this.fromNative(i);
 				
 			}
@@ -70,7 +188,7 @@ class ArrayPrototype extends EasyObjectValue {
 	static *lastIndexOf$e(thiz, args) {
 		//TODO: Call ToObject() on thisz;
 		let l = yield * getLength(thiz);
-		let match = args[0] || EasyObjectValue.undef;
+		let match = args[0] || Value.undef;
 		let startn = l;
 		if ( args[1] ) startn = yield * args[1].toIntNative();
 		
@@ -79,7 +197,7 @@ class ArrayPrototype extends EasyObjectValue {
 
 		for ( let i = startn; i >= 0; --i ) {
 			let v = yield * thiz.member(i);
-			if ( !v ) v = EasyObjectValue.undef;
+			if ( !v ) v = Value.undef;
 			if ( (yield * v.tripleEquals(match)).truthy ) return this.fromNative(i);
 			
 		}
@@ -87,6 +205,19 @@ class ArrayPrototype extends EasyObjectValue {
 		return this.fromNative(-1);
 	}
 
+	static *join$e(thiz, args) {
+		//TODO: Call ToObject() on thisz;
+		let l = yield * getLength(thiz);
+		let seperator = args[0] || defaultSeperator;
+		let sepstr = (yield * seperator.toStringValue()).native;
+		let strings = [];
+		for ( let i = 0; i < l; ++i ) {
+			let v = yield * thiz.member(i);
+			if ( !v  ) strings[i] = '';
+			else strings[i] = (yield * v.toStringValue()).native;
+		}
+		return this.fromNative(strings.join(sepstr));
+	}
 
 	static *push$e(thiz, args) {
 		let l = yield * getLength(thiz);
@@ -104,6 +235,18 @@ class ArrayPrototype extends EasyObjectValue {
 		return val;
 	}
 
+	static *reverse$e(thiz, args, s) {
+		let l = yield * getLength(thiz);
+		for ( let i = 0; i < Math.floor(l/2); ++i ) {
+			let lv = yield * thiz.member(i);
+			let rv = yield * thiz.member(l-i-1);
+			yield * thiz.put(l-i-1, lv, s);
+			yield * thiz.put(i, rv, s);
+		}
+
+		return thiz;
+	}
+
 	static *shift$e(thiz, args) {
 		let l = yield * getLength(thiz);
 		if ( l < 1 ) return Value.undef;
@@ -111,29 +254,6 @@ class ArrayPrototype extends EasyObjectValue {
 		let val = yield * thiz.member(0);
 		yield * shiftLeft(thiz, 1, 1);
 		return val;
-	}
-
-	static *unshift$e(thiz, args) {
-		let amt = args.length;
-		yield * shiftRight(thiz, 0, amt);
-		for ( let i = 0; i < amt; ++i ) {
-			thiz.assign(i, args[i]);
-		}
-		return yield * getLength(thiz);
-	}
-
-	static *join$e(thiz, args) {
-		//TODO: Call ToObject() on thisz;
-		let l = yield * getLength(thiz);
-		let seperator = args[0] || defaultSeperator;
-		let sepstr = (yield * seperator.toStringValue()).native;
-		let strings = [];
-		for ( let i = 0; i < l; ++i ) {
-			let v = yield * thiz.member(i);
-			if ( !v  ) strings[i] = '';
-			else strings[i] = (yield * v.toStringValue()).native;
-		}
-		return this.fromNative(strings.join(sepstr));
 	}
 
 	static *slice$e(thiz, args, s) {
@@ -161,6 +281,46 @@ class ArrayPrototype extends EasyObjectValue {
 
 
 		return ArrayValue.make(result, s.realm);
+	}
+
+	static *splice$e(thiz, args, s) {
+		//TODO: Call ToObject() on thisz;
+
+
+		let result = [];
+
+		let start = 0;
+		let deleteCount = 0;
+		let len = yield * getLength(thiz);
+		
+		if ( isNaN(len) ) return thiz;
+
+		if ( args.length > 0 ) start = yield * args[0].toIntNative();
+		if ( args.length > 1 ) deleteCount = yield * args[1].toIntNative();
+
+		if ( start > len ) start = len;
+		else if ( start < 0 ) start = len - start;
+
+		if ( deleteCount > (len - start) ) deleteCount = len - start;
+		if ( deleteCount < 0 ) deleteCount = 0;
+
+		let deleted = [];
+		let toAdd = args.slice(2);
+		let delta = toAdd.length - deleteCount;
+
+		for ( let i = start; i < start + deleteCount; ++i ) {
+			deleted.push(yield * thiz.member(i));
+		}
+
+		if ( delta > 0 ) yield * shiftRight(thiz, start, delta);
+		if ( delta < 0 ) yield * shiftLeft(thiz, start - delta, -delta);
+
+		for ( let i = 0; i < toAdd.length; ++i ) {
+			yield * thiz.put(start + i, toAdd[i]);
+		}
+
+		
+		return ArrayValue.make(deleted, s.realm);
 	}
 
 	static *sort$e(thiz,args, s) {
@@ -202,8 +362,19 @@ class ArrayPrototype extends EasyObjectValue {
 		}
 		
 	}
+
+	static *unshift$e(thiz, args) {
+		let amt = args.length;
+		yield * shiftRight(thiz, 0, amt);
+		for ( let i = 0; i < amt; ++i ) {
+			thiz.assign(i, args[i]);
+		}
+		return yield * getLength(thiz);
+	}
+
 }
 
 ArrayPrototype.prototype.wellKnownName = '%ArrayPrototype%';
 
 module.exports = ArrayPrototype;
+

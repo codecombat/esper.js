@@ -12,7 +12,8 @@ describe("Jerry Tests", function() {
 		var file = files[i];
 		if ( !/.js$/.test(file) ) continue;
 
-		if ( 
+		if ( /array.prototype.(reverse|join|indexof)/.test(file) ) { } //Whitelist
+		else if ( 
 			/date|^array|array-prototype|string-prototype|-with-blocks|object-prototype|number-prototype|^object|regexp-|regression-|json|global|^func/.test(file) ||
 			/arguments|bitwise-logic|builtin-cons|delete|error|escape-|eval|for-in|get-value|labelled|compact-profile|strict|try-catch-finally|case-conversion/.test(file) 
 		) {

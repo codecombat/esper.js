@@ -72,6 +72,11 @@ class ASTPreprocessor {
 				break;
 			case "Identifier":
 				break;
+			case "ArrayExpression":
+				if ( ast.elements ) {
+					for ( let e of ast.elements ) yield * me(e);
+				}
+				break;
 			default:
 				
 				for (var p in ast) {
@@ -152,6 +157,10 @@ class ASTPreprocessor {
 
 	enterThisExpression(a) {
 		a.srcName = 'this';
+	}
+
+	exitArrayExpression(a) {
+		a.srcName = '[' + a.elements.map((e) => e.srcName).join() + ']';
 	}
 
 	enterFunction(a) {

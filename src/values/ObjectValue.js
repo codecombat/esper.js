@@ -79,6 +79,11 @@ class ObjectValue extends Value {
 		}
 	}
 
+	*put(name, value, s) {
+		var r = this.ref(name);
+		return yield * r.setValue(value, s);
+	}
+
 	get(name) {
 		let ref = this.properties[name];
 		if ( ref ) return ref.value;

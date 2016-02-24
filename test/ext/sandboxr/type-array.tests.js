@@ -116,7 +116,7 @@ describe("Type: Array", () => {
 		});
 	});
 
-	xdescribe("Array.prototype.splice", () => {
+	describe("Array.prototype.splice", () => {
 		it("should insert the item at the position specified", done => {
 			runner.confirmBlock("var a = ['angel', 'clown', 'mandarin', 'surgeon'];var b=a.splice(2, 0, 'drum');a[2]=='drum' && a.length==5 && b.length==0;", done);
 		});
@@ -138,7 +138,7 @@ describe("Type: Array", () => {
 		});
 	});
 
-	xdescribe("Array.prototype.concat", () => {
+	describe("Array.prototype.concat", () => {
 		it("should combine 2 arrays", done => {
 			runner.confirmBlock("var a = ['a', 'b', 'c'];var b=a.concat([1, 2, 3]);b.length==6 && b[3]==1;", done);
 		});
@@ -202,7 +202,7 @@ describe("Type: Array", () => {
 		});
 	});
 
-	xdescribe("Array.prototype.forEach", () => {
+	describe("Array.prototype.forEach", () => {
 		it("should iterate over the array", done => {
 			runner.confirmBlock("var counter=0;[1,2,3].forEach(function() { counter++; });counter==3;", done);
 		});
@@ -220,19 +220,19 @@ describe("Type: Array", () => {
 		});
 	});
 
-	xdescribe("Array.prototype.map", () => {
+	describe("Array.prototype.map", () => {
 		it("should return the mapped values", done => {
 			runner.confirmBlock("var a=[1,2,3].map(function (i) { return i * 2; });a.length==3 && a[0]==2 && a[2]==6;", done);
 		});
 	});
 
-	xdescribe("Array.prototype.filter", () => {
+	describe("Array.prototype.filter", () => {
 		it("should filter values from the array", done => {
 			runner.confirmBlock("var a=[12, 5, 8, 130, 44].filter(function (v) { return v >= 10; });a.length==3 && a[0]==12 && a[1]==130;", done);
 		});
 	});
 
-	xdescribe("Array.prototype.every", () => {
+	describe("Array.prototype.every", () => {
 		it("should return true for an empty array", done => {
 			runner.confirmBlock("[].every(function () { return true; });", done);
 		});
@@ -246,7 +246,7 @@ describe("Type: Array", () => {
 		});
 	});
 
-	xdescribe("Array.prototype.some", () => {
+	describe("Array.prototype.some", () => {
 		it("should return false for an empty array", done => {
 			runner.confirmBlock("!([].some(function() { return true; }));", done);
 		});
@@ -270,7 +270,7 @@ describe("Type: Array", () => {
 		});
 	});
 
-	xdescribe("Array.prototype.reverse", () => {
+	describe("Array.prototype.reverse", () => {
 		it("should reverse the items in the array", done => {
 			runner.confirmBlock("var a=['one', 'two', 'three'].reverse();a[0]=='three' && a[2]=='one';", done);
 		});
