@@ -46,8 +46,8 @@ class ObjectValue extends Value {
 			ret.del = () => false;
 			Object.defineProperty(ret, 'value', {
 				get: () => Value.undef,
-				set: (v) => {
-					this.assign(name, v);
+				set: (v, s) => {
+					this.assign(name, v, s);
 				}
 			});
 			ret.getValue = function *() { return Value.undef; };

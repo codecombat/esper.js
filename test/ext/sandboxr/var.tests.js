@@ -13,7 +13,7 @@ describe("Variables", () => {
 		it("should declare the variable", () => es6.confirmBlock("const a=true;a;"));
 		it("should keep value if reassigned", () => es6.confirmBlock("const a=1;a=2;a===1;"));
 		
-		xit("should throw TypeError on reasignment in strict mode", () => es6.confirmError("'use strict';const a=1;a=2;", TypeError));
+		it("should throw TypeError on reasignment in strict mode", () => es6.confirmError("'use strict';const a=1;a=2;", TypeError));
 	});
 	
 	describe("with `let`", () => {

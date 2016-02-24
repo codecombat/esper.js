@@ -13,6 +13,7 @@ class Scope {
 		this.strict = false;
 		this.realm = realm;
 		this.global = this;
+		this.writeTo = this.object;
 	}
 
 	/**
@@ -41,13 +42,13 @@ class Scope {
 	}
 
 	add(name, value) {
-		this.object.set(name, value);
+		this.writeTo.set(name, value);
 	}
 
 	addConst(name, value) {
-		this.object.set(name, value);
-		this.object.properties[name].writeable = false;
-		this.object.properties[name].configurable = false;
+		this.writeTo.set(name, value);
+		this.writeTo.properties[name].writeable = false;
+		this.writeTo.properties[name].configurable = false;
 	}
 
 	/**
@@ -56,7 +57,7 @@ class Scope {
 	 * @param {Value} value - Value to set
 	 */
 	set(name, value) {
-		this.object.set(name, value);
+		this.writeTo.set(name, value);
 	}
 
 	unset(name) {
@@ -77,7 +78,7 @@ class Scope {
 			return;
 		}
 		var v = new PropertyDescriptor(value, this);
-		this.properties[name] = v;
+		this.writeTo.properties[name] = v;
 	}
 
 	createChild() {

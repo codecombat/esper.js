@@ -21,7 +21,9 @@ class FunctionObject extends EasyObjectValue {
 			return new CompletionRecord(CompletionRecord.THROW, e);
 		}
 
-		return new ClosureValue(ast.body[0], scope.realm.globalScope);
+		let fn = new ClosureValue(ast.body[0], scope.global);
+		fn.boundScope = scope.global;
+		return fn;
 	}
 
 	_init() {

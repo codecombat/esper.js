@@ -753,7 +753,12 @@ class Evaluator {
 			let value = Value.undef;
 			if ( decl.init ) value = yield * this.branch(decl.init,s);
 			else if ( s.has(decl.id.name) ) continue;
+
 			s.add(decl.id.name, value);
+			//TODO: Wow is this hacky...
+			if ( kind === 'const' ) {
+				s.object.properties[decl.id.name].writeable = false;
+			} 
 		}
 		return Value.undef;
 	}

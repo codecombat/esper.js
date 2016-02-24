@@ -53,8 +53,16 @@ class ClosureValue extends ObjectValue {
 	*call(thiz, args, scope) {
 		//TODO: This way of scoping is entirelly wrong.
 		if ( !scope ) scope = this.scope;
-		let invokeScope = scope.createChild();
-		invokeScope.thiz = this.thiz || thiz;
+		let invokeScope;
+		if ( this.boundScope ) {
+			invokeScope = this.boundScope.createChild();
+			invokeScope.writeTo = this.boundScope.object;
+			invokeScope.thiz = this.thiz || /* thiz ||*/ this.boundScope.thiz;
+		} else {
+			invokeScope = scope.createChild();
+			invokeScope.thiz = this.thiz || thiz;
+		}
+
 		if ( this.func.strict === true ) invokeScope.strict = true;
 
 		let obj = this.scope.object;

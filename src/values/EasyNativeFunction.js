@@ -44,7 +44,7 @@ class EasyNativeFunction extends ObjectValue {
 	}
 
 	*makeThisForNew() {
-		return new CompletionRecord(CompletionRecord.THROW, new TypeError("function is not a constructor"));
+		return yield new CompletionRecord(CompletionRecord.THROW, new TypeError("function is not a constructor"));
 	}
 
 	get debugString() {

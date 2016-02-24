@@ -2,6 +2,7 @@
 /* @flow */
 
 const Value = require('../Value');
+const CompletionRecord = require('../CompletionRecord');
 
 let serial = 0;
 
@@ -29,12 +30,15 @@ class PropertyDescriptor {
 		return this.value;
 	}
 
-	*setValue(thiz, to) {
+	*setValue(thiz, to, s) {
 		thiz = thiz || Value.null;
 		if ( this.getter ) {
 			return yield * this.setter.call(thiz, [to]);
 		}
-		if ( !this.writeable ) return this.value;
+		if ( !this.writeable ) {
+			if ( !s || !s.strict ) return this.value;
+			return new CompletionRecord.makeTypeError(s.realm, "Can't write to non-writable value.");
+		}
 		this.value = to;
 		return this.value;
 	}

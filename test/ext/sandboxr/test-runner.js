@@ -6,7 +6,7 @@ const Engine = require('../../../src/index');
 function getRunner (code, options) {
 	let ast = parser.parse(code, options);
 	return new Engine().evalASTSync(ast);
-};
+}
 
 function wrapArgs (args) {
 	return args.map(arg => {
@@ -15,20 +15,19 @@ function wrapArgs (args) {
 }
 
 const es6 = {
-	confirmBlock (code) {
-		return getRunner(code, {ecmaVersion: 6});;
+	runBlock (code) { return getRunner(code); },
+
+	confirmBlock (code, done) {
+		let value = this.runBlock(code);
+		expect(value.toNative()).to.be.true;
+		done && done();
 	},
 	
 	confirmError (code, errType) {
 		try {
 			getRunner(code, {ecmaVersion: 6});
-
 			expect(false).to.be.true;
 		} catch (err) {
-			// if (typeof err === "object" && err.toNative) {
-			// 	err = err.toNative();
-			// }
-			
 			expect(err).to.be.instanceOf(errType);
 		}
 	},
@@ -39,10 +38,7 @@ const es6 = {
 };
 
 const es5 = {
-	runBlock (code) {
-		var p = getRunner(code);
-		return p;
-	},
+	runBlock (code) { return getRunner(code); },
 
 	confirmBlock (code, done) {
 		let value = this.runBlock(code);
