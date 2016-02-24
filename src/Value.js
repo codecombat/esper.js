@@ -92,7 +92,12 @@ class Value {
 	static get zero() { return zero; }
 
 	static createNativeBookmark(v) {
-		var out = function Bookmark() { throw new Error("Atempted to invoke bookmark for " + v.debugString); };
+		var out;
+		if ( typeof v.call === "function" ) {
+			out = function Bookmark() { throw new Error("Atempted to invoke bookmark for " + v.debugString); };
+		} else {
+			out = {};
+		}
 		out.toString = function() { return v.debugString; };
 		out.inspect = function() { return v.debugString; };
 		bookmarks.set(out, v);

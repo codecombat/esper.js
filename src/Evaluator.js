@@ -62,8 +62,10 @@ class Evaluator {
 			delete top.retValue;
 		}
 
+
 	 	result = top.generator.next(this.lastValue);
-		
+		if ( that.insterment ) that.insterment();
+
 		let val = result.value;
 		if ( Array.isArray(val) ) {
 			val.shift();
@@ -89,9 +91,14 @@ class Evaluator {
 					let e = val.value.toNative();
 					let smallStack;
 					if ( e.stack ) smallStack = e.stack.split(/\n/).slice(0,4).join('\n');
-					let stk = e.stack = this.buildStacktrace(e);
+					let stk = this.buildStacktrace(e);					
+
 					if ( smallStack ) stk += "\n-------------\n" + smallStack;
-					if ( e instanceof Error )  e.stack = stk;
+					if ( e instanceof Error ) {
+						e.stack = stk;
+						if ( this.frames[0] ) e.range = this.frames[0].ast.range;
+						if ( this.frames[0] ) e.loc = this.frames[0].ast.loc;
+					}
 
 					let tfr = this.unwindStack('catch', true);
 					if ( tfr ) {

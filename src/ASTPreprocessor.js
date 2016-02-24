@@ -150,6 +150,10 @@ class ASTPreprocessor {
 		if ( strict !== undefined ) a.strict = strict;
 	}
 
+	enterThisExpression(a) {
+		a.srcName = 'this';
+	}
+
 	enterFunction(a) {
 		this.funcStack.unshift(a);
 		let scope = Object.create(this.scopeStack[0]);

@@ -48,7 +48,7 @@ class Realm {
 	}
 
 	parser(code) {
-		return esprima.parse(code, {loc: true});
+		return esprima.parse(code, {loc: true, range: true});
 	}
 	
 	constructor(options) {

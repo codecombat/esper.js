@@ -115,32 +115,13 @@ class Engine {
 		this.globalScope.add(name, new BridgeValue(what, this.realm));
 	}
 
-	fetchFunctionSync(name) {
-		var val = this.globalScope.get(name);
-		var realm = this.realm;
-		var scope = this.globalScope;
-		var that = this;
-		if ( !val ) return;
-
+	fetchFunctionSync(name, shouldYield) {
+		var genfx = this.fetchFunction(name, shouldYield);
 		return function() {
-			var realThis = realm.makeLink(this);
-			var realArgs = new Array(arguments.length);
-			for ( let i = 0; i < arguments.length; ++i ) {
-				realArgs[i] = realm.makeLink(arguments[i]);
-			}
-
-
-			let c = val.call(realThis, realArgs, scope);
-			that.evaluator.pushFrame({generator: c, type: 'program', scope: scope, ast: null});
-			let gen = that.evaluator.generator();
-
-			let value = gen.next();
-			let steps = 0;
-			while ( !value.done ) {
-				value = gen.next();
-				if ( ++steps > 100000 ) throw "Inf loop. detected";
-			}
-			return value.value.toNative();
+			let gen = genfx.call(this, arguments);
+			let val = gen.next();
+			while (!val.done) val = gen.next();		
+			return val.value;	
 		};
 	}
 
@@ -165,6 +146,7 @@ class Engine {
 
 			let value = gen.next();
 			let steps = 0;
+
 			while ( !value.done ) {
 				if ( !shouldYield ) yield;
 				else {
@@ -173,7 +155,7 @@ class Engine {
 				}
 				value = gen.next();
 				if ( ++steps > 100000 ) throw "Inf loop. detected";
-			}
+			}		
 			return value.value.toNative();
 		};
 	}
