@@ -40,7 +40,7 @@ class PropertyDescriptor {
 				console.log("Wrote to const?!");
 				return this.value;
 			}
-			return new CompletionRecord.makeTypeError(s.realm, "Can't write to non-writable value.");
+			return yield CompletionRecord.makeTypeError(s.realm, "Can't write to non-writable value.");
 		}
 		this.value = to;
 		return this.value;
