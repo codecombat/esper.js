@@ -45,6 +45,16 @@ class ArrayValue extends ObjectValue {
 		super.assign(name, v);
 	}
 
+	toNative() {
+		let length = this.properties.length.value.native;
+		let out = new Array(length);
+		for ( let i = 0; i < length; ++i ) {
+			let po = this.properties[i];
+			if ( po && po.value ) out[i] = po.value.toNative();
+		}
+		return out;
+	}
+
 	static make(vals, realm) {
 
 		let av = new ArrayValue(realm);
