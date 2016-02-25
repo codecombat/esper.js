@@ -681,7 +681,7 @@ class Evaluator {
 		let result = yield this.branchFrame('catch', n.block, s);
 		if ( result instanceof CompletionRecord && result.type == CompletionRecord.THROW ) {
 			if ( !n.handler ) {
-				console.log("No catch..., throwing", result.obj);
+				//console.log("No catch..., throwing", result.obj);
 				return result;
 			}
 			let handlerScope = s.createChild();
@@ -725,8 +725,9 @@ class Evaluator {
 			}
 			if ( !ref ) return Value.false;
 			if ( ref.isVariable ) { return Value.false; }
-			ref.del();
-			return Value.true;
+			let worked = ref.del(s);
+			if ( worked instanceof CompletionRecord ) return yield worked;
+			return Value.fromNative(worked);
 		}
 
 		if ( n.operator === "typeof" ) {
@@ -756,11 +757,11 @@ class Evaluator {
 			if ( decl.init ) value = yield * this.branch(decl.init,s);
 			else if ( s.has(decl.id.name) ) continue;
 
-			s.add(decl.id.name, value);
-			//TODO: Wow is this hacky...
 			if ( kind === 'const' ) {
-				s.object.properties[decl.id.name].writeable = false;
-			} 
+				s.addConst(decl.id.name, value);
+			} else {
+				s.add(decl.id.name, value);
+			}
 		}
 		return Value.undef;
 	}

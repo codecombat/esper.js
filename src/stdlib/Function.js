@@ -35,6 +35,7 @@ class FunctionObject extends EasyObjectValue {
 	}
 
 	callPrototype(realm) { return realm.FunctionPrototype; }
+	get callLength() { return 1; }
 	//objPrototype(realm) { return realm.Function; }
 }
 

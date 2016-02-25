@@ -37,7 +37,6 @@ class PropertyDescriptor {
 		}
 		if ( !this.writable ) {
 			if ( !s || !s.strict ) {
-				console.log("Wrote to const?!");
 				return this.value;
 			}
 			return yield CompletionRecord.makeTypeError(s.realm, "Can't write to non-writable value.");

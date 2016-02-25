@@ -74,8 +74,8 @@ class ArrayPrototype extends EasyObjectValue {
 		if ( args.length > 0 ) fx = args[0];
 		if ( args.length > 1 ) targ = args[1];
 
-		let test = function *(v) {
-			let res = yield * fx.call(targ, [v], s);
+		let test = function *(v, i) {
+			let res = yield * fx.call(targ, [v, Value.fromNative(i), thiz], s);
 			return res.truthy;
 		};
 
@@ -84,7 +84,7 @@ class ArrayPrototype extends EasyObjectValue {
 		let l = yield * getLength(thiz);
 		for ( let i = 0; i < l; ++i ) {
 			let tv = yield * thiz.member(i);
-			let tru = yield * test(tv);
+			let tru = yield * test(tv, i);
 			if ( tru ) out.push(tv);
 		}
 
@@ -149,7 +149,6 @@ class ArrayPrototype extends EasyObjectValue {
 			out[i] = v;
 		}
 
-		console.log(out);
 		return ArrayValue.make(out, s.realm);
 	}
 
@@ -194,13 +193,19 @@ class ArrayPrototype extends EasyObjectValue {
 		//TODO: Call ToObject() on thisz;
 		let l = yield * getLength(thiz);
 		let match = args[0] || Value.undef;
-		let startn = l;
-		if ( args[1] ) startn = yield * args[1].toIntNative();
-		
-		if ( isNaN(startn) ) startn = l;
-		else if ( startn < 0 ) startn = l + startn;
+		let startn = l-1;
+
+		if ( args.length > 1 ) startn = yield * args[1].toIntNative();
+		if ( isNaN(startn) ) startn = 0;
+		if ( startn < 0 ) startn += l;
+		if ( startn > l ) startn = l;
+		if ( startn < 0 ) return this.fromNative(-1);
+
+	
+		//if ( isNaN(startn) ) startn = l - 1;
 
 		for ( let i = startn; i >= 0; --i ) {
+			if ( !thiz.has(i) ) continue;
 			let v = yield * thiz.member(i);
 			if ( !v ) v = Value.undef;
 			if ( (yield * v.tripleEquals(match)).truthy ) return this.fromNative(i);
@@ -215,11 +220,15 @@ class ArrayPrototype extends EasyObjectValue {
 		let l = yield * getLength(thiz);
 		let seperator = args[0] || defaultSeperator;
 		let sepstr = (yield * seperator.toStringValue()).native;
-		let strings = [];
+		let strings = new Array(l);
 		for ( let i = 0; i < l; ++i ) {
+			if ( !thiz.has(i) ) continue;
 			let v = yield * thiz.member(i);
-			if ( !v  ) strings[i] = '';
+			if ( !v ) strings[i] = '';
 			else {
+				if ( v.jsTypeName == 'undefined' ) {
+					continue;
+				}
 				let sv = (yield * v.toStringValue());
 				if ( sv ) strings[i] = sv.native;
 				else strings[i] = undefined; //TODO: THROW HERE?

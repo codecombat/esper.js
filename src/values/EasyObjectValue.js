@@ -39,6 +39,7 @@ class EasyObjectValue extends ObjectValue {
 			let flags = parts[1] || '';
 			let d = Object.getOwnPropertyDescriptor(clazz.constructor, p);
 			let v = new PropertyDescriptor();
+			let length = 1;
 
 			if ( d.get ) {
 				//Its a property
@@ -46,12 +47,22 @@ class EasyObjectValue extends ObjectValue {
 				if ( val instanceof Value ) v.value = val;
 				else v.value = this.fromNative(val);
 			} else {
+				if ( d.value.esperLength !== undefined ) length = d.value.esperLength;
 				let rb = EasyNativeFunction.make(realm, d.value, this);
+				let rblen = new PropertyDescriptor(Value.fromNative(length));
+				rblen.configurable = false;
+				rblen.writable = false;
+				rblen.enumerable = false;
+				rb.properties['length'] = rblen;
 				v.value = rb;
 			}
 			if ( flags.indexOf('e') !== -1 ) v.enumerable = false;
 			if ( flags.indexOf('w') !== -1 ) v.writable = false;
 			if ( flags.indexOf('c') !== -1 ) v.configurable = false;
+			if ( flags.indexOf('g') !== -1 ) {
+				v.getter = v.value;
+				delete v.value;
+			}
 			this.properties[name] = v;
 		}
 
@@ -61,6 +72,15 @@ class EasyObjectValue extends ObjectValue {
 			pt.enumerable = false;
 			this.properties['prototype'] = pt;
 		}
+
+		if ( this.callLength !== undefined ) {
+			let rblen = new PropertyDescriptor(Value.fromNative(this.callLength));
+			rblen.configurable = false;
+			rblen.writable = false;
+			rblen.enumerable = false;
+			this.properties['length'] = rblen;	
+		}
+
 		if ( realm.Function ) {
 			let cs = new PropertyDescriptor(realm.Function);
 			cs.configurable = false;

@@ -1,7 +1,7 @@
 const runner = require('./test-runner').es5;
 
 describe("JSON", () => {
-	describe("stringify", () => {
+	xdescribe("stringify", () => {
 		it("should process string as expected", () => {
 			runner.confirmBlock("JSON.stringify('foo')=='\"foo\"'");
 		});
@@ -63,7 +63,7 @@ describe("JSON", () => {
 		});
 	});
 
-	describe("parse", () => {
+	xdescribe("parse", () => {
 		it("should parse null correctly", () => {
 			runner.confirmBlock("JSON.parse('null')===null;");
 		});

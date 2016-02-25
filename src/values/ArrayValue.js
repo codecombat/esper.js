@@ -20,12 +20,6 @@ class ArrayValue extends ObjectValue {
 		return yield * super.member(name, realm);
 	}
 
-	*doubleEquals(other) { 
-		
-		return Value.false;
-
-	}
-
 	adjustLength(name) {
 		if ( !isNaN(parseInt(name)) ) {
 			let length = this.properties.length.value.native;
@@ -40,15 +34,20 @@ class ArrayValue extends ObjectValue {
 		super.set(name, v);
 	}
 
+	put(name, v) {
+		this.adjustLength(name);
+		return super.put(name, v);
+	}
+
 	assign(name, v) {
 		this.adjustLength(name);
 		super.assign(name, v);
 	}
 
 	toNative() {
-		let length = this.properties.length.value.native;
-		let out = new Array(length);
-		for ( let i = 0; i < length; ++i ) {
+		let out = new Array();
+
+		for ( let i of Object.keys(this.properties)) {
 			let po = this.properties[i];
 			if ( po && po.value ) out[i] = po.value.toNative();
 		}
@@ -73,13 +72,15 @@ class ArrayValue extends ObjectValue {
 	get debugString() {
 		if ( !this.properties.length ) return super.debugString;
 		let length = this.properties.length.value.native;
-		let r = new Array(length);
-		for ( let i = 0; i < length; ++i ) {
-			let v = this.properties[i].value;
-			if ( v ) r[i] = v.debugString;
+
+		let loop = Math.min(length, 20);
+		let r = new Array(loop);
+		for ( let i = 0; i < loop; ++i ) {
+			let po = this.properties[i];
+			if ( po && po.value ) r[i] = po.value.debugString;
 			else r[i] = '';
 		}
-		return '[' + r.join(', ') + ']';
+		return '[' + r.join(', ') + ( loop < length ? '...' : '' ) + ']';
 	}
 }
 

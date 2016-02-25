@@ -47,7 +47,7 @@ class Scope {
 
 	addConst(name, value) {
 		this.writeTo.set(name, value);
-		this.writeTo.properties[name].writeable = false;
+		this.writeTo.properties[name].writable = false;
 		this.writeTo.properties[name].configurable = false;
 	}
 

@@ -2,20 +2,27 @@
 
 const EasyObjectValue = require('../values/EasyObjectValue');
 const CompletionRecord = require('../CompletionRecord');
+const EmptyValue = require('../values/EmptyValue');
+const _g = require('../GenDash');
 
 function wrapStringPrototype(name) {
 	let fx = String.prototype[name];
-	return function *(thiz, args, realm) {
-		let sv = yield * thiz.toStringValue();
+	let genfx = function *(thiz, args, s) {
+		if ( thiz instanceof EmptyValue ) {
+			return yield CompletionRecord.makeTypeError(s.realm, new TypeError('called String function on null or undefined?'));	
+		}
+		let sv = yield * thiz.toStringValue(s.realm);
 		var argz = new Array(args.length);
 		for ( let i = 0; i < args.length; ++i ) {
 			argz[i] = args[i].toNative();
 		}
 
 		let result = fx.apply(sv.toNative(), argz);
-		let nv = realm.fromNative(result);
+		let nv = s.realm.fromNative(result);
 		return nv;
 	};
+	genfx.esperLength = fx.length;
+	return genfx;
 }
 
 class StringPrototype extends EasyObjectValue {
@@ -30,6 +37,12 @@ class StringPrototype extends EasyObjectValue {
 		throw new TypeError('Couldnt get there.');
 	}	
 
+	static *concat(thiz, args, realm) {
+		let base = yield * thiz.toStringNative();
+		let real_args = yield * _g.map(args, function*(v) { return yield * v.toStringNative(); });
+		let out = String.prototype.concat.apply(base, real_args);
+		return realm.fromNative(out);
+	}
 
 	static *toString(thiz) {
 		return yield * StringPrototype.valueOf(thiz);
@@ -38,7 +51,6 @@ class StringPrototype extends EasyObjectValue {
 
 StringPrototype.charAt = wrapStringPrototype('charAt');
 StringPrototype.charCodeAt = wrapStringPrototype('charCodeAt');
-StringPrototype.concat = wrapStringPrototype('concat');
 StringPrototype.substring = wrapStringPrototype('substring');
 StringPrototype.substr = wrapStringPrototype('substr');
 StringPrototype.split = wrapStringPrototype('split');

@@ -98,8 +98,10 @@ class Value {
 		} else {
 			out = {};
 		}
-		out.toString = function() { return v.debugString; };
-		out.inspect = function() { return v.debugString; };
+		Object.defineProperties(v, {
+			toString: {value: function() { return v.debugString; }, writable: true},
+			inspect: {value: function() { return v.debugString; }, writable: true},
+		});
 		bookmarks.set(out, v);
 		return out;
 	}
@@ -137,6 +139,14 @@ class Value {
 
 	*not() {
 		return !this.truthy ? Value.true : Value.false;
+	}
+
+	*unaryPlus() {
+		return Value.fromNative(+(yield * this.toNumberValue()));
+	}
+
+	*unaryMinus() {
+		return Value.fromNative(-(yield * this.toNumberValue()));
 	}
 
 	*typeOf() {

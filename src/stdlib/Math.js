@@ -1,6 +1,7 @@
 "use strict";
 
 const EasyObjectValue = require('../values/EasyObjectValue');
+const Value = require('../Value');
 
 function makeNumber(num) {
 	return 0 + num.toNative();
@@ -15,8 +16,9 @@ function wrapMathFunction(name) {
 			if ( i < args.length ) argz[i] = args[i].toNative();
 			else argz[i] = undefined;
 		}
+
 		let result = fn.apply(Math, argz);
-		return realm.fromNative(result);
+		return Value.fromPrimativeNative(result);
 	};
 
 }

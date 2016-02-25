@@ -26,10 +26,16 @@ class EvalFunction extends ObjectValue {
 			let oast = scope.realm.parser(code, {loc: true});
 			ast = ASTPreprocessor.process(oast);
 		} catch ( e ) {
-			var eo = e;
-			if ( eo.description == "Invalid left-hand side in assignment" ) eo = new ReferenceError(eo.description);
+			var eo;
+
+			if ( e.description == "Invalid left-hand side in assignment" ) eo = new ReferenceError(e.description, e.fileName, e.lineNumber);
+			else eo = new SyntaxError(e.description, e.fileName, e.lineNumber);
+
+			if ( e.stack ) eo.stack = e.stack;
+
 			return new CompletionRecord(CompletionRecord.THROW, this.fromNative(eo));
 		}
+
 		let bak = yield ['branch', 'eval', ast, scope];
 		//console.log("EVALED: ", bak);
 		return bak;

@@ -65,6 +65,25 @@ function *defObjectProperty(obj, name, desc, realm) {
 	return true;
 }
 
+function *getDescriptor(target, name, realm) {
+	if ( !Object.hasOwnProperty.call(target.properties, name) ) {
+		console.log(name, "not in", target.properties);
+		return Value.undef;
+	}
+
+	let pdesc = target.properties[name];
+	let out = new ObjectValue(realm);
+
+	if ( pdesc.value  ) yield * out.put("value", pdesc.value);
+	if ( pdesc.getter ) yield * out.put("get", pdesc.getter);
+	if ( pdesc.setter ) yield * out.put("set", pdesc.setter);
+
+	yield * out.put("writable", Value.fromNative(pdesc.writable));
+	yield * out.put("enumerable", Value.fromNative(pdesc.enumerable));
+	yield * out.put("configurable", Value.fromNative(pdesc.configurable));
+	return out;
+}
+
 function *objOrThrow(i, realm) {
 	let val = i ? i : Value.undef;
 	if ( !(val instanceof ObjectValue) ) {
@@ -105,6 +124,20 @@ class ObjectObject extends EasyObjectValue {
 		let name = yield * args[1].toStringNative();
 		let desc = args[2];
 		yield * defObjectProperty(target, name, desc, s.realm);
+		return Value.true;
+	}
+
+	static *defineProperties(thiz, args, s) {
+
+		let target = yield * objOrThrow(args[0], s.realm);
+		//let props = yield * objOrThrow(args[1], s.realm);
+		let propsobj = args[1];
+
+		for ( let p of propsobj.observableProperties() ) {
+			let strval = p.native;
+			let podesc = yield * propsobj.member(strval, s.realm);
+			yield * defObjectProperty(target, p, podesc, s.realm);
+		}
 		return Value.true;
 	}
 
@@ -164,7 +197,8 @@ class ObjectObject extends EasyObjectValue {
 	static *keys$e(thiz, args, s) {
 		let target = yield * objOrThrow(args[0], s.realm);
 		let result = [];
-		for ( let p of target.observableProperties() ) {
+		for ( let p of Object.keys(target.properties) ) {
+			if ( !target.properties[p].enumerable ) continue;
 			result.push(p);
 		}
 		return ArrayValue.make(result, s.realm);
@@ -172,12 +206,13 @@ class ObjectObject extends EasyObjectValue {
 
 	static *getOwnPropertyNames$e(thiz, args, s) {
 		let target = yield * objOrThrow(args[0], s.realm);
-		let result = [];
-		for ( let p in target.properties ) {
-			if ( !Object.hasOwnProperty.call(target.properties,p) ) continue;
-			result.push(this.fromNative(p));
-		}
-		return ArrayValue.make(result, s.realm);
+		return ArrayValue.make(Object.getOwnPropertyNames(target.properties), s.realm);
+	}
+
+	static *getOwnPropertyDescriptor(thiz, args, s) {
+		let target = yield * objOrThrow(args[0], s.realm);
+		let name = yield * args[1].toStringNative();
+		return yield * getDescriptor(target, name, s.realm);
 	}
 
 	static *getPrototypeOf(thiz, args, s) {

@@ -5,6 +5,7 @@ const ClosureValue = require('../values/ClosureValue');
 const Value = require('../Value');
 const ObjectValue = require('../values/ObjectValue');
 const CompletionRecord = require('../CompletionRecord');
+const PropertyDescriptor = require('../values/PropertyDescriptor');
 
 class BoundFunction extends ObjectValue {
 	constructor(func, realm) {
@@ -65,6 +66,11 @@ class FunctionPrototype extends EasyObjectValue {
 		var out = new BoundFunction(thiz, this.realm);
 		if ( args.length > 1 ) out.boundArgs = args.slice(1);
 		out.boundThis = bthis;
+
+		if ( thiz.properties['length'] ) {
+			let newlen = thiz.properties['length'].value.toNative() - out.boundArgs.length;
+			out.properties['length'] = new PropertyDescriptor(this.fromNative(newlen));
+		}
 		return out;
 	}
 

@@ -93,7 +93,7 @@ class PrimitiveValue extends Value {
 
 	*member(name, realm) { 
 		let pt = this.derivePrototype(realm);
-		return yield * pt.member(name, realm);
+		return yield * pt.member(name, realm, this);
 	}
 
 	*observableProperties() {

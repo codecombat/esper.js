@@ -18,7 +18,7 @@ class ObjectValue extends Value {
 		this.setPrototype(this.realm.ObjectPrototype);
 	}
 
-	ref(name) {
+	ref(name, ctxthis) {
 		var existing = this.properties[name];
 		var ret = {
 			set: (v,s) => this.assign(name,v,s),
@@ -27,12 +27,10 @@ class ObjectValue extends Value {
 		let get;
 		if ( existing ) {
 			ret.isVariable = existing.isVariable;
-			ret.del = () => {
-				if ( !this.properties[name].configurable ) return false;
-				delete this.properties[name];
-				return true;
+			ret.del = (s) => {
+				return this.delete(name, s);
 			};
-			ret.getValue = existing.getValue.bind(existing, this);
+			ret.getValue = existing.getValue.bind(existing, ctxthis || this);
 			ret.setValue = this.put.bind(this, name);
 			Object.defineProperty(ret, 'value', {
 				get: () => existing.value,
@@ -43,7 +41,7 @@ class ObjectValue extends Value {
 
 		} else {
 			ret.isVariable = false;
-			ret.del = () => false;
+			ret.del = (s) => false;
 			Object.defineProperty(ret, 'value', {
 				get: () => Value.undef,
 				set: (v, s) => {
@@ -69,7 +67,7 @@ class ObjectValue extends Value {
 			}
 		} else if ( this.extensable ) {
 			v = new PropertyDescriptor(value, this);
-			v.del = () => this.delete(name);
+			v.del = (s) => this.delete(name, s);
 			this.properties[name] = v;
 		} else {
 			//TODO: Should we throw here in strict mode?
@@ -116,8 +114,13 @@ class ObjectValue extends Value {
 		return name in this.properties;
 	}
 
-	delete(name) {
-		delete this.properties[name];
+	delete(name, s) {
+		let po = this.properties[name];
+		if ( !po.configurable ) {
+			if ( s.strict ) return CompletionRecord.makeTypeError(this.realm, "Can't delete nonconfigurable object");
+			else return false;
+		}
+		return delete this.properties[name];
 	}
 	
 	toNative() {
@@ -149,10 +152,11 @@ class ObjectValue extends Value {
 	*add(other) { return yield * (yield * this.toPrimitiveValue()).add(other); }
 	*doubleEquals(other) {
 		if ( other instanceof PrimitiveValue ) {
-			let pv = yield * this.toPrimitiveValue();
+			let hint = ( other.jsTypeName == "string" ? 'string' : 'number' );
+			let pv = yield * this.toPrimitiveValue(hint);
 			return yield * pv.doubleEquals(other);
 		}
-		let pthis = yield * this.toPrimitiveValue();
+		let pthis = yield * this.toPrimitiveValue('string');
 		return yield * pthis.doubleEquals(other);
 	}
 	*inOperator(str) {
@@ -160,9 +164,9 @@ class ObjectValue extends Value {
 		return this.has(svalue.toNative()) ? Value.true : Value.false;
 	}
 
-	*member(name) { 
-		let ref = this.ref(name);
-		if ( ref ) return yield * ref.getValue(this);
+	*member(name, realm, ctxthis) { 
+		let ref = this.ref(name, ctxthis || this);
+		if ( ref ) return yield * ref.getValue();
 		return Value.undef;
 	}
 
