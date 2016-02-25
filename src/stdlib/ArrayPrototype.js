@@ -97,15 +97,15 @@ class ArrayPrototype extends EasyObjectValue {
 		if ( args.length > 0 ) fx = args[0];
 		if ( args.length > 1 ) targ = args[1];
 
-		let test = function *(v) {
-			let res = yield * fx.call(targ, [v], s);
+		let test = function *(v, i) {
+			let res = yield * fx.call(targ, [v, Value.fromNative(i), thiz], s);
 			return res.truthy;
 		};
 
 		let l = yield * getLength(thiz);
 		for ( let i = 0; i < l; ++i ) {
 			let tv = yield * thiz.member(i);
-			let tru = yield * test(tv);
+			let tru = yield * test(tv, i);
 			if ( !tru ) return Value.false;
 		}
 
@@ -118,15 +118,15 @@ class ArrayPrototype extends EasyObjectValue {
 		if ( args.length > 0 ) fx = args[0];
 		if ( args.length > 1 ) targ = args[1];
 
-		let test = function *(v) {
-			let res = yield * fx.call(targ, [v], s);
+		let test = function *(v, i) {
+			let res = yield * fx.call(targ, [v, Value.fromNative(i), thiz], s);
 			return res.truthy;
 		};
 
 		let l = yield * getLength(thiz);
 		for ( let i = 0; i < l; ++i ) {
 			let tv = yield * thiz.member(i);
-			let tru = yield * test(tv);
+			let tru = yield * test(tv, i);
 			if ( tru ) return Value.true;
 		}
 
