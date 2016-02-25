@@ -17,7 +17,7 @@ class UndefinedValue extends EmptyValue {
 
 	*toPrimitiveValue(preferedType) { return this; }
 	*toNumberValue() { return Value.nan; }
-	*toStringValue() { Value.fromNative('undefined'); }
+	*toStringValue() { return Value.fromNative('undefined'); }
 
 	get debugString() { return "undefined"; }
 }
