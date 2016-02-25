@@ -198,7 +198,9 @@ class Evaluator {
 		//let result = new ObjectValue();
 		let result = new Array(n.elements.length);
 		for ( let i = 0; i < n.elements.length; ++i ) {
-			result[i] = yield * this.branch(n.elements[i],s);
+			if ( n.elements[i] ) {
+				result[i] = yield * this.branch(n.elements[i],s);
+			}
 		}
 		let ArrayValue = require('./values/ArrayValue');
 		return ArrayValue.make(result, this.realm);

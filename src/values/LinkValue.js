@@ -3,6 +3,7 @@
 
 const Value = require('../Value');
 const CompletionRecord = require('../CompletionRecord');
+const ArrayValue = require('./ArrayValue');
 /**
  * Represents a value that maps directly to an untrusted local value.
  */
@@ -23,6 +24,14 @@ class LinkValue extends Value {
 
 		if ( Value.hasBookmark(native) ) {
 			return Value.getBookmark(native);
+		}
+
+		if ( Array.isArray(native) ) {
+			var ia = new Array(native);
+			for ( let i = 0; i < native.length; ++i ) {
+				ia[i] = LinkValue.make(native[i], realm);
+			}
+			return ArrayValue.make(ia, realm);
 		}
 
 		return new LinkValue(realm, native);

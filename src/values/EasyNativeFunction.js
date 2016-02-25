@@ -32,9 +32,11 @@ class EasyNativeFunction extends ObjectValue {
 		return out;
 	}
 
-	*call(thiz, argz) {
+	*call(thiz, argz, scope) {
 		try {
-			let o = yield yield * this.fn.apply(this.binding, arguments);
+			let s = scope ? scope.createChild() : scope;
+			if ( s ) s.strict = true;
+			let o = yield yield * this.fn.apply(this.binding, arguments, s);
 			if ( o instanceof CompletionRecord ) return o;
 			if ( !(o instanceof Value) ) o = this.fromNative(o);
 			return new CompletionRecord(CompletionRecord.NORMAL, o);

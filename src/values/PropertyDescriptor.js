@@ -32,7 +32,7 @@ class PropertyDescriptor {
 
 	*setValue(thiz, to, s) {
 		thiz = thiz || Value.null;
-		if ( this.getter ) {
+		if ( this.setter ) {
 			return yield * this.setter.call(thiz, [to]);
 		}
 		if ( !this.writeable ) {

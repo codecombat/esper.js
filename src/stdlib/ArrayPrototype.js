@@ -4,6 +4,7 @@ const EasyObjectValue = require('../values/EasyObjectValue');
 const ObjectValue = require('../values/ObjectValue');
 const ArrayValue = require('../values/ArrayValue');
 const PrimitiveValue = require('../values/PrimitiveValue');
+const CompletionRecord = require('../CompletionRecord');
 const Value = require('../Value');
 const _g = require('../GenDash');
 
@@ -29,12 +30,12 @@ function *shiftLeft(arr, start, amt) {
 	let len = yield * getLength(arr);
 	for ( let i = start; i < len; ++i ) {
 		let cur = yield * arr.member(i);
-		arr.assign(i-amt, cur);
+		yield * arr.put(i-amt, cur);
 	}
 	for ( let i = len-amt; i < len; ++i ) {
 		delete arr.properties[i];
 	}
-	arr.assign('length', Value.fromNative(len - amt));
+	yield * arr.put('length', Value.fromNative(len - amt));
 }
 
 
@@ -52,6 +53,8 @@ class ArrayPrototype extends EasyObjectValue {
 		let idx = 0;
 		for ( let arr of toCopy ) {
 			if ( arr instanceof PrimitiveValue ) {
+				out[idx++] = arr;
+			} else if ( !arr.has("length") ) {
 				out[idx++] = arr;
 			} else {
 				let l = yield * getLength(arr);
@@ -134,17 +137,19 @@ class ArrayPrototype extends EasyObjectValue {
 		let fx = Value.undef;
 		let targ = Value.undef;
 		if ( args.length > 0 ) fx = args[0];
+		if ( !fx.isCallable ) return yield CompletionRecord.makeTypeError(s.realm, "Arg2 not calalble.");
+
 		if ( args.length > 1 ) targ = args[1];
 
 		let l = yield * getLength(thiz);
 		let out = new Array(l);
 		for ( let i = 0; i < l; ++i ) {
 			let tv = yield * thiz.member(i);
-			let v = yield * fx.call(targ, [tv, Value.fromNative(i), thiz], s);
+			let v = yield yield * fx.call(targ, [tv, Value.fromNative(i), thiz], s);
 			out[i] = v;
 		}
 
-
+		console.log(out);
 		return ArrayValue.make(out, s.realm);
 	}
 
@@ -214,7 +219,11 @@ class ArrayPrototype extends EasyObjectValue {
 		for ( let i = 0; i < l; ++i ) {
 			let v = yield * thiz.member(i);
 			if ( !v  ) strings[i] = '';
-			else strings[i] = (yield * v.toStringValue()).native;
+			else {
+				let sv = (yield * v.toStringValue());
+				if ( sv ) strings[i] = sv.native;
+				else strings[i] = undefined; //TODO: THROW HERE?
+			}
 		}
 		return this.fromNative(strings.join(sepstr));
 	}
@@ -289,17 +298,20 @@ class ArrayPrototype extends EasyObjectValue {
 
 		let result = [];
 
-		let start = 0;
-		let deleteCount = 0;
-		let len = yield * getLength(thiz);
 		
+		let deleteCount;
+		let len = yield * getLength(thiz);
+		let start = len;
+
 		if ( isNaN(len) ) return thiz;
 
 		if ( args.length > 0 ) start = yield * args[0].toIntNative();
-		if ( args.length > 1 ) deleteCount = yield * args[1].toIntNative();
 
 		if ( start > len ) start = len;
 		else if ( start < 0 ) start = len - start;
+
+		if ( args.length > 1 ) deleteCount = yield * args[1].toIntNative();
+		else deleteCount = len - start;
 
 		if ( deleteCount > (len - start) ) deleteCount = len - start;
 		if ( deleteCount < 0 ) deleteCount = 0;
@@ -319,6 +331,8 @@ class ArrayPrototype extends EasyObjectValue {
 			yield * thiz.put(start + i, toAdd[i]);
 		}
 
+		yield * thiz.put('length', Value.fromNative(len + delta));
+
 		
 		return ArrayValue.make(deleted, s.realm);
 	}
@@ -332,12 +346,15 @@ class ArrayPrototype extends EasyObjectValue {
 
 		let comp = function *(left, right) {
 			let l = yield * left.toStringValue();
+			if ( !l ) return false;
 			let r = yield * right.toStringValue();
+			if ( !r ) return true;
 			return (yield * l.lt(r)).truthy;
 		};
 
 		if ( args.length > 0 ) {
 			let fx = args[0];
+			if ( !fx.isCallable ) return yield CompletionRecord.makeTypeError(s.realm, "Arg2 not calalble.");
 			comp = function *(left, right) {
 				let res = yield * fx.call(Value.undef, [left, right], s);
 				return ( yield * res.lt(Value.fromNative(0)) ).truthy;
@@ -363,13 +380,18 @@ class ArrayPrototype extends EasyObjectValue {
 		
 	}
 
-	static *unshift$e(thiz, args) {
+	static *unshift$e(thiz, args, s) {
 		let amt = args.length;
+		let len = yield * getLength(thiz);
+		if ( isNaN(len) ) len = 0;
 		yield * shiftRight(thiz, 0, amt);
 		for ( let i = 0; i < amt; ++i ) {
 			thiz.assign(i, args[i]);
 		}
-		return yield * getLength(thiz);
+
+		let nl = Value.fromNative(len + amt);
+		yield * thiz.put('length', nl, s);
+		return nl;
 	}
 
 }

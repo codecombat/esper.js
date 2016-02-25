@@ -74,7 +74,9 @@ class ASTPreprocessor {
 				break;
 			case "ArrayExpression":
 				if ( ast.elements ) {
-					for ( let e of ast.elements ) yield * me(e);
+					for ( let e of ast.elements ) {
+						if ( e ) yield * me(e);
+					}
 				}
 				break;
 			default:
@@ -160,7 +162,7 @@ class ASTPreprocessor {
 	}
 
 	exitArrayExpression(a) {
-		a.srcName = '[' + a.elements.map((e) => e.srcName).join() + ']';
+		a.srcName = '[' + a.elements.map((e) => e ? e.srcName : '').join() + ']';
 	}
 
 	enterFunction(a) {
