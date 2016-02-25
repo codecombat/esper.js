@@ -33,7 +33,7 @@ class ObjectValue extends Value {
 				return true;
 			};
 			ret.getValue = existing.getValue.bind(existing, this);
-			ret.setValue = existing.setValue.bind(existing, this);
+			ret.setValue = this.put.bind(this, name);
 			Object.defineProperty(ret, 'value', {
 				get: () => existing.value,
 				set: (v) => {
@@ -60,14 +60,12 @@ class ObjectValue extends Value {
 		let v;
 		if ( Object.prototype.hasOwnProperty.call(this.properties, name) ) {
 			v = this.properties[name];
-			if ( v.writeable ) {
+			if ( v.writable ) {
 				v.value = value;
 			} else if ( s && s.strict ) {
-				console.log("A");
-				throw new TypeError('Cant write to something thats not writeable');
+				throw new TypeError('Cant write to something thats not writable');
 			} else {
-				console.log("B");
-				throw new TypeError('Not STrict!')
+				return;
 			}
 		} else if ( this.extensable ) {
 			v = new PropertyDescriptor(value, this);
@@ -80,8 +78,15 @@ class ObjectValue extends Value {
 	}
 
 	*put(name, value, s) {
-		var r = this.ref(name);
-		return yield * r.setValue(value, s);
+		if ( !Object.prototype.hasOwnProperty.call(this.properties, name) ) {
+			let v = new PropertyDescriptor(value);
+			v.del = () => this.delete(name);
+			this.properties[name] = v;
+			return yield * v.setValue(this, value, s);
+		} 
+
+		return yield * this.properties[name].setValue(this, value, s);
+		
 	}
 
 	get(name) {
@@ -132,7 +137,7 @@ class ObjectValue extends Value {
 					return c === undefined ? undefined : c.toNative();
 				},
 				set: (v) => { this.properties[p].value = Value.fromNative(v, this.realm); },
-				enumerable: po, writeable: po.writeable,
+				enumerable: po.enumerable,
 				configurable: po.configurable
 			});
 		}

@@ -28,14 +28,24 @@ function *defObjectProperty(obj, name, desc, realm) {
 		v.enumerable = false;
 	}
 
-	if ( desc.has('writeable') ) {
-		let wri = yield * desc.member('writeable', realm);
+	if ( desc.has('writable') ) {
+		let wri = yield * desc.member('writable', realm);
 		if ( !(wri instanceof EmptyValue) ) {
-			v.writeable = enu.truthy;
+			v.writable = wri.truthy;
 		}
 	} else {
-		v.writeable = false;
+		v.writable = false;
 	}
+
+	if ( desc.has('configurable') ) {
+		let conf = yield * desc.member('configurable', realm);
+		if ( !(conf instanceof EmptyValue) ) {
+			v.writable = conf.truthy;
+		}
+	} else {
+		v.writable = false;
+	}
+
 
 	if ( desc.has('get') ) {
 		let get = yield * desc.member('get', realm);
@@ -124,7 +134,7 @@ class ObjectObject extends EasyObjectValue {
 		for ( let p in target.properties ) {
 			if ( !Object.prototype.hasOwnProperty.call(target.properties, p) ) continue;
 			target.properties[p].configurable = false;
-			target.properties[p].writeable = false;
+			target.properties[p].writable = false;
 		}
 		return target;
 	}
@@ -135,7 +145,7 @@ class ObjectObject extends EasyObjectValue {
 		for ( let p of Object.keys(target.properties) ) {
 			let ps = target.properties[p];
 			if ( ps.configurable ) return Value.false;
-			if ( ps.writeable ) return Value.false;
+			if ( ps.writable ) return Value.false;
 		}
 		return Value.true;
 	}

@@ -50,7 +50,7 @@ class EasyObjectValue extends ObjectValue {
 				v.value = rb;
 			}
 			if ( flags.indexOf('e') !== -1 ) v.enumerable = false;
-			if ( flags.indexOf('w') !== -1 ) v.writeable = false;
+			if ( flags.indexOf('w') !== -1 ) v.writable = false;
 			if ( flags.indexOf('c') !== -1 ) v.configurable = false;
 			this.properties[name] = v;
 		}

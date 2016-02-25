@@ -14,11 +14,11 @@ class PropertyDescriptor {
 		this.serial = serial++;
 		this.configurable = true;
 		this.enumerable = true;
-		this.writeable = true;
+		this.writable = true;
 	}
 
 	set(value) {
-		if ( !this.writeable ) return;
+		if ( !this.writable ) return;
 		this.value = value;
 	}
 
@@ -35,8 +35,11 @@ class PropertyDescriptor {
 		if ( this.setter ) {
 			return yield * this.setter.call(thiz, [to]);
 		}
-		if ( !this.writeable ) {
-			if ( !s || !s.strict ) return this.value;
+		if ( !this.writable ) {
+			if ( !s || !s.strict ) {
+				console.log("Wrote to const?!");
+				return this.value;
+			}
 			return new CompletionRecord.makeTypeError(s.realm, "Can't write to non-writable value.");
 		}
 		this.value = to;
