@@ -94,6 +94,8 @@ class Realm {
 		this.RegExp = new (require('./stdlib/RegExp'))(this);
 
 		this.Esper = new (require('./stdlib/Esper'))(this);
+		this.ErrorPrototype = new (require('./stdlib/ErrorPrototype'))(this);
+		this.Error = new (require('./stdlib/Error'))(this);
 
 		/** @type {Value} */
 		this.console = new (require('./stdlib/Console'))(this);
@@ -123,13 +125,14 @@ class Realm {
 		scope.set('String', this.String);
 		scope.set('RegExp', this.RegExp);
 
-		scope.set('TypeError', this.fromNative(TypeError));
-		scope.set('SyntaxError', this.fromNative(SyntaxError));
-		scope.set('ReferenceError', this.fromNative(ReferenceError));
-		scope.set('RangeError', this.fromNative(RangeError));
-		scope.set('EvalError', this.fromNative(EvalError));
-		scope.set('URIError', this.fromNative(URIError));
-		scope.set('Error', this.fromNative(Error));
+		scope.set('Error', this.Error);
+		scope.set('TypeError', this.TypeError = this.Error.makeErrorType(TypeError));
+		scope.set('SyntaxError', this.SyntaxError = this.Error.makeErrorType(SyntaxError));
+		scope.set('ReferenceError', this.ReferenceError = this.Error.makeErrorType(ReferenceError));
+		scope.set('RangeError', this.RangeError = this.Error.makeErrorType(RangeError));
+		scope.set('EvalError', this.EvalError = this.Error.makeErrorType(EvalError));
+		scope.set('URIError', this.URIError = this.Error.makeErrorType(URIError));
+
 
 		scope.set('parseInt', EasyNativeFunction.makeForNative(this, parseInt));
 		scope.set('parseFloat', EasyNativeFunction.makeForNative(this, parseFloat));

@@ -43,12 +43,22 @@ class Value {
 		//TODO: Implement a real envirionemnt
 		//TODO: Is this cache dangerous?
 
+		if ( value instanceof Error ) {
+			if ( !realm ) throw new Error("We needed a realm, but we didnt have one.  We were sad :(");
+			if ( value instanceof TypeError ) return realm.TypeError.makeFrom(value);	
+			if ( value instanceof ReferenceError ) return realm.ReferenceError.makeFrom(value);
+			if ( value instanceof SyntaxError ) return realm.SyntaxError.makeFrom(value);
+			else return realm.Error.makeFrom(value);
+		}
+
 		if ( Value.hasBookmark(value) ) {
 			return Value.getBookmark(value);
 		}
 
+		throw new TypeError("Tried to load an unsafe native value into the interperter:" + typeof value + " / " + value);
+
 		if ( !cache.has(value) ) {
-			if ( !realm ) throw new Error("We needed a realm, but we didnt have one.  We were sad :(");
+			
 			let nue = new BridgeValue(realm, value);
 				
 			cache.set(value, nue);

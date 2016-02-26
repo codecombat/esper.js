@@ -6,6 +6,7 @@ const RuntimeError = require('./RuntimeError');
 const ClosureValue = require('./values/ClosureValue');
 const ObjectValue = require('./values/ObjectValue');
 const RegExpValue = require('./values/RegExpValue');
+const ErrorValue = require('./values/ErrorValue');
 
 class Evaluator {
 	constructor(realm, n, s) {
@@ -89,15 +90,24 @@ class Evaluator {
 				case CompletionRecord.THROW:
 					//TODO: Fix this nonsense:
 					let e = val.value.toNative();
+					//val.value.native = e;
+
 					let smallStack;
-					if ( e.stack ) smallStack = e.stack.split(/\n/).slice(0,4).join('\n');
+					if ( e && e.stack ) smallStack = e.stack.split(/\n/).slice(0,4).join('\n');
 					let stk = this.buildStacktrace(e);					
 
-					if ( smallStack ) stk += "\n-------------\n" + smallStack;
+
 					if ( e instanceof Error ) {
 						e.stack = stk;
+						if ( smallStack ) e.stack += "\n-------------\n" + smallStack;
 						if ( this.frames[0] ) e.range = this.frames[0].ast.range;
 						if ( this.frames[0] ) e.loc = this.frames[0].ast.loc;
+					}
+
+					if ( val.value instanceof ErrorValue ) {
+						if ( !val.value.has('stack') ) {
+							val.value.set('stack', Value.fromNative(stk));
+						}
 					}
 
 					let tfr = this.unwindStack('catch', true);
@@ -370,7 +380,7 @@ class Evaluator {
 
 		let name = n.callee.srcName || callee.jsTypeName;
 		if ( !callee.isCallable ) {
-			return new CompletionRecord(CompletionRecord.THROW, new TypeError("" + name + " is not a function"));
+			return CompletionRecord.makeTypeError(this.realm, "" + name + " is not a function");
 		}
 
 		let callResult = callee.call(thiz, args, s, {
@@ -382,7 +392,7 @@ class Evaluator {
 
 		if ( typeof callResult.next !== "function" ) {
 			console.log('Generator Failure', callResult);
-			return new CompletionRecord(CompletionRecord.THROW, new TypeError("" + name + " didnt make a generator"));
+			return CompletionRecord.makeTypeError(this.realm, "" + name + " didnt make a generator");
 		}
 		
 		let result = yield * callResult;
@@ -444,7 +454,7 @@ class Evaluator {
 		if ( !s.has(n.name) ) {
 			// Allow undeclared varibles to be null?
 			if ( false ) return Value.undef;
-			return new CompletionRecord(CompletionRecord.THROW, this.fromNative(new ReferenceError(`${n.name} is not defined`)));
+			return CompletionRecord.makeReferenceError(this.realm, `${n.name} is not defined`);
 		}
 		return s.get(n.name);
 	}

@@ -117,7 +117,7 @@ class ObjectValue extends Value {
 	delete(name, s) {
 		let po = this.properties[name];
 		if ( !po.configurable ) {
-			if ( s.strict ) return CompletionRecord.makeTypeError(this.realm, "Can't delete nonconfigurable object");
+			if ( s.strict ) return CompletionRecord.makeTypeError(s.realm, "Can't delete nonconfigurable object");
 			else return false;
 		}
 		return delete this.properties[name];

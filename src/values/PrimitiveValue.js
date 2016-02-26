@@ -49,6 +49,7 @@ class PrimitiveValue extends Value {
 	get debugString() { 
 		if ( typeof this.native === 'object' ) return '[native object]';
 		else if ( typeof this.native === 'function' ) return '[native function]';
+		else if ( typeof this.native === 'string' ) return JSON.stringify(this.native);
 		else return '' + this.native;
 
 	}

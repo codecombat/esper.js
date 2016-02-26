@@ -3,13 +3,14 @@
 const EasyObjectValue = require('../values/EasyObjectValue');
 const CompletionRecord = require('../CompletionRecord');
 const EmptyValue = require('../values/EmptyValue');
+const ArrayValue = require('../values/ArrayValue');
 const _g = require('../GenDash');
 
 function wrapStringPrototype(name) {
 	let fx = String.prototype[name];
 	let genfx = function *(thiz, args, s) {
 		if ( thiz instanceof EmptyValue ) {
-			return yield CompletionRecord.makeTypeError(s.realm, new TypeError('called String function on null or undefined?'));	
+			return yield CompletionRecord.makeTypeError(s.realm, 'called String function on null or undefined?');	
 		}
 		let sv = yield * thiz.toStringValue(s.realm);
 		var argz = new Array(args.length);
@@ -18,8 +19,17 @@ function wrapStringPrototype(name) {
 		}
 
 		let result = fx.apply(sv.toNative(), argz);
-		let nv = s.realm.fromNative(result);
-		return nv;
+
+		if ( Array.isArray(result) ) {
+			var vals = new Array(result.length);
+			for ( let i = 0; i < vals.length; ++i ) {
+				vals[i] = s.realm.fromNative(result[i]);
+			}
+			return ArrayValue.make(vals, s.realm);
+		} else {
+			let nv = s.realm.fromNative(result);
+			return nv;
+		}
 	};
 	genfx.esperLength = fx.length;
 	return genfx;

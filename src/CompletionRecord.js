@@ -18,9 +18,20 @@ class CompletionRecord {
 
 	static makeTypeError(realm, msg) {
 		let Value = require('./Value');
-		let err = Value.fromNative(new TypeError(msg), realm);
+		let err;
+		if ( msg instanceof Error ) err = realm.TypeError.makeFrom(msg);
+		else err = realm.TypeError.make(msg);
 		return new CompletionRecord(CompletionRecord.THROW, err);
 	}
+
+	static makeReferenceError(realm, msg) {
+		let Value = require('./Value');
+		let err;
+		if ( msg instanceof Error ) err = realm.ReferenceError.makeFrom(msg);
+		else err = realm.ReferenceError.make(msg);
+		return new CompletionRecord(CompletionRecord.THROW, err);
+	}
+
 }
 module.exports = CompletionRecord;
 
