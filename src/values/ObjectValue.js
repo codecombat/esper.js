@@ -216,16 +216,22 @@ class ObjectValue extends Value {
 
 	get debugString() { 
 		let strProps = ['{','[', this.clazz,']'];
+		let delim = [];
+		if ( this.wellKnownName ) {
+			strProps.push('(', this.wellKnownName , ')');
+		}
 		if ( this.proto ) {
-			strProps.push('[[Prototype]]: ', this.proto.wellKnownName || this.proto.clazz);
+			delim.push('[[Prototype]]: ' + (this.proto.wellKnownName || this.proto.clazz || this.proto.jsTypeName) );
 		}
 		for ( let n in this.properties ) {
 			if ( !Object.prototype.hasOwnProperty.call(this.properties, n) ) continue;
 			let  val = this.properties[n].value;
-
-			if ( val.specTypeName === 'object' ) strProps.push(n + ': [Object]');
-			else strProps.push(n + ': ' + val.specTypeName);
+			if ( this.properties[n].getter || this.properties[n].setter ) delim.push(n + ': [Getter/Setter]');
+			else if ( val.specTypeName === 'object' ) delim.push(n + ': [Object]');
+			else if ( val.specTypeName === 'function' ) delim.push(n + ': [Function]');			
+			else delim.push(n + ': ' + val.debugString);
 		}
+		strProps.push(delim.join(', '));
 		strProps.push('} ]');
 		return strProps.join(' ');
 	}
