@@ -1,6 +1,6 @@
 "use strict";
 
-let Value;
+let Value = require('./Value');
 
 class CompletionRecord {
 	constructor(type, value, target) {
@@ -17,7 +17,6 @@ class CompletionRecord {
 	get abrupt() { return this.type !== CompletionRecord.NORMAL; }
 
 	static makeTypeError(realm, msg) {
-		let Value = require('./Value');
 		let err;
 		if ( msg instanceof Error ) err = realm.TypeError.makeFrom(msg);
 		else err = realm.TypeError.make(msg);
@@ -25,10 +24,16 @@ class CompletionRecord {
 	}
 
 	static makeReferenceError(realm, msg) {
-		let Value = require('./Value');
 		let err;
 		if ( msg instanceof Error ) err = realm.ReferenceError.makeFrom(msg);
 		else err = realm.ReferenceError.make(msg);
+		return new CompletionRecord(CompletionRecord.THROW, err);
+	}
+
+	static makeSyntaxError(realm, msg) {
+		let err;
+		if ( msg instanceof Error ) err = realm.SyntaxError.makeFrom(msg);
+		else err = realm.SyntaxError.make(msg);
 		return new CompletionRecord(CompletionRecord.THROW, err);
 	}
 

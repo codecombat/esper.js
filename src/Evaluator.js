@@ -170,15 +170,18 @@ class Evaluator {
 	}
 
 	*resolveRef(n, s, create) {
+		let oldAST = this.frames[0].ast;
+		this.frames[0].ast = n;
 		switch (n.type) {
 			case "Identifier":
 				let iref = s.ref(n.name, s.realm);
 				if ( !iref ) {
-					if ( !create ) throw new ReferenceError(`${n.name} not defined`);
-					if ( s.strict ) throw new ReferenceError(`${n.name} not defined`);					
+					if ( !create ) throw new ReferenceError(`${n.name} is not defined`);
+					if ( s.strict ) throw new ReferenceError(`${n.name} is not defined`);					
 					s.global.set(n.name, Value.undef);
 					iref = s.ref(n.name, s.realm);
 				}
+				this.frames[0].ast = oldAST;
 				return iref;
 			case "MemberExpression":
 				let idx;
@@ -197,6 +200,7 @@ class Evaluator {
 					throw new TypeError("Cant write property of non-object type: " + idx);
 				}
 
+				this.frames[0].ast = oldAST;
 				return ref.ref(idx, s.realm);
 
 			default:
@@ -408,6 +412,43 @@ class Evaluator {
 		}
 	}
 
+	*evaluateClassExpression(n,s) {
+		let clazz = new ObjectValue(this.realm);
+		clazz.call = function*() { return Value.undef; }
+
+		let proto = new ObjectValue(this.realm);
+		clazz.set('prototype', proto);
+		proto.set('constructor', clazz);
+
+		for ( let m of n.body.body ) {
+			let fx = yield * this.branch(m.value, s);
+
+			//TODO: Support getters and setters
+			if ( m.kind == 'constructor' ) {
+				clazz.call = function*(thiz,args,s) { return yield * fx.call(thiz,args,s); };
+
+			} else {
+				let ks;
+				if ( m.computed ) {
+					let k = yield * this.branch(m.key, s);
+					ks = yield * k.toStringNative(this.realm);
+				} else {
+					ks = m.key.name;
+				}
+
+				if ( m.static ) clazz.set(ks, fx);
+				else proto.set(ks, fx);				
+			}
+		}
+		return clazz;
+	}
+
+	*evaluateClassDeclaration(n,s) {
+		let clazz = yield * this.evaluateClassExpression(n,s);
+		s.set(n.id.name, clazz);
+		return clazz;
+	}
+
 	*evaluateConditionalExpression(n,s) {
 		let test = yield * this.branch(n.test, s);
 		if ( test.truthy ) {
@@ -507,7 +548,7 @@ class Evaluator {
 
 		var gen = function*() {
 			for ( let name of names ) {
-				ref.value = name;
+				yield * ref.setValue(name);
 				last = yield * that.branch(n.body, s);
 			}
 		};
@@ -518,6 +559,33 @@ class Evaluator {
 		return Value.undef;
 	}
 
+	//TODO: For of does more crazy Symbol iterator stuff
+	*evaluateForOfStatement(n,s) {
+		let last = Value.undef;
+		let object = yield * this.branch(n.right,s);
+		let names = object.observableProperties();
+		let that = this;
+		let ref;
+
+		if ( n.left.type === "VariableDeclaration" ) {
+			s.assign(n.left.declarations[0].id.name, Value.undef);
+			ref = s.ref(n.left.declarations[0].id.name, s.realm);
+		} else {
+			ref = s.ref(n.left.name, s.realm);
+		}
+
+		var gen = function*() {
+			for ( let name of names ) {
+				yield * ref.setValue(yield * object.member(yield * name.toStringNative()));
+				last = yield * that.branch(n.body, s);
+			}
+		};
+		this.pushFrame({generator: gen(), type: 'loop'});
+
+
+		let finished = yield;
+		return Value.undef;
+	}
 
 	*evaluateFunctionDeclaration(n,s) {
 		let closure = new ClosureValue(n, s);
@@ -791,6 +859,11 @@ class Evaluator {
 		return Value.undef;
 	}
 
+	*evaluateWithStatement(n,s) {
+		if ( s.strict ) return yield CompletionRecord.makeSyntaxError(this.realm, 'Strict mode code may not include a with statement');
+		return yield CompletionRecord.makeSyntaxError(this.realm, 'With statement not supported by esper');
+	}
+
 	/**
 	 * @private
 	 */
@@ -803,6 +876,8 @@ class Evaluator {
 			case "BreakStatement": return this.evaluateBreakStatement(n,s);
 			case "BlockStatement": return this.evaluateBlockStatement(n,s);
 			case "CallExpression": return this.evaluateCallExpression(n,s);
+			case "ClassDeclaration": return this.evaluateClassDeclaration(n,s);
+			case "ClassExpression": return this.evaluateClassExpression(n,s);
 			case "ConditionalExpression": return this.evaluateConditionalExpression(n,s);
 			case "DebuggerStatement": return this.evaluateEmptyStatement(n,s);
 			case "DoWhileStatement": return this.evaluateDoWhileStatement(n,s);
@@ -811,6 +886,7 @@ class Evaluator {
 			case "ExpressionStatement": return this.evalutaeExpressionStatement(n,s);
 			case "ForStatement": return this.evaluateForStatement(n,s);
 			case "ForInStatement": return this.evaluateForInStatement(n,s);
+			case "ForOfStatement": return this.evaluateForOfStatement(n,s);
 			case "FunctionDeclaration": return this.evaluateFunctionDeclaration(n,s);
 			case "FunctionExpression": return this.evaluateFunctionExpression(n,s);
 			case "Identifier": return this.evaluateIdentifier(n,s);
@@ -832,6 +908,7 @@ class Evaluator {
 			case "UpdateExpression": return this.evaluateUpdateExpression(n,s);
 			case "VariableDeclaration": return this.evaluateVariableDeclaration(n,s);
 			case "WhileStatement": return this.evaluateWhileStatement(n,s);
+			case "WithStatement": return this.evaluateWithStatement(n,s);			
 			default:
 				throw new Error("Unknown AST Node Type: " + n.type);
 		}
