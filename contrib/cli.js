@@ -36,6 +36,7 @@ program
 
 
 let toEval = program.args.slice(0);
+if ( toEval.length < 1 ) program.interactive = true;
 
 function next() {
 	if ( toEval.length === 0 ) {
