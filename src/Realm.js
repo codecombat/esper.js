@@ -9,6 +9,8 @@ const Value = require('./Value');
 const esprima = require('esprima');
 const CompletionRecord = require('./CompletionRecord');
 const ObjectValue = require('./values/ObjectValue');
+const PrimitiveValue = require('./values/PrimitiveValue.js');
+const StringValue = require('./values/StringValue');
 const LinkValue = require('./values/LinkValue');
 const ASTPreprocessor = require('./ASTPreprocessor');
 const EasyNativeFunction = require('./values/EasyNativeFunction');
@@ -20,7 +22,10 @@ class EvalFunction extends ObjectValue {
 	}
 
 	*call(thiz, args, scope) {
-		let code = args[0].toNative().toString();
+		let cv = Value.undef;
+		if ( args.length > 0 ) cv = args[0];
+		if ( !(cv instanceof StringValue) ) return cv;
+		let code = yield * cv.toStringNative();
 		let ast;
 		try {
 			let oast = scope.realm.parser(code, {loc: true});
