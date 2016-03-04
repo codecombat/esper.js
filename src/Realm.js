@@ -88,7 +88,7 @@ class Realm {
 
 
 		this.BooleanPrototype = new (require('./stdlib/BooleanPrototype'))(this);
-
+		this.Boolean = new (require('./stdlib/Boolean'))(this);
 
 		this.RegExpPrototype = new (require('./stdlib/RegExpPrototype'))(this);
 		this.RegExp = new (require('./stdlib/RegExp'))(this);
@@ -114,11 +114,12 @@ class Realm {
 		scope.addConst('Infinity', this.fromNative(Infinity));
 
 		scope.set('console', this.console);
-		//scope.set('JSON', this.fromNative(JSON));
+		scope.set('JSON', new (require('./stdlib/JSON'))(this));
 		scope.set('Esper', this.Esper);
 		scope.set('Math', this.Math);
 		
 		scope.set('Number', this.Number);
+		scope.set('Boolean', this.Boolean);
 		scope.set('Object', this.Object);
 		scope.set('Function', this.Function);
 		scope.set('Array', this.Array);

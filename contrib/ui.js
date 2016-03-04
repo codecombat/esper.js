@@ -18,7 +18,7 @@ server.on('request', (req, res) => {
 	let contentType = 'text/plain';
 
 	if ( /\/?esper\.js$/.test(uri) ) {
-		file = path.join(__dirname, '..', 'esper.js');
+		file = path.join(__dirname, '..', 'dist', 'esper.js');
 		contentType = 'text/javascript';
 	} else if ( /\/$/.test(uri) ) {
 		contentType = 'text/html';

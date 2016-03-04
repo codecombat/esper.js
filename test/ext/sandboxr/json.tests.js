@@ -1,7 +1,7 @@
 const runner = require('./test-runner').es5;
 
 describe("JSON", () => {
-	xdescribe("stringify", () => {
+	describe("stringify", () => {
 		it("should process string as expected", () => {
 			runner.confirmBlock("JSON.stringify('foo')=='\"foo\"'");
 		});
@@ -14,7 +14,7 @@ describe("JSON", () => {
 			runner.confirmBlock("JSON.stringify(true)=='true'");
 		});
 
-		it("should process date as expected", () => {
+		xit("should process date as expected", () => {
 			runner.confirmBlock("JSON.stringify(new Date(2000,1,1))=='\"' + (new Date(2000,1,1)).toJSON() + '\"'");
 		});
 
@@ -22,7 +22,7 @@ describe("JSON", () => {
 			runner.confirmBlock("JSON.stringify([42])=='[42]'");
 		});
 
-		it("should use replacer with array", () => {
+		xit("should use replacer with array", () => {
 			runner.confirmBlock("JSON.stringify([42], function (k,v) { return v===42?'fourtytwo':v; })=='[\"fourtytwo\"]'");
 		});
 
@@ -63,7 +63,7 @@ describe("JSON", () => {
 		});
 	});
 
-	xdescribe("parse", () => {
+	describe("parse", () => {
 		it("should parse null correctly", () => {
 			runner.confirmBlock("JSON.parse('null')===null;");
 		});
@@ -88,7 +88,7 @@ describe("JSON", () => {
 			runner.confirmBlock("JSON.parse('{\"foo\":true}').foo===true;");
 		});
 
-		it("should parse with reviver correctly", () => {
+		xit("should parse with reviver correctly", () => {
 			runner.confirmBlock("JSON.parse('{\"foo\":1}', function(k,v){return k=='foo'?v*2:v;}).foo===2;");
 		});
 	});
