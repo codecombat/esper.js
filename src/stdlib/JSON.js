@@ -7,62 +7,64 @@ const PrimitiveValue = require('../values/PrimitiveValue');
 const ArrayValue = require('../values/ArrayValue');
 const CompletionRecord = require('../CompletionRecord');
 
-function *genJSONTokens(arr, o, map, str, strincr) {
-	let str2 = str !== undefined ? str + strincr : undefined;
+class JSONUtils { 
+	static *genJSONTokens(arr, o, map, str, strincr) {
+		let str2 = str !== undefined ? str + strincr : undefined;
 
-	if ( o instanceof PrimitiveValue ) {
-		return arr.push(JSON.stringify(o.native));
-	}
+		if ( o instanceof PrimitiveValue ) {
+			return arr.push(JSON.stringify(o.native));
+		}
 
 
-	if ( map.has(o) ) {
-		return arr.push("[Circular]");
-	}
-	map.set(o, true);
+		if ( map.has(o) ) {
+			return arr.push("[Circular]");
+		}
+		map.set(o, true);
 
-	if ( o instanceof ArrayValue ) {
-		arr.push("[");
-		let length = yield * (yield * o.member('length')).toIntNative();
-		for ( let i = 0; i < length; ++i ) {
-			if ( i > 0 ) arr.push(', ');
-			if ( str !== undefined  ) arr.push("\n");
-			let m = yield * o.member(i);
-			if ( str !== undefined ) arr.push(str2);
-			if ( m ) {
-				if ( m.jsTypeName == "undefined" ) arr.push('null');
-				else yield * genJSONTokens(arr, m, map, str2, strincr);
+		if ( o instanceof ArrayValue ) {
+			arr.push("[");
+			let length = yield * (yield * o.member('length')).toIntNative();
+			for ( let i = 0; i < length; ++i ) {
+				if ( i > 0 ) arr.push(', ');
+				if ( str !== undefined  ) arr.push("\n");
+				let m = yield * o.member(i);
+				if ( str !== undefined ) arr.push(str2);
+				if ( m ) {
+					if ( m.jsTypeName == "undefined" ) arr.push('null');
+					else yield * JSONUtils.genJSONTokens(arr, m, map, str2, strincr);
+				}
 			}
+			if ( str !== undefined  ) arr.push("\n");
+			if ( str !== undefined  ) arr.push(str);
+			arr.push("]");
+			return;
+		}
+
+		arr.push("{");
+		
+		let first = true;
+		for ( let p in o.properties) {
+			let po = o.properties[p];
+			let v = yield * o.member(p);
+			if ( !po.enumerable ) continue;
+			if ( v.jsTypeName === 'function' ) continue;
+
+			if ( first ) first = false;
+			else arr.push(',');
+			if ( str !== undefined ) arr.push("\n");
+			if ( str !== undefined ) arr.push(str2);
+
+
+
+			arr.push(JSON.stringify(p));
+			arr.push(':');
+			yield * JSONUtils.genJSONTokens(arr, v, map, str2, strincr);
+
+
 		}
 		if ( str !== undefined  ) arr.push("\n");
-		if ( str !== undefined  ) arr.push(str);
-		arr.push("]");
-		return;
+		arr.push("}");
 	}
-
-	arr.push("{");
-	
-	let first = true;
-	for ( let p in o.properties) {
-		let po = o.properties[p];
-		let v = yield * o.member(p);
-		if ( !po.enumerable ) continue;
-		if ( v.jsTypeName === 'function' ) continue;
-
-		if ( first ) first = false;
-		else arr.push(',');
-		if ( str !== undefined ) arr.push("\n");
-		if ( str !== undefined ) arr.push(str2);
-
-
-
-		arr.push(JSON.stringify(p));
-		arr.push(':');
-		yield * genJSONTokens(arr, v, map, str2, strincr);
-
-
-	}
-	if ( str !== undefined  ) arr.push("\n");
-	arr.push("}");
 }
 
 class JSONObject extends EasyObjectValue {
@@ -110,7 +112,7 @@ class JSONObject extends EasyObjectValue {
 		}
 		if ( v.jsTypeName === "undefined" ) return Value.undef;
 
-		yield * genJSONTokens(arr, v, new WeakMap(), str, strincr);
+		yield * JSONUtils.genJSONTokens(arr, v, new WeakMap(), str, strincr);
 		return Value.fromNative(arr.join(''));
 	}
 

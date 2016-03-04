@@ -11,7 +11,8 @@
     "webpack": "webpack",
     "demo": "webpack && node contrib/ui.js",
     "cover": "isparta cover --report text --report html node_modules/mocha/bin/_mocha -- --reporter dot",
-    "dev-server": "webpack-dev-server src/index.js --content-base contrib/ui"
+    "dev-server": "webpack-dev-server src/index.js --content-base contrib/ui",
+    "prepublish": "node contrib/build.js"
   },
   "bin": {
     "esper": "./contrib/cli.js"
@@ -34,7 +35,6 @@
   },
   "homepage": "https://github.com/codecombat/esper-staging#readme",
   "devDependencies": {
-    "babel": "^5.8.34",
     "babel-core": "^6.4.0",
     "babel-loader": "^6.2.1",
     "babel-plugin-check-es2015-constants": "^6.3.13",
@@ -57,9 +57,11 @@
     "babel-plugin-transform-es2015-typeof-symbol": "^6.3.13",
     "babel-plugin-transform-es2015-unicode-regex": "^6.3.13",
     "babel-plugin-transform-regenerator": "^6.3.13",
+    "babel-plugin-transform-runtime": "^6.6.0",
     "babel-polyfill": "^6.3.14",
     "babel-regenerator-runtime": "^6.5.0",
     "babel-register": "^6.3.13",
+    "babel-runtime": "^6.6.1",
     "chai": "^3.4.1",
     "core-js": "^2.1.0",
     "esdoc": "^0.4.3",
