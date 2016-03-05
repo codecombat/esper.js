@@ -69,7 +69,7 @@ module.exports = function cfg(profile, opts) {
 	cfg = {
 		entry: entry,
 		output: {
-			library: 'Esper',
+			library: 'esper',
 			libraryTarget: libraryTarget,
 			path: path.join(__dirname, 'dist'),
 			filename: file

@@ -17,7 +17,7 @@ class LinkValue extends Value {
 	static make(native, realm) {
 		if ( native === undefined ) return Value.undef;
 		let prim = Value.fromPrimativeNative(native);
-		if ( prim !== undefined ) return prim;
+		if ( prim ) return prim;
 
 		let wellKnown = realm.lookupWellKnown(native);
 		if ( wellKnown ) return wellKnown;
@@ -27,7 +27,7 @@ class LinkValue extends Value {
 		}
 
 		if ( Array.isArray(native) ) {
-			var ia = new Array(native);
+			var ia = new Array(native.length);
 			for ( let i = 0; i < native.length; ++i ) {
 				ia[i] = LinkValue.make(native[i], realm);
 			}

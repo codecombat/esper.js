@@ -96,7 +96,7 @@ myAppModule.controller('main', function ($scope, $timeout) {
 	};
 
 	$scope.compile = function() {
-		var epr = new Esper.Engine();
+		var epr = new esper.Engine();
 		try {
 			epr.load($scope.code);
 		} catch ( e ) {
