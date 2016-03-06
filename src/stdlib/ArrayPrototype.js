@@ -8,10 +8,15 @@ const CompletionRecord = require('../CompletionRecord');
 const Value = require('../Value');
 const _g = require('../GenDash');
 
+function *forceArrayness(v) {
+	if ( !v.has('length') ) {
+		v.assign('length', Value.zero);
+	}
+}
+
 function *getLength(v) {
 	let m = yield * v.member('length');
 	return yield * m.toUIntNative();
-
 }
 
 var defaultSeperator = Value.fromNative(',');
@@ -21,9 +26,9 @@ function *shiftRight(arr, start, amt) {
 	let len = yield * getLength(arr);
 	for ( let i = len - 1; i >= start; --i ) {
 		let cur = yield * arr.member(i);
-		arr.assign(i+amt, cur);
+		yield * arr.put(i+amt, cur);
 	}
-	arr.assign(start, Value.undef);
+	yield * arr.put(start, Value.undef);
 }
 
 function *shiftLeft(arr, start, amt) {
@@ -144,6 +149,7 @@ class ArrayPrototype extends EasyObjectValue {
 		let l = yield * getLength(thiz);
 		let out = new Array(l);
 		for ( let i = 0; i < l; ++i ) {
+			if ( !thiz.has(i) ) continue;
 			let tv = yield * thiz.member(i);
 			let v = yield yield * fx.call(targ, [tv, Value.fromNative(i), thiz], s);
 			out[i] = v;
@@ -239,17 +245,22 @@ class ArrayPrototype extends EasyObjectValue {
 
 	static *push$e(thiz, args) {
 		let l = yield * getLength(thiz);
+
 		for ( let i = 0; i < args.length; ++i ) {
-			thiz.assign(l+i, args[i]);
+			yield * thiz.put(l+i, args[i]);
 		}
+
+		let nl = this.fromNative(l+args.length);
+		yield * thiz.put('length', nl);
 		return this.fromNative(l+args.length);
 	}
 
 	static *pop$e(thiz, args) {
+		yield * forceArrayness(thiz);
 		let l = yield * getLength(thiz);
 		if ( l < 1 ) return Value.undef;
 		let val = yield * thiz.member(l-1);
-		thiz.assign('length', Value.fromNative(l-1));
+		yield * thiz.put('length', Value.fromNative(l-1));
 		return val;
 	}
 
@@ -320,6 +331,7 @@ class ArrayPrototype extends EasyObjectValue {
 	}
 
 	static *shift$e(thiz, args) {
+		yield * forceArrayness(thiz);
 		let l = yield * getLength(thiz);
 		if ( l < 1 ) return Value.undef;
 		
