@@ -75,11 +75,14 @@ class ObjectValue extends Value {
 		}
 	}
 
-	*put(name, value, s) {
+	*put(name, value, s, extra) {
+		extra = extra || {};
 		if ( !Object.prototype.hasOwnProperty.call(this.properties, name) ) {
 			let v = new PropertyDescriptor(value);
 			v.del = () => this.delete(name);
+			v.enumerable = 'enumerable' in extra ? extra.enumerable : true;
 			this.properties[name] = v;
+
 			return yield * v.setValue(this, value, s);
 		} 
 

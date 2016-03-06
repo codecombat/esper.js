@@ -25,7 +25,7 @@ class JSONUtils {
 			arr.push("[");
 			let length = yield * (yield * o.member('length')).toIntNative();
 			for ( let i = 0; i < length; ++i ) {
-				if ( i > 0 ) arr.push(', ');
+				if ( i > 0 ) arr.push(',');
 				if ( str !== undefined  ) arr.push("\n");
 				let m = yield * o.member(i);
 				if ( str !== undefined ) arr.push(str2);
@@ -43,21 +43,20 @@ class JSONUtils {
 		arr.push("{");
 		
 		let first = true;
-		for ( let p in o.properties) {
+		for ( let p of Object.keys(o.properties)) {
 			let po = o.properties[p];
-			let v = yield * o.member(p);
 			if ( !po.enumerable ) continue;
+			let v = yield * o.member(p);
 			if ( v.jsTypeName === 'function' ) continue;
 
 			if ( first ) first = false;
 			else arr.push(',');
-			if ( str !== undefined ) arr.push("\n");
-			if ( str !== undefined ) arr.push(str2);
+			if ( str !== undefined ) arr.push("\n", str2);
 
 
 
-			arr.push(JSON.stringify(p));
-			arr.push(':');
+			arr.push(JSON.stringify(p), ':');
+			if ( str !== undefined ) arr.push(" ");
 			yield * JSONUtils.genJSONTokens(arr, v, map, str2, strincr);
 
 
@@ -88,7 +87,6 @@ class JSONObject extends EasyObjectValue {
 				for ( var p in o ) {
 					v.set(p, o[p]);
 				}
-				console.log(v);
 				return v;
 			});
 			return out;
@@ -108,7 +106,13 @@ class JSONObject extends EasyObjectValue {
 		if ( args.length > 1 ) replacer = args[1];
 		if ( args.length > 2 ) {
 			str = "";
-			strincr = yield * args[2].toStringNative();
+			if ( args[2].jsTypeName === 'number' ) {
+				let len = yield * args[2].toIntNative();
+				strincr = new Array(1+len).join(' ');
+			} else {
+				strincr = yield * args[2].toStringNative();
+			}
+			
 		}
 		if ( v.jsTypeName === "undefined" ) return Value.undef;
 
