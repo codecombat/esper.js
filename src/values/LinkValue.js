@@ -146,6 +146,10 @@ class LinkValue extends Value {
 
 	}
 
+	getPrototype() {
+		return this.realm.ObjectPrototype;
+	}
+
 	*makeThisForNew() {
 		return Value.undef;
 	}

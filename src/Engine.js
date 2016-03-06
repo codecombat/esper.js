@@ -97,7 +97,7 @@ class Engine {
 	}
 
 	addGlobal(name, what) {
-		this.globalScope.add(name, this.globalScope.fromNative(what));
+		this.globalScope.add(name, this.realm.makeLink(what));
 	}
 
 	addGlobalFx(name, what) {
