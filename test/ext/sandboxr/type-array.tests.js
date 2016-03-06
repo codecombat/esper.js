@@ -260,7 +260,7 @@ describe("Type: Array", () => {
 		});
 	});
 
-	xdescribe("Array.prototype.reduce", () => {
+	describe("Array.prototype.reduce", () => {
 		it("should execute reduce callback", done => {
 			runner.confirmBlock("var a=[0, 1, 2, 3].reduce(function(a, b) { return a + b; });a==6;", done);
 		});

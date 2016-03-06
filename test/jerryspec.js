@@ -14,7 +14,7 @@ describe("Jerry Tests", function() {
 
 		if ( /assdfadsfd/.test(file) ) { } //Whitelist
 		else if ( 
-			/date|^array\.|array-prototype-(map|pop|push|reduce|shift|slice|splice|tolocal|unshift)|string-prototype-(match|replace|split)|-with-blocks|object-prototype|number-prototype|^object|regression-|json|global|function-construct/.test(file) ||
+			/date|^array\.|array-prototype-(map|pop|push|reduce-right|shift|slice|splice|tolocal|unshift)|string-prototype-(match|replace|split)|-with-blocks|object-prototype|number-prototype|^object|regression-|json|global|function-construct/.test(file) ||
 			/builtin-cons|error|escape-|eval|for-in|labelled|compact-profile|regexp-simple/.test(file) 
 		) {
 			xit(file, function() {});

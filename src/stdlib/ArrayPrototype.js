@@ -265,6 +265,34 @@ class ArrayPrototype extends EasyObjectValue {
 		return thiz;
 	}
 
+	static *reduce$e(thiz, args, s) {
+		let l = yield * getLength(thiz);
+		let acc = Value.undef;
+		let start = 1;
+		let fx = args[0];
+
+		if ( args.length < 1 || !fx.isCallable ) {
+			return yield CompletionRecord.makeTypeError("First argument to reduce must be a function.");
+		}
+
+		if ( args.length > 1 ) {
+			start = 0;
+			acc = args[1];
+		} else {
+			if ( l < 1 ) return yield CompletionRecord.makeTypeError("Reduce an empty array with no initial value.");
+			acc = yield * thiz.member(0);
+		}
+
+		for ( let i = start; i < l; ++i ) {
+			if ( !thiz.has(i) ) continue;
+			let lv = yield * thiz.member(i);
+			let res = yield * fx.call(thiz, [acc, lv], s);
+			acc = res;
+		}
+
+		return acc;
+	}
+
 	static *shift$e(thiz, args) {
 		let l = yield * getLength(thiz);
 		if ( l < 1 ) return Value.undef;
