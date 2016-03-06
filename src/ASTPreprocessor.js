@@ -161,6 +161,10 @@ class ASTPreprocessor {
 		a.srcName = 'this';
 	}
 
+	enterLabeledStatement(a) {
+		a.body.label = a.label.name;
+	}
+
 	exitArrayExpression(a) {
 		a.srcName = '[' + a.elements.map((e) => e ? e.srcName : '').join() + ']';
 	}

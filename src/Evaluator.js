@@ -24,11 +24,16 @@ class Evaluator {
 		this.pushFrame({generator: this.dispatch(n,s), type: 'program', scope: s, ast: n});
 	}
 
-	unwindStack(target, canCrossFxBounds) {
+	unwindStack(target, canCrossFxBounds, label) {
 		let finallyFrames = [];
 		for ( let i = 0; i < this.frames.length; ++i ) {
 			let t = this.frames[i].type;
-			if ( t == target || (target == 'return' && t == 'function' )) {
+			let match = t == target || (target == 'return' && t == 'function' );
+			if ( match && label ) {
+				match = label == this.frames[i].label;
+			}
+
+			if ( match ) {
 				let j = i+1;
 				for (; j < this.frames.length; ++j ) if ( this.frames[j].type != "finally" ) break;
 				let fr = this.frames[j];
@@ -75,10 +80,10 @@ class Evaluator {
 			if ( !(val.value instanceof Value) ) val.value = this.fromNative(val.value);
 			switch ( val.type ) {
 				case CompletionRecord.CONTINUE:
-					if ( this.unwindStack('continue', false) ) return {done:false, val: val.value};
+					if ( this.unwindStack('continue', false, val.target) ) return {done:false, val: val.value};
 					throw new Error('Cant find matching loop frame for continue');
 				case CompletionRecord.BREAK:
-					if ( this.unwindStack('loop', false) ) return {done:false, val: val.value};
+					if ( this.unwindStack('loop', false, val.target) ) return {done:false, val: val.value};
 					throw new Error('Cant find matching loop frame for break');
 				case CompletionRecord.RETURN:
 					let rfr = this.unwindStack('return', false);
@@ -107,6 +112,7 @@ class Evaluator {
 					if ( val.value instanceof ErrorValue ) {
 						if ( !val.value.has('stack') ) {
 							val.value.set('stack', Value.fromNative(stk));
+							val.value.properties['stack'].enumerable = false;
 						}
 					}
 
@@ -343,7 +349,8 @@ class Evaluator {
 
 
 	*evaluateBreakStatement(n,s) {
-		return new CompletionRecord(CompletionRecord.BREAK, Value.undef);
+		let label = n.label ? n.label.name : undefined;
+		return new CompletionRecord(CompletionRecord.BREAK, Value.undef, label);
 	}
 
 
@@ -463,7 +470,8 @@ class Evaluator {
 
 
 	*evaluateContinueStatement(n,s) {
-		return new CompletionRecord(CompletionRecord.CONTINUE, Value.undef);
+		let label = n.label ? n.label.name : undefined;
+		return new CompletionRecord(CompletionRecord.CONTINUE, Value.undef, label);
 	}
 
 	*evaluateDoWhileStatement(n,s) {
@@ -471,10 +479,10 @@ class Evaluator {
 		let that = this;
 		var gen = function*() {
 			do {
-				last = yield that.branchFrame('continue', n.body, s);
+				last = yield that.branchFrame('continue', n.body, s, label);
 			} while ( (yield * that.branch(n.test,s)).truthy );
 		};
-		this.pushFrame({generator: gen(), type: 'loop'});
+		this.pushFrame({generator: gen(), type: 'loop', label: n.label});
 
 
 		let finished = yield;
@@ -520,12 +528,12 @@ class Evaluator {
 			let test = Value.true;
 			if ( n.test ) test = yield * that.branch(n.test,s);
 			while ( test.truthy ) {
-				last = yield that.branchFrame('continue', n.body, s);
+				last = yield that.branchFrame('continue', n.body, s, n.label);
 				if ( n.update ) yield * that.branch(n.update,s);
 				if ( n.test ) test = yield * that.branch(n.test,s);
 			}
 		};
-		this.pushFrame({generator: gen(), type: 'loop'});
+		this.pushFrame({generator: gen(), type: 'loop', label: n.label});
 
 
 		let finished = yield;
@@ -552,7 +560,7 @@ class Evaluator {
 				last = yield * that.branch(n.body, s);
 			}
 		};
-		this.pushFrame({generator: gen(), type: 'loop'});
+		this.pushFrame({generator: gen(), type: 'loop', label: n.label});
 
 
 		let finished = yield;
@@ -580,7 +588,7 @@ class Evaluator {
 				last = yield * that.branch(n.body, s);
 			}
 		};
-		this.pushFrame({generator: gen(), type: 'loop'});
+		this.pushFrame({generator: gen(), type: 'loop', label: n.label});
 
 
 		let finished = yield;
@@ -738,7 +746,7 @@ class Evaluator {
 			}
 		};
 
-		this.pushFrame({generator: gen(), type: 'loop'});
+		this.pushFrame({generator: gen(), type: 'loop', label: n.label});
 		let finished = yield;
 
 		return last;
@@ -852,7 +860,7 @@ class Evaluator {
 				last = yield that.branchFrame('continue', n.body, s);
 			}
 		};
-		this.pushFrame({generator: gen(), type: 'loop'});
+		this.pushFrame({generator: gen(), type: 'loop', label: n.label});
 
 
 		let finished = yield;
@@ -947,8 +955,8 @@ class Evaluator {
 		return vout;
 	}
 
-	branchFrame(type, n,s) {
-		return this.pushFrame({generator: this.branch(n,s), type: type, scope: s});
+	branchFrame(type, n, s, label) {
+		return this.pushFrame({generator: this.branch(n,s), type: type, scope: s, label: label});
 	}
 }
 
