@@ -40,27 +40,6 @@ class ObjectValue extends Value {
 		return ret;
 	}
 
-	assign(name, value, s) {
-		let v;
-		if ( Object.prototype.hasOwnProperty.call(this.properties, name) ) {
-			v = this.properties[name];
-			if ( v.writable ) {
-				v.value = value;
-			} else if ( s && s.strict ) {
-				throw new TypeError('Cant write to something thats not writable');
-			} else {
-				return;
-			}
-		} else if ( this.extensable ) {
-			v = new PropertyDescriptor(value, this);
-			v.del = (s) => this.delete(name, s);
-			this.properties[name] = v;
-		} else {
-			//TODO: Should we throw here in strict mode?
-			return;
-		}
-	}
-
 	*put(name, value, s, extra) {
 		extra = extra || {};
 		if ( !Object.prototype.hasOwnProperty.call(this.properties, name) ) {

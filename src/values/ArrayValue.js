@@ -39,11 +39,6 @@ class ArrayValue extends ObjectValue {
 		return super.put(name, v);
 	}
 
-	assign(name, v) {
-		this.adjustLength(name);
-		super.assign(name, v);
-	}
-
 	toNative() {
 		let out = new Array();
 

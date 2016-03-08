@@ -60,10 +60,6 @@ class LinkValue extends Value {
 		return out;
 	}
 
-	assign(name, value) {
-		this.native[name] = value.toNative();
-	}
-
 	*put(name, value, s, extra) {
 		this.native[name] = value.toNative();
 	}

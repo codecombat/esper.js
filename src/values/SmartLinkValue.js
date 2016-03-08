@@ -63,12 +63,6 @@ class SmartLinkValue extends LinkValue {
 		return out;
 	}
 
-	assign(name, value) {
-		if ( !this.allowWrite(name) ) return;
-
-		this.native[name] = value.toNative();
-	}
-
 	*put(name, value, s, extra) {
 		if ( !this.allowWrite(name) ) return yield CompletionRecord.makeTypeError(this.realm, "Can't write to protected property: " + name);
 		return yield * super.put(name, value, s, extra);

@@ -38,10 +38,6 @@ class PrimitiveValue extends Value {
 		}
 	}
 
-	assign(name, value, realm) {
-		
-	}
-
 	toNative() {
 		return this.native;
 	}

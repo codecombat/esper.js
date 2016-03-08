@@ -298,7 +298,7 @@ class Evaluator {
 		if ( ref ) {
 			yield * ref.setValue(value, s);
 		} else {
-			s.assign(n.left.name, value, s);
+			yield * s.put(n.left.name, value, s);
 		}
 
 		return value;
@@ -548,7 +548,7 @@ class Evaluator {
 		let ref;
 
 		if ( n.left.type === "VariableDeclaration" ) {
-			s.assign(n.left.declarations[0].id.name, Value.undef);
+			yield * s.put(n.left.declarations[0].id.name, Value.undef);
 			ref = s.ref(n.left.declarations[0].id.name, s.realm);
 		} else {
 			ref = s.ref(n.left.name, s.realm);
@@ -576,7 +576,7 @@ class Evaluator {
 		let ref;
 
 		if ( n.left.type === "VariableDeclaration" ) {
-			s.assign(n.left.declarations[0].id.name, Value.undef);
+			yield * s.put(n.left.declarations[0].id.name, Value.undef);
 			ref = s.ref(n.left.declarations[0].id.name, s.realm);
 		} else {
 			ref = s.ref(n.left.name, s.realm);
@@ -677,7 +677,7 @@ class Evaluator {
 			}
 
 			let value = yield * this.branch(prop.value, s);
-			nat.assign(key, value);
+			yield * nat.put(key, value);
 		}
 		return nat;
 	}

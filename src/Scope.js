@@ -66,11 +66,10 @@ class Scope {
 	/**
 	 * Set the identifier in its nearest scope, or create a global.
 	 */
-	assign(name, value) {
+	*put(name, value, s) {
 		let variable = this.object.properties[name];
 		if ( variable ) {
-			variable.value = value;
-			return;
+			return yield * variable.setValue(this.object, value, s);
 		}
 		var v = new PropertyDescriptor(value, this);
 		this.writeTo.properties[name] = v;

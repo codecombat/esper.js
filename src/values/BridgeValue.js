@@ -23,10 +23,6 @@ class BridgeValue extends Value {
 		return out;
 	}
 
-	assign(name, value) {
-		this.native[name] = value.toNative();
-	}
-
 	toNative() {
 		return this.native;
 	}

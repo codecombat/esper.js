@@ -101,7 +101,7 @@ class ClosureValue extends ObjectValue {
 			argvars[i] = v;
 
 			if ( invokeScope.strict ) {
-				args_obj.assign(i, vv);
+				yield * args_obj.put(i, vv);
 			} else {
 				args_obj.rawSetProperty(i, v);
 			}
