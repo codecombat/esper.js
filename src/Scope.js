@@ -31,13 +31,8 @@ class Scope {
 		var o = {
 			setValue: vhar.setValue.bind(vhar, this),
 			getValue: vhar.getValue.bind(vhar, this),
-			set: (o, s) => vhar.value = o,
 			isVariable: true
 		};
-		Object.defineProperty(o, 'value', {
-			get: () => vhar.value,
-			set: (v) => vhar.value = v
-		});
 		return o;
 	}
 
@@ -97,7 +92,7 @@ class Scope {
 	fromNative(w) { return this.realm.fromNative(w); }
 	*member(name) { 
 		let ref = this.ref(name, this.realm);
-		if ( ref ) return ref.value;
+		if ( ref ) return yield * ref.getValue();
 		return Value.undef;
 	}
 

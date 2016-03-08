@@ -479,7 +479,7 @@ class Evaluator {
 		let that = this;
 		var gen = function*() {
 			do {
-				last = yield that.branchFrame('continue', n.body, s, label);
+				last = yield that.branchFrame('continue', n.body, s, n.label);
 			} while ( (yield * that.branch(n.test,s)).truthy );
 		};
 		this.pushFrame({generator: gen(), type: 'loop', label: n.label});

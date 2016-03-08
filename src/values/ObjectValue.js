@@ -20,9 +20,8 @@ class ObjectValue extends Value {
 
 	ref(name, ctxthis) {
 		var existing = this.properties[name];
-		var ret = {
-			set: (v,s) => this.assign(name,v,s),
-		};
+		let thiz = this;
+		var ret = {};
 
 		let get;
 		if ( existing ) {
@@ -32,24 +31,11 @@ class ObjectValue extends Value {
 			};
 			ret.getValue = existing.getValue.bind(existing, ctxthis || this);
 			ret.setValue = this.put.bind(this, name);
-			Object.defineProperty(ret, 'value', {
-				get: () => existing.value,
-				set: (v) => {
-					this.assign(name, v);
-				}
-			});
-
 		} else {
 			ret.isVariable = false;
 			ret.del = (s) => false;
-			Object.defineProperty(ret, 'value', {
-				get: () => Value.undef,
-				set: (v, s) => {
-					this.assign(name, v, s);
-				}
-			});
 			ret.getValue = function *() { return Value.undef; };
-			ret.setValue = function *(to) { return ret.value = to; };
+			ret.setValue = function *(to, s) { return yield * thiz.put(name, to, s); };
 		}
 		return ret;
 	}
@@ -78,6 +64,10 @@ class ObjectValue extends Value {
 	*put(name, value, s, extra) {
 		extra = extra || {};
 		if ( !Object.prototype.hasOwnProperty.call(this.properties, name) ) {
+			if ( !this.extensable ) {
+				//TODO: Should we throw here in strict mode?
+				return;
+			}
 			let v = new PropertyDescriptor(value);
 			v.del = () => this.delete(name);
 			v.enumerable = 'enumerable' in extra ? extra.enumerable : true;

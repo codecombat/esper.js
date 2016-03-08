@@ -53,20 +53,18 @@ class LinkValue extends Value {
 			getter = () => this.makeLink(this.native).ref(name).value;
 		}
 
-		let str = (value) => that.native[name] = value.toNative();
-		Object.defineProperty(out, 'value', {
-			get: getter,
-			set: str
-		});
-		out.getValue = function *() { return getter() };
-		out.setValue = function *(to) { return str(to); };
-		out.del = function() { return false; }
-		out.set = str;
+		out.getValue = function *() { return getter(); };
+		out.setValue = function *(to) { return yield * this.put(name, to); };
+		out.del = function() { return false; };
 
 		return out;
 	}
 
 	assign(name, value) {
+		this.native[name] = value.toNative();
+	}
+
+	*put(name, value, s, extra) {
 		this.native[name] = value.toNative();
 	}
 

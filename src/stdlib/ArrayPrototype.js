@@ -10,7 +10,7 @@ const _g = require('../GenDash');
 
 function *forceArrayness(v) {
 	if ( !v.has('length') ) {
-		v.assign('length', Value.zero);
+		yield * v.put('length', Value.zero);
 	}
 }
 
@@ -439,7 +439,7 @@ class ArrayPrototype extends EasyObjectValue {
 		let nue = yield * _g.sort(vals, comp);
 		
 		for ( let i = 0; i < length; ++i ) {
-			thiz.assign(i, nue[i]);
+			yield * thiz.put(i, nue[i]);
 		}
 		return thiz;
 	}
@@ -461,7 +461,7 @@ class ArrayPrototype extends EasyObjectValue {
 		if ( isNaN(len) ) len = 0;
 		yield * shiftRight(thiz, 0, amt);
 		for ( let i = 0; i < amt; ++i ) {
-			thiz.assign(i, args[i]);
+			yield * thiz.put(i, args[i]);
 		}
 
 		let nl = Value.fromNative(len + amt);
