@@ -53,5 +53,6 @@ class EasyNativeFunction extends ObjectValue {
 		return 'function() { [Native Code] }';
 	}
 }
+EasyNativeFunction.prototype.clazz = 'Function';
 
 module.exports = EasyNativeFunction;

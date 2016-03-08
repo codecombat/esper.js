@@ -129,5 +129,6 @@ class ClosureValue extends ObjectValue {
 	get specTypeName() { return 'object'; }
 
 }
+ClosureValue.prototype.clazz = 'Function';
 
 module.exports = ClosureValue;

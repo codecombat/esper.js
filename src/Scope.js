@@ -9,7 +9,7 @@ const ObjectValue = require("./values/ObjectValue");
 class Scope {
 	constructor(realm) {
 		this.parent = null;
-		this.object = new ObjectValue(this);
+		this.object = new ObjectValue(realm);
 		this.strict = false;
 		this.realm = realm;
 		this.global = this;

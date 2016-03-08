@@ -251,6 +251,10 @@ class ObjectValue extends Value {
 		if ( typeof this.call !== "function" ) return "object";
 		return "function";
 	}
+
+	get specTypeName() {
+		return "object";
+	}
 }
 
 ObjectValue.prototype.clazz = 'Object';

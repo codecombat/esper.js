@@ -75,9 +75,6 @@ class PrimitiveValue extends Value {
 	*tripleEquals(other) { return this.fromNative(this.native === other.toNative()); }
 
 	*add(other) { return this.fromNative(this.native + other.toNative()); }
-	*multiply(other) { return this.fromNative(this.native * other.toNative()); }
-	*divide(other) { return this.fromNative(this.native / other.toNative()); }
-	*mod(other) { return this.fromNative(this.native % other.toNative()); }
 
 	*inOperator(other) { return this.fromNative(this.native in other.toNative()); }
 	*instanceOf(other) { return Value.false; }

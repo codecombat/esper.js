@@ -720,7 +720,7 @@ class Evaluator {
 		for ( let i = 0; i < n.cases.length; ++i ) {
 			let cas = n.cases[i];
 			if ( cas.test ) {
-				let testval = yield * that.branch(cas.test);
+				let testval = yield * that.branch(cas.test, s);
 				let equality = yield * testval.tripleEquals(discriminant);
 				if ( equality.truthy ) ++matches;
 				matchVals[i] = equality.truthy;
