@@ -9,11 +9,11 @@ let serial = 0;
 //TODO: We should call this a PropertyDescriptor, not a variable.
 
 class PropertyDescriptor {
-	constructor(value) {
+	constructor(value, enumerable) {
 		this.value = value;
 		this.serial = serial++;
 		this.configurable = true;
-		this.enumerable = true;
+		this.enumerable = enumerable !== undefined ? !!enumerable : true;
 		this.writable = true;
 	}
 

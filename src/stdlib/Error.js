@@ -7,7 +7,7 @@ const PrimitiveValue = require('../values/PrimitiveValue');
 const EmptyValue = require('../values/EmptyValue');
 const ErrorValue = require('../values/ErrorValue');
 const CompletionRecord = require('../CompletionRecord');
-
+const PropertyDescriptor = require('../values/PropertyDescriptor');
 const Value = require('../Value');
 
 
@@ -60,13 +60,14 @@ class ErrorObject extends EasyObjectValue {
 		proto.setPrototype(this.realm.ErrorPrototype);
 		proto.set('name', Value.fromNative(type.name));
 		proto.properties.name.enumerable = false;
-		proto.wellKnownName = `%${type.name}ErrorPrototype%`;
+		proto.wellKnownName = `%${type.name}Prototype%`;
 		proto.nativeClass = type;
 
 		let obj = new ErrorObject(this.realm);
 		obj.setPrototype(proto);
 		obj.properties.prototype.value = proto;
-		obj.wellKnownName = `%${type.name}Error%`;
+		obj.wellKnownName = `%${type.name}%`;
+		proto.rawSetProperty('constructor', new PropertyDescriptor(obj, false));
 		return obj;
 
 	}

@@ -17,7 +17,8 @@ function log(what) {
 
 let defaultOptions = {
 	strict: false,
-	foreignObjectMode: 'link'
+	foreignObjectMode: 'link',
+	addInternalStack: false
 };
 
 /**

@@ -15,6 +15,7 @@ const LinkValue = require('./values/LinkValue');
 const SmartLinkValue = require('./values/SmartLinkValue');
 const ASTPreprocessor = require('./ASTPreprocessor');
 const EasyNativeFunction = require('./values/EasyNativeFunction');
+const PropertyDescriptor = require('./values/PropertyDescriptor');
 
 class EvalFunction extends ObjectValue {
 
@@ -75,8 +76,8 @@ class Realm {
 		this.FunctionPrototype.setPrototype(this.ObjectPrototype);
 
 		//TODO: Do this when we can make the property non enumerable.
-		//this.ObjectPrototype.set('constructor', this.Object); //Chickens and egs...
-		
+		this.ObjectPrototype.rawSetProperty('constructor', new PropertyDescriptor(this.Object, false));
+
 		this.Function = new (require('./stdlib/Function'))(this);
 
 		/** @type {Math} */
@@ -103,6 +104,7 @@ class Realm {
 		this.Esper = new (require('./stdlib/Esper'))(this);
 		this.ErrorPrototype = new (require('./stdlib/ErrorPrototype'))(this);
 		this.Error = new (require('./stdlib/Error'))(this);
+		this.ErrorPrototype.rawSetProperty('constructor', new PropertyDescriptor(this.Error, false));
 
 		/** @type {Value} */
 		this.console = new (require('./stdlib/Console'))(this);

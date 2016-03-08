@@ -18,7 +18,9 @@ class ErrorPrototype extends EasyObjectValue {
 	static *toString(thiz, argz, s) {
 		let name = yield * (yield * thiz.member('name')).toStringNative();
 		let message = yield * (yield * thiz.member('message')).toStringNative();
-		return Value.fromNative(`${name}: ${message}`);
+		if ( name && message ) return Value.fromNative(`${name}: ${message}`);
+		else if ( message ) return Value.fromNative(message);
+		else return Value.fromNative(name);
 	}
 
 }

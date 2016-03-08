@@ -37,6 +37,13 @@ class CompletionRecord {
 		return new CompletionRecord(CompletionRecord.THROW, err);
 	}
 
+	static makeRangeError(realm, msg) {
+		let err;
+		if ( msg instanceof Error ) err = realm.RangeError.makeFrom(msg);
+		else err = realm.RangeError.make(msg);
+		return new CompletionRecord(CompletionRecord.THROW, err);
+	}
+
 }
 module.exports = CompletionRecord;
 

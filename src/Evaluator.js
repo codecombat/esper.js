@@ -6,6 +6,7 @@ const RuntimeError = require('./RuntimeError');
 const ClosureValue = require('./values/ClosureValue');
 const ObjectValue = require('./values/ObjectValue');
 const RegExpValue = require('./values/RegExpValue');
+const PropertyDescriptor = require('./values/PropertyDescriptor');
 const ErrorValue = require('./values/ErrorValue');
 
 class Evaluator {
@@ -104,7 +105,7 @@ class Evaluator {
 
 					if ( e instanceof Error ) {
 						e.stack = stk;
-						if ( smallStack ) e.stack += "\n-------------\n" + smallStack;
+						if ( smallStack && this.realm.options.addInternalStack ) e.stack += "\n-------------\n" + smallStack;
 						if ( this.frames[0] ) e.range = this.frames[0].ast.range;
 						if ( this.frames[0] ) e.loc = this.frames[0].ast.loc;
 					}
@@ -677,7 +678,27 @@ class Evaluator {
 			}
 
 			let value = yield * this.branch(prop.value, s);
-			yield * nat.put(key, value);
+			let pd;
+
+			if ( Object.prototype.hasOwnProperty.call(nat.properties, key) ) {
+				pd = nat.properties[key];
+			} else {
+				pd = new PropertyDescriptor(Value.undef);
+				nat.rawSetProperty(key, pd);
+			}
+
+			switch ( prop.kind ) {
+				case 'init':
+					pd.value = value;
+					break;
+				case 'get':
+					pd.getter = value;
+					break;
+				case 'set':
+					pd.setter = value;
+					break;
+			}
+
 		}
 		return nat;
 	}
@@ -690,7 +711,7 @@ class Evaluator {
 		}
 		if ( n.strict === true ) s.strict = true;
 		for ( let statement of n.body ) {
-			result = yield * this.branch(statement,s);
+			result = yield * this.branch(statement, s);
 		}
 		return result;
 	}
