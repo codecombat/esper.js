@@ -16,7 +16,7 @@ class ObjectValue extends Value {
 		super(realm);
 		this.extensable = true;
 		this.properties = Object.create(null);
-		this.setPrototype(this.realm.ObjectPrototype);
+		this.setPrototype(realm.ObjectPrototype);
 	}
 
 	ref(name, ctxthis) {

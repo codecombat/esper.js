@@ -86,6 +86,11 @@ function *getDescriptor(target, name, realm) {
 
 function *objOrThrow(i, realm) {
 	let val = i ? i : Value.undef;
+	
+	if ( val instanceof EmptyValue ) {
+		return yield CompletionRecord.makeTypeError(realm, 'Cannot convert undefined or null to object');
+	}
+
 	if ( !(val instanceof ObjectValue) ) {
 		 return yield CompletionRecord.makeTypeError(realm, 'Need an object');
 	}
@@ -139,7 +144,8 @@ class ObjectObject extends EasyObjectValue {
 
 		let target = yield * objOrThrow(args[0], s.realm);
 		//let props = yield * objOrThrow(args[1], s.realm);
-		let propsobj = args[1];
+
+		let propsobj = yield * objOrThrow(args[1], s.realm);
 
 		for ( let p of propsobj.observableProperties() ) {
 			let strval = p.native;
