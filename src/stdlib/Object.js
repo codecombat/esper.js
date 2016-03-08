@@ -105,9 +105,17 @@ class ObjectObject extends EasyObjectValue {
 
 	static *create$e(thiz, args, s) {
 		let v = new ObjectValue(this.realm);
+		let p = Value.undef;
 		if ( args.length > 0 ) {
-			v.setPrototype(args[1]);
+			p = args[0];
 		}
+
+		if ( p.jsTypeName !== 'object' && p.jsTypeName !== 'function' ) {
+			return yield CompletionRecord.makeTypeError(s.realm, "Object prototype may only be an Object or null");
+		}
+
+		v.setPrototype(p);
+		
 		if ( args.length > 1 ) {
 			let propsobj = args[1];
 			for ( let p of propsobj.observableProperties() ) {

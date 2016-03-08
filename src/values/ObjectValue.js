@@ -5,6 +5,7 @@ const Value = require('../Value');
 const PropertyDescriptor = require('./PropertyDescriptor');
 const CompletionRecord = require('../CompletionRecord');
 const PrimitiveValue = require('./PrimitiveValue');
+const NullValue = require('./NullValue');
 
 /**
  * Represents a value that maps directly to an untrusted local value.
@@ -173,7 +174,7 @@ class ObjectValue extends Value {
 	}
 
 	setPrototype(val) {
-		if ( val === null || val === undefined ) {
+		if ( val === null || val === undefined || val instanceof NullValue ) {
 			Object.setPrototypeOf(this.properties, null);
 			this.proto = null;
 			return;
