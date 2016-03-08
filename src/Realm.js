@@ -12,6 +12,7 @@ const ObjectValue = require('./values/ObjectValue');
 const PrimitiveValue = require('./values/PrimitiveValue.js');
 const StringValue = require('./values/StringValue');
 const LinkValue = require('./values/LinkValue');
+const SmartLinkValue = require('./values/SmartLinkValue');
 const ASTPreprocessor = require('./ASTPreprocessor');
 const EasyNativeFunction = require('./values/EasyNativeFunction');
 
@@ -63,7 +64,7 @@ class Realm {
 	}
 	
 	constructor(options) {
-
+		this.options = options || {};
 		/** @type {Value} */	
 		this.ObjectPrototype =  new (require('./stdlib/ObjectPrototype'))(this);
 		this.FunctionPrototype = new (require('./stdlib/FunctionPrototype'))(this);
@@ -175,13 +176,20 @@ class Realm {
 	valueFromNative(native) {
 		return Value.fromNative(native, this);
 	}
+
 	fromNative(native) {
 		return Value.fromNative(native, this);
 	}
 
-	makeLink(native) {
-		return LinkValue.make(native, this)
-;	}
+	makeForForeignObject(native) {
+		switch ( this.options.foreignObjectMode ) {
+			case 'smart':
+				return SmartLinkValue.make(native, this);
+			case 'link':
+			default:
+				return LinkValue.make(native, this);
+		}
+	}
 }
 
 module.exports = Realm;

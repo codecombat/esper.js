@@ -15,6 +15,10 @@ function log(what) {
 	console.log("LOG", what);
 }
 
+let defaultOptions = {
+	strict: false,
+	foreignObjectMode: 'link'
+};
 
 /**
  * Container class for all of esper.
@@ -23,7 +27,12 @@ class Engine {
 
 	constructor(options) {
 		options = options || {};
-		this.realm = new Realm(options);
+		this.options = {};
+		for ( var k in defaultOptions ) {
+			if ( k in options ) this.options[k] = options[k];
+			else this.options[k] = defaultOptions[k];
+		}
+		this.realm = new Realm(this.options);
 	}
 
 	/**
@@ -97,7 +106,7 @@ class Engine {
 	}
 
 	addGlobal(name, what) {
-		this.globalScope.add(name, this.realm.makeLink(what));
+		this.globalScope.add(name, this.realm.makeForForeignObject(what));
 	}
 
 	addGlobalFx(name, what) {
@@ -133,10 +142,10 @@ class Engine {
 		if ( !val ) return;
 
 		return function*() {
-			var realThis = realm.makeLink(this);
+			var realThis = realm.makeForForeignObject(this);
 			var realArgs = new Array(arguments.length);
 			for ( let i = 0; i < arguments.length; ++i ) {
-				realArgs[i] = realm.makeLink(arguments[i]);
+				realArgs[i] = realm.makeForForeignObject(arguments[i]);
 			}
 
 
