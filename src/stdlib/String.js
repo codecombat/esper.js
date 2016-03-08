@@ -2,6 +2,7 @@
 
 const EasyObjectValue = require('../values/EasyObjectValue');
 const CompletionRecord = require('../CompletionRecord');
+const PropertyDescriptor = require('../values/PropertyDescriptor');
 
 class StringObject extends EasyObjectValue {
 	*call(thiz, args, scope, ext) {
@@ -10,12 +11,21 @@ class StringObject extends EasyObjectValue {
 			//Called as a function...
 			return yield * args[0].toStringValue();
 		}
+		let len = 0;
 		if ( args.length > 0 ) {
 			let pv = yield * args[0].toStringValue();
+			len = pv.native.length;
 			thiz.primativeValue = pv;
 		} else {
 			thiz.primativeValue = EasyObjectValue.emptyString;
 		}
+
+		var plen = new PropertyDescriptor(scope.realm.fromNative(len));
+		plen.enumerable = false;
+		plen.configurable = false;
+		plen.writable = false;
+		thiz.rawSetProperty('length', plen);
+		return thiz;
 	}
 
 	callPrototype(realm) { return realm.StringPrototype; }

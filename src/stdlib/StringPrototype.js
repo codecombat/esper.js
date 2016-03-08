@@ -59,6 +59,10 @@ class StringPrototype extends EasyObjectValue {
 	}	
 }
 
+
+StringPrototype.prototype.wellKnownName = '%StringProtoype%';
+StringPrototype.prototype.clazz = 'String';
+
 StringPrototype.charAt = wrapStringPrototype('charAt');
 StringPrototype.charCodeAt = wrapStringPrototype('charCodeAt');
 StringPrototype.substring = wrapStringPrototype('substring');
