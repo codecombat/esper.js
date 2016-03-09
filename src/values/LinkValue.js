@@ -54,7 +54,7 @@ class LinkValue extends Value {
 		}
 
 		out.getValue = function *() { return getter(); };
-		out.setValue = function *(to) { return yield * this.put(name, to); };
+		out.setValue = function *(to) { return yield * that.put(name, to); };
 		out.del = function() { return false; };
 
 		return out;

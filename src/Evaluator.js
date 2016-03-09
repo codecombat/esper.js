@@ -238,7 +238,7 @@ class Evaluator {
 		}
 
 		if ( !ref && s.strict ) {
-			return new CompletionRecord(CompletionRecord.THROW, this.fromNative(new ReferenceError(`target not defined`)));
+			return new CompletionRecord(CompletionRecord.THROW, this.fromNative(new ReferenceError(`Invalid refrence in assignment.`)));
 		}
 
 		let argument = yield * this.branch(n.right, s);

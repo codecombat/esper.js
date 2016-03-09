@@ -13,6 +13,30 @@ class BridgeValue extends Value {
 		this.native = value;
 	}
 
+	makeBridge(value) {
+		return BridgeValue.make(value, this.realm);
+	}
+
+	static make(native, realm) {
+		if ( native === undefined ) return Value.undef;
+		let prim = Value.fromPrimativeNative(native);
+		if ( prim ) return prim;
+
+		if ( Value.hasBookmark(native) ) {
+			return Value.getBookmark(native);
+		}
+
+		if ( Array.isArray(native) ) {
+			var ia = new Array(native.length);
+			for ( let i = 0; i < native.length; ++i ) {
+				ia[i] = BridgeValue.make(native[i], realm);
+			}
+			return ArrayValue.make(ia, realm);
+		}
+
+		return new BridgeValue(realm, native);
+	}
+
 	ref(name) {
 		let that = this;
 		let out = Object.create(null);
@@ -31,45 +55,48 @@ class BridgeValue extends Value {
 		return this.native.toString();
 	}
 
-	*doubleEquals(other) { return this.fromNative(this.native == other.toNative()); }
-	*tripleEquals(other) { return this.fromNative(this.native === other.toNative()); }
+	*doubleEquals(other) { return this.makeBridge(this.native == other.toNative()); }
+	*tripleEquals(other) { return this.makeBridge(this.native === other.toNative()); }
 
-	*add(other) { return this.fromNative(this.native + other.toNative()); }
-	*subtract(other) { return this.fromNative(this.native - other.toNative()); }
-	*multiply(other) { return this.fromNative(this.native * other.toNative()); }
-	*divide(other) { return this.fromNative(this.native / other.toNative()); }
-	*mod(other) { return this.fromNative(this.native % other.toNative()); }
+	*add(other) { return this.makeBridge(this.native + other.toNative()); }
+	*subtract(other) { return this.makeBridge(this.native - other.toNative()); }
+	*multiply(other) { return this.makeBridge(this.native * other.toNative()); }
+	*divide(other) { return this.makeBridge(this.native / other.toNative()); }
+	*mod(other) { return this.makeBridge(this.native % other.toNative()); }
 
-	*shiftLeft(other) { return this.fromNative(this.native << other.toNative()); }
-	*shiftRight(other) { return this.fromNative(this.native >> other.toNative()); }
-	*shiftRightZF(other) { return this.fromNative(this.native >>> other.toNative()); }
+	*shiftLeft(other) { return this.makeBridge(this.native << other.toNative()); }
+	*shiftRight(other) { return this.makeBridge(this.native >> other.toNative()); }
+	*shiftRightZF(other) { return this.makeBridge(this.native >>> other.toNative()); }
 
-	*bitAnd(other) { return this.fromNative(this.native & other.toNative()); }
-	*bitOr(other) { return this.fromNative(this.native | other.toNative()); }
-	*bitXor(other) { return this.fromNative(this.native ^ other.toNative()); }
+	*bitAnd(other) { return this.makeBridge(this.native & other.toNative()); }
+	*bitOr(other) { return this.makeBridge(this.native | other.toNative()); }
+	*bitXor(other) { return this.makeBridge(this.native ^ other.toNative()); }
 
-	*gt(other) { return this.fromNative(this.native > other.toNative()); }
-	*lt(other) { return this.fromNative(this.native < other.toNative()); }
-	*gte(other) { return this.fromNative(this.native >= other.toNative()); }
-	*lte(other) { return this.fromNative(this.native <= other.toNative()); }
+	*gt(other) { return this.makeBridge(this.native > other.toNative()); }
+	*lt(other) { return this.makeBridge(this.native < other.toNative()); }
+	*gte(other) { return this.makeBridge(this.native >= other.toNative()); }
+	*lte(other) { return this.makeBridge(this.native <= other.toNative()); }
 
-	*inOperator(other) { return this.fromNative(this.native in other.toNative()); }
-	*instanceOf(other) { return this.fromNative(this.native instanceof other.toNative()); }
+	*inOperator(other) { return this.makeBridge(this.native in other.toNative()); }
+	*instanceOf(other) { return this.makeBridge(this.native instanceof other.toNative()); }
 	
-	*unaryPlus() { return this.fromNative(+this.native); }
-	*unaryMinus() { return this.fromNative(-this.native); }
-	*not() { return this.fromNative(!this.native); }
+	*unaryPlus() { return this.makeBridge(+this.native); }
+	*unaryMinus() { return this.makeBridge(-this.native); }
+	*not() { return this.makeBridge(!this.native); }
 
 
 
 	*member(name) { 
-		return this.fromNative(this.native[name]); 
+		return this.makeBridge(this.native[name]); 
 	}
 
+	*put(name, value) {
+		this.native[name] = value.toNative();
+	}
 
 	*observableProperties() {
 		for ( let p in this.native ) {
-			yield this.fromNative(p);
+			yield this.makeBridge(p);
 		}
 		return;
 	}
@@ -87,16 +114,16 @@ class BridgeValue extends Value {
 		}
 		try {
 			let result = this.native.apply(thiz ? thiz.toNative() : undefined, realArgs);
-			return this.fromNative(result);
+			return this.makeBridge(result);
 		} catch ( e ) {
-			let result = this.fromNative(e);
+			let result = this.makeBridge(e);
 			return new CompletionRecord(CompletionRecord.THROW, result);
 		}
 
 	}
 
 	*makeThisForNew() {
-		return this.fromNative(Object.create(this.native.prototype));
+		return this.makeBridge(Object.create(this.native.prototype));
 	}
 
 	get debugString() {

@@ -18,7 +18,8 @@ function log(what) {
 let defaultOptions = {
 	strict: false,
 	foreignObjectMode: 'link',
-	addInternalStack: false
+	addInternalStack: false,
+	executionLimit: Infinity
 };
 
 /**
@@ -92,7 +93,7 @@ class Engine {
 		let value = this.generator.next();
 		while ( !value.done ) {
 			value = this.generator.next();
-			if ( ++steps > 10000000 ) throw "Inf loop. detected";
+			if ( ++steps > this.options.executionLimit ) throw "Execution Limit Reached";
 		}
 		return value.value;
 	}
@@ -164,7 +165,7 @@ class Engine {
 					if ( yieldValue !== false ) yield yieldValue;
 				}
 				value = gen.next();
-				if ( ++steps > 100000 ) throw "Inf loop. detected";
+				if ( ++steps > that.options.executionLimit ) throw "Execution Limit Reached";
 			}		
 			return value.value.toNative();
 		};

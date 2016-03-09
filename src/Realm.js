@@ -13,6 +13,7 @@ const PrimitiveValue = require('./values/PrimitiveValue.js');
 const StringValue = require('./values/StringValue');
 const LinkValue = require('./values/LinkValue');
 const SmartLinkValue = require('./values/SmartLinkValue');
+const BridgeValue = require('./values/BridgeValue');
 const ASTPreprocessor = require('./ASTPreprocessor');
 const EasyNativeFunction = require('./values/EasyNativeFunction');
 const PropertyDescriptor = require('./values/PropertyDescriptor');
@@ -172,7 +173,7 @@ class Realm {
 		if ( v === Array.prototype ) return this.ArrayPrototype;
 		if ( v === RegExp ) return this.RegExp;
 		if ( v === RegExp.prototype ) return this.RegExpPrototype;
-		if ( v === console ) return this.console;
+		if ( typeof console !== 'undefined' && v === console ) return this.console;
 
 	}
 
@@ -186,6 +187,8 @@ class Realm {
 
 	makeForForeignObject(native) {
 		switch ( this.options.foreignObjectMode ) {
+			case 'bridge':
+				return BridgeValue.make(native, this);
 			case 'smart':
 				return SmartLinkValue.make(native, this);
 			case 'link':

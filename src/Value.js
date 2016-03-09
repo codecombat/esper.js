@@ -108,7 +108,7 @@ class Value {
 		} else {
 			out = {};
 		}
-		Object.defineProperties(v, {
+		Object.defineProperties(out, {
 			toString: {value: function() { return v.debugString; }, writable: true},
 			inspect: {value: function() { return v.debugString; }, writable: true},
 		});
