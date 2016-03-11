@@ -78,7 +78,8 @@ module.exports = function cfg(profile, opts) {
 		module: {
 			loaders: [
 				{
-					test: path.join(__dirname, 'src'),
+					test: /js$/,
+					include: [path.join(__dirname, 'src')],
 					loader: 'babel-loader',
 					query: {
 						plugins: plugins
@@ -111,11 +112,13 @@ module.exports = function cfg(profile, opts) {
 
 	if ( opts.test ) {
 		delete cfg.output.library;
-		delete cfg.output.libraryTarget
+		delete cfg.output.libraryTarget;
 
 		cfg.output.filename = 'esper-test.js';
+		cfg.module.loaders[0].include.push(path.join(__dirname, 'test'));
 		cfg.entry[0] = './contrib/webpack-mocha-entry.js';
 		cfg.node = {fs: 'empty'};
+
 	}
 
 	return cfg;

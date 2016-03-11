@@ -1,7 +1,5 @@
 import {es6} from "./test-runner";
 import {expect} from "chai";
-import * as SandBoxr from "./adapter";
-import * as acorn from "acorn";
 
 describe("Imports", () => {
 	it("should allow named imports", () => {

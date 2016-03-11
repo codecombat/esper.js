@@ -1,5 +1,4 @@
 import {expect} from "chai";
-import * as SandBoxr from "./adapter";
 import * as parser from "./ast-parser";
 
 describe("Async", () => {

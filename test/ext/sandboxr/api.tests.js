@@ -1,6 +1,6 @@
 import {expect} from "chai";
 import * as parser from "./ast-parser";
-import * as SandBoxr from "./adapter";
+
 
 describe("API", () => {
 	it("should allow a variable to be defined", () => {
