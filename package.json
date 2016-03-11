@@ -9,7 +9,7 @@
     "test": "mocha",
     "repl": "node contrib/cli.js -i",
     "webpack": "webpack",
-    "demo": "webpack && node contrib/ui.js",
+    "demo": "webpack && webpack --test && node contrib/ui.js",
     "cover": "isparta cover --report text --report html node_modules/mocha/bin/_mocha -- --reporter dot",
     "dev-server": "webpack-dev-server src/index.js --content-base contrib/ui",
     "prepublish": "node contrib/build.js"
@@ -68,6 +68,7 @@
     "isparta": "^4.0.0",
     "lua2js": "0.0.11",
     "mocha": "^2.4.5",
+    "mocha-loader": "^0.7.1",
     "webpack": "^1.12.11",
     "webpack-dev-server": "^1.14.1"
   },

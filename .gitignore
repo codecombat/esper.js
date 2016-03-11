@@ -40,3 +40,4 @@ test/ext/duktape/*
 test/ext/test262/*
 test/ext/jerry/*
 coverage/*
+dist/*

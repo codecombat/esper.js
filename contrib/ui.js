@@ -4,7 +4,7 @@ let path = require('path');
 let fs = require('fs');
 let port = process.env.PORT || 3000;
 
-if ( !fs.existsSync(path.join(__dirname, '..', 'esper.js')) ) {
+if ( !fs.existsSync(path.join(__dirname, '..', 'dist', 'esper.js')) ) {
 	console.log();
 	console.log("esper.js distributable not built yet!");
 	console.log("Build it with `npm run webpack`");
@@ -20,15 +20,21 @@ server.on('request', (req, res) => {
 	if ( /\/?esper\.js$/.test(uri) ) {
 		file = path.join(__dirname, '..', 'dist', 'esper.js');
 		contentType = 'text/javascript';
+	} else if ( /\/?esper-test\.js$/.test(uri) ) {
+		file = path.join(__dirname, '..', 'dist', 'esper-test.js');
+		contentType = 'text/javascript';
 	} else if ( /\/$/.test(uri) ) {
 		contentType = 'text/html';
 		file = path.join(__dirname, 'ui', 'index.html');
+	} else if ( /\/test/.test(uri) ) {
+		contentType = 'text/html';
+		file = path.join(__dirname, 'ui', 'test.html');
 	} else if ( /\/[a-z]*\.js$/.test(uri) ) {
 		file = path.join(__dirname, 'ui', uri);
 		contentType = 'text/javascript';
 	} else if ( /\/[a-z]*\.png$/.test(uri) ) {
 		file = path.join(__dirname, 'ui', uri);
-		contentType = 'iamge/png';
+		contentType = 'image/png';
 	}
 	
 	if ( !file ) {

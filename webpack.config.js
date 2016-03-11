@@ -2,7 +2,8 @@ var fx = require('./webpack-cfg');
 
 var profile = process.env.ESPER_PROFILE || 'web';
 var args = process.argv.slice(0);
-var min = false;
+
+var opts = {min: false, name: process.env.ESPER_PROFILE ? 'esper.js' : undefined};
 
 while ( args.length ) {
 	var opt = args.shift();
@@ -13,12 +14,16 @@ while ( args.length ) {
 			profile = parts[1];
 			break;
 		case '--min':
-			min = true;
+			opts.min = true;
+			break;
+		case '--test':
+			opts.test = true;
+			break;
 	}
 }
 
 
-module.exports = fx(profile, {min: min, name: process.env.ESPER_PROFILE ? 'esper.js' : undefined});
-
+module.exports = fx(profile, opts);
+console.log(module.exports);
 
 

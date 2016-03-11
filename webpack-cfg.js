@@ -59,11 +59,12 @@ module.exports = function cfg(profile, opts) {
 
 
 	var cfg;
-	var parts = ['esper'];
+	var parts = [opts.test ? 'esper-test' : 'esper'];
 	if ( profile != 'web' ) parts.push(profile);
 	if ( opts.min ) parts.push('min');
 	parts.push('js');
 	var file = opts.name ? opts.name : parts.join('.');
+
 
 	var entry = polyfill.concat(['./src/index.js']);
 	cfg = {
@@ -108,6 +109,14 @@ module.exports = function cfg(profile, opts) {
 		};
 	}
 
+	if ( opts.test ) {
+		delete cfg.output.library;
+		delete cfg.output.libraryTarget
+
+		cfg.output.filename = 'esper-test.js';
+		cfg.entry[0] = './contrib/webpack-mocha-entry.js';
+		cfg.node = {fs: 'empty'};
+	}
 
 	return cfg;
 
