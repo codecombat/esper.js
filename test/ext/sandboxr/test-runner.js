@@ -5,7 +5,7 @@ const Engine = require('../../../src/index');
 
 function getRunner (code, options) {
 	let ast = parser.parse(code, options);
-	return new Engine().evalASTSync(ast);
+	return new Engine({ executionLimit: 100000 }).evalASTSync(ast);
 }
 
 function wrapArgs (args) {

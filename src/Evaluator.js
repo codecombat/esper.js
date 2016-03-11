@@ -71,7 +71,7 @@ class Evaluator {
 
 
 	 	result = top.generator.next(this.lastValue);
-		if ( that.insterment ) that.insterment();
+		if ( that.instrument ) that.instrument();
 
 		let val = result.value;
 		if ( Array.isArray(val) ) {
@@ -979,6 +979,9 @@ class Evaluator {
 	branchFrame(type, n, s, label) {
 		return this.pushFrame({generator: this.branch(n,s), type: type, scope: s, label: label});
 	}
+
+	get insterment() { return this.instrument; }
+	set insterment(v) { this.instrument = v; }
 }
 
 module.exports = Evaluator;

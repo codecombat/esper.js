@@ -21,7 +21,13 @@ class SmartLinkValue extends LinkValue {
 	}
 
 	allowWrite(name) {
-		return false;
+		var allowed = [];
+		var native = this.native;
+		if ( native.apiUserProperties ) {
+			Array.prototype.push.apply(allowed, native.apiUserProperties);
+		}
+
+		return allowed.indexOf(name) != -1;
 	}
 
 	static make(native, realm) {
@@ -53,31 +59,52 @@ class SmartLinkValue extends LinkValue {
 
 	ref(name) {
 		let realm = this.realm;
-		if ( !this.allowRead(name) ) return undefined;
 		let out = super.ref(name);
+		if ( name in this.native ) {
+			let noWrite = function *() { return yield CompletionRecord.makeTypeError(realm, "Can't write to protected property: " + name); };
 
-		if ( !this.allowWrite(name) ) {
-			out.setValue = function *() { return yield CompletionRecord.makeTypeError(realm, "Can't write to protected property: " + name); };
+			if ( !this.allowRead(name) ) {
+				return {
+					getValue: function *() { return yield CompletionRecord.makeTypeError(realm, "Can't read protected property: " + name); },
+					setValue: noWrite,
+					del: () => false
+				};
+			}
+			
+			if ( !this.allowWrite(name) ) {
+				out.setValue = noWrite;
+			}
+
+		} else {
+			//TODO: Mark value as having been written by user so they retain write permissions to it.
 		}
 
 		return out;
 	}
 
 	*put(name, value, s, extra) {
-		if ( !this.allowWrite(name) ) return yield CompletionRecord.makeTypeError(this.realm, "Can't write to protected property: " + name);
+
+		if ( name in this.native ) {
+			if ( !this.allowWrite(name) ) return yield CompletionRecord.makeTypeError(this.realm, "Can't write to protected property: " + name);
+		} else {
+			//TODO: Mark value as having been written by user so they retain write permissions to it.
+		}
+
 		return yield * super.put(name, value, s, extra);
 		
 	}
 
 	*member(name) {
 
-		if ( !this.allowRead(name) ) return Value.undef;
-
-		if ( this.native.hasOwnProperty(name) ) {
-			return this.makeLink(this.native[name]); 
+		if ( !(name in this.native) ) {
+			return Value.undef;
 		}
 
-		return yield * this.makeLink(Object.getPrototypeOf(this.native)).member(name);
+		if ( !this.allowRead(name) ) {
+			return yield CompletionRecord.makeTypeError(this.realm, "Can't read protected property: " + name);
+		}
+
+		return yield * super.member(name);
 	}
 
 	get apiProperties() {
@@ -90,9 +117,19 @@ class SmartLinkValue extends LinkValue {
 			Array.prototype.push.apply(allowed, native.apiProperties);
 		}
 
+		if ( native.apiUserProperties ) {
+			Array.prototype.push.apply(allowed, native.apiUserProperties);
+		}
+
 		if ( native.apiMethods ) {
 			Array.prototype.push.apply(allowed, native.apiMethods);
 		}
+
+
+		if ( native.apiOwnMethods ) {
+			Array.prototype.push.apply(allowed, native.apiMethods);
+		}
+
 
 		if ( native.programmableProperties ) {
 			Array.prototype.push.apply(allowed, native.programmableProperties);
