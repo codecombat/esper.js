@@ -36,8 +36,8 @@ node_modules
 esper.js
 esper.*.js
 esdoc/*
-test/ext/duktape/*
-test/ext/test262/*
-test/ext/jerry/*
+contrib/test-suites/duktape/*
+contrib/test-suites/test262/*
+contrib/test-suites/jerry/*
 coverage/*
 dist/*

@@ -117,18 +117,18 @@ module.exports = function cfg(profile, opts) {
 		cfg.output.filename = 'esper-test.js';
 		cfg.module.loaders.push({
 			test: /\.js$/,
-			include: [path.join(__dirname, 'test', 'ext', 'sandboxr')],
+			include: [path.join(__dirname, 'contrib', 'test-suites', 'sandboxr')],
 			loader: 'babel-loader',
 			query: { plugins: plugins },
 		});
 		cfg.module.loaders.push({
 			test: /\.js$/,
-			include: [path.join(__dirname, 'test', 'ext', 'jerry')],
+			include: [path.join(__dirname, 'contrib', 'test-suites', 'jerry')],
 			loader: 'raw-loader'
 		});
 		cfg.module.loaders.push({
 			test: /auto.list$/,
-			include: [path.join(__dirname, 'test')],
+			include: [path.join(__dirname, 'contrib', 'test-suites')],
 			loader: path.join(__dirname, 'contrib', 'list-loader.js')
 		});	
 		cfg.entry[0] = './contrib/webpack-mocha-entry.js';

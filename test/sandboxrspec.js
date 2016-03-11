@@ -1,7 +1,7 @@
 "use strict";
 
 var path = require('path');
-var dir = path.join(__dirname, 'ext', 'sandboxr');
+var dir = path.join(__dirname, '..', 'contrib', 'test-suites', 'sandboxr');
 
 global.expect = require('chai').expect;
 
@@ -10,7 +10,7 @@ describe("Sandboxr Tests", function() {
 	var fs = require('fs');
 	var files;
 	if ( fs.readdirSync ) files = fs.readdirSync(dir);
-	else files = require('./ext/sandboxr/auto.list');
+	else files = require('../contrib/test-suites/sandboxr/auto.list');
 
 	for ( var i = 0; i < files.length; ++i ) {
 		var file = files[i];
@@ -19,7 +19,7 @@ describe("Sandboxr Tests", function() {
 		(function(file) {
 
 			describe(file, function() {
-				require('./ext/sandboxr/' + file);
+				require('../contrib/test-suites/sandboxr/' + file);
 			});
 		})(files[i]);
 	}

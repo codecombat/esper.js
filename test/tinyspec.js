@@ -2,7 +2,7 @@
 
 var fs = require('fs');
 var path = require('path');
-var dir = path.join(__dirname, 'ext', 'tiny-js');
+var dir = path.join(__dirname, '..', 'contrib', 'test-suites', 'tiny-js');
 var expect = require('chai').expect;
 
 describe("TinyJS Tests", function() {

@@ -2,14 +2,14 @@
 
 var fs = require('fs');
 var path = require('path');
-var dir = path.join(__dirname, 'ext', 'jerry');
+var dir = path.join(__dirname, '..', 'contrib', 'test-suites', 'jerry');
 var expect = require('chai').expect;
 
 describe("Jerry Tests", function() {
 	if ( fs.existsSync && !fs.existsSync(dir) ) return;
 	var files;
 	if ( fs.readdirSync ) files = fs.readdirSync(dir);
-	else files = require('./ext/jerry/auto.list');
+	else files = require('../contrib/test-suites/jerry/auto.list');
 
 	for ( var i = 0; i < files.length; ++i ) {
 		var file = files[i];
@@ -30,7 +30,7 @@ describe("Jerry Tests", function() {
 			var src;
 			console.log(file);
 			if ( fs.readFileSync ) src = fs.readFileSync(path.join(dir,file), 'utf8');
-			else src = require('./ext/jerry/' + file);
+			else src = require('../contrib/test-suites/jerry/' + file);
 
 			it(file, function() {
 				//console.log("\n");
