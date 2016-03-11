@@ -6,16 +6,19 @@ var dir = path.join(__dirname, 'ext', 'jerry');
 var expect = require('chai').expect;
 
 describe("Jerry Tests", function() {
-	if ( !fs.existsSync(dir) ) return;
-	var files = fs.readdirSync(dir);
+	if ( fs.existsSync && !fs.existsSync(dir) ) return;
+	var files;
+	if ( fs.readdirSync ) files = fs.readdirSync(dir);
+	else files = require('./ext/jerry/auto.list');
+
 	for ( var i = 0; i < files.length; ++i ) {
 		var file = files[i];
 		if ( !/.js$/.test(file) ) continue;
 
 		if ( /assdfadsfd/.test(file) ) { } //Whitelist
 		else if ( 
-			/date|^array\.|array-prototype-(map|pop|push|reduce-right|shift|slice|splice|tolocal|unshift)|string-prototype-(match|replace|split)|-with-blocks|object-prototype|number-prototype|^object|regression-|json|global|function-construct/.test(file) ||
-			/builtin-cons|error|escape-|eval|for-in|labelled|compact-profile|regexp-simple/.test(file) 
+			/date|^array\.|array-prototype-(push|slice|splice|tolocal|unshift)|string-prototype-(match|replace|split)|-with-blocks|object-prototype-(ispro|propertyis|tolocal)|number-prototype|json|global|function-construct/.test(file) ||
+			/builtin-cons|object_|object-(literal-2|get-own-prop|define)|eval|for-in|compact-profile|regexp-simple|label|regression-test-issue-(122|164|212|245|285|316|566|642|798|736)/.test(file) 
 		) {
 			xit(file, function() {});
 			continue;
@@ -24,12 +27,15 @@ describe("Jerry Tests", function() {
 		(function(file) {
 			
 			var Engine = require('../src/index.js');
-			var src = fs.readFileSync(path.join(dir,file), 'utf8');
+			var src;
+			console.log(file);
+			if ( fs.readFileSync ) src = fs.readFileSync(path.join(dir,file), 'utf8');
+			else src = require('./ext/jerry/' + file);
 
 			it(file, function() {
 				//console.log("\n");
 				//console.log(file);
-				var engine = new Engine({strict: false});
+				var engine = new Engine({strict: false, executionLimit: 100000});
 				engine.eval(src);
 				expect(true).to.be.true;
 			});

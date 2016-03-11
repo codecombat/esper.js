@@ -24,6 +24,5 @@ while ( args.length ) {
 
 
 module.exports = fx(profile, opts);
-console.log(module.exports);
 
 

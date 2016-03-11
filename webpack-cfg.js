@@ -115,7 +115,22 @@ module.exports = function cfg(profile, opts) {
 		delete cfg.output.libraryTarget;
 
 		cfg.output.filename = 'esper-test.js';
-		cfg.module.loaders[0].include.push(path.join(__dirname, 'test'));
+		cfg.module.loaders.push({
+			test: /\.js$/,
+			include: [path.join(__dirname, 'test', 'ext', 'sandboxr')],
+			loader: 'babel-loader',
+			query: { plugins: plugins },
+		});
+		cfg.module.loaders.push({
+			test: /\.js$/,
+			include: [path.join(__dirname, 'test', 'ext', 'jerry')],
+			loader: 'raw-loader'
+		});
+		cfg.module.loaders.push({
+			test: /auto.list$/,
+			include: [path.join(__dirname, 'test')],
+			loader: path.join(__dirname, 'contrib', 'list-loader.js')
+		});	
 		cfg.entry[0] = './contrib/webpack-mocha-entry.js';
 		cfg.node = {fs: 'empty'};
 
