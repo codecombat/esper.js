@@ -26,14 +26,6 @@ class BridgeValue extends Value {
 			return Value.getBookmark(native);
 		}
 
-		if ( Array.isArray(native) ) {
-			var ia = new Array(native.length);
-			for ( let i = 0; i < native.length; ++i ) {
-				ia[i] = BridgeValue.make(native[i], realm);
-			}
-			return ArrayValue.make(ia, realm);
-		}
-
 		return new BridgeValue(realm, native);
 	}
 
