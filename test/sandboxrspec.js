@@ -16,10 +16,11 @@ describe("Sandboxr Tests", function() {
 		var file = files[i];
 		//if ( !/assignment|binary|logical|function|sequence|update-|unary-/.test(file) ) continue;
 		if ( /api|async|ast|import|test-runner|with-/.test(file) ) continue;
+		if ( !/js$/.test(file) ) continue;
 		(function(file) {
 
 			describe(file, function() {
-				require('../contrib/test-suites/sandboxr/' + file);
+				require('../contrib/test-suites/sandboxr/' + file.replace(/\.js$/,'') + '.js');
 			});
 		})(files[i]);
 	}

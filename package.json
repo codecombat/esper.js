@@ -9,7 +9,7 @@
     "test": "mocha",
     "repl": "node contrib/cli.js -i",
     "webpack": "webpack",
-    "demo": "contrib/fetch-test-ext.sh && webpack --test && node contrib/ui.js",
+    "demo": "webpack && webpack --test && node contrib/ui.js",
     "cover": "isparta cover --report text --report html node_modules/mocha/bin/_mocha -- --reporter dot",
     "dev-server": "webpack-dev-server src/index.js --content-base contrib/ui",
     "prepublish": "node contrib/build.js"

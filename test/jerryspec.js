@@ -30,7 +30,7 @@ describe("Jerry Tests", function() {
 			var src;
 			console.log(file);
 			if ( fs.readFileSync ) src = fs.readFileSync(path.join(dir,file), 'utf8');
-			else src = require('../contrib/test-suites/jerry/' + file);
+			else src = require('../contrib/test-suites/jerry/' + file.replace(/\.js$/,'') + '.js');
 
 			it(file, function() {
 				//console.log("\n");
