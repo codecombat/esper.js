@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const EasyObjectValue = require('../values/EasyObjectValue');
 const ClosureValue = require('../values/ClosureValue');

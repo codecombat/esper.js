@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 function *sortValArray(arr, comp) {
 	if ( arr.length < 2 ) return arr;

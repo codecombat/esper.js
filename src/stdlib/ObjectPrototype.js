@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const ObjectValue = require('../values/ObjectValue');
 const EasyObjectValue = require('../values/EasyObjectValue');
@@ -20,7 +20,7 @@ class ObjectPrototype extends EasyObjectValue {
 	}
 
 
-	static *isPrototypeOf$e(thiz, args) { 
+	static *isPrototypeOf$e(thiz, args) {
 		if ( args.length < 1 ) return Value.false;
 		let target = args[1]; //TODO: Call ToObject();
 		let pt = thiz.getPrototype(thiz.realm);
@@ -35,7 +35,7 @@ class ObjectPrototype extends EasyObjectValue {
 		return Value.false;
 	}
 
-	static *propertyIsEnumerable$e(thiz, args) { 
+	static *propertyIsEnumerable$e(thiz, args) {
 		let nam = yield * args[0].toStringNative();
 		let pd = thiz.properties[nam];
 		return this.fromNative(pd.enumerable);
@@ -45,13 +45,13 @@ class ObjectPrototype extends EasyObjectValue {
 	static *toString$e(thiz, args) {
 		if ( thiz instanceof UndefinedValue ) return this.fromNative('[object Undefined]');
 		if ( thiz instanceof NullValue ) return this.fromNative('[object Null]');
-		return this.fromNative("[object " + thiz.clazz + "]");
+		return this.fromNative('[object ' + thiz.clazz + ']');
 	}
 
-	static *valueOf$e(thiz, args) { 
+	static *valueOf$e(thiz, args) {
 		if ( thiz.specTypeName === 'object' ) return thiz;
 		//TODO: Need to follow the ToObject() conversion
-		return thiz; 
+		return thiz;
 	}
 
 }

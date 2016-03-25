@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const EasyObjectValue = require('../values/EasyObjectValue');
 const ObjectValue = require('../values/ObjectValue');
@@ -22,7 +22,7 @@ class ErrorObject extends EasyObjectValue {
 	}
 
 	make(message) {
-		let nue = this.makeOne();		
+		let nue = this.makeOne();
 		if ( message ) {
 			nue.set('message', Value.fromNative(message));
 			nue.properties['message'].enumerable = false;
@@ -50,7 +50,7 @@ class ErrorObject extends EasyObjectValue {
 
 		if ( args.length > 0 ) yield * thiz.put('message', args[0], s, {enumerable: false});
 		if ( args.length > 1 ) yield * thiz.put('fileName', args[1], s, {enumerable: false});
-		if ( args.length > 2 ) yield * thiz.put('lineNumber', args[2], s, {enumerable: false});		
+		if ( args.length > 2 ) yield * thiz.put('lineNumber', args[2], s, {enumerable: false});
 
 		return thiz;
 	}

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /* @flow */
 
 const Value = require('../Value');
@@ -8,7 +8,7 @@ const ArrayValue = require('./ArrayValue');
  * Represents a value that maps directly to an untrusted local value.
  */
 class LinkValue extends Value {
-	
+
 	constructor(realm, value) {
 		super(realm);
 		this.native = value;
@@ -96,7 +96,7 @@ class LinkValue extends Value {
 
 	*inOperator(other) { return this.makeLink(this.native in other.toNative()); }
 	*instanceOf(other) { return this.makeLink(this.native instanceof other.toNative()); }
-	
+
 	*unaryPlus() { return this.makeLink(+this.native); }
 	*unaryMinus() { return this.makeLink(-this.native); }
 	*not() { return this.makeLink(!this.native); }
@@ -105,7 +105,7 @@ class LinkValue extends Value {
 
 	*member(name) {
 		if ( this.native.hasOwnProperty(name) ) {
-			return this.makeLink(this.native[name]); 
+			return this.makeLink(this.native[name]);
 		}
 
 		return yield * this.makeLink(Object.getPrototypeOf(this.native)).member(name);
@@ -121,7 +121,6 @@ class LinkValue extends Value {
 
 	/**
 	 *
-	 * @param {Evaluator} evaluator
 	 * @param {Value} thiz
 	 * @param {Value[]} args
 	 */

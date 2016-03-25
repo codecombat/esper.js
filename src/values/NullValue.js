@@ -1,20 +1,20 @@
-"use strict";
+'use strict';
 
 const EmptyValue = require('./EmptyValue');
 const Value = require('../Value');
 
-class NullValue extends EmptyValue {	
+class NullValue extends EmptyValue {
 	toNative() { return null; }
 
-	get jsTypeName() { return "object"; }
-	get specTypeName() { return "null"; }
+	get jsTypeName() { return 'object'; }
+	get specTypeName() { return 'null'; }
 
 	*tripleEquals(other, realm) {
 		return other instanceof NullValue ? Value.true : Value.false;
 	}
 
 	*asString() {
-		return "null";
+		return 'null';
 	}
 
 	*toPrimitiveValue(preferedType) { return this; }

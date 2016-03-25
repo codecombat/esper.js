@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const Value = require('../Value');
 const CompletionRecord = require('../CompletionRecord');

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 
 const PrimitiveValue = require('./PrimitiveValue');
@@ -18,7 +18,7 @@ class RegExpValue extends ObjectValue {
 
 		let av = new RegExpValue(realm);
 		av.regexp = regexp;
-		
+
 		return av;
 	}
 

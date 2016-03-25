@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const EasyObjectValue = require('../values/EasyObjectValue');
 const CompletionRecord = require('../CompletionRecord');
@@ -10,7 +10,7 @@ function wrapStringPrototype(name) {
 	let fx = String.prototype[name];
 	let genfx = function *(thiz, args, s) {
 		if ( thiz instanceof EmptyValue ) {
-			return yield CompletionRecord.makeTypeError(s.realm, 'called String function on null or undefined?');	
+			return yield CompletionRecord.makeTypeError(s.realm, 'called String function on null or undefined?');
 		}
 		let sv = yield * thiz.toStringValue(s.realm);
 		var argz = new Array(args.length);
@@ -37,26 +37,26 @@ function wrapStringPrototype(name) {
 
 class StringPrototype extends EasyObjectValue {
 	static get length$cew() { return StringPrototype.fromNative(0); }
-	
+
 	static *valueOf(thiz) {
-		if ( thiz.specTypeName === "string" ) return thiz;
-		if ( thiz.specTypeName === "object" ) {
+		if ( thiz.specTypeName === 'string' ) return thiz;
+		if ( thiz.specTypeName === 'object' ) {
 			let pv = thiz.primativeValue;
 			if ( pv.specTypeName == 'string' ) return pv;
 		}
 		throw new TypeError('Couldnt get there.');
-	}	
+	}
 
 	static *concat(thiz, args, realm) {
 		let base = yield * thiz.toStringNative();
-		let real_args = yield * _g.map(args, function*(v) { return yield * v.toStringNative(); });
-		let out = String.prototype.concat.apply(base, real_args);
+		let realArgs = yield * _g.map(args, function*(v) { return yield * v.toStringNative(); });
+		let out = String.prototype.concat.apply(base, realArgs);
 		return realm.fromNative(out);
 	}
 
 	static *toString(thiz) {
 		return yield * StringPrototype.valueOf(thiz);
-	}	
+	}
 }
 
 

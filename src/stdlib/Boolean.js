@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const Value = require('../Value');
 const EasyObjectValue = require('../values/EasyObjectValue');

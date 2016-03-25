@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 function invokeCB(o, name) {
 	if ( !(name in o ) ) return;
@@ -35,44 +35,44 @@ class ASTPreprocessor {
 		invokeCB(cbs, 'enter' + ast.type, ast);
 		if ( parent ) ast.parent = parent;
 		switch ( ast.type ) {
-			case "Program":
+			case 'Program':
 				for ( let e of ast.body ) yield * me(e);
 				break;
-			case "BlockStatement":
+			case 'BlockStatement':
 				for ( let e of ast.body ) yield * me(e);
 				break;
-			case "CallExpression":
+			case 'CallExpression':
 				for ( let e of ast.arguments ) yield * me(e);
 				yield * me(ast.callee);
 				break;
-			case "WhileStatement":
-			case "DoWhileStatement":
+			case 'WhileStatement':
+			case 'DoWhileStatement':
 				if ( ast.test ) yield * me(ast.test);
 				yield * me(ast.body);
 				break;
-			case "VariableDeclaration":
+			case 'VariableDeclaration':
 				for ( let e of ast.declarations ) yield * me(e);
 				break;
-			case "VariableDeclarator":
+			case 'VariableDeclarator':
 				invokeCB(cbs, 'decl', ast);
 				if ( ast.init ) yield * me(ast.init);
 				break;
-			case "FunctionDeclaration":
+			case 'FunctionDeclaration':
 				invokeCB(cbs, 'decl', ast);
 				invokeCB(cbs, 'enterFunction', ast);
 				yield * me(ast.body);
 				invokeCB(cbs, 'exitFunction', ast);
 				break;
 
-			case "ArrowFunctionExpression":
-			case "FunctionExpression":
+			case 'ArrowFunctionExpression':
+			case 'FunctionExpression':
 				invokeCB(cbs, 'enterFunction', ast);
 				yield * me(ast.body);
 				invokeCB(cbs, 'exitFunction', ast);
 				break;
-			case "Identifier":
+			case 'Identifier':
 				break;
-			case "ArrayExpression":
+			case 'ArrayExpression':
 				if ( ast.elements ) {
 					for ( let e of ast.elements ) {
 						if ( e ) yield * me(e);
@@ -80,24 +80,24 @@ class ASTPreprocessor {
 				}
 				break;
 			default:
-				
+
 				for (var p in ast) {
 					let n = ast[p];
-					if ( p === "parent" ) continue;
-					if ( p === "loc" ) continue;
-					if ( p === "type" ) continue;
-					if ( p === "nodeID" ) continue;
-					if ( p === "parentFunction" ) continue;
-					if ( p === "funcs" ) continue;
+					if ( p === 'parent' ) continue;
+					if ( p === 'loc' ) continue;
+					if ( p === 'type' ) continue;
+					if ( p === 'nodeID' ) continue;
+					if ( p === 'parentFunction' ) continue;
+					if ( p === 'funcs' ) continue;
 					if ( n === null ) continue;
-					if ( typeof n.type !== "string" ) {
+					if ( typeof n.type !== 'string' ) {
 						continue;
 					}
 					yield * me(n);
-				}				
+				}
 		}
 
-		
+
 		invokeCB(cbs, 'exit' + ast.type, ast);
 		invokeCB(cbs, 'exit', ast);
 	}
@@ -128,7 +128,7 @@ class ASTPreprocessor {
 	enter(a) {
 		++this.depth;
 		a.nodeID = this.counter++;
-		this.log("Entering", a.type);
+		this.log('Entering', a.type);
 	}
 
 	enterIdentifier(a) {
@@ -137,14 +137,14 @@ class ASTPreprocessor {
 	}
 
 	decl(a) {
-		if ( a.parent.type == "VariableDeclaration" && a.parent.kind != "var" ) return;
+		if ( a.parent.type == 'VariableDeclaration' && a.parent.kind != 'var' ) return;
 		let stack = this.varStack[0];
 		stack[a.id.name] = a;
 	}
 
 	enterProgram(a) {
 		let scope = Object.create(null);
-		
+
 		a.refs = Object.create(null);
 		a.vars = Object.create(null);
 		a.funcs = Object.create(null);
@@ -207,7 +207,7 @@ class ASTPreprocessor {
 	enterFunctionDeclaration(a) {
 		let parent = this.funcStack[0];
 		//a.parentFunction = parent.nodeID;
-		a.srcName = 'function ' + a.id.name + ' {'
+		a.srcName = 'function ' + a.id.name + ' {';
 		parent.funcs[a.id.name] = a;
 	}
 
@@ -247,7 +247,7 @@ class ASTPreprocessor {
 	exitFunction(a) {
 		var vars = this.varStack.shift();
 		var free = {};
-		var upvars = {};		
+		var upvars = {};
 		for ( var r in a.refs ) {
 			if ( r in vars ) {
 				//Local refrence
@@ -260,7 +260,7 @@ class ASTPreprocessor {
 		a.upvars = upvars;
 		a.freevars = free;
 
-		this.scopeStack.shift();	
+		this.scopeStack.shift();
 		this.funcStack.shift();
 		delete a.refs;
 		//this.log("VARS:", Object.getOwnPropertyNames(a.vars).join(', '));
@@ -273,7 +273,7 @@ class ASTPreprocessor {
 	}
 
 	exit(a) {
-		this.log("Exiting", a.type);
+		this.log('Exiting', a.type);
 		--this.depth;
 	}
 

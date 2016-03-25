@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const Value = require('../Value');
 const BridgeValue = require('./BridgeValue');
@@ -8,7 +8,7 @@ class EmptyValue extends Value {
 	constructor() {
 		super(null);
 	}
-	
+
 	get truthy() { return false; }
 
 	*not() { return Value.fromNative(true); }

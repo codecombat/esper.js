@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /* @flow */
 
 const CompletionRecord = require('./CompletionRecord');
@@ -17,16 +17,16 @@ class Value {
 	/**
 	 * Convert a native javascript primative value to a Value
 	 * @param {any} value - The value to convert
-	 */	
+	 */
 	static fromPrimativeNative(value) {
 		if ( value === undefined ) return undef;
 		if ( value === null ) return nil;
 		if ( value === true ) return tru;
 		if ( value === false ) return fals;
 
-		if ( typeof value === "number" ) return new NumberValue(value);
-		if ( typeof value === "string" ) return new StringValue(value);
-		if ( typeof value === "boolean" ) return new PrimitiveValue(value);
+		if ( typeof value === 'number' ) return new NumberValue(value);
+		if ( typeof value === 'string' ) return new StringValue(value);
+		if ( typeof value === 'boolean' ) return new PrimitiveValue(value);
 	}
 
 	static hasBookmark(native) { return bookmarks.has(native); }
@@ -34,6 +34,7 @@ class Value {
 
 	/**
 	 * Convert a native javascript value to a Value
+	 *
 	 * @param {any} value - The value to convert
 	 * @param {Realm} realm - The realm of the new value.
 	 */
@@ -44,8 +45,8 @@ class Value {
 		//TODO: Is this cache dangerous?
 
 		if ( value instanceof Error ) {
-			if ( !realm ) throw new Error("We needed a realm, but we didnt have one.  We were sad :(");
-			if ( value instanceof TypeError ) return realm.TypeError.makeFrom(value);	
+			if ( !realm ) throw new Error('We needed a realm, but we didnt have one.  We were sad :(');
+			if ( value instanceof TypeError ) return realm.TypeError.makeFrom(value);
 			if ( value instanceof ReferenceError ) return realm.ReferenceError.makeFrom(value);
 			if ( value instanceof SyntaxError ) return realm.SyntaxError.makeFrom(value);
 			else return realm.Error.makeFrom(value);
@@ -55,12 +56,12 @@ class Value {
 			return Value.getBookmark(value);
 		}
 
-		throw new TypeError("Tried to load an unsafe native value into the interperter:" + typeof value + " / " + value);
+		throw new TypeError('Tried to load an unsafe native value into the interperter:' + typeof value + ' / ' + value);
 
 		if ( !cache.has(value) ) {
-			
+
 			let nue = new BridgeValue(realm, value);
-				
+
 			cache.set(value, nue);
 			return nue;
 		}
@@ -69,6 +70,7 @@ class Value {
 
 	/**
 	 * Holds a value representing `undefined`
+	 *
 	 * @returns {UndefinedValue}
 	 */
 	static get undef() {
@@ -77,6 +79,7 @@ class Value {
 
 	/**
 	 * Holds a value representing `null`
+	 *
 	 * @returns {UndefinedValue}
 	 */
 	static get null() {
@@ -103,8 +106,8 @@ class Value {
 
 	static createNativeBookmark(v) {
 		var out;
-		if ( typeof v.call === "function" ) {
-			out = function Bookmark() { throw new Error("Atempted to invoke bookmark for " + v.debugString); };
+		if ( typeof v.call === 'function' ) {
+			out = function Bookmark() { throw new Error('Atempted to invoke bookmark for ' + v.debugString); };
 		} else {
 			out = {};
 		}
@@ -120,18 +123,19 @@ class Value {
 		this.realm = realm;
 		this.serial = serial++;
 	}
-	
+
 
 	/**
 	 * Converts this value to a native javascript value.
+	 *
 	 * @abstract
 	 * @returns {*}
 	 */
 	toNative() {
-		throw new Error("Unimplemented: Value#toNative");
+		throw new Error('Unimplemented: Value#toNative');
 	}
 
-	get debugString() { 
+	get debugString() {
 		let native = this.toNative();
 		return native ? native.toString() : '???';
 	}
@@ -143,7 +147,7 @@ class Value {
 	}
 
 	*member(name, realm) {
-		let err = "Can't access member " + name + " of that type: " + require('util').inspect(this);
+		let err = "Can't access member " + name + ' of that type: ' + require('util').inspect(this);
 		return CompletionRecord.makeTypeError(realm || this.realm, err);
 	}
 
@@ -188,11 +192,11 @@ class Value {
 	*lt(other) { return this.fromNative((yield * this.toNumberNative()) < (yield * other.toNumberNative())); }
 	*gte(other) { return this.fromNative((yield * this.toNumberNative()) >= (yield * other.toNumberNative())); }
 	*lte(other) { return this.fromNative((yield * this.toNumberNative()) <= (yield * other.toNumberNative())); }
-	
+
 	*subtract(other) { return this.fromNative((yield * this.toNumberNative()) - (yield * other.toNumberNative())); }
-	*divide(other) { return this.fromNative((yield * this.toNumberNative()) / (yield * other.toNumberNative())); }	
-	*multiply(other) { return this.fromNative((yield * this.toNumberNative()) * (yield * other.toNumberNative())); }	
-	*mod(other) { return this.fromNative((yield * this.toNumberNative()) % (yield * other.toNumberNative())); }	
+	*divide(other) { return this.fromNative((yield * this.toNumberNative()) / (yield * other.toNumberNative())); }
+	*multiply(other) { return this.fromNative((yield * this.toNumberNative()) * (yield * other.toNumberNative())); }
+	*mod(other) { return this.fromNative((yield * this.toNumberNative()) % (yield * other.toNumberNative())); }
 
 	*bitNot() { return this.fromNative(~(yield * this.toNumberNative())); }
 
@@ -206,8 +210,9 @@ class Value {
 
 	/**
 	 * Is the value is truthy, i.e. `!!value`
+	 *
 	 * @abstract
-	 * @type {boolean} 
+	 * @type {boolean}
 	 */
 	get truthy() {
 		throw new Error('Unimplemented: Value#truthy');
@@ -222,7 +227,7 @@ class Value {
 	}
 
 	get isCallable() {
-		return ( typeof this.call === "function" );
+		return ( typeof this.call === 'function' );
 	}
 
 	*toNumberValue() { throw new Error('Unimplemented: Value#toNumberValue'); }
@@ -230,24 +235,24 @@ class Value {
 	*toStringNative() { return (yield * this.toStringValue()).native; }
 
 	*toBooleanValue() { return this.truthy ? tru : fals; }
-	
-	*toUIntNative() { 
+
+	*toUIntNative() {
 		let nv = yield * this.toNumberValue();
 		return Math.floor(nv.native);
 	}
-	
-	*toIntNative() { 
+
+	*toIntNative() {
 		let nv = yield * this.toNumberValue();
 		return Math.floor(nv.native);
 	}
-	
-	*toNumberNative() { 
+
+	*toNumberNative() {
 		let nv = yield * this.toNumberValue();
 		return nv.native;
 	}
 
 	*toPrimitiveValue(preferedType) { throw new Error('Unimplemented: Value#jsTypeName'); }
-	
+
 }
 module.exports = Value;
 

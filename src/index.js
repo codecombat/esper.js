@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /* @flow */
 
 const Engine = require('./Engine');

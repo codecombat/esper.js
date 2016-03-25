@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /* @flow */
 
 const Value = require('../Value');
@@ -12,12 +12,12 @@ class EasyObjectValue extends ObjectValue {
 		super(realm);
 
 		let objProto = realm.ObjectPrototype;
-		if ( typeof this.objPrototype === "function" ) {
+		if ( typeof this.objPrototype === 'function' ) {
 			objProto = this.objPrototype(realm);
-		} else if ( typeof this.call === "function" ) {
+		} else if ( typeof this.call === 'function' ) {
 			objProto = realm.FunctionPrototype;
 		}
-		if ( this.call == "function" ) this.clazz = 'Function';
+		if ( this.call == 'function' ) this.clazz = 'Function';
 		this.setPrototype(objProto);
 
 		this._init();
@@ -78,7 +78,7 @@ class EasyObjectValue extends ObjectValue {
 			rblen.configurable = false;
 			rblen.writable = false;
 			rblen.enumerable = false;
-			this.properties['length'] = rblen;	
+			this.properties['length'] = rblen;
 		}
 
 		if ( realm.Function ) {
@@ -90,7 +90,7 @@ class EasyObjectValue extends ObjectValue {
 
 	}
 
-	get jsTypeName() { return typeof this.call === "function" ? 'function' : 'object'; }
+	get jsTypeName() { return typeof this.call === 'function' ? 'function' : 'object'; }
 }
 
 EasyObjectValue.EasyNativeFunction = EasyNativeFunction;

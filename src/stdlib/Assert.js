@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const Value = require('../Value');
 const CompletionRecord = require('../CompletionRecord');
@@ -13,11 +13,11 @@ class AssertFunction extends ObjectValue {
 		let why = '';
 		let check = n.arguments[0];
 		switch ( check.type ) {
-			case "BinaryExpression":
+			case 'BinaryExpression':
 				let left = yield * evalu.branch(check.left, scope);
-				let right = yield * evalu.branch(check.right, scope);						
+				let right = yield * evalu.branch(check.right, scope);
 				args[0] = yield * evalu.doBinaryEvaluation(check.operator, left, right, scope);
-				why = n.arguments[0].srcName + ' (' + left.debugString + " " + check.operator + " " + right.debugString + ')';
+				why = n.arguments[0].srcName + ' (' + left.debugString + ' ' + check.operator + ' ' + right.debugString + ')';
 				break;
 			default:
 				why = (n.arguments[0].srcName || '???');
@@ -40,7 +40,7 @@ class AssertFunction extends ObjectValue {
 		let val = Value.undef;
 		if ( args.length > 0 ) return Value.undef;
 		if ( val.truthy ) return Value.undef;
-		let reason = "";
+		let reason = '';
 		if ( args.length > 1 ) {
 			reason = ( yield * args[1].toStringValue() ).toNative();
 		} else if ( ext.callNode && ext.callNode.arguments[0] ) {

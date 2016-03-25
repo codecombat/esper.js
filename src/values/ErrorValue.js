@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 
 const PrimitiveValue = require('./PrimitiveValue');
@@ -8,8 +8,8 @@ const Value = require('../Value');
 class ErrorInstance extends ObjectValue {
 	createNativeAnalog() {
 		if ( !this.native ) {
-			let nativeClass = this.proto.nativeClass || Error;
-			this.native = new nativeClass();
+			let NativeClass = this.proto.nativeClass || Error;
+			this.native = new NativeClass();
 
 			let frames = this.native.stack.split(/\n/);
 			let header = frames.shift();

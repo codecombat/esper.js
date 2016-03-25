@@ -1,0 +1,19 @@
+{
+	"preset": "google",
+	"validateIndentation": "\t",
+	"disallowSpacesInsideParentheses": null,
+	"requireCurlyBraces": null,
+	"disallowMultipleLineBreaks": null,
+	"requireDotNotation": null,
+	"maximumLineLength": null,
+	"validateQuoteMarks": {
+		"mark": "'",
+		"escape": true
+	},
+	"disallowMultipleVarDecl": null,
+	"requireCamelCaseOrUpperCaseIdentifiers": false,
+	"jsDoc": {
+		"checkAnnotations": true,
+		"checkParamExistence": true
+	}
+}

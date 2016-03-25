@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const EasyObjectValue = require('../values/EasyObjectValue');
 const Value = require('../Value');
@@ -24,7 +24,7 @@ function wrapMathFunction(name) {
 }
 
 class MathObject extends EasyObjectValue {
-	
+
 
 	static get E$cew() { return Math.E; }
 	static get LN10$cew() { return Math.LN10; }

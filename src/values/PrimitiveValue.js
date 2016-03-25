@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /* @flow */
 
 const Value = require('../Value');
@@ -9,7 +9,7 @@ let StringValue;
  * Represents a value that maps directly to an untrusted local value.
  */
 class PrimitiveValue extends Value {
-	
+
 	constructor(value) {
 		super(null);
 		this.native = value;
@@ -32,9 +32,9 @@ class PrimitiveValue extends Value {
 
 	derivePrototype(realm) {
 		switch ( typeof this.native ) {
-			case "string": return realm.StringPrototype;
-			case "number": return realm.NumberPrototype;
-			case "boolean": return realm.BooleanPrototype;
+			case 'string': return realm.StringPrototype;
+			case 'number': return realm.NumberPrototype;
+			case 'boolean': return realm.BooleanPrototype;
 		}
 	}
 
@@ -42,7 +42,7 @@ class PrimitiveValue extends Value {
 		return this.native;
 	}
 
-	get debugString() { 
+	get debugString() {
 		if ( typeof this.native === 'object' ) return '[native object]';
 		else if ( typeof this.native === 'function' ) return '[native function]';
 		else if ( typeof this.native === 'string' ) return JSON.stringify(this.native);
@@ -54,7 +54,7 @@ class PrimitiveValue extends Value {
 		return this.native.toString();
 	}
 
-	*doubleEquals(other) { 
+	*doubleEquals(other) {
 		let native = this.native;
 		if ( other instanceof PrimitiveValue) {
 			return Value.fromNative(this.native == other.native);
@@ -78,24 +78,24 @@ class PrimitiveValue extends Value {
 
 	*inOperator(other) { return this.fromNative(this.native in other.toNative()); }
 	*instanceOf(other) { return Value.false; }
-	
+
 	*unaryPlus() { return this.fromNative(+this.native); }
 	*unaryMinus() { return this.fromNative(-this.native); }
 	*not() { return this.fromNative(!this.native); }
 
 
 
-	*member(name, realm) { 
+	*member(name, realm) {
 		let pt = this.derivePrototype(realm);
 		return yield * pt.member(name, realm, this);
 	}
 
 	*observableProperties() {
-		throw new Error("Dont do this yet");
+		throw new Error('Dont do this yet');
 	}
 
 	*makeThisForNew() {
-		throw new Error("Naw");
+		throw new Error('Naw');
 	}
 
 	get truthy() {
@@ -107,13 +107,13 @@ class PrimitiveValue extends Value {
 	}
 
 	*toPrimitiveValue(preferedType) { return this; }
-	*toStringValue() { 
-		if ( typeof this.native === "string" ) return this;
+	*toStringValue() {
+		if ( typeof this.native === 'string' ) return this;
 		return this.fromNative(String(this.native));
 	}
 
-	*toNumberValue() { 
-		if ( typeof this.native === "number" ) return this;
+	*toNumberValue() {
+		if ( typeof this.native === 'number' ) return this;
 		return this.fromNative(Number(this.native));
 	}
 

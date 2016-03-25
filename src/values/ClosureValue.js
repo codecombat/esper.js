@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /* @flow */
 
 const Value = require('../Value');
@@ -9,7 +9,7 @@ const ObjectValue = require('./ObjectValue');
  * Represents a value that maps directly to an untrusted local value.
  */
 class ClosureValue extends ObjectValue {
-	
+
 	/**
 	 * @param {object} func - AST Node for function
 	 * @param {Scope} scope - Functions up-values.
@@ -23,7 +23,7 @@ class ClosureValue extends ObjectValue {
 		this.properties['prototype'] = new PropertyDescriptor(new ObjectValue(this.realm));
 		this.properties['name'] = new PropertyDescriptor(this.fromNative(func.id ? func.id.name : undefined));
 		this.properties['length'] = new PropertyDescriptor(this.fromNative(func.params.length));
-		
+
 
 	}
 
@@ -32,8 +32,8 @@ class ClosureValue extends ObjectValue {
 	}
 
 	get debugString() {
-		if ( this.func && this.func.id ) return `[Function ${this.func.id.name}]`
-		return "[Function]";
+		if ( this.func && this.func.id ) return `[Function ${this.func.id.name}]`;
+		return '[Function]';
 	}
 
 	get truthy() {
@@ -46,9 +46,9 @@ class ClosureValue extends ObjectValue {
 
 	/**
 	 *
-	 * @param {Evaluator} evaulator
 	 * @param {Value} thiz
 	 * @param {Value[]} args
+	 * @param {Scope} scope
 	 */
 	*call(thiz, args, scope) {
 		//TODO: This way of scoping is entirelly wrong.
@@ -91,7 +91,7 @@ class ClosureValue extends ObjectValue {
 
 		let argn = Math.max(args.length, this.func.params.length);
 		let argvars = new Array(argn);
-		let args_obj = new ObjectValue(scope.realm);
+		let argsObj = new ObjectValue(scope.realm);
 
 		for ( let i = 0; i < argn; ++i ) {
 			let vv = Value.undef;
@@ -101,26 +101,26 @@ class ClosureValue extends ObjectValue {
 			argvars[i] = v;
 
 			if ( invokeScope.strict ) {
-				yield * args_obj.put(i, vv);
+				yield * argsObj.put(i, vv);
 			} else {
-				args_obj.rawSetProperty(i, v);
+				argsObj.rawSetProperty(i, v);
 			}
 		}
 
 		if ( !invokeScope.strict ) {
-			args_obj.set('callee', this);
+			argsObj.set('callee', this);
 		}
 
-		args_obj.set("length", this.fromNative(args.length));
+		argsObj.set('length', this.fromNative(args.length));
 
-		invokeScope.add('arguments', args_obj);
+		invokeScope.add('arguments', argsObj);
 
 		for ( let i = 0; i < this.func.params.length; ++i ) {
 			let name = this.func.params[i].name;
 			if ( scope.strict ) invokeScope.add(name, args[i]); //Scope is strict, so we make a copy for the args variable
 			else invokeScope.object.rawSetProperty(name, argvars[i]); //Scope isnt strict, magic happens.
 		}
-		
+
 		var result = yield ['branch','function', this.func.body, invokeScope];
 		return result;
 	}

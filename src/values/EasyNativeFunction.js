@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /* @flow */
 
 const Value = require('../Value');
@@ -46,7 +46,7 @@ class EasyNativeFunction extends ObjectValue {
 	}
 
 	*makeThisForNew() {
-		return yield new CompletionRecord(CompletionRecord.THROW, new TypeError("function is not a constructor"));
+		return yield new CompletionRecord(CompletionRecord.THROW, new TypeError('function is not a constructor'));
 	}
 
 	get debugString() {

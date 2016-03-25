@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const Value = require('./Value');
 const CompletionRecord = require('./CompletionRecord');
@@ -15,8 +15,8 @@ class Evaluator {
 		let that = this;
 		this.lastValue = null;
 		this.ast = n;
-		/** 
-		 * @type {Object[]} 
+		/**
+		 * @type {Object[]}
 		 * @property {Generator} generator
 		 * @property {string} type
 		 * @property {ast} ast
@@ -35,10 +35,10 @@ class Evaluator {
 			}
 
 			if ( match ) {
-				let j = i+1;
-				for (; j < this.frames.length; ++j ) if ( this.frames[j].type != "finally" ) break;
+				let j = i + 1;
+				for (; j < this.frames.length; ++j ) if ( this.frames[j].type != 'finally' ) break;
 				let fr = this.frames[j];
-				this.frames.splice(0,i+1);
+				this.frames.splice(0,i + 1);
 				Array.prototype.unshift.apply(this.frames, finallyFrames);
 				return fr;
 			} else if ( target == 'return' && this.frames[i].retValue ) {
@@ -48,7 +48,7 @@ class Evaluator {
 				return fr;
 			} else if ( !canCrossFxBounds && this.frames[i].type == 'function' ) {
 				break;
-			} else if ( t == "finally" ) {
+			} else if ( t == 'finally' ) {
 				finallyFrames.push(this.frames[i]);
 			}
 		}
@@ -70,7 +70,7 @@ class Evaluator {
 		}
 
 
-	 	result = top.generator.next(this.lastValue);
+		result = top.generator.next(this.lastValue);
 		if ( that.instrument ) that.instrument();
 
 		let val = result.value;
@@ -81,16 +81,16 @@ class Evaluator {
 			if ( !(val.value instanceof Value) ) val.value = this.fromNative(val.value);
 			switch ( val.type ) {
 				case CompletionRecord.CONTINUE:
-					if ( this.unwindStack('continue', false, val.target) ) return {done:false, val: val.value};
+					if ( this.unwindStack('continue', false, val.target) ) return {done: false, val: val.value};
 					throw new Error('Cant find matching loop frame for continue');
 				case CompletionRecord.BREAK:
-					if ( this.unwindStack('loop', false, val.target) ) return {done:false, val: val.value};
+					if ( this.unwindStack('loop', false, val.target) ) return {done: false, val: val.value};
 					throw new Error('Cant find matching loop frame for break');
 				case CompletionRecord.RETURN:
 					let rfr = this.unwindStack('return', false);
 					if ( rfr ) {
 						rfr.retValue = val.value;
-						return {done:false, val: val.value};
+						return {done: false, val: val.value};
 					}
 					throw new Error('Cant find function bounds.');
 				case CompletionRecord.THROW:
@@ -100,12 +100,12 @@ class Evaluator {
 
 					let smallStack;
 					if ( e && e.stack ) smallStack = e.stack.split(/\n/).slice(0,4).join('\n');
-					let stk = this.buildStacktrace(e);					
+					let stk = this.buildStacktrace(e);
 
 
 					if ( e instanceof Error ) {
 						e.stack = stk;
-						if ( smallStack && this.realm.options.addInternalStack ) e.stack += "\n-------------\n" + smallStack;
+						if ( smallStack && this.realm.options.addInternalStack ) e.stack += '\n-------------\n' + smallStack;
 						if ( this.frames[0] ) e.range = this.frames[0].ast.range;
 						if ( this.frames[0] ) e.loc = this.frames[0].ast.loc;
 					}
@@ -121,8 +121,8 @@ class Evaluator {
 					if ( tfr ) {
 						tfr.exception = val;
 						this.lastValue = val;
-						return {done:false, val: val.value};
-					} 
+						return {done: false, val: val.value};
+					}
 					let line = -1;
 					if ( this.frames[0].ast && this.frames[0].ast.attr) {
 						line = this.frames[0].ast.attr.pos.start_line;
@@ -132,8 +132,8 @@ class Evaluator {
 				case CompletionRecord.NORMAL:
 					val = val.value;
 			}
-			
-		} 
+
+		}
 
 		this.lastValue = val;
 		if ( result.done ) {
@@ -141,11 +141,11 @@ class Evaluator {
 
 			// Latient values can't cross function calls.
 			// Dont do this, and you get coffeescript mode.
-			if ( lastFrame.type === "function" ) this.lastValue = Value.undef;
+			if ( lastFrame.type === 'function' ) this.lastValue = Value.undef;
 
 			if ( that.frames.length === 0 ) return {done: true, value: result.value};
-		} 
-		
+		}
+
 		return {done: false, val: this.lastValue};
 	}
 
@@ -156,7 +156,7 @@ class Evaluator {
 			let line = 'at ';
 			if ( f.ast ) {
 				if ( f.ast ) line += (f.ast.srcName || f.ast.type) + ' ';
-				if ( f.ast.loc ) line += '(<src>:' + f.ast.loc.start.line + ":" + f.ast.loc.start.column + ')';
+				if ( f.ast.loc ) line += '(<src>:' + f.ast.loc.start.line + ':' + f.ast.loc.start.column + ')';
 			}
 			lines.push(line);
 		}
@@ -180,17 +180,17 @@ class Evaluator {
 		let oldAST = this.frames[0].ast;
 		this.frames[0].ast = n;
 		switch (n.type) {
-			case "Identifier":
+			case 'Identifier':
 				let iref = s.ref(n.name, s.realm);
 				if ( !iref ) {
 					if ( !create ) throw new ReferenceError(`${n.name} is not defined`);
-					if ( s.strict ) throw new ReferenceError(`${n.name} is not defined`);					
+					if ( s.strict ) throw new ReferenceError(`${n.name} is not defined`);
 					s.global.set(n.name, Value.undef);
 					iref = s.ref(n.name, s.realm);
 				}
 				this.frames[0].ast = oldAST;
 				return iref;
-			case "MemberExpression":
+			case 'MemberExpression':
 				let idx;
 				let ref = yield * this.branch(n.object, s);
 				if ( n.computed ) {
@@ -200,22 +200,22 @@ class Evaluator {
 				}
 
 				if ( !ref ) {
-					throw new TypeError("Cant write property of undefined: " + idx);
+					throw new TypeError('Cant write property of undefined: ' + idx);
 				}
 
 				if ( !ref.ref ) {
-					throw new TypeError("Cant write property of non-object type: " + idx);
+					throw new TypeError('Cant write property of non-object type: ' + idx);
 				}
 
 				this.frames[0].ast = oldAST;
 				return ref.ref(idx, s.realm);
 
 			default:
-				throw new Error("Couldnt resolve ref component: " + n.type);
+				throw new Error('Couldnt resolve ref component: ' + n.type);
 		}
 	}
 
-	*evaluateArrayExpression(n,s) {
+	*evaluateArrayExpression(n, s) {
 		//let result = new ObjectValue();
 		let result = new Array(n.elements.length);
 		for ( let i = 0; i < n.elements.length; ++i ) {
@@ -227,12 +227,12 @@ class Evaluator {
 		return ArrayValue.make(result, this.realm);
 	}
 
-	*evaluateAssignmentExpression(n,s) {
+	*evaluateAssignmentExpression(n, s) {
 		//TODO: Account for not-strict mode
 		let ref;
 		var realm = s.realm;
 		try {
-			ref = yield * this.resolveRef(n.left, s, n.operator === "=");
+			ref = yield * this.resolveRef(n.left, s, n.operator === '=');
 		} catch ( e ) {
 			return new CompletionRecord(CompletionRecord.THROW, this.fromNative(e));
 		}
@@ -245,55 +245,55 @@ class Evaluator {
 		let value;
 		let cur;
 		switch ( n.operator ) {
-			case "=":
+			case '=':
 				value = argument;
 				break;
-			case "+=":
+			case '+=':
 				cur = yield * ref.getValue();
 				value = yield * cur.add(argument, realm);
 				break;
-			case "-=":
+			case '-=':
 				cur = yield * ref.getValue();
 				value = yield * cur.subtract(argument, realm);
 				break;
-			case "*=":
+			case '*=':
 				cur = yield * ref.getValue();
 				value = yield * cur.multiply(argument, realm);
 				break;
-			case "/=":
+			case '/=':
 				cur = yield * ref.getValue();
 				value = yield * cur.divide(argument, realm);
 				break;
-			case "%=":
+			case '%=':
 				cur = yield * ref.getValue();
 				value = yield * cur.mod(argument, realm);
 				break;
-			case "<<=":
+			case '<<=':
 				cur = yield * ref.getValue();
 				value = yield * cur.shiftLeft(argument, realm);
 				break;
-			case ">>=":
+			case '>>=':
 				cur = yield * ref.getValue();
 				value = yield * cur.shiftRight(argument, realm);
 				break;
-			case ">>>=":
+			case '>>>=':
 				cur = yield * ref.getValue();
 				value = yield * cur.shiftRightZF(argument, realm);
 				break;
-			case "|=":
+			case '|=':
 				cur = yield * ref.getValue();
 				value = yield * cur.bitOr(argument, realm);
 				break;
-			case "&=":
+			case '&=':
 				cur = yield * ref.getValue();
 				value = yield * cur.bitAnd(argument, realm);
 				break;
-			case "^=":
+			case '^=':
 				cur = yield * ref.getValue();
 				value = yield * cur.bitXor(argument, realm);
 				break;
 			default:
-				throw new Error("Unknown assignment operator: " + n.operator);
+				throw new Error('Unknown assignment operator: ' + n.operator);
 		}
 
 		if ( ref ) {
@@ -329,18 +329,18 @@ class Evaluator {
 			case '>>': return yield * left.shiftRight(right, realm);
 			case '>>>': return yield * left.shiftRightZF(right, realm);
 			default:
-				throw new Error("Unknown binary operator: " + operator);
+				throw new Error('Unknown binary operator: ' + operator);
 		}
 	}
 
-	*evaulateBinaryExpression(n,s) {
+	*evaulateBinaryExpression(n, s) {
 		let left = yield * this.branch(n.left,s);
 		let right = yield * this.branch(n.right,s);
 		var realm = this.realm;
 		return yield * this.doBinaryEvaluation(n.operator, left, right, realm);
 	}
 
-	*evaluateBlockStatement(n,s) {
+	*evaluateBlockStatement(n, s) {
 		let result = Value.undef;
 		for ( let statement of n.body ) {
 			result = yield * this.branch(statement,s);
@@ -349,18 +349,18 @@ class Evaluator {
 	}
 
 
-	*evaluateBreakStatement(n,s) {
+	*evaluateBreakStatement(n, s) {
 		let label = n.label ? n.label.name : undefined;
 		return new CompletionRecord(CompletionRecord.BREAK, Value.undef, label);
 	}
 
 
-	*evaluateCallExpression(n,s,e) {
+	*evaluateCallExpression(n, s, e) {
 		let thiz = Value.undef;
 
 		let callee;
 
-		if ( n.callee.type === "MemberExpression" ) {
+		if ( n.callee.type === 'MemberExpression' ) {
 			thiz = yield * this.branch(n.callee.object, s);
 			callee = yield * this.partialMemberExpression(thiz, n.callee, s);
 			if ( callee instanceof CompletionRecord ) {
@@ -371,7 +371,7 @@ class Evaluator {
 			callee = yield * this.branch(n.callee, s);
 		}
 
-		if ( n.type === "NewExpression" ) {
+		if ( n.type === 'NewExpression' ) {
 			thiz = yield * callee.makeThisForNew();
 			if ( thiz instanceof CompletionRecord ) {
 				if ( thiz.type == CompletionRecord.THROW ) return thiz;
@@ -392,23 +392,23 @@ class Evaluator {
 
 		let name = n.callee.srcName || callee.jsTypeName;
 		if ( !callee.isCallable ) {
-			return CompletionRecord.makeTypeError(this.realm, "" + name + " is not a function");
+			return CompletionRecord.makeTypeError(this.realm, '' + name + ' is not a function');
 		}
 
 		let callResult = callee.call(thiz, args, s, {
-			asConstructor: n.type === "NewExpression",
+			asConstructor: n.type === 'NewExpression',
 			callNode: n
 		});
 
 		if ( callResult instanceof CompletionRecord ) return callResult;
 
-		if ( typeof callResult.next !== "function" ) {
+		if ( typeof callResult.next !== 'function' ) {
 			console.log('Generator Failure', callResult);
-			return CompletionRecord.makeTypeError(this.realm, "" + name + " didnt make a generator");
+			return CompletionRecord.makeTypeError(this.realm, '' + name + ' didnt make a generator');
 		}
-		
+
 		let result = yield * callResult;
-		if ( n.type === "NewExpression" ) {
+		if ( n.type === 'NewExpression' ) {
 			//TODO: If a constructor returns, you actually use that value
 			if ( result instanceof Value ) {
 				if ( result.specTypeName === 'undefined' ) return thiz;
@@ -420,9 +420,9 @@ class Evaluator {
 		}
 	}
 
-	*evaluateClassExpression(n,s) {
+	*evaluateClassExpression(n, s) {
 		let clazz = new ObjectValue(this.realm);
-		clazz.call = function*() { return Value.undef; }
+		clazz.call = function*() { return Value.undef; };
 
 		let proto = new ObjectValue(this.realm);
 		clazz.set('prototype', proto);
@@ -433,7 +433,7 @@ class Evaluator {
 
 			//TODO: Support getters and setters
 			if ( m.kind == 'constructor' ) {
-				clazz.call = function*(thiz,args,s) { return yield * fx.call(thiz,args,s); };
+				clazz.call = function*(thiz, args, s) { return yield * fx.call(thiz,args,s); };
 
 			} else {
 				let ks;
@@ -445,19 +445,19 @@ class Evaluator {
 				}
 
 				if ( m.static ) clazz.set(ks, fx);
-				else proto.set(ks, fx);				
+				else proto.set(ks, fx);
 			}
 		}
 		return clazz;
 	}
 
-	*evaluateClassDeclaration(n,s) {
+	*evaluateClassDeclaration(n, s) {
 		let clazz = yield * this.evaluateClassExpression(n,s);
 		s.set(n.id.name, clazz);
 		return clazz;
 	}
 
-	*evaluateConditionalExpression(n,s) {
+	*evaluateConditionalExpression(n, s) {
 		let test = yield * this.branch(n.test, s);
 		if ( test.truthy ) {
 			return yield * this.branch(n.consequent, s);
@@ -470,12 +470,12 @@ class Evaluator {
 	}
 
 
-	*evaluateContinueStatement(n,s) {
+	*evaluateContinueStatement(n, s) {
 		let label = n.label ? n.label.name : undefined;
 		return new CompletionRecord(CompletionRecord.CONTINUE, Value.undef, label);
 	}
 
-	*evaluateDoWhileStatement(n,s) {
+	*evaluateDoWhileStatement(n, s) {
 		let last = Value.undef;
 		let that = this;
 		var gen = function*() {
@@ -490,17 +490,17 @@ class Evaluator {
 		return Value.undef;
 	}
 
-	*evaluateEmptyStatement(n,s) {
+	*evaluateEmptyStatement(n, s) {
 		return Value.undef;
 	}
 
 
-	*evalutaeExpressionStatement(n,s) {
+	*evalutaeExpressionStatement(n, s) {
 		return yield * this.branch(n.expression,s);
 	}
 
-	*evaluateIdentifier(n,s) {
-		if ( n.name === "undefined" ) return Value.undef;
+	*evaluateIdentifier(n, s) {
+		if ( n.name === 'undefined' ) return Value.undef;
 		if ( !s.has(n.name) ) {
 			// Allow undeclared varibles to be null?
 			if ( false ) return Value.undef;
@@ -509,7 +509,7 @@ class Evaluator {
 		return s.get(n.name);
 	}
 
-	*evaluateIfStatement(n,s) {
+	*evaluateIfStatement(n, s) {
 		let test = yield * this.branch(n.test, s);
 		if ( test.truthy ) {
 			return yield * this.branch(n.consequent, s);
@@ -521,7 +521,7 @@ class Evaluator {
 		return Value.undef;
 	}
 
-	*evaluateForStatement(n,s) {
+	*evaluateForStatement(n, s) {
 		let last = Value.undef;
 		if ( n.init ) yield * this.branch(n.init,s);
 		let that = this;
@@ -541,14 +541,14 @@ class Evaluator {
 		return Value.undef;
 	}
 
-	*evaluateForInStatement(n,s) {
+	*evaluateForInStatement(n, s) {
 		let last = Value.undef;
 		let object = yield * this.branch(n.right,s);
 		let names = object.observableProperties();
 		let that = this;
 		let ref;
 
-		if ( n.left.type === "VariableDeclaration" ) {
+		if ( n.left.type === 'VariableDeclaration' ) {
 			yield * s.put(n.left.declarations[0].id.name, Value.undef);
 			ref = s.ref(n.left.declarations[0].id.name, s.realm);
 		} else {
@@ -569,14 +569,14 @@ class Evaluator {
 	}
 
 	//TODO: For of does more crazy Symbol iterator stuff
-	*evaluateForOfStatement(n,s) {
+	*evaluateForOfStatement(n, s) {
 		let last = Value.undef;
 		let object = yield * this.branch(n.right,s);
 		let names = object.observableProperties();
 		let that = this;
 		let ref;
 
-		if ( n.left.type === "VariableDeclaration" ) {
+		if ( n.left.type === 'VariableDeclaration' ) {
 			yield * s.put(n.left.declarations[0].id.name, Value.undef);
 			ref = s.ref(n.left.declarations[0].id.name, s.realm);
 		} else {
@@ -596,25 +596,25 @@ class Evaluator {
 		return Value.undef;
 	}
 
-	*evaluateFunctionDeclaration(n,s) {
+	*evaluateFunctionDeclaration(n, s) {
 		let closure = new ClosureValue(n, s);
 		s.add(n.id.name, closure);
 		return Value.undef;
 	}
 
-	*evaluateFunctionExpression(n,s) {
+	*evaluateFunctionExpression(n, s) {
 		let value = new ClosureValue(n, s);
-		if ( n.type === "ArrowFunctionExpression" ) {
+		if ( n.type === 'ArrowFunctionExpression' ) {
 			value.thiz = s.thiz;
 		}
 		return value;
 	}
 
-	*evaluateLabeledStatement(n,s) {
+	*evaluateLabeledStatement(n, s) {
 		return yield * this.branch(n.body, s);
 	}
 
-	*evaulateLiteral(n,s) {
+	*evaulateLiteral(n, s) {
 		if ( n.regex ) {
 			return RegExpValue.make(new RegExp(n.regex.pattern, n.regex.flags), s.realm);
 		} else if ( n.value === null ) {
@@ -624,27 +624,27 @@ class Evaluator {
 			let tryFloat = parseFloat(n.raw);
 			if ( !isNaN(tryFloat) ) return this.fromNative(tryFloat);
 			return this.fromNative(null);
-	 	} else {
+		} else {
 			return this.fromNative(n.value);
 		}
 	}
 
-	*evaluateLogicalExpression(n,s) {
+	*evaluateLogicalExpression(n, s) {
 		let left = yield * this.branch(n.left,s);
 		switch ( n.operator ) {
 			case '&&':
 				if ( left.truthy ) return yield * this.branch(n.right,s);
 				return left;
-			case '||': 
+			case '||':
 				if ( left.truthy ) return left;
 				return yield * this.branch(n.right,s);
 			default:
-				throw new Error("Unknown logical operator: " + n.operator);
+				throw new Error('Unknown logical operator: ' + n.operator);
 		}
 
 	}
 
-	*evaluateMemberExpression(n,s) {
+	*evaluateMemberExpression(n, s) {
 		let left = yield * this.branch(n.object,s);
 		return yield * this.partialMemberExpression(left, n, s);
 	}
@@ -654,7 +654,7 @@ class Evaluator {
 		if ( n.computed ) {
 			let right = yield * this.branch(n.property,s);
 			return yield * left.member(right.toNative(), this.realm);
-		} else if ( n.property.type == "Identifier") {
+		} else if ( n.property.type == 'Identifier') {
 			if ( !left ) throw `Cant index ${n.property.name} of undefined`;
 			return yield * left.member(n.property.name, this.realm);
 		} else {
@@ -663,7 +663,7 @@ class Evaluator {
 		}
 	}
 
-	*evaluateObjectExpression(n,s) {
+	*evaluateObjectExpression(n, s) {
 		//TODO: Need to wire up native prototype
 		var nat = new ObjectValue(s.realm);
 		for ( let i = 0; i < n.properties.length; ++i ) {
@@ -703,7 +703,7 @@ class Evaluator {
 		return nat;
 	}
 
-	*evaluateProgram(n,s) {
+	*evaluateProgram(n, s) {
 		let result = Value.undef;
 		if ( n.vars )
 		for ( var v in n.vars ) {
@@ -716,13 +716,13 @@ class Evaluator {
 		return result;
 	}
 
-	*evaluateReturnStatement(n,s) {
+	*evaluateReturnStatement(n, s) {
 		let retVal = Value.undef;
 		if ( n.argument ) retVal = yield * this.branch(n.argument,s);
 		return new CompletionRecord(CompletionRecord.RETURN, retVal);
 	}
 
-	*evaluateSequenceExpression(n,s) {
+	*evaluateSequenceExpression(n, s) {
 		let last = Value.undef;
 		for ( let expr of n.expressions ) {
 			last = yield * this.branch(expr,s);
@@ -730,14 +730,14 @@ class Evaluator {
 		return last;
 	}
 
-	*evaluateSwitchStatement(n,s) {
+	*evaluateSwitchStatement(n, s) {
 		let discriminant = yield * this.branch(n.discriminant, s);
-		let last = Value.undef;		
+		let last = Value.undef;
 		let that = this;
 		let matches = 0;
 		let matchVals = new Array(n.cases.length);
 		let matched = false;
-		
+
 		for ( let i = 0; i < n.cases.length; ++i ) {
 			let cas = n.cases[i];
 			if ( cas.test ) {
@@ -748,7 +748,7 @@ class Evaluator {
 			}
 		}
 
-		
+
 		let gen = function*() {
 
 			for ( let i = 0; i < n.cases.length; ++i ) {
@@ -762,7 +762,7 @@ class Evaluator {
 					matched = true;
 				}
 				for ( let statement of cas.consequent ) {
-					last = yield * that.branch(statement, s);	
+					last = yield * that.branch(statement, s);
 				}
 			}
 		};
@@ -773,17 +773,17 @@ class Evaluator {
 		return last;
 	}
 
-	*evaluateThisExpression(n,s) {
+	*evaluateThisExpression(n, s) {
 		if ( s.thiz ) return s.thiz;
 		else return Value.undef;
 	}
 
-	*evaluateThrowStatement(n,s) {
+	*evaluateThrowStatement(n, s) {
 		let value = yield * this.branch(n.argument, s);
 		return new CompletionRecord(CompletionRecord.THROW, value);
 	}
 
-	*evaluateTryStatement(n,s) {
+	*evaluateTryStatement(n, s) {
 		if ( n.finalizer ) this.pushFrame({generator: this.branch(n.finalizer,s), type: 'finally', scope: s});
 		let result = yield this.branchFrame('catch', n.block, s);
 		if ( result instanceof CompletionRecord && result.type == CompletionRecord.THROW ) {
@@ -798,7 +798,7 @@ class Evaluator {
 		return result;
 	}
 
-	*evaluateUpdateExpression(n,s) {
+	*evaluateUpdateExpression(n, s) {
 		//TODO: Need to support something like ++x[1];
 		let nue, ref;
 		try {
@@ -810,9 +810,9 @@ class Evaluator {
 		if ( ref ) old = yield * ref.getValue();
 		if ( old === undefined ) old = Value.nan;
 		switch (n.operator) {
-			case "++": nue = yield * old.add(this.fromNative(1)); break;
-			case "--": nue = yield * old.subtract(this.fromNative(1)); break;
-			default: throw new Error("Unknown update expression type: " + n.operator);
+			case '++': nue = yield * old.add(this.fromNative(1)); break;
+			case '--': nue = yield * old.subtract(this.fromNative(1)); break;
+			default: throw new Error('Unknown update expression type: ' + n.operator);
 		}
 		if ( ref ) yield * ref.setValue(nue, s);
 
@@ -820,14 +820,14 @@ class Evaluator {
 		return old;
 	}
 
-	*evaulateUnaryExpression(n,s) {
-		if ( n.operator === "delete" ) {
+	*evaulateUnaryExpression(n, s) {
+		if ( n.operator === 'delete' ) {
 			let ref;
 			try {
 				ref = yield * this.resolveRef(n.argument, s);
-				
+
 			} catch ( e ) {
-				if ( n.argument.type !== "MemberExpression" ) return Value.true;
+				if ( n.argument.type !== 'MemberExpression' ) return Value.true;
 				return new CompletionRecord(CompletionRecord.THROW, this.fromNative(e));
 			}
 			if ( !ref ) return Value.false;
@@ -837,8 +837,8 @@ class Evaluator {
 			return Value.fromNative(worked);
 		}
 
-		if ( n.operator === "typeof" ) {
-			if ( n.argument.type == "Identifier" ) {
+		if ( n.operator === 'typeof' ) {
+			if ( n.argument.type == 'Identifier' ) {
 				if ( !s.has(n.argument.name) ) return yield * Value.undef.typeOf();
 			}
 		}
@@ -852,12 +852,12 @@ class Evaluator {
 			case 'typeof': return yield * left.typeOf();
 			case 'void': return Value.undef;
 			default:
-				throw new Error("Unknown binary operator: " + n.operator);
+				throw new Error('Unknown binary operator: ' + n.operator);
 		}
 	}
 
 
-	*evaluateVariableDeclaration(n,s) {
+	*evaluateVariableDeclaration(n, s) {
 		let kind = n.kind;
 		for ( let decl of n.declarations ) {
 			let value = Value.undef;
@@ -873,7 +873,7 @@ class Evaluator {
 		return Value.undef;
 	}
 
-	*evaluateWhileStatement(n,s) {
+	*evaluateWhileStatement(n, s) {
 		let last = Value.undef;
 		let that = this;
 		var gen = function*() {
@@ -888,58 +888,60 @@ class Evaluator {
 		return Value.undef;
 	}
 
-	*evaluateWithStatement(n,s) {
+	*evaluateWithStatement(n, s) {
 		if ( s.strict ) return yield CompletionRecord.makeSyntaxError(this.realm, 'Strict mode code may not include a with statement');
 		return yield CompletionRecord.makeSyntaxError(this.realm, 'With statement not supported by esper');
 	}
 
 	/**
 	 * @private
+	 * @param {object} n - AST Node to dispatch
+	 * @param {Scope} s - Current evaluation scope
 	 */
-	dispatch(n,s) {
+	dispatch(n, s) {
 		switch ( n.type ) {
-			case "ArrayExpression": return this.evaluateArrayExpression(n,s);
-			case "ArrowFunctionExpression": return this.evaluateFunctionExpression(n,s);
-			case "AssignmentExpression": return this.evaluateAssignmentExpression(n,s);
-			case "BinaryExpression": return this.evaulateBinaryExpression(n,s);
-			case "BreakStatement": return this.evaluateBreakStatement(n,s);
-			case "BlockStatement": return this.evaluateBlockStatement(n,s);
-			case "CallExpression": return this.evaluateCallExpression(n,s);
-			case "ClassDeclaration": return this.evaluateClassDeclaration(n,s);
-			case "ClassExpression": return this.evaluateClassExpression(n,s);
-			case "ConditionalExpression": return this.evaluateConditionalExpression(n,s);
-			case "DebuggerStatement": return this.evaluateEmptyStatement(n,s);
-			case "DoWhileStatement": return this.evaluateDoWhileStatement(n,s);
-			case "ContinueStatement": return this.evaluateContinueStatement(n,s);
-			case "EmptyStatement": return this.evaluateEmptyStatement(n,s);
-			case "ExpressionStatement": return this.evalutaeExpressionStatement(n,s);
-			case "ForStatement": return this.evaluateForStatement(n,s);
-			case "ForInStatement": return this.evaluateForInStatement(n,s);
-			case "ForOfStatement": return this.evaluateForOfStatement(n,s);
-			case "FunctionDeclaration": return this.evaluateFunctionDeclaration(n,s);
-			case "FunctionExpression": return this.evaluateFunctionExpression(n,s);
-			case "Identifier": return this.evaluateIdentifier(n,s);
-			case "IfStatement": return this.evaluateIfStatement(n,s);
-			case "LabeledStatement": return this.evaluateLabeledStatement(n,s);
-			case "Literal": return this.evaulateLiteral(n,s);
-			case "LogicalExpression": return this.evaluateLogicalExpression(n,s);
-			case "MemberExpression": return this.evaluateMemberExpression(n,s);
-			case "NewExpression": return this.evaluateCallExpression(n,s);
-			case "ObjectExpression": return this.evaluateObjectExpression(n,s);
-			case "Program": return this.evaluateProgram(n,s);
-			case "ReturnStatement": return this.evaluateReturnStatement(n,s);
-			case "SequenceExpression": return this.evaluateSequenceExpression(n,s);
-			case "SwitchStatement": return this.evaluateSwitchStatement(n,s);
-			case "ThisExpression": return this.evaluateThisExpression(n,s);
-			case "ThrowStatement": return this.evaluateThrowStatement(n,s);
-			case "TryStatement": return this.evaluateTryStatement(n,s);
-			case "UnaryExpression": return this.evaulateUnaryExpression(n,s);
-			case "UpdateExpression": return this.evaluateUpdateExpression(n,s);
-			case "VariableDeclaration": return this.evaluateVariableDeclaration(n,s);
-			case "WhileStatement": return this.evaluateWhileStatement(n,s);
-			case "WithStatement": return this.evaluateWithStatement(n,s);			
+			case 'ArrayExpression': return this.evaluateArrayExpression(n,s);
+			case 'ArrowFunctionExpression': return this.evaluateFunctionExpression(n,s);
+			case 'AssignmentExpression': return this.evaluateAssignmentExpression(n,s);
+			case 'BinaryExpression': return this.evaulateBinaryExpression(n,s);
+			case 'BreakStatement': return this.evaluateBreakStatement(n,s);
+			case 'BlockStatement': return this.evaluateBlockStatement(n,s);
+			case 'CallExpression': return this.evaluateCallExpression(n,s);
+			case 'ClassDeclaration': return this.evaluateClassDeclaration(n,s);
+			case 'ClassExpression': return this.evaluateClassExpression(n,s);
+			case 'ConditionalExpression': return this.evaluateConditionalExpression(n,s);
+			case 'DebuggerStatement': return this.evaluateEmptyStatement(n,s);
+			case 'DoWhileStatement': return this.evaluateDoWhileStatement(n,s);
+			case 'ContinueStatement': return this.evaluateContinueStatement(n,s);
+			case 'EmptyStatement': return this.evaluateEmptyStatement(n,s);
+			case 'ExpressionStatement': return this.evalutaeExpressionStatement(n,s);
+			case 'ForStatement': return this.evaluateForStatement(n,s);
+			case 'ForInStatement': return this.evaluateForInStatement(n,s);
+			case 'ForOfStatement': return this.evaluateForOfStatement(n,s);
+			case 'FunctionDeclaration': return this.evaluateFunctionDeclaration(n,s);
+			case 'FunctionExpression': return this.evaluateFunctionExpression(n,s);
+			case 'Identifier': return this.evaluateIdentifier(n,s);
+			case 'IfStatement': return this.evaluateIfStatement(n,s);
+			case 'LabeledStatement': return this.evaluateLabeledStatement(n,s);
+			case 'Literal': return this.evaulateLiteral(n,s);
+			case 'LogicalExpression': return this.evaluateLogicalExpression(n,s);
+			case 'MemberExpression': return this.evaluateMemberExpression(n,s);
+			case 'NewExpression': return this.evaluateCallExpression(n,s);
+			case 'ObjectExpression': return this.evaluateObjectExpression(n,s);
+			case 'Program': return this.evaluateProgram(n,s);
+			case 'ReturnStatement': return this.evaluateReturnStatement(n,s);
+			case 'SequenceExpression': return this.evaluateSequenceExpression(n,s);
+			case 'SwitchStatement': return this.evaluateSwitchStatement(n,s);
+			case 'ThisExpression': return this.evaluateThisExpression(n,s);
+			case 'ThrowStatement': return this.evaluateThrowStatement(n,s);
+			case 'TryStatement': return this.evaluateTryStatement(n,s);
+			case 'UnaryExpression': return this.evaulateUnaryExpression(n,s);
+			case 'UpdateExpression': return this.evaluateUpdateExpression(n,s);
+			case 'VariableDeclaration': return this.evaluateVariableDeclaration(n,s);
+			case 'WhileStatement': return this.evaluateWhileStatement(n,s);
+			case 'WithStatement': return this.evaluateWithStatement(n,s);
 			default:
-				throw new Error("Unknown AST Node Type: " + n.type);
+				throw new Error('Unknown AST Node Type: ' + n.type);
 		}
 	}
 
@@ -953,13 +955,15 @@ class Evaluator {
 
 	/**
 	 * @private
+	 * @param {object} n - AST Node to dispatch
+	 * @param {Scope} s - Current evaluation scope
 	 */
-	*branch(n,s) {
+	*branch(n, s) {
 		let gen = this.dispatch(n,s);
 		let oldAST = this.frames[0].ast;
 		this.frames[0].ast = n;
 		let result = gen.next();
-		
+
 		let val = result.value;
 		if ( val instanceof CompletionRecord ) val = val.value;
 		this.frames[0].value = val;

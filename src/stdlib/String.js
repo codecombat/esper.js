@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const EasyObjectValue = require('../values/EasyObjectValue');
 const CompletionRecord = require('../CompletionRecord');
@@ -38,7 +38,7 @@ class StringObject extends EasyObjectValue {
 
 		return this.fromNative(String.fromCharCode.apply(String, argz));
 	}
-	
+
 }
 
 module.exports = StringObject;

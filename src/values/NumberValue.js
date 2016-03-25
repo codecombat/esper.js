@@ -1,11 +1,11 @@
-"use strict";
+'use strict';
 
 const PrimitiveValue = require('./PrimitiveValue');
 const Value = require('../Value');
 let StringValue;
 
-class NumberValue extends PrimitiveValue {	
-	
+class NumberValue extends PrimitiveValue {
+
 
 	*doubleEquals(other) {
 		if ( other instanceof NumberValue) {

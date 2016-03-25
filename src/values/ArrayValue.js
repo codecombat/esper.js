@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 
 const PrimitiveValue = require('./PrimitiveValue');
@@ -16,7 +16,7 @@ class ArrayValue extends ObjectValue {
 
 
 	*member(name, realm) {
-		
+
 		return yield * super.member(name, realm);
 	}
 
@@ -52,7 +52,7 @@ class ArrayValue extends ObjectValue {
 	static make(vals, realm) {
 
 		let av = new ArrayValue(realm);
-		
+
 		av.set('length', Value.fromNative(0));
 		av.properties.length.enumerable = false;
 

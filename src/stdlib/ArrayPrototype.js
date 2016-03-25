@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const EasyObjectValue = require('../values/EasyObjectValue');
 const ObjectValue = require('../values/ObjectValue');
@@ -26,7 +26,7 @@ function *shiftRight(arr, start, amt) {
 	let len = yield * getLength(arr);
 	for ( let i = len - 1; i >= start; --i ) {
 		let cur = yield * arr.member(i);
-		yield * arr.put(i+amt, cur);
+		yield * arr.put(i + amt, cur);
 	}
 	yield * arr.put(start, Value.undef);
 }
@@ -35,9 +35,9 @@ function *shiftLeft(arr, start, amt) {
 	let len = yield * getLength(arr);
 	for ( let i = start; i < len; ++i ) {
 		let cur = yield * arr.member(i);
-		yield * arr.put(i-amt, cur);
+		yield * arr.put(i - amt, cur);
 	}
-	for ( let i = len-amt; i < len; ++i ) {
+	for ( let i = len - amt; i < len; ++i ) {
 		delete arr.properties[i];
 	}
 	yield * arr.put('length', Value.fromNative(len - amt));
@@ -59,7 +59,7 @@ class ArrayPrototype extends EasyObjectValue {
 		for ( let arr of toCopy ) {
 			if ( arr instanceof PrimitiveValue ) {
 				out[idx++] = arr;
-			} else if ( !arr.has("length") ) {
+			} else if ( !arr.has('length') ) {
 				out[idx++] = arr;
 			} else {
 				let l = yield * getLength(arr);
@@ -68,7 +68,7 @@ class ArrayPrototype extends EasyObjectValue {
 					out[idx++] = tv;
 				}
 			}
-		}	
+		}
 
 		return ArrayValue.make(out, s.realm);
 	}
@@ -142,7 +142,7 @@ class ArrayPrototype extends EasyObjectValue {
 		let fx = Value.undef;
 		let targ = Value.undef;
 		if ( args.length > 0 ) fx = args[0];
-		if ( !fx.isCallable ) return yield CompletionRecord.makeTypeError(s.realm, "Arg2 not calalble.");
+		if ( !fx.isCallable ) return yield CompletionRecord.makeTypeError(s.realm, 'Arg2 not calalble.');
 
 		if ( args.length > 1 ) targ = args[1];
 
@@ -180,7 +180,7 @@ class ArrayPrototype extends EasyObjectValue {
 		let match = args[0] || Value.undef;
 		let start = args[1] || this.fromNative(0);
 		let startn = (yield * start.toNumberValue()).native;
-		
+
 		if ( isNaN(startn) ) startn = 0;
 		else if ( startn < 0 ) startn = 0;
 
@@ -189,7 +189,7 @@ class ArrayPrototype extends EasyObjectValue {
 				let v = yield * thiz.member(i);
 				if ( !v ) v = Value.undef;
 				if ( (yield * v.tripleEquals(match)).truthy ) return this.fromNative(i);
-				
+
 			}
 		}
 		return this.fromNative(-1);
@@ -199,7 +199,7 @@ class ArrayPrototype extends EasyObjectValue {
 		//TODO: Call ToObject() on thisz;
 		let l = yield * getLength(thiz);
 		let match = args[0] || Value.undef;
-		let startn = l-1;
+		let startn = l - 1;
 
 		if ( args.length > 1 ) startn = yield * args[1].toIntNative();
 		if ( isNaN(startn) ) startn = 0;
@@ -207,7 +207,7 @@ class ArrayPrototype extends EasyObjectValue {
 		if ( startn > l ) startn = l;
 		if ( startn < 0 ) return this.fromNative(-1);
 
-	
+
 		//if ( isNaN(startn) ) startn = l - 1;
 
 		for ( let i = startn; i >= 0; --i ) {
@@ -215,7 +215,7 @@ class ArrayPrototype extends EasyObjectValue {
 			let v = yield * thiz.member(i);
 			if ( !v ) v = Value.undef;
 			if ( (yield * v.tripleEquals(match)).truthy ) return this.fromNative(i);
-			
+
 		}
 
 		return this.fromNative(-1);
@@ -247,29 +247,29 @@ class ArrayPrototype extends EasyObjectValue {
 		let l = yield * getLength(thiz);
 
 		for ( let i = 0; i < args.length; ++i ) {
-			yield * thiz.put(l+i, args[i]);
+			yield * thiz.put(l + i, args[i]);
 		}
 
-		let nl = this.fromNative(l+args.length);
+		let nl = this.fromNative(l + args.length);
 		yield * thiz.put('length', nl);
-		return this.fromNative(l+args.length);
+		return this.fromNative(l + args.length);
 	}
 
 	static *pop$e(thiz, args) {
 		yield * forceArrayness(thiz);
 		let l = yield * getLength(thiz);
 		if ( l < 1 ) return Value.undef;
-		let val = yield * thiz.member(l-1);
-		yield * thiz.put('length', Value.fromNative(l-1));
+		let val = yield * thiz.member(l - 1);
+		yield * thiz.put('length', Value.fromNative(l - 1));
 		return val;
 	}
 
 	static *reverse$e(thiz, args, s) {
 		let l = yield * getLength(thiz);
-		for ( let i = 0; i < Math.floor(l/2); ++i ) {
+		for ( let i = 0; i < Math.floor(l / 2); ++i ) {
 			let lv = yield * thiz.member(i);
-			let rv = yield * thiz.member(l-i-1);
-			yield * thiz.put(l-i-1, lv, s);
+			let rv = yield * thiz.member(l - i - 1);
+			yield * thiz.put(l - i - 1, lv, s);
 			yield * thiz.put(i, rv, s);
 		}
 
@@ -282,7 +282,7 @@ class ArrayPrototype extends EasyObjectValue {
 		let fx = args[0];
 
 		if ( args.length < 1 || !fx.isCallable ) {
-			return yield CompletionRecord.makeTypeError("First argument to reduce must be a function.");
+			return yield CompletionRecord.makeTypeError('First argument to reduce must be a function.');
 		}
 
 		if ( args.length > 1 ) {
@@ -298,7 +298,7 @@ class ArrayPrototype extends EasyObjectValue {
 			}
 			acc = yield * fx.call(thiz, [acc, lv], s);
 		}
-		if ( !acc ) return yield CompletionRecord.makeTypeError(this.realm, "Reduce an empty array with no initial value.");
+		if ( !acc ) return yield CompletionRecord.makeTypeError(this.realm, 'Reduce an empty array with no initial value.');
 		return acc;
 	}
 
@@ -309,14 +309,14 @@ class ArrayPrototype extends EasyObjectValue {
 		let fx = args[0];
 
 		if ( args.length < 1 || !fx.isCallable ) {
-			return yield CompletionRecord.makeTypeError(this.realm, "First argument to reduceRight must be a function.");
+			return yield CompletionRecord.makeTypeError(this.realm, 'First argument to reduceRight must be a function.');
 		}
 
 		if ( args.length > 1 ) {
 			acc = args[1];
 		}
 
-		for ( let i = l-1; i >= 0; --i ) {
+		for ( let i = l - 1; i >= 0; --i ) {
 			if ( !thiz.has(i) ) continue;
 			let lv = yield * thiz.member(i);
 			if ( !acc ) {
@@ -326,7 +326,7 @@ class ArrayPrototype extends EasyObjectValue {
 			acc = yield * fx.call(thiz, [acc, lv], s);
 		}
 
-		if ( !acc ) return yield CompletionRecord.makeTypeError(this.realm, "Reduce an empty array with no initial value.");
+		if ( !acc ) return yield CompletionRecord.makeTypeError(this.realm, 'Reduce an empty array with no initial value.');
 		return acc;
 	}
 
@@ -334,7 +334,7 @@ class ArrayPrototype extends EasyObjectValue {
 		yield * forceArrayness(thiz);
 		let l = yield * getLength(thiz);
 		if ( l < 1 ) return Value.undef;
-		
+
 		let val = yield * thiz.member(0);
 		yield * shiftLeft(thiz, 1, 1);
 		return val;
@@ -373,7 +373,7 @@ class ArrayPrototype extends EasyObjectValue {
 
 		let result = [];
 
-		
+
 		let deleteCount;
 		let len = yield * getLength(thiz);
 		let start = len;
@@ -408,11 +408,11 @@ class ArrayPrototype extends EasyObjectValue {
 
 		yield * thiz.put('length', Value.fromNative(len + delta));
 
-		
+
 		return ArrayValue.make(deleted, s.realm);
 	}
 
-	static *sort$e(thiz,args, s) {
+	static *sort$e(thiz, args, s) {
 		let length = yield * getLength(thiz);
 		let vals = new Array(length);
 		for ( let i = 0; i < length; ++i ) {
@@ -429,7 +429,7 @@ class ArrayPrototype extends EasyObjectValue {
 
 		if ( args.length > 0 ) {
 			let fx = args[0];
-			if ( !fx.isCallable ) return yield CompletionRecord.makeTypeError(s.realm, "Arg2 not calalble.");
+			if ( !fx.isCallable ) return yield CompletionRecord.makeTypeError(s.realm, 'Arg2 not calalble.');
 			comp = function *(left, right) {
 				let res = yield * fx.call(Value.undef, [left, right], s);
 				return ( yield * res.lt(Value.fromNative(0)) ).truthy;
@@ -437,7 +437,7 @@ class ArrayPrototype extends EasyObjectValue {
 		}
 
 		let nue = yield * _g.sort(vals, comp);
-		
+
 		for ( let i = 0; i < length; ++i ) {
 			yield * thiz.put(i, nue[i]);
 		}
@@ -452,7 +452,7 @@ class ArrayPrototype extends EasyObjectValue {
 		} else {
 			return yield * joinfn.call(thiz, [defaultSeperator]);
 		}
-		
+
 	}
 
 	static *unshift$e(thiz, args, s) {

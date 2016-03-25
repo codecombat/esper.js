@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /* @flow */
 
 const Value = require('../Value');
@@ -7,7 +7,7 @@ const CompletionRecord = require('../CompletionRecord');
  * Represents a value that maps directly to an untrusted local value.
  */
 class BridgeValue extends Value {
-	
+
 	constructor(realm, value) {
 		super(realm);
 		this.native = value;
@@ -71,15 +71,15 @@ class BridgeValue extends Value {
 
 	*inOperator(other) { return this.makeBridge(this.native in other.toNative()); }
 	*instanceOf(other) { return this.makeBridge(this.native instanceof other.toNative()); }
-	
+
 	*unaryPlus() { return this.makeBridge(+this.native); }
 	*unaryMinus() { return this.makeBridge(-this.native); }
 	*not() { return this.makeBridge(!this.native); }
 
 
 
-	*member(name) { 
-		return this.makeBridge(this.native[name]); 
+	*member(name) {
+		return this.makeBridge(this.native[name]);
 	}
 
 	*put(name, value) {
@@ -95,7 +95,6 @@ class BridgeValue extends Value {
 
 	/**
 	 *
-	 * @param {Evaluator} evaluator
 	 * @param {Value} thiz
 	 * @param {Value[]} args
 	 */

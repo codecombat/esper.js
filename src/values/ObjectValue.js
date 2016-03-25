@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /* @flow */
 
 const Value = require('../Value');
@@ -11,7 +11,7 @@ const NullValue = require('./NullValue');
  * Represents a value that maps directly to an untrusted local value.
  */
 class ObjectValue extends Value {
-	
+
 	constructor(realm) {
 		super(realm);
 		this.extensable = true;
@@ -54,10 +54,10 @@ class ObjectValue extends Value {
 			this.properties[name] = v;
 
 			return yield * v.setValue(this, value, s);
-		} 
+		}
 
 		return yield * this.properties[name].setValue(this, value, s);
-		
+
 	}
 
 	get(name) {
@@ -70,7 +70,7 @@ class ObjectValue extends Value {
 		this.properties[name] = value;
 	}
 
-	
+
 	set(name, value) {
 		let v;
 		if ( Object.prototype.hasOwnProperty.call(this.properties, name) ) {
@@ -95,7 +95,7 @@ class ObjectValue extends Value {
 		}
 		return delete this.properties[name];
 	}
-	
+
 	toNative() {
 
 		//TODO: This is really a mess and should maybe be somewhere else.
@@ -125,7 +125,7 @@ class ObjectValue extends Value {
 	*add(other) { return yield * (yield * this.toPrimitiveValue()).add(other); }
 	*doubleEquals(other) {
 		if ( other instanceof PrimitiveValue ) {
-			let hint = ( other.jsTypeName == "string" ? 'string' : 'number' );
+			let hint = ( other.jsTypeName == 'string' ? 'string' : 'number' );
 			let pv = yield * this.toPrimitiveValue(hint);
 			return yield * pv.doubleEquals(other);
 		}
@@ -137,7 +137,7 @@ class ObjectValue extends Value {
 		return this.has(svalue.toNative()) ? Value.true : Value.false;
 	}
 
-	*member(name, realm, ctxthis) { 
+	*member(name, realm, ctxthis) {
 		let ref = this.ref(name, ctxthis || this);
 		if ( ref ) return yield * ref.getValue();
 		return Value.undef;
@@ -187,7 +187,7 @@ class ObjectValue extends Value {
 		return this.proto;
 	}
 
-	get debugString() { 
+	get debugString() {
 		let strProps = ['{','[', this.clazz,']'];
 		let delim = [];
 		if ( this.wellKnownName ) {
@@ -201,7 +201,7 @@ class ObjectValue extends Value {
 			let  val = this.properties[n].value;
 			if ( this.properties[n].getter || this.properties[n].setter ) delim.push(n + ': [Getter/Setter]');
 			else if ( val.specTypeName === 'object' ) delim.push(n + ': [Object]');
-			else if ( val.specTypeName === 'function' ) delim.push(n + ': [Function]');			
+			else if ( val.specTypeName === 'function' ) delim.push(n + ': [Function]');
 			else delim.push(n + ': ' + val.debugString);
 		}
 		strProps.push(delim.join(', '));
@@ -209,7 +209,7 @@ class ObjectValue extends Value {
 		return strProps.join(' ');
 	}
 
-	*toPrimitiveValue(preferedType) { 
+	*toPrimitiveValue(preferedType) {
 		let methodNames;
 		if ( preferedType == 'string') {
 			methodNames = ['toString', 'valueOf'];
@@ -226,19 +226,19 @@ class ObjectValue extends Value {
 				else if ( rescr.type == CompletionRecord.RETURN ) res = rescr.value;
 				else if ( rescr.type != CompletionRecord.NORMAL ) continue;
 				if ( res.specTypeName !== 'object' ) return res;
-			} 
+			}
 		}
 		return yield CompletionRecord.makeTypeError(this.realm, 'Cannot convert object to primitive value');
 	}
 
-	*toNumberValue() { 
+	*toNumberValue() {
 		let prim = yield * this.toPrimitiveValue('number');
 		return yield * prim.toNumberValue();
 	}
 
 	*toObjectValue(realm) { return this; }
 
-	*toStringValue() { 
+	*toStringValue() {
 		let prim = yield * this.toPrimitiveValue('string');
 		let gen = prim.toStringValue();
 		return yield * gen;
@@ -249,12 +249,12 @@ class ObjectValue extends Value {
 	}
 
 	get jsTypeName() {
-		if ( typeof this.call !== "function" ) return "object";
-		return "function";
+		if ( typeof this.call !== 'function' ) return 'object';
+		return 'function';
 	}
 
 	get specTypeName() {
-		return "object";
+		return 'object';
 	}
 }
 

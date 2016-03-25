@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const EasyObjectValue = require('../values/EasyObjectValue');
 const ObjectValue = require('../values/ObjectValue');
@@ -67,32 +67,32 @@ function *defObjectProperty(obj, name, desc, realm) {
 
 function *getDescriptor(target, name, realm) {
 	if ( !Object.hasOwnProperty.call(target.properties, name) ) {
-		console.log(name, "not in", target.properties);
+		console.log(name, 'not in', target.properties);
 		return Value.undef;
 	}
 
 	let pdesc = target.properties[name];
 	let out = new ObjectValue(realm);
 
-	if ( pdesc.value  ) yield * out.put("value", pdesc.value);
-	if ( pdesc.getter ) yield * out.put("get", pdesc.getter);
-	if ( pdesc.setter ) yield * out.put("set", pdesc.setter);
+	if ( pdesc.value  ) yield * out.put('value', pdesc.value);
+	if ( pdesc.getter ) yield * out.put('get', pdesc.getter);
+	if ( pdesc.setter ) yield * out.put('set', pdesc.setter);
 
-	yield * out.put("writable", Value.fromNative(pdesc.writable));
-	yield * out.put("enumerable", Value.fromNative(pdesc.enumerable));
-	yield * out.put("configurable", Value.fromNative(pdesc.configurable));
+	yield * out.put('writable', Value.fromNative(pdesc.writable));
+	yield * out.put('enumerable', Value.fromNative(pdesc.enumerable));
+	yield * out.put('configurable', Value.fromNative(pdesc.configurable));
 	return out;
 }
 
 function *objOrThrow(i, realm) {
 	let val = i ? i : Value.undef;
-	
+
 	if ( val instanceof EmptyValue ) {
 		return yield CompletionRecord.makeTypeError(realm, 'Cannot convert undefined or null to object');
 	}
 
 	if ( !(val instanceof ObjectValue) ) {
-		 return yield CompletionRecord.makeTypeError(realm, 'Need an object');
+		return yield CompletionRecord.makeTypeError(realm, 'Need an object');
 	}
 	return val;
 }
@@ -116,11 +116,11 @@ class ObjectObject extends EasyObjectValue {
 		}
 
 		if ( p.jsTypeName !== 'object' && p.jsTypeName !== 'function' ) {
-			return yield CompletionRecord.makeTypeError(s.realm, "Object prototype may only be an Object or null");
+			return yield CompletionRecord.makeTypeError(s.realm, 'Object prototype may only be an Object or null');
 		}
 
 		v.setPrototype(p);
-		
+
 		if ( args.length > 1 ) {
 			let propsobj = args[1];
 			for ( let p of propsobj.observableProperties() ) {

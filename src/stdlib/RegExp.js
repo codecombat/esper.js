@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const Value = require('../Value');
 const CompletionRecord = require('../CompletionRecord');
@@ -30,8 +30,8 @@ class RegExpObject extends EasyObjectValue {
 
 		return RegExpValue.make(rx, s.realm);
 	}
-	
-	callPrototype(realm) { return realm.RegExpPrototype; }	
+
+	callPrototype(realm) { return realm.RegExpPrototype; }
 	get callLength() { return 2; }
 }
 

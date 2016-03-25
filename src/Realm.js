@@ -1,8 +1,4 @@
-"use strict";
-
-/**
- * @flow
- */
+'use strict';
 
 const Scope = require('./Scope');
 const Value = require('./Value');
@@ -36,7 +32,7 @@ class EvalFunction extends ObjectValue {
 		} catch ( e ) {
 			var eo;
 
-			if ( e.description == "Invalid left-hand side in assignment" ) eo = new ReferenceError(e.description, e.fileName, e.lineNumber);
+			if ( e.description == 'Invalid left-hand side in assignment' ) eo = new ReferenceError(e.description, e.fileName, e.lineNumber);
 			else eo = new SyntaxError(e.description, e.fileName, e.lineNumber);
 
 			if ( e.stack ) eo.stack = e.stack;
@@ -64,10 +60,10 @@ class Realm {
 	parser(code) {
 		return esprima.parse(code, {loc: true, range: true});
 	}
-	
+
 	constructor(options) {
 		this.options = options || {};
-		/** @type {Value} */	
+		/** @type {Value} */
 		this.ObjectPrototype =  new (require('./stdlib/ObjectPrototype'))(this);
 		this.FunctionPrototype = new (require('./stdlib/FunctionPrototype'))(this);
 		this.Object = new (require('./stdlib/Object.js'))(this);
@@ -111,7 +107,7 @@ class Realm {
 		this.console = new (require('./stdlib/Console'))(this);
 
 		let scope = new Scope(this);
-		scope.object.clazz = "global";
+		scope.object.clazz = 'global';
 		scope.strict = options.strict || false;
 		let that = this;
 		var printer = EasyNativeFunction.makeForNative(this, function() {
@@ -127,7 +123,7 @@ class Realm {
 		scope.set('JSON', new (require('./stdlib/JSON'))(this));
 		scope.set('Esper', this.Esper);
 		scope.set('Math', this.Math);
-		
+
 		scope.set('Number', this.Number);
 		scope.set('Boolean', this.Boolean);
 		scope.set('Object', this.Object);
@@ -161,8 +157,8 @@ class Realm {
 
 	lookupWellKnown(v) {
 		if ( v === Object ) return this.Object;
-		if ( v === Object.prototype ) return this.ObjectPrototype;		
-		if ( v === Function ) return this.Function;		
+		if ( v === Object.prototype ) return this.ObjectPrototype;
+		if ( v === Function ) return this.Function;
 		if ( v === Function.prototype ) return this.FunctionPrototype;
 		if ( v === Math ) return this.Math;
 		if ( v === Number ) return this.Number;

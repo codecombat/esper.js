@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /* @flow */
 
 const Value = require('../Value');
@@ -9,7 +9,7 @@ const ArrayValue = require('./ArrayValue');
  * Represents a value that maps directly to an untrusted local value.
  */
 class SmartLinkValue extends LinkValue {
-	
+
 	constructor(realm, value) {
 		super(realm, value);
 	}
@@ -70,7 +70,7 @@ class SmartLinkValue extends LinkValue {
 					del: () => false
 				};
 			}
-			
+
 			if ( !this.allowWrite(name) ) {
 				out.setValue = noWrite;
 			}
@@ -91,7 +91,7 @@ class SmartLinkValue extends LinkValue {
 		}
 
 		return yield * super.put(name, value, s, extra);
-		
+
 	}
 
 	*member(name) {
@@ -137,7 +137,7 @@ class SmartLinkValue extends LinkValue {
 
 		return allowed;
 	}
-	
+
 	get debugString() {
 		return '[SmartLink: ' + this.native + ', props: ' + this.apiProperties.join(',') + ']';
 	}

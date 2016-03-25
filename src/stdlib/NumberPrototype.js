@@ -1,19 +1,19 @@
-"use strict";
+'use strict';
 
 const EasyObjectValue = require('../values/EasyObjectValue');
 
 
 class NumberPrototype extends EasyObjectValue {
-	static *oink(other) { return this.fromNative("Oink!"); }
-	
+	static *oink(other) { return this.fromNative('Oink!'); }
+
 	static *valueOf(thiz) {
-		if ( thiz.specTypeName === "number" ) return thiz;
-		if ( thiz.specTypeName === "object" ) {
+		if ( thiz.specTypeName === 'number' ) return thiz;
+		if ( thiz.specTypeName === 'object' ) {
 			let pv = thiz.primativeValue;
 			if ( pv.specTypeName == 'number' ) return pv;
 		}
 		throw new TypeError('Couldnt get there.');
-	}	
+	}
 
 
 	static *toExponential(thiz, argz) {
@@ -23,7 +23,7 @@ class NumberPrototype extends EasyObjectValue {
 		}
 		let num = yield * thiz.toNumberNative(thiz);
 		return this.fromNative(num.toExponential(a));
-	}	
+	}
 
 	static *toFixed(thiz, argz) {
 		let a;

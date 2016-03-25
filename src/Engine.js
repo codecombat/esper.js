@@ -1,8 +1,4 @@
-"use strict";
-
-/**
- * @flow
- */
+'use strict';
 
 const Evaluator = require('./Evaluator');
 const Realm = require('./Realm');
@@ -12,7 +8,7 @@ const BridgeValue = require('./values/BridgeValue');
 const ASTPreprocessor = require('./ASTPreprocessor');
 
 function log(what) {
-	console.log("LOG", what);
+	console.log('LOG', what);
 }
 
 let defaultOptions = {
@@ -39,6 +35,7 @@ class Engine {
 
 	/**
 	 * Evalute `code` and return a promise for the result.
+	 *
 	 * @access public
 	 * @param {string} code - String of code to evaulate
 	 * @return {Promise<*>} - The result of execution, as a promise.
@@ -58,7 +55,7 @@ class Engine {
 	evalAST(ast) {
 		//console.log(escodegen.generate(ast));
 		this.loadAST(ast);
-		
+
 		let value = this.run();
 		delete this.generator;
 		return Promise.resolve(value);
@@ -83,7 +80,7 @@ class Engine {
 	}
 
 	step() {
-		if ( !this.generator ) throw new Error("No code loaded to step");
+		if ( !this.generator ) throw new Error('No code loaded to step');
 		let value = this.generator.next();
 		return value.done;
 	}
@@ -93,7 +90,7 @@ class Engine {
 		let value = this.generator.next();
 		while ( !value.done ) {
 			value = this.generator.next();
-			if ( ++steps > this.options.executionLimit ) throw "Execution Limit Reached";
+			if ( ++steps > this.options.executionLimit ) throw 'Execution Limit Reached';
 		}
 		return value.value;
 	}
@@ -131,8 +128,8 @@ class Engine {
 		return function() {
 			let gen = genfx.call(this, arguments);
 			let val = gen.next();
-			while (!val.done) val = gen.next();		
-			return val.value;	
+			while (!val.done) val = gen.next();
+			return val.value;
 		};
 	}
 
@@ -165,8 +162,8 @@ class Engine {
 					if ( yieldValue !== false ) yield yieldValue;
 				}
 				value = gen.next();
-				if ( ++steps > that.options.executionLimit ) throw "Execution Limit Reached";
-			}		
+				if ( ++steps > that.options.executionLimit ) throw 'Execution Limit Reached';
+			}
 			return value.value.toNative();
 		};
 	}

@@ -1,10 +1,9 @@
-"use strict";
-/* @flow */
+'use strict';
 
-const PropertyDescriptor = require("./values/PropertyDescriptor");
+const PropertyDescriptor = require('./values/PropertyDescriptor');
 
-const Value = require("./Value");
-const ObjectValue = require("./values/ObjectValue");
+const Value = require('./Value');
+const ObjectValue = require('./values/ObjectValue');
 
 class Scope {
 	constructor(realm) {
@@ -48,6 +47,7 @@ class Scope {
 
 	/**
 	 * Sets an identifier in the scope to some value.
+	 *
 	 * @param {string} name - Identifier to set
 	 * @param {Value} value - Value to set
 	 */
@@ -65,6 +65,9 @@ class Scope {
 
 	/**
 	 * Set the identifier in its nearest scope, or create a global.
+	 * @param {string} name - Identifier to retreive
+	 * @param {Value} value - New vaalue of variable
+	 * @param {Scope} s - Code scope to run setter functions in
 	 */
 	*put(name, value, s) {
 		let variable = this.object.properties[name];
@@ -89,7 +92,7 @@ class Scope {
 
 	toNative() { return this; }
 	fromNative(w) { return this.realm.fromNative(w); }
-	*member(name) { 
+	*member(name) {
 		let ref = this.ref(name, this.realm);
 		if ( ref ) return yield * ref.getValue();
 		return Value.undef;

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const Value = require('../Value');
 const ArrayValue = require('../values/ArrayValue');
@@ -22,14 +22,14 @@ class RegExpProtoype extends EasyObjectValue {
 		var str = undefined;
 		if ( args.length > 0 ) str = yield * args[0].toStringNative();
 		return this.fromNative(rx.test(str));
-	}	
+	}
 
 	static *exec(thiz, args, s) {
 		var rx = yield * toRegexp(thiz);
 		rx.lastIndex = yield * (yield * thiz.member('lastIndex')).toIntNative();
 		var str = undefined;
 		if ( args.length > 0 ) str = yield * args[0].toStringNative();
-		
+
 		var result = rx.exec(str);
 		yield * thiz.put('lastIndex', Value.fromNative(rx.lastIndex));
 		if ( result === null ) return Value.null;
@@ -37,8 +37,8 @@ class RegExpProtoype extends EasyObjectValue {
 		let wraped = yield * _g.map(result, function *(c) { return Value.fromNative(c, s.realm); });
 
 		let out = ArrayValue.make(wraped, s.realm);
-		yield * out.put("index", Value.fromNative(result.index));
-		yield * out.put("input", Value.fromNative(result.input));
+		yield * out.put('index', Value.fromNative(result.index));
+		yield * out.put('input', Value.fromNative(result.input));
 		return out;
 	}
 
@@ -46,7 +46,7 @@ class RegExpProtoype extends EasyObjectValue {
 		yield * toRegexp(thiz);
 		let rv = yield * s.realm.RegExp.call(Value.null, args, s);
 		thiz.regexp = rv.regexp;
-		yield * thiz.put("lastIndex", Value.zero);
+		yield * thiz.put('lastIndex', Value.zero);
 		return Value.undef;
 	}
 

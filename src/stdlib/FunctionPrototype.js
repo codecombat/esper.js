@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const EasyObjectValue = require('../values/EasyObjectValue');
 const ClosureValue = require('../values/ClosureValue');
@@ -41,8 +41,8 @@ class BoundFunction extends ObjectValue {
 
 class FunctionPrototype extends EasyObjectValue {
 	static get caller$cew() { return null; }
-	static get length$ew() { return "?"; }
-	static get name$ew() { return ""; }
+	static get length$ew() { return '?'; }
+	static get name$ew() { return ''; }
 
 	static *apply(thiz, args, s) {
 		let vthis = args[0];
@@ -79,7 +79,7 @@ class FunctionPrototype extends EasyObjectValue {
 		if ( args.length > 0 ) vthis = args.shift();
 		return yield * thiz.call(vthis, args, s);
 	}
-	static *toString(thiz, args) { 
+	static *toString(thiz, args) {
 		if ( thiz instanceof ClosureValue ) {
 			return this.fromNative('function() { [AST] }');
 		} else if ( thiz instanceof BoundFunction ) {
@@ -87,7 +87,7 @@ class FunctionPrototype extends EasyObjectValue {
 		} else if ( thiz instanceof EasyObjectValue.EasyNativeFunction ) {
 			return this.fromNative('function() { [native code] }');
 		}
-		return CompletionRecord.makeTypeError(this.realm, 'Function.prototype.toString is not generic');		
+		return CompletionRecord.makeTypeError(this.realm, 'Function.prototype.toString is not generic');
 
 	}
 
