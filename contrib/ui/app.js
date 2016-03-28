@@ -110,7 +110,7 @@ myAppModule.controller('main', function ($scope, $timeout) {
 		delete $scope.error;
 		$scope.esper = epr;
 		$scope.ast = $scope.esper.evaluator.ast;
-		window.esper = epr;
+		window.engine = epr;
 	};
 
 	$scope.start = function() {
