@@ -18,6 +18,7 @@ class EvalFunction extends ObjectValue {
 
 	constructor(realm) {
 		super(realm);
+		this.setPrototype(realm.FunctionPrototype);
 	}
 
 	*call(thiz, args, scope) {
@@ -40,7 +41,8 @@ class EvalFunction extends ObjectValue {
 			return new CompletionRecord(CompletionRecord.THROW, this.fromNative(eo));
 		}
 
-		let bak = yield ['branch', 'eval', ast, scope];
+		//TODO: Dont run in the parent scope if we are called indirectly
+		let bak = yield ['branch', 'eval', ast, scope.parent ? scope.parent : scope];
 		//console.log("EVALED: ", bak);
 		return bak;
 	}

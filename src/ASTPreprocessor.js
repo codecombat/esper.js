@@ -41,6 +41,7 @@ class ASTPreprocessor {
 			case 'BlockStatement':
 				for ( let e of ast.body ) yield * me(e);
 				break;
+			case 'NewExpression':
 			case 'CallExpression':
 				for ( let e of ast.arguments ) yield * me(e);
 				yield * me(ast.callee);
@@ -153,6 +154,8 @@ class ASTPreprocessor {
 		this.scopeStack.unshift(scope);
 		this.varStack.unshift(a.vars);
 
+		this.mangleBody(a);
+
 		let strict = detectStrict(a.body);
 		if ( strict !== undefined ) a.strict = strict;
 	}
@@ -169,18 +172,7 @@ class ASTPreprocessor {
 		a.srcName = '[' + a.elements.map((e) => e ? e.srcName : '').join() + ']';
 	}
 
-	enterFunction(a) {
-		this.funcStack.unshift(a);
-		let scope = Object.create(this.scopeStack[0]);
-		this.scopeStack.unshift(scope);
-		a.vars = Object.create(null);
-		a.refs = Object.create(null);
-		a.funcs = Object.create(null);
-
-		for ( let o of a.params ) {
-			a.vars[o.name] = a;
-		}
-
+	mangleBody(a) {
 		function prehoist(s) {
 			if ( s.type === 'VariableDeclaration' && s.kind == 'var' ) {
 				for ( var decl of s.declarations ) {
@@ -194,9 +186,27 @@ class ASTPreprocessor {
 
 		if ( a.body.type === 'BlockStatement' ) {
 			for ( let stmt of a.body.body ) prehoist(stmt);
+		} else if ( Array.isArray(a.body) ) {
+			for ( let stmt of a.body ) prehoist(stmt);
 		} else {
 			prehoist(a.body);
 		}
+
+	}
+
+	enterFunction(a) {
+		this.funcStack.unshift(a);
+		let scope = Object.create(this.scopeStack[0]);
+		this.scopeStack.unshift(scope);
+		a.vars = Object.create(null);
+		a.refs = Object.create(null);
+		a.funcs = Object.create(null);
+
+		for ( let o of a.params ) {
+			a.vars[o.name] = a;
+		}
+
+		this.mangleBody(a);
 
 		let strict = detectStrict(a.body.body);
 		if ( strict !== undefined ) a.strict = strict;
