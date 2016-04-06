@@ -182,6 +182,7 @@ class Realm {
 	}
 
 	makeForForeignObject(native) {
+		if ( native instanceof Value ) return native;
 		switch ( this.options.foreignObjectMode ) {
 			case 'bridge':
 				return BridgeValue.make(native, this);

@@ -4,7 +4,7 @@
 
 var myAppModule = angular.module('MyApp', ['ui.ace', 'ui.bootstrap']);
 
-myAppModule.controller('main', function ($scope, $timeout) { 
+myAppModule.controller('main', function ($scope, $timeout, $http, $q) {
 	$scope.brekpoints = [];
 	$scope.code = window.localStorage.code || document.getElementById("exampleCode").innerText;
 	$scope.opts = {forceVar: true, decorateLuaObjects: true, luaCalls: true, luaOperators: true,
@@ -97,6 +97,17 @@ myAppModule.controller('main', function ($scope, $timeout) {
 
 	$scope.compile = function() {
 		var epr = new esper.Engine();
+		epr.addGlobalFx('fetch', function(url) {
+			return esper.FutureValue.make($http({
+				url: url,
+				method: 'GET',
+				transformResponse: null
+			}).then(function(data) {
+				return epr.realm.fromNative(data.data);
+			}, function(e) {
+				return $q.reject(epr.realm.fromNative(new Error('Fetch failed.')));
+			}));
+		});
 		try {
 			epr.load($scope.code);
 		} catch ( e ) {

@@ -38,10 +38,10 @@ class EasyNativeFunction extends ObjectValue {
 			if ( s ) s.strict = true;
 			let o = yield yield * this.fn.apply(this.binding, arguments, s);
 			if ( o instanceof CompletionRecord ) return o;
-			if ( !(o instanceof Value) ) o = this.fromNative(o);
+			if ( !(o instanceof Value) ) o = this.realm.makeForForeignObject(o);
 			return new CompletionRecord(CompletionRecord.NORMAL, o);
 		} catch ( e ) {
-			return new CompletionRecord(CompletionRecord.THROW, this.realm.fromNative(e));
+			return new CompletionRecord(CompletionRecord.THROW, this.realm.makeForForeignObject(e));
 		}
 	}
 

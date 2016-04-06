@@ -39,6 +39,7 @@ class Value {
 	 * @param {Realm} realm - The realm of the new value.
 	 */
 	static fromNative(value, realm) {
+		if ( value instanceof Value ) return value;
 		let prim = Value.fromPrimativeNative(value);
 		if ( prim ) return prim;
 		//TODO: Implement a real envirionemnt
@@ -255,10 +256,6 @@ class Value {
 
 }
 module.exports = Value;
-
-var BridgeValue = require('./values/BridgeValue');
-if ( BridgeValue.default ) BridgeValue = BridgeValue.default;
-
 
 ObjectValue = require('./values/ObjectValue');
 PrimitiveValue = require('./values/PrimitiveValue');

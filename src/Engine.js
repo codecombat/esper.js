@@ -6,6 +6,7 @@ const Scope = require('./Scope');
 const Value = require('./Value');
 const BridgeValue = require('./values/BridgeValue');
 const ASTPreprocessor = require('./ASTPreprocessor');
+const FutureValue = require('./values/FutureValue');
 
 function log(what) {
 	console.log('LOG', what);
@@ -55,15 +56,14 @@ class Engine {
 	evalAST(ast) {
 		//console.log(escodegen.generate(ast));
 		this.loadAST(ast);
-
-		let value = this.run();
-		delete this.generator;
-		return Promise.resolve(value);
+		let p = this.run();
+		p.then(() => delete this.generator);
+		return p;
 	}
 
 	evalASTSync(ast) {
 		this.loadAST(ast);
-		let value = this.run();
+		let value = this.runSync();
 		delete this.generator;
 		return value;
 	}
@@ -86,10 +86,29 @@ class Engine {
 	}
 
 	run() {
+		let that = this;
+		let steps = 0;
+		function handler(value) {
+			while ( !value.done ) {
+				value = that.generator.next();
+				if ( value.value && value.value.then ) {
+					return value.value.then(handler);
+				}
+				if ( ++steps > that.options.executionLimit ) throw 'Execution Limit Reached';
+			}
+			return value;
+		}
+		return new Promise(function(resolve, reject) {
+			resolve(that.generator.next());
+		}).then(handler).then((v) => v.value);
+	}
+
+	runSync() {
 		let steps = 0;
 		let value = this.generator.next();
 		while ( !value.done ) {
 			value = this.generator.next();
+			if ( value.value && value.value.then ) throw "Can't deal with futures when running in sync mode";
 			if ( ++steps > this.options.executionLimit ) throw 'Execution Limit Reached';
 		}
 		return value.value;
@@ -128,6 +147,7 @@ class Engine {
 		return function() {
 			let gen = genfx.call(this, arguments);
 			let val = gen.next();
+			//TODO: Make sure we dont await as it will loop FOREVER.
 			while (!val.done) val = gen.next();
 			return val.value;
 		};
@@ -157,6 +177,7 @@ class Engine {
 
 			while ( !value.done ) {
 				if ( !shouldYield ) yield;
+				else if ( that.evaluator.frames[0].type == 'await' ) yield;
 				else {
 					var yieldValue = shouldYield(that);
 					if ( yieldValue !== false ) yield yieldValue;

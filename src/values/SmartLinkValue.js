@@ -32,6 +32,7 @@ class SmartLinkValue extends LinkValue {
 
 	static make(native, realm) {
 		if ( native === undefined ) return Value.undef;
+		if ( native instanceof Value ) return native;
 		let prim = Value.fromPrimativeNative(native);
 		if ( prim ) return prim;
 

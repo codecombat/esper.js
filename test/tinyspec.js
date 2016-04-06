@@ -25,7 +25,7 @@ describe("TinyJS Tests", function() {
 				//console.log("\n");
 				//console.log(file);
 				var engine = new Engine({strict: false});
-				engine.eval(src);
+				engine.evalSync(src);
 				var result = engine.globalScope.get('result');
 				expect(result.truthy).to.be.true;
 			});

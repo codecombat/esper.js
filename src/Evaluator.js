@@ -5,6 +5,7 @@ const CompletionRecord = require('./CompletionRecord');
 const RuntimeError = require('./RuntimeError');
 const ClosureValue = require('./values/ClosureValue');
 const ObjectValue = require('./values/ObjectValue');
+const FutureValue = require('./values/FutureValue');
 const RegExpValue = require('./values/RegExpValue');
 const PropertyDescriptor = require('./values/PropertyDescriptor');
 const ErrorValue = require('./values/ErrorValue');
@@ -69,16 +70,17 @@ class Evaluator {
 			delete top.retValue;
 		}
 
-
 		result = top.generator.next(this.lastValue);
 		if ( that.instrument ) that.instrument();
 
 		let val = result.value;
+
 		if ( Array.isArray(val) ) {
 			val.shift();
 			this.branchFrame.apply(this, val);
 		} else if ( (val instanceof CompletionRecord) ) {
-			if ( !(val.value instanceof Value) ) val.value = this.fromNative(val.value);
+			if ( !(val.value instanceof Value) ) throw new Error('Value isnt of type Value');
+
 			switch ( val.type ) {
 				case CompletionRecord.CONTINUE:
 					if ( this.unwindStack('continue', false, val.target) ) return {done: false, val: val.value};
@@ -101,13 +103,21 @@ class Evaluator {
 					let smallStack;
 					if ( e && e.stack ) smallStack = e.stack.split(/\n/).slice(0,4).join('\n');
 					let stk = this.buildStacktrace(e);
-
+					var bestFrame = undefined;
+					for ( let i = 0; i < this.frames.length; ++i ) {
+						if ( this.frames[i].ast ) {
+							bestFrame = this.frames[i];
+							break;
+						}
+					}
 
 					if ( e instanceof Error ) {
 						e.stack = stk;
 						if ( smallStack && this.realm.options.addInternalStack ) e.stack += '\n-------------\n' + smallStack;
-						if ( this.frames[0] ) e.range = this.frames[0].ast.range;
-						if ( this.frames[0] ) e.loc = this.frames[0].ast.loc;
+						if ( bestFrame ) {
+							e.range = bestFrame.ast.range;
+							e.loc = bestFrame.ast.loc;
+						}
 					}
 
 					if ( val.value instanceof ErrorValue ) {
@@ -133,6 +143,15 @@ class Evaluator {
 					val = val.value;
 			}
 
+		}
+
+		if ( val && val.then ) {
+			this.pushFrame({generator: (function *(f) {
+				while ( !f.resolved ) yield;
+				if ( f.successful ) return f.value;
+				else return new CompletionRecord(CompletionRecord.THROW, f.value);
+			})(val), type: 'await'});
+			return {done: false, value: val};
 		}
 
 		this.lastValue = val;
