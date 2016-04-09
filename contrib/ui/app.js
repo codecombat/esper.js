@@ -1,14 +1,28 @@
-"use strict";
+'use strict';
 
-/*global $:false, angular:false, window:false, ace:false, Esper:false, document:false */
+/*global $:false, angular:false, window:false, ace:false, esper:false, document:false, _:false */
 
 var myAppModule = angular.module('MyApp', ['ui.ace', 'ui.bootstrap']);
 
-myAppModule.controller('main', function ($scope, $timeout, $http, $q) {
+myAppModule.controller('main', function($scope, $timeout, $http, $q, $location) {
+	var params = $location.search();
+
 	$scope.brekpoints = [];
-	$scope.code = window.localStorage.code || document.getElementById("exampleCode").innerText;
+	if ( params.gist ) {
+		$scope.code = '// Loading gist...';
+		$http({
+			url: 'https://api.github.com/gists/' + params.gist
+		}).then(function(cb) {
+			var result = cb.data;
+			var name = Object.keys(result.files).pop();
+			$scope.code = result.files[name].content;
+		});
+	} else {
+		$scope.code = window.localStorage.code || document.getElementById('exampleCode').innerText;
+	}
+
 	$scope.opts = {forceVar: true, decorateLuaObjects: true, luaCalls: true, luaOperators: true,
-		encloseWithFunctions: false, useStrict: false, noMutliReturnSquish: false };
+		encloseWithFunctions: false, useStrict: false, noMutliReturnSquish: false};
 
 	$scope.fix = function(c) { return c.reverse(); };
 
@@ -20,19 +34,15 @@ myAppModule.controller('main', function ($scope, $timeout, $http, $q) {
 		$scope.ace = ai;
 		window.a = ai;
 		$scope.Range = ace.require('ace/range').Range;
-		
-		ai.on("guttermousedown", function(e) { 
 
-			var target = e.domEvent.target; 
+		ai.on('guttermousedown', function(e) {
+
+			var target = e.domEvent.target;
 			console.log(target, e);
-			if (target.className.indexOf("ace_gutter-cell") == -1) 
-				return; 
-			if (!ai.isFocused()) 
-				return; 
-			if (e.clientX > 25 + target.getBoundingClientRect().left) 
-				return; 
+			if (target.className.indexOf('ace_gutter-cell') == -1) return;
+			if (!ai.isFocused()) return;
+			if (e.clientX > 25 + target.getBoundingClientRect().left) return;
 
-			console.log("OK");
 			var row = e.getDocumentPosition().row;
 			var bps = e.editor.session.getBreakpoints();
 			if ( !bps[row] ) {
@@ -47,18 +57,18 @@ myAppModule.controller('main', function ($scope, $timeout, $http, $q) {
 		ai.focus();
 	};
 
-	$scope.speed = 5;
+	$scope.speed = params.speed || 5;
 	var timer = function timer() {
-		if ( $scope.speed == 0 ) return $timeout(timer, 1000);
+		if ( $scope.speed === 0 ) return $timeout(timer, 1000);
 		if ( $scope.esper && $scope.auto ) $scope.step();
-		var delay = 1000/Math.pow(10,($scope.speed-3)/3);
+		var delay = 1000 / Math.pow(10,($scope.speed - 3) / 3);
 		if ( $scope.speed == 10 ) delay = 0;
 		$timeout(timer, delay);
 	};
 	$timeout(timer, 100);
 
 	$scope.names = function(o) {
-		return Object.getOwnPropertyNames(o).join(", ");
+		return Object.getOwnPropertyNames(o).join(', ');
 	};
 
 	$scope.isASTOpen = function(ast) {
@@ -75,24 +85,24 @@ myAppModule.controller('main', function ($scope, $timeout, $http, $q) {
 		var out = [];
 		for (var p in ast) {
 			let n = ast[p];
-			if ( p === "parent" ) continue;
-			if ( p === "loc" ) continue;
-			if ( p === "type" ) continue;
-			if ( p === "nodeID" ) continue;
+			if ( p === 'parent' ) continue;
+			if ( p === 'loc' ) continue;
+			if ( p === 'type' ) continue;
+			if ( p === 'nodeID' ) continue;
 			if ( n === null ) continue;
 			if ( angular.isArray(n) ) {
 				for ( var i in n ) {
-					if ( typeof n[i].type === "string" ) out.push(n[i]);
+					if ( typeof n[i].type === 'string' ) out.push(n[i]);
 				}
 				continue;
 			}
-			if ( typeof n.type !== "string" ) {
+			if ( typeof n.type !== 'string' ) {
 				continue;
 			}
-			if ( n.type === "Identifier" || n.type === "Literal" ) continue;
+			if ( n.type === 'Identifier' || n.type === 'Literal' ) continue;
 			out.push(n);
 		}
-		return out;		
+		return out;
 	};
 
 	$scope.compile = function() {
@@ -108,18 +118,37 @@ myAppModule.controller('main', function ($scope, $timeout, $http, $q) {
 				return $q.reject(epr.realm.fromNative(new Error('Fetch failed.')));
 			}));
 		});
+
+		epr.addGlobalFx('fork', function(yourFX) {
+			var parent = $scope.esper;
+			var fx = esper.Value.getBookmark(yourFX);
+			var e = parent.evaluator;
+			var E = e.constructor;
+			var newThread = new E(e.realm, e.ast, parent.globalScope);
+			var scope = parent.globalScope.createChild();
+			let c = fx.call(esper.Value.undef, [], scope);
+			newThread.pushFrame({generator: c, type: 'program', scope: scope, ast: null});
+			var eng = new esper.Engine();
+			eng.evaluator = newThread;
+			eng.generator = newThread.generator();
+			eng.realm = e.realm;
+			$scope.engines.push(eng);
+		});
+
 		try {
 			epr.load($scope.code);
 		} catch ( e ) {
 			$scope.error = e.stack || e.toString();
 			return;
 		}
-		$scope.output = "";
+
+		$scope.output = '';
 		epr.realm.print = function() {
-			$scope.output += Array.prototype.join.call(arguments," ") + "\n";
+			$scope.output += Array.prototype.join.call(arguments,' ') + '\n';
 		};
 		delete $scope.error;
 		$scope.esper = epr;
+		$scope.engines = [epr];
 		$scope.ast = $scope.esper.evaluator.ast;
 		window.engine = epr;
 	};
@@ -130,29 +159,41 @@ myAppModule.controller('main', function ($scope, $timeout, $http, $q) {
 	};
 
 	$scope.clear = function() {
-		if ( $scope.marker ) {
-			$scope.ace.session.removeMarker($scope.marker);
-			delete $scope.marker;
-		}
+		angular.forEach($scope.marker, function(marker) {
+			$scope.ace.session.removeMarker(marker);
+		});
+		$scope.marker = [];
 	};
 
 	$scope.step = function() {
-		var result;
 		if ( !$scope.esper ) return;
+		$scope.clear();
+		for ( var i in $scope.engines ) {
+			var eng = $scope.engines[i];
+			if ( stepOne(eng) && eng == $scope.esper ) {
+				delete $scope.esper;
+				delete $scope.gen;
+			}
+		}
+
+	};
+
+	function stepOne(engine) {
+		var result;
 		try {
-			result = $scope.esper.step();
+			result = engine.step();
 		} catch ( e ) {
+			console.log(e);
 			$scope.error = e.stack || e.toString();
 			result = e;
 			//delete $scope.esper;
-			//delete $scope.gen;      
+			//delete $scope.gen;
 		}
 
 		if ( result ) {
-			delete $scope.esper;
-			delete $scope.gen;
+			return true;
 		} else {
-			var frames = $scope.esper.evaluator.frames;
+			var frames = engine.evaluator.frames;
 			var ast;
 			for ( var i = 0; i < frames.length; ++i ) {
 				if ( frames[i].ast ) {
@@ -160,7 +201,7 @@ myAppModule.controller('main', function ($scope, $timeout, $http, $q) {
 					break;
 				}
 			}
-			
+
 			function readScope(scope) {
 				var vars = {};
 				var props = scope.object.properties;
@@ -180,9 +221,11 @@ myAppModule.controller('main', function ($scope, $timeout, $http, $q) {
 					type: f.type,
 					vars: {}
 				};
-				if ( f.ast ) o.node = f.ast.type;
-				if ( f.ast ) o.name = f.ast.srcName;
-				if ( f.ast ) o.loc = f.ast.loc.start.line + ":" + f.ast.loc.start.column;
+				if ( f.ast ) {
+					o.node = f.ast.type;
+					o.name = f.ast.srcName;
+					o.loc = f.ast.loc.start.line + ':' + f.ast.loc.start.column;
+				}
 				if ( f.value ) o.value = f.value.debugString;
 				if ( f.scope ) {
 					o.vars = readScope(f.scope);
@@ -190,32 +233,26 @@ myAppModule.controller('main', function ($scope, $timeout, $http, $q) {
 				}
 				lines.push(o);
 			}
-			
 
 			if ( ast ) {
-
-				$scope.clear();
 				var range = ast.loc;
-				var ln = range.start.line-1;
+				var ln = range.start.line - 1;
 				if ( $scope.brekpoints[ln] && $scope.skipBP != ln ) {
 					$scope.skipBP = ln;
 					$scope.auto = false;
 				} else if ( $scope.skipBP != ln ) {
 					delete $scope.skipBP;
 				}
-				var rr = new $scope.Range(range.start.line-1, range.start.column, range.end.line-1, range.end.column);
-				$scope.marker = $scope.ace.session.addMarker(rr,'executing', 'text');
+				var rr = new $scope.Range(range.start.line - 1, range.start.column, range.end.line - 1, range.end.column);
+				$scope.marker.push($scope.ace.session.addMarker(rr,'executing', 'text'));
 				//$scope.ace.session.selection.setRange(rr);
-				//$scope.output = JSON.stringify(frames,null,'  ');  
+				//$scope.output = JSON.stringify(frames,null,'  ');
 			}
 
 			$scope.frames = lines;
 		}
 
-		
-		
-	};
-
+	}
 
 	$scope.pause = function() { $scope.auto = false; };
 	$scope.play = function() { $scope.auto = true; };
@@ -233,7 +270,7 @@ myAppModule.controller('main', function ($scope, $timeout, $http, $q) {
 		$scope.clear();
 		$scope.compile();
 	},200);
-	
+
 	$scope.$watch('opts', function() {
 		$scope.stop();
 	}, true);
