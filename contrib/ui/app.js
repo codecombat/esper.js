@@ -127,6 +127,7 @@ myAppModule.controller('main', function($scope, $timeout, $http, $q, $location) 
 			var newThread = new E(e.realm, e.ast, parent.globalScope);
 			var scope = parent.globalScope.createChild();
 			let c = fx.call(esper.Value.undef, [], scope);
+			newThread.frames = [];
 			newThread.pushFrame({generator: c, type: 'program', scope: scope, ast: null});
 			var eng = new esper.Engine();
 			eng.evaluator = newThread;
@@ -168,13 +169,23 @@ myAppModule.controller('main', function($scope, $timeout, $http, $q, $location) 
 	$scope.step = function() {
 		if ( !$scope.esper ) return;
 		$scope.clear();
+		var terminated = [];
 		for ( var i in $scope.engines ) {
 			var eng = $scope.engines[i];
-			if ( stepOne(eng) && eng == $scope.esper ) {
-				delete $scope.esper;
-				delete $scope.gen;
+			if ( stepOne(eng) ) {
+				if ( eng == $scope.esper ) {
+					delete $scope.esper;
+					delete $scope.gen;
+				}
+				terminated.push(eng);
 			}
 		}
+		var stillRunning = [];
+		angular.forEach($scope.engines, function(e) {
+			if ( terminated.indexOf(e) === -1 ) stillRunning.push(e);
+		});
+
+		$scope.engines = stillRunning;
 
 	};
 
