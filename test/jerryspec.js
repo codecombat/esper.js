@@ -17,8 +17,8 @@ describe("Jerry Tests", function() {
 
 		if ( /assdfadsfd/.test(file) ) { } //Whitelist
 		else if ( 
-			/date|^array\.|array-prototype-(push|slice|splice|tolocal|unshift)|string-prototype-(match|replace|split)|-with-blocks|object-prototype-(ispro|propertyis|tolocal)|number-prototype|json|global|function-construct/.test(file) ||
-			/builtin-cons|object_|object-(literal-2|get-own-prop|define)|eval|for-in|compact-profile|regexp-simple|label|regression-test-issue-(122|164|212|245|285|316|566|642|798|736)/.test(file) 
+			/date|^array\.|array-prototype-(push|slice|splice|tolocal|unshift)|string-prototype-(match|replace|split)|-with-blocks|object-prototype-(ispro|propertyis|tolocal)|number-prototype|json|global-|function-construct/.test(file) ||
+			/builtin-cons|object_|object-(literal-2|get-own-prop|define)|eval|compact-profile|regexp-simple|label|regression-test-issue-(122|164|212|245|285|316|566|642|798|736)/.test(file) 
 		) {
 			xit(file, function() {});
 			continue;

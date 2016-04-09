@@ -253,6 +253,7 @@ class Value {
 	}
 
 	*toPrimitiveValue(preferedType) { throw new Error('Unimplemented: Value#jsTypeName'); }
+	*toPrimitiveNative(preferedType) { return (yield * this.toPrimitiveValue()).native; }
 
 }
 module.exports = Value;

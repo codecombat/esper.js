@@ -12,4 +12,8 @@ esper.Value = require('./Value');
 esper.ASTPreprocessor = require('./ASTPreprocessor');
 esper.FutureValue = require('./values/FutureValue');
 
+esper.eval = function(source) {
+	return new Engine().evalSync(source).toNative();
+};
+
 module.exports = esper;

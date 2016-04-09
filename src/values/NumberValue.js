@@ -21,6 +21,8 @@ class NumberValue extends PrimitiveValue {
 		return Value.false;
 
 	}
+
+	*add(other) { return this.fromNative(this.native + (yield * other.toPrimitiveNative())); }
 }
 
 module.exports = NumberValue;

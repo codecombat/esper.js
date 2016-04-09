@@ -32,7 +32,7 @@ class StringValue extends PrimitiveValue {
 	*lt(other) { return this.fromNative(this.native < (yield * other.toStringNative())); }
 	*gte(other) { return this.fromNative(this.native >= (yield * other.toStringNative())); }
 	*lte(other) { return this.fromNative(this.native <= (yield * other.toStringNative())); }
-
+	*add(other) { return this.fromNative(this.native + (yield * other.toPrimitiveNative('string'))); }
 
 }
 

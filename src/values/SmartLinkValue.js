@@ -140,7 +140,8 @@ class SmartLinkValue extends LinkValue {
 	}
 
 	get debugString() {
-		return '[SmartLink: ' + this.native + ', props: ' + this.apiProperties.join(',') + ']';
+		let props = this.apiProperties;
+		return '[SmartLink: ' + this.native + ', props: ' + (props ? pops.join(',') : '[none]') + ']';
 	}
 
 }
