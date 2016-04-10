@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-"use strict";
+'use strict';
 
 
 const fs = require('fs');
@@ -48,7 +48,7 @@ function next() {
 	var code = fs.readFileSync(fn);
 	return engine.eval(code).then(function(val) {
 		return next();
-	}).catch(function (e) {
+	}).catch(function(e) {
 		console.log(e.stack);
 	});
 }
@@ -58,8 +58,8 @@ next();
 
 
 /*
-Usage: node [options] [ -e script | script.js ] [arguments] 
-       node debug script.js [arguments] 
+Usage: node [options] [ -e script | script.js ] [arguments]
+       node debug script.js [arguments]
 
 Options:
   -v, --version         print Node.js version

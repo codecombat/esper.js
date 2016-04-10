@@ -1,11 +1,11 @@
-"use strict";
+'use strict';
 
 var fs = require('fs');
 var path = require('path');
 var dir = path.join(__dirname, '..', 'contrib', 'test-suites', 'tiny-js');
 var expect = require('chai').expect;
 
-describe("TinyJS Tests", function() {
+describe('TinyJS Tests', function() {
 	var files = fs.readdirSync(dir);
 	for ( var i = 0; i < files.length; ++i ) {
 		var file = files[i];
@@ -17,7 +17,7 @@ describe("TinyJS Tests", function() {
 		}
 
 		(function(file) {
-			
+
 			var Engine = require('../src/index.js');
 			var src = fs.readFileSync(path.join(dir,file), 'utf8');
 

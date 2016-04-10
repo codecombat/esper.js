@@ -1,11 +1,11 @@
-"use strict";
+'use strict';
 
 var path = require('path');
 var dir = path.join(__dirname, '..', 'contrib', 'test-suites', 'sandboxr');
 
 global.expect = require('chai').expect;
 
-describe("Sandboxr Tests", function() {
+describe('Sandboxr Tests', function() {
 
 	var fs = require('fs');
 	var files;
@@ -18,7 +18,6 @@ describe("Sandboxr Tests", function() {
 		if ( /api|async|ast|import|test-runner|with-/.test(file) ) continue;
 		if ( !/js$/.test(file) ) continue;
 		(function(file) {
-
 			describe(file, function() {
 				require('../contrib/test-suites/sandboxr/' + file.replace(/\.js$/,'') + '.js');
 			});

@@ -2,7 +2,6 @@
 
 const Value = require('./Value');
 const CompletionRecord = require('./CompletionRecord');
-const RuntimeError = require('./RuntimeError');
 const ClosureValue = require('./values/ClosureValue');
 const ObjectValue = require('./values/ObjectValue');
 const FutureValue = require('./values/FutureValue');

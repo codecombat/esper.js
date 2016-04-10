@@ -1,11 +1,11 @@
-"use strict";
+'use strict';
 
 var fs = require('fs');
 var path = require('path');
 var dir = path.join(__dirname, '..', 'contrib', 'test-suites', 'jerry');
 var expect = require('chai').expect;
 
-describe("Jerry Tests", function() {
+describe('Jerry Tests', function() {
 	if ( fs.existsSync && !fs.existsSync(dir) ) return;
 	var files;
 	if ( fs.readdirSync ) files = fs.readdirSync(dir);
@@ -16,16 +16,16 @@ describe("Jerry Tests", function() {
 		if ( !/.js$/.test(file) ) continue;
 
 		if ( /assdfadsfd/.test(file) ) { } //Whitelist
-		else if ( 
+		else if (
 			/date|^array\.|array-prototype-(push|slice|splice|tolocal|unshift)|string-prototype-(match|replace|split)|-with-blocks|object-prototype-(ispro|propertyis|tolocal)|number-prototype|json|global-|function-construct/.test(file) ||
-			/builtin-cons|object_|object-(literal-2|get-own-prop|define)|eval|compact-profile|regexp-simple|label|regression-test-issue-(122|164|212|245|285|316|566|642|798|736)/.test(file) 
+			/builtin-cons|object_|object-(literal-2|get-own-prop|define)|eval|compact-profile|regexp-simple|label|regression-test-issue-(122|164|212|245|285|316|566|642|798|736)/.test(file)
 		) {
 			xit(file, function() {});
 			continue;
 		}
 
 		(function(file) {
-			
+
 			var Engine = require('../src/index.js');
 			var src;
 			console.log(file);

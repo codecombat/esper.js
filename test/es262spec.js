@@ -1,10 +1,10 @@
-"use strict";
+'use strict';
 
 var fs = require('fs');
 var path = require('path');
 var root = path.join(__dirname, 'ext', 'test262', 'test', 'language', 'expressions');
 
-describe("ES262", function() {
+describe('ES262', function() {
 	//testDirectory(root);
 });
 
