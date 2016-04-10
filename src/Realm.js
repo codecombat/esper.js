@@ -123,7 +123,11 @@ class Realm {
 
 		scope.set('console', this.console);
 		scope.set('JSON', new (require('./stdlib/JSON'))(this));
-		scope.set('Esper', this.Esper);
+
+		if ( options.exposeEsperGlobal ) {
+			scope.set('Esper', this.Esper);
+		}
+
 		scope.set('Math', this.Math);
 
 		scope.set('Number', this.Number);

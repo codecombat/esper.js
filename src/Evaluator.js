@@ -102,7 +102,7 @@ class Evaluator {
 
 					let smallStack;
 					if ( e && e.stack ) smallStack = e.stack.split(/\n/).slice(0,4).join('\n');
-					let stk = this.buildStacktrace(e);
+					let stk = this.buildStacktrace(e).join('\n    ');
 					var bestFrame = undefined;
 					for ( let i = 0; i < this.frames.length; ++i ) {
 						if ( this.frames[i].ast ) {
@@ -169,7 +169,7 @@ class Evaluator {
 	}
 
 	buildStacktrace(e) {
-		let lines = [e.toString()];
+		let lines = e ? [e.toString()] : [];
 		for ( var f of this.frames ) {
 			//if ( f.type !== 'function' ) continue;
 			let line = 'at ';
@@ -179,7 +179,7 @@ class Evaluator {
 			}
 			lines.push(line);
 		}
-		return lines.join('\n    ');
+		return lines;
 	}
 	pushFrame(frame) {
 		this.frames.unshift(frame);
@@ -416,7 +416,8 @@ class Evaluator {
 
 		let callResult = callee.call(thiz, args, s, {
 			asConstructor: n.type === 'NewExpression',
-			callNode: n
+			callNode: n,
+			evaluator: this
 		});
 
 		if ( callResult instanceof CompletionRecord ) return callResult;
@@ -637,7 +638,7 @@ class Evaluator {
 		if ( n.regex ) {
 			return RegExpValue.make(new RegExp(n.regex.pattern, n.regex.flags), s.realm);
 		} else if ( n.value === null ) {
-			if ( this.raw === 'null' ) return this.fromNative(null);
+			if ( this.raw === 'null' ) return Value.null;
 
 			//Work around Esprima turning Infinity into null. =\
 			let tryFloat = parseFloat(n.raw);
