@@ -60,7 +60,7 @@ class LinkValue extends Value {
 		return out;
 	}
 
-	*put(name, value, s, extra) {
+	*set(name, value, s, extra) {
 		this.native[name] = value.toNative();
 	}
 
@@ -103,12 +103,12 @@ class LinkValue extends Value {
 
 
 
-	*member(name) {
+	*get(name) {
 		if ( this.native.hasOwnProperty(name) ) {
 			return this.makeLink(this.native[name]);
 		}
 
-		return yield * this.makeLink(Object.getPrototypeOf(this.native)).member(name);
+		return yield * this.makeLink(Object.getPrototypeOf(this.native)).get(name);
 	}
 
 

@@ -31,17 +31,17 @@ class ObjectValue extends Value {
 				return this.delete(name, s);
 			};
 			ret.getValue = existing.getValue.bind(existing, ctxthis || this);
-			ret.setValue = this.put.bind(this, name);
+			ret.setValue = this.set.bind(this, name);
 		} else {
 			ret.isVariable = false;
 			ret.del = (s) => false;
 			ret.getValue = function *() { return Value.undef; };
-			ret.setValue = function *(to, s) { return yield * thiz.put(name, to, s); };
+			ret.setValue = function *(to, s) { return yield * thiz.set(name, to, s); };
 		}
 		return ret;
 	}
 
-	*put(name, value, s, extra) {
+	*set(name, value, s, extra) {
 		extra = extra || {};
 		if ( !Object.prototype.hasOwnProperty.call(this.properties, name) ) {
 			if ( !this.extensable ) {
@@ -60,28 +60,14 @@ class ObjectValue extends Value {
 
 	}
 
-	get(name) {
-		let ref = this.properties[name];
-		if ( ref ) return ref.value;
-		return Value.undef;
-	}
-
 	rawSetProperty(name, value) {
 		this.properties[name] = value;
 	}
 
-
-	set(name, value) {
-		let v;
-		if ( Object.prototype.hasOwnProperty.call(this.properties, name) ) {
-			v = this.properties[name];
-			v.value = value;
-		} else {
-			v = new PropertyDescriptor(value, this);
-			v.del = () => this.delete(name);
-			this.properties[name] = v;
-		}
+	setImmediate(name, value) {
+		return Value.syncGenHelper(this.set(name, value, this.realm));
 	}
+
 
 	has(name) {
 		return name in this.properties;
@@ -137,7 +123,7 @@ class ObjectValue extends Value {
 		return this.has(svalue.toNative()) ? Value.true : Value.false;
 	}
 
-	*member(name, realm, ctxthis) {
+	*get(name, realm, ctxthis) {
 		let ref = this.ref(name, ctxthis || this);
 		if ( ref ) return yield * ref.getValue();
 		return Value.undef;
@@ -148,7 +134,7 @@ class ObjectValue extends Value {
 	}
 
 	*constructorOf(what, realm) {
-		let target = yield * this.member('prototype');
+		let target = yield * this.get('prototype');
 		let pt = what.getPrototype(realm);
 		let checked = [];
 
@@ -218,7 +204,7 @@ class ObjectValue extends Value {
 		}
 
 		for ( let name of methodNames ) {
-			let method = yield * this.member(name);
+			let method = yield * this.get(name);
 			if ( method && method.call ) {
 				let rescr = yield (yield * method.call(this, [], this.realm.evaluator));
 				let res = Value.undef;

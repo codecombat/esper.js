@@ -8,11 +8,21 @@ let cache = new WeakMap();
 let bookmarks = new WeakMap();
 let ObjectValue, PrimitiveValue, StringValue, NumberValue;
 
+
+
 let serial = 0;
 /**
  * Represents a value a variable could take.
  */
 class Value {
+	static syncGenHelper(gen) {
+		var val = gen.next();
+		if ( !val.done ) {
+			console.log('This code path uses a helper, but the actual method yielded...');
+			throw new Error('This code path uses a helper, but the actual method yielded...');
+		}
+		return val.value;
+	}
 
 	/**
 	 * Convert a native javascript primative value to a Value
@@ -147,9 +157,13 @@ class Value {
 		return Value.fromNative(other, this.realm);
 	}
 
-	*member(name, realm) {
-		let err = "Can't access member " + name + ' of that type: ' + require('util').inspect(this);
+	*get(name, realm) {
+		let err = "Can't access get " + name + ' of that type: ' + require('util').inspect(this);
 		return CompletionRecord.makeTypeError(realm || this.realm, err);
+	}
+
+	getImmediate(name) {
+		return Value.syncGenHelper(this.get(name, this.realm));
 	}
 
 	*not() {

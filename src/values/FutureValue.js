@@ -28,12 +28,10 @@ class FutureValue extends Value {
 	/**
 	 * Creates a new future value wraping the promise p.
 	 * @param <Promise<Value>> promise
-	 * @param <Realm> realm
 	 */
-
-	static make(p) {
+	static make(promise) {
 		var fv = new FutureValue(null);
-		p.then(function(resolved) {
+		promise.then(function(resolved) {
 			fv.resolve(Value.fromNative(resolved));
 		}, function(caught) {
 			fv.reject(Value.fromNative(caught));

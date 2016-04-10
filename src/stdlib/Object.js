@@ -13,14 +13,14 @@ function *defObjectProperty(obj, name, desc, realm) {
 		name = (yield * name.toStringNative());
 	}
 
-	let value = yield * desc.member('value', realm);
+	let value = yield * desc.get('value', realm);
 
 
 	let v = new PropertyDescriptor(value);
 
 
 	if ( desc.has('enumerable') ) {
-		let enu = yield * desc.member('enumerable', realm);
+		let enu = yield * desc.get('enumerable', realm);
 		if ( !(enu instanceof EmptyValue) ) {
 			v.enumerable = enu.truthy;
 		}
@@ -29,7 +29,7 @@ function *defObjectProperty(obj, name, desc, realm) {
 	}
 
 	if ( desc.has('writable') ) {
-		let wri = yield * desc.member('writable', realm);
+		let wri = yield * desc.get('writable', realm);
 		if ( !(wri instanceof EmptyValue) ) {
 			v.writable = wri.truthy;
 		}
@@ -38,7 +38,7 @@ function *defObjectProperty(obj, name, desc, realm) {
 	}
 
 	if ( desc.has('configurable') ) {
-		let conf = yield * desc.member('configurable', realm);
+		let conf = yield * desc.get('configurable', realm);
 		if ( !(conf instanceof EmptyValue) ) {
 			v.writable = conf.truthy;
 		}
@@ -48,14 +48,14 @@ function *defObjectProperty(obj, name, desc, realm) {
 
 
 	if ( desc.has('get') ) {
-		let get = yield * desc.member('get', realm);
+		let get = yield * desc.get('get', realm);
 		if ( !(get instanceof EmptyValue) ) {
 			v.getter = get;
 		}
 	}
 
 	if ( desc.has('set') ) {
-		let set = yield * desc.member('set', realm);
+		let set = yield * desc.get('set', realm);
 		if ( !(set instanceof EmptyValue) ) {
 			v.setter = set;
 		}
@@ -74,13 +74,13 @@ function *getDescriptor(target, name, realm) {
 	let pdesc = target.properties[name];
 	let out = new ObjectValue(realm);
 
-	if ( pdesc.value  ) yield * out.put('value', pdesc.value);
-	if ( pdesc.getter ) yield * out.put('get', pdesc.getter);
-	if ( pdesc.setter ) yield * out.put('set', pdesc.setter);
+	if ( pdesc.value  ) yield * out.set('value', pdesc.value);
+	if ( pdesc.getter ) yield * out.set('get', pdesc.getter);
+	if ( pdesc.setter ) yield * out.set('set', pdesc.setter);
 
-	yield * out.put('writable', Value.fromNative(pdesc.writable));
-	yield * out.put('enumerable', Value.fromNative(pdesc.enumerable));
-	yield * out.put('configurable', Value.fromNative(pdesc.configurable));
+	yield * out.set('writable', Value.fromNative(pdesc.writable));
+	yield * out.set('enumerable', Value.fromNative(pdesc.enumerable));
+	yield * out.set('configurable', Value.fromNative(pdesc.configurable));
 	return out;
 }
 
@@ -125,7 +125,7 @@ class ObjectObject extends EasyObjectValue {
 			let propsobj = args[1];
 			for ( let p of propsobj.observableProperties() ) {
 				let strval = p.native;
-				let podesc = yield * propsobj.member(strval, s.realm);
+				let podesc = yield * propsobj.get(strval, s.realm);
 				yield * defObjectProperty(v, p, podesc, s.realm);
 			}
 		}
@@ -149,7 +149,7 @@ class ObjectObject extends EasyObjectValue {
 
 		for ( let p of propsobj.observableProperties() ) {
 			let strval = p.native;
-			let podesc = yield * propsobj.member(strval, s.realm);
+			let podesc = yield * propsobj.get(strval, s.realm);
 			yield * defObjectProperty(target, p, podesc, s.realm);
 		}
 		return Value.true;

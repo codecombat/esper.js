@@ -16,19 +16,21 @@ class PrimitiveValue extends Value {
 	}
 
 	ref(name, realm) {
+		var that = this;
 		let out = Object.create(null);
-		let str = (value) => {};
-		let pt = this.derivePrototype(realm);
-		Object.defineProperty(out, 'value', {
-			get: () => pt.get(name),
-			set: str
-		});
-		out.getValue = function *() { yield * pt.member(name); };
-		out.setValue = function *(to) { };
-		out.set = str;
-
+		out.getValue = function *() { return yield * that.get(name, realm); };
+		out.setValue = function *(to) { yield * that.set(name, to, realm); };
 		return out;
 	}
+
+	*get(what, realm) {
+		return yield * this.derivePrototype(realm).get(what, realm);
+	}
+
+	*set(what, to, realm) {
+		//Can't set primative properties.
+	}
+
 
 	derivePrototype(realm) {
 		switch ( typeof this.native ) {
@@ -85,9 +87,9 @@ class PrimitiveValue extends Value {
 
 
 
-	*member(name, realm) {
+	*get(name, realm) {
 		let pt = this.derivePrototype(realm);
-		return yield * pt.member(name, realm, this);
+		return yield * pt.get(name, realm, this);
 	}
 
 	*observableProperties() {

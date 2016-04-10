@@ -20,7 +20,7 @@ class Scope {
 	 * @returns {Value}
 	 */
 	get(name) {
-		return this.object.get(name);
+		return this.object.getImmediate(name);
 	}
 
 	ref(name) {
@@ -36,11 +36,11 @@ class Scope {
 	}
 
 	add(name, value) {
-		this.writeTo.set(name, value);
+		this.writeTo.setImmediate(name, value);
 	}
 
 	addConst(name, value) {
-		this.writeTo.set(name, value);
+		this.set(name, value);
 		this.writeTo.properties[name].writable = false;
 		this.writeTo.properties[name].configurable = false;
 	}
@@ -52,7 +52,7 @@ class Scope {
 	 * @param {Value} value - Value to set
 	 */
 	set(name, value) {
-		this.writeTo.set(name, value);
+		this.writeTo.setImmediate(name, value);
 	}
 
 	unset(name) {
@@ -87,16 +87,10 @@ class Scope {
 		return child;
 	}
 
-	//TODO: This is a patch to let a scope be a variable,
-	//      but we could do it better.
-
-	toNative() { return this; }
-	fromNative(w) { return this.realm.fromNative(w); }
-	*member(name) {
-		let ref = this.ref(name, this.realm);
-		if ( ref ) return yield * ref.getValue();
-		return Value.undef;
+	fromNative(value) {
+		return this.realm.fromNative(value);
 	}
+
 
 }
 

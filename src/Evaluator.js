@@ -122,7 +122,7 @@ class Evaluator {
 
 					if ( val.value instanceof ErrorValue ) {
 						if ( !val.value.has('stack') ) {
-							val.value.set('stack', Value.fromNative(stk));
+							val.value.setImmediate('stack', Value.fromNative(stk));
 							val.value.properties['stack'].enumerable = false;
 						}
 					}
@@ -568,7 +568,7 @@ class Evaluator {
 		let ref;
 
 		if ( n.left.type === 'VariableDeclaration' ) {
-			yield * s.put(n.left.declarations[0].id.name, Value.undef);
+			s.add(n.left.declarations[0].id.name, Value.undef);
 			ref = s.ref(n.left.declarations[0].id.name, s.realm);
 		} else {
 			ref = s.ref(n.left.name, s.realm);
@@ -604,7 +604,7 @@ class Evaluator {
 
 		var gen = function*() {
 			for ( let name of names ) {
-				yield * ref.setValue(yield * object.member(yield * name.toStringNative()));
+				yield * ref.setValue(yield * object.get(yield * name.toStringNative()));
 				last = yield * that.branch(n.body, s);
 			}
 		};
@@ -669,16 +669,15 @@ class Evaluator {
 	}
 
 	*partialMemberExpression(left, n, s) {
-
 		if ( n.computed ) {
 			let right = yield * this.branch(n.property,s);
-			return yield * left.member(right.toNative(), this.realm);
+			return yield * left.get(right.toNative(), this.realm);
 		} else if ( n.property.type == 'Identifier') {
 			if ( !left ) throw `Cant index ${n.property.name} of undefined`;
-			return yield * left.member(n.property.name, this.realm);
+			return yield * left.get(n.property.name, this.realm);
 		} else {
 			if ( !left ) throw `Cant index ${n.property.value.toString()} of undefined`;
-			return yield * left.member(n.property.value.toString(), this.realm);
+			return yield * left.get(n.property.value.toString(), this.realm);
 		}
 	}
 

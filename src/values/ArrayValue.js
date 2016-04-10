@@ -15,9 +15,8 @@ class ArrayValue extends ObjectValue {
 	}
 
 
-	*member(name, realm) {
-
-		return yield * super.member(name, realm);
+	*get(name, realm) {
+		return yield * super.get(name, realm);
 	}
 
 	adjustLength(name) {
@@ -31,12 +30,7 @@ class ArrayValue extends ObjectValue {
 
 	set(name, v) {
 		this.adjustLength(name);
-		super.set(name, v);
-	}
-
-	put(name, v) {
-		this.adjustLength(name);
-		return super.put(name, v);
+		return super.set(name, v);
 	}
 
 	toNative() {
@@ -53,13 +47,13 @@ class ArrayValue extends ObjectValue {
 
 		let av = new ArrayValue(realm);
 
-		av.set('length', Value.fromNative(0));
+		av.setImmediate('length', Value.fromNative(0));
 		av.properties.length.enumerable = false;
 
 		for ( let i = 0; i < vals.length; ++i ) {
 			let v = vals[i];
 			if ( !(v instanceof Value) ) v = realm.fromNative(v);
-			av.set(i, v);
+			av.setImmediate(i, v);
 		}
 		return av;
 	}

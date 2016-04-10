@@ -101,17 +101,17 @@ class ClosureValue extends ObjectValue {
 			argvars[i] = v;
 
 			if ( invokeScope.strict ) {
-				yield * argsObj.put(i, vv);
+				yield * argsObj.set(i, vv);
 			} else {
 				argsObj.rawSetProperty(i, v);
 			}
 		}
 
 		if ( !invokeScope.strict ) {
-			argsObj.set('callee', this);
+			argsObj.add('callee', this);
 		}
 
-		argsObj.set('length', this.fromNative(args.length));
+		yield * argsObj.set('length', this.fromNative(args.length));
 
 		invokeScope.add('arguments', argsObj);
 

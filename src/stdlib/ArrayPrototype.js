@@ -10,12 +10,12 @@ const _g = require('../GenDash');
 
 function *forceArrayness(v) {
 	if ( !v.has('length') ) {
-		yield * v.put('length', Value.zero);
+		yield * v.set('length', Value.zero);
 	}
 }
 
 function *getLength(v) {
-	let m = yield * v.member('length');
+	let m = yield * v.get('length');
 	return yield * m.toUIntNative();
 }
 
@@ -25,22 +25,22 @@ function *shiftRight(arr, start, amt) {
 	amt = amt || 1;
 	let len = yield * getLength(arr);
 	for ( let i = len - 1; i >= start; --i ) {
-		let cur = yield * arr.member(i);
-		yield * arr.put(i + amt, cur);
+		let cur = yield * arr.get(i);
+		yield * arr.set(i + amt, cur);
 	}
-	yield * arr.put(start, Value.undef);
+	yield * arr.set(start, Value.undef);
 }
 
 function *shiftLeft(arr, start, amt) {
 	let len = yield * getLength(arr);
 	for ( let i = start; i < len; ++i ) {
-		let cur = yield * arr.member(i);
-		yield * arr.put(i - amt, cur);
+		let cur = yield * arr.get(i);
+		yield * arr.set(i - amt, cur);
 	}
 	for ( let i = len - amt; i < len; ++i ) {
 		delete arr.properties[i];
 	}
-	yield * arr.put('length', Value.fromNative(len - amt));
+	yield * arr.set('length', Value.fromNative(len - amt));
 }
 
 
@@ -64,7 +64,7 @@ class ArrayPrototype extends EasyObjectValue {
 			} else {
 				let l = yield * getLength(arr);
 				for ( let i = 0; i < l; ++i ) {
-					let tv = yield * arr.member(i, s.realm);
+					let tv = yield * arr.get(i, s.realm);
 					out[idx++] = tv;
 				}
 			}
@@ -88,7 +88,7 @@ class ArrayPrototype extends EasyObjectValue {
 
 		let l = yield * getLength(thiz);
 		for ( let i = 0; i < l; ++i ) {
-			let tv = yield * thiz.member(i);
+			let tv = yield * thiz.get(i);
 			let tru = yield * test(tv, i);
 			if ( tru ) out.push(tv);
 		}
@@ -109,7 +109,7 @@ class ArrayPrototype extends EasyObjectValue {
 
 		let l = yield * getLength(thiz);
 		for ( let i = 0; i < l; ++i ) {
-			let tv = yield * thiz.member(i);
+			let tv = yield * thiz.get(i);
 			let tru = yield * test(tv, i);
 			if ( !tru ) return Value.false;
 		}
@@ -130,7 +130,7 @@ class ArrayPrototype extends EasyObjectValue {
 
 		let l = yield * getLength(thiz);
 		for ( let i = 0; i < l; ++i ) {
-			let tv = yield * thiz.member(i);
+			let tv = yield * thiz.get(i);
 			let tru = yield * test(tv, i);
 			if ( tru ) return Value.true;
 		}
@@ -150,7 +150,7 @@ class ArrayPrototype extends EasyObjectValue {
 		let out = new Array(l);
 		for ( let i = 0; i < l; ++i ) {
 			if ( !thiz.has(i) ) continue;
-			let tv = yield * thiz.member(i);
+			let tv = yield * thiz.get(i);
 			let v = yield yield * fx.call(targ, [tv, Value.fromNative(i), thiz], s);
 			out[i] = v;
 		}
@@ -167,7 +167,7 @@ class ArrayPrototype extends EasyObjectValue {
 		let l = yield * getLength(thiz);
 		for ( let i = 0; i < l; ++i ) {
 			if ( !thiz.has(i) ) continue;
-			let v = yield * thiz.member(i);
+			let v = yield * thiz.get(i);
 			let res = yield * fx.call(targ, [v, Value.fromNative(i), thiz], s);
 		}
 
@@ -186,7 +186,7 @@ class ArrayPrototype extends EasyObjectValue {
 
 		if ( l > startn ) {
 			for ( let i = startn; i < l; ++i ) {
-				let v = yield * thiz.member(i);
+				let v = yield * thiz.get(i);
 				if ( !v ) v = Value.undef;
 				if ( (yield * v.tripleEquals(match)).truthy ) return this.fromNative(i);
 
@@ -212,7 +212,7 @@ class ArrayPrototype extends EasyObjectValue {
 
 		for ( let i = startn; i >= 0; --i ) {
 			if ( !thiz.has(i) ) continue;
-			let v = yield * thiz.member(i);
+			let v = yield * thiz.get(i);
 			if ( !v ) v = Value.undef;
 			if ( (yield * v.tripleEquals(match)).truthy ) return this.fromNative(i);
 
@@ -229,7 +229,7 @@ class ArrayPrototype extends EasyObjectValue {
 		let strings = new Array(l);
 		for ( let i = 0; i < l; ++i ) {
 			if ( !thiz.has(i) ) continue;
-			let v = yield * thiz.member(i);
+			let v = yield * thiz.get(i);
 			if ( !v ) strings[i] = '';
 			else {
 				if ( v.jsTypeName == 'undefined' ) {
@@ -247,11 +247,11 @@ class ArrayPrototype extends EasyObjectValue {
 		let l = yield * getLength(thiz);
 
 		for ( let i = 0; i < args.length; ++i ) {
-			yield * thiz.put(l + i, args[i]);
+			yield * thiz.set(l + i, args[i]);
 		}
 
 		let nl = this.fromNative(l + args.length);
-		yield * thiz.put('length', nl);
+		yield * thiz.set('length', nl);
 		return this.fromNative(l + args.length);
 	}
 
@@ -259,18 +259,18 @@ class ArrayPrototype extends EasyObjectValue {
 		yield * forceArrayness(thiz);
 		let l = yield * getLength(thiz);
 		if ( l < 1 ) return Value.undef;
-		let val = yield * thiz.member(l - 1);
-		yield * thiz.put('length', Value.fromNative(l - 1));
+		let val = yield * thiz.get(l - 1);
+		yield * thiz.set('length', Value.fromNative(l - 1));
 		return val;
 	}
 
 	static *reverse$e(thiz, args, s) {
 		let l = yield * getLength(thiz);
 		for ( let i = 0; i < Math.floor(l / 2); ++i ) {
-			let lv = yield * thiz.member(i);
-			let rv = yield * thiz.member(l - i - 1);
-			yield * thiz.put(l - i - 1, lv, s);
-			yield * thiz.put(i, rv, s);
+			let lv = yield * thiz.get(i);
+			let rv = yield * thiz.get(l - i - 1);
+			yield * thiz.set(l - i - 1, lv, s);
+			yield * thiz.set(i, rv, s);
 		}
 
 		return thiz;
@@ -291,7 +291,7 @@ class ArrayPrototype extends EasyObjectValue {
 
 		for ( let i = 0; i < l; ++i ) {
 			if ( !thiz.has(i) ) continue;
-			let lv = yield * thiz.member(i);
+			let lv = yield * thiz.get(i);
 			if ( !acc ) {
 				acc = lv;
 				continue;
@@ -318,7 +318,7 @@ class ArrayPrototype extends EasyObjectValue {
 
 		for ( let i = l - 1; i >= 0; --i ) {
 			if ( !thiz.has(i) ) continue;
-			let lv = yield * thiz.member(i);
+			let lv = yield * thiz.get(i);
 			if ( !acc ) {
 				acc = lv;
 				continue;
@@ -335,7 +335,7 @@ class ArrayPrototype extends EasyObjectValue {
 		let l = yield * getLength(thiz);
 		if ( l < 1 ) return Value.undef;
 
-		let val = yield * thiz.member(0);
+		let val = yield * thiz.get(0);
 		yield * shiftLeft(thiz, 1, 1);
 		return val;
 	}
@@ -360,7 +360,7 @@ class ArrayPrototype extends EasyObjectValue {
 
 
 		for ( let i = start; i < end; ++i ) {
-			result.push(yield * thiz.member('' + i ));
+			result.push(yield * thiz.get('' + i ));
 		}
 
 
@@ -396,17 +396,17 @@ class ArrayPrototype extends EasyObjectValue {
 		let delta = toAdd.length - deleteCount;
 
 		for ( let i = start; i < start + deleteCount; ++i ) {
-			deleted.push(yield * thiz.member(i));
+			deleted.push(yield * thiz.get(i));
 		}
 
 		if ( delta > 0 ) yield * shiftRight(thiz, start, delta);
 		if ( delta < 0 ) yield * shiftLeft(thiz, start - delta, -delta);
 
 		for ( let i = 0; i < toAdd.length; ++i ) {
-			yield * thiz.put(start + i, toAdd[i]);
+			yield * thiz.set(start + i, toAdd[i]);
 		}
 
-		yield * thiz.put('length', Value.fromNative(len + delta));
+		yield * thiz.set('length', Value.fromNative(len + delta));
 
 
 		return ArrayValue.make(deleted, s.realm);
@@ -416,7 +416,7 @@ class ArrayPrototype extends EasyObjectValue {
 		let length = yield * getLength(thiz);
 		let vals = new Array(length);
 		for ( let i = 0; i < length; ++i ) {
-			vals[i] = yield * thiz.member(i);
+			vals[i] = yield * thiz.get(i);
 		}
 
 		let comp = function *(left, right) {
@@ -439,15 +439,15 @@ class ArrayPrototype extends EasyObjectValue {
 		let nue = yield * _g.sort(vals, comp);
 
 		for ( let i = 0; i < length; ++i ) {
-			yield * thiz.put(i, nue[i]);
+			yield * thiz.set(i, nue[i]);
 		}
 		return thiz;
 	}
 
 	static *toString$e(thiz, args) {
-		let joinfn = yield * thiz.member('join');
+		let joinfn = yield * thiz.get('join');
 		if ( !joinfn || !joinfn.isCallable ) {
-			let ots = yield * this.realm.ObjectPrototype.member('toString');
+			let ots = yield * this.realm.ObjectPrototype.get('toString');
 			return yield * ots.call(thiz, []);
 		} else {
 			return yield * joinfn.call(thiz, [defaultSeperator]);
@@ -461,11 +461,11 @@ class ArrayPrototype extends EasyObjectValue {
 		if ( isNaN(len) ) len = 0;
 		yield * shiftRight(thiz, 0, amt);
 		for ( let i = 0; i < amt; ++i ) {
-			yield * thiz.put(i, args[i]);
+			yield * thiz.set(i, args[i]);
 		}
 
 		let nl = Value.fromNative(len + amt);
-		yield * thiz.put('length', nl, s);
+		yield * thiz.set('length', nl, s);
 		return nl;
 	}
 

@@ -83,7 +83,7 @@ class SmartLinkValue extends LinkValue {
 		return out;
 	}
 
-	*put(name, value, s, extra) {
+	*set(name, value, s, extra) {
 
 		if ( name in this.native ) {
 			if ( !this.allowWrite(name) ) return yield CompletionRecord.makeTypeError(this.realm, "Can't write to protected property: " + name);
@@ -95,7 +95,7 @@ class SmartLinkValue extends LinkValue {
 
 	}
 
-	*member(name) {
+	*get(name) {
 
 		if ( !(name in this.native) ) {
 			return Value.undef;
@@ -105,7 +105,7 @@ class SmartLinkValue extends LinkValue {
 			return yield CompletionRecord.makeTypeError(this.realm, "Can't read protected property: " + name);
 		}
 
-		return yield * super.member(name);
+		return yield * super.get(name);
 	}
 
 	get apiProperties() {

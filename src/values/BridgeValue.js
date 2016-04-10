@@ -78,11 +78,11 @@ class BridgeValue extends Value {
 
 
 
-	*member(name) {
+	*get(name) {
 		return this.makeBridge(this.native[name]);
 	}
 
-	*put(name, value) {
+	*set(name, value) {
 		this.native[name] = value.toNative();
 	}
 

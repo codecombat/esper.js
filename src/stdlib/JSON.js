@@ -23,11 +23,11 @@ class JSONUtils {
 
 		if ( o instanceof ArrayValue ) {
 			arr.push('[');
-			let length = yield * (yield * o.member('length')).toIntNative();
+			let length = yield * (yield * o.get('length')).toIntNative();
 			for ( let i = 0; i < length; ++i ) {
 				if ( i > 0 ) arr.push(',');
 				if ( str !== undefined  ) arr.push('\n');
-				let m = yield * o.member(i);
+				let m = yield * o.get(i);
 				if ( str !== undefined ) arr.push(str2);
 				if ( m ) {
 					if ( m.jsTypeName == 'undefined' ) arr.push('null');
@@ -46,7 +46,7 @@ class JSONUtils {
 		for ( let p of Object.keys(o.properties)) {
 			let po = o.properties[p];
 			if ( !po.enumerable ) continue;
-			let v = yield * o.member(p);
+			let v = yield * o.get(p);
 			if ( v.jsTypeName === 'function' ) continue;
 
 			if ( first ) first = false;
@@ -85,7 +85,7 @@ class JSONObject extends EasyObjectValue {
 
 				let v = new ObjectValue(s.realm);
 				for ( var p in o ) {
-					v.set(p, o[p]);
+					v.setImmediate(p, o[p]);
 				}
 				return v;
 			});

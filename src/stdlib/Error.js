@@ -24,7 +24,7 @@ class ErrorObject extends EasyObjectValue {
 	make(message) {
 		let nue = this.makeOne();
 		if ( message ) {
-			nue.set('message', Value.fromNative(message));
+			nue.setImmediate('message', Value.fromNative(message));
 			nue.properties['message'].enumerable = false;
 		}
 		nue.createNativeAnalog().message = message;
@@ -48,9 +48,9 @@ class ErrorObject extends EasyObjectValue {
 			thiz = this.makeOne();
 		}
 
-		if ( args.length > 0 ) yield * thiz.put('message', args[0], s, {enumerable: false});
-		if ( args.length > 1 ) yield * thiz.put('fileName', args[1], s, {enumerable: false});
-		if ( args.length > 2 ) yield * thiz.put('lineNumber', args[2], s, {enumerable: false});
+		if ( args.length > 0 ) yield * thiz.set('message', args[0], s, {enumerable: false});
+		if ( args.length > 1 ) yield * thiz.set('fileName', args[1], s, {enumerable: false});
+		if ( args.length > 2 ) yield * thiz.set('lineNumber', args[2], s, {enumerable: false});
 
 		return thiz;
 	}
@@ -58,7 +58,7 @@ class ErrorObject extends EasyObjectValue {
 	makeErrorType(type) {
 		let proto = new ObjectValue(this.realm);
 		proto.setPrototype(this.realm.ErrorPrototype);
-		proto.set('name', Value.fromNative(type.name));
+		proto.setImmediate('name', Value.fromNative(type.name));
 		proto.properties.name.enumerable = false;
 		proto.wellKnownName = `%${type.name}Prototype%`;
 		proto.nativeClass = type;

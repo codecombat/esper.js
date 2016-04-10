@@ -49,10 +49,10 @@ class FunctionPrototype extends EasyObjectValue {
 		let arga = [];
 		if ( args.length > 1 ) {
 			let arr = args[1];
-			let length = yield * arr.member('length');
+			let length = yield * arr.get('length');
 			length = (yield * length.toNumberValue()).toNative();
 			for ( let i = 0; i < length; ++i ) {
-				arga[i] = yield * arr.member(i);
+				arga[i] = yield * arr.get(i);
 			}
 		}
 		return yield * thiz.call(vthis, arga, s);
