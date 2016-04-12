@@ -70,6 +70,7 @@ class EasyObjectValue extends ObjectValue {
 			let pt = new PropertyDescriptor(this.callPrototype(realm));
 			pt.configurable = false;
 			pt.enumerable = false;
+			pt.writable = false;
 			this.properties['prototype'] = pt;
 		}
 
@@ -79,6 +80,16 @@ class EasyObjectValue extends ObjectValue {
 			rblen.writable = false;
 			rblen.enumerable = false;
 			this.properties['length'] = rblen;
+		}
+
+		if ( this.constructorFor ) {
+			let target = this.constructorFor(realm);
+			if ( target ) {
+				let cs = new PropertyDescriptor(this);
+				cs.configurable = false;
+				cs.enumerable = false;
+				target.properties['constructor'] = cs;
+			}
 		}
 
 		if ( realm.Function ) {

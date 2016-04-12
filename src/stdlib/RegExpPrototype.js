@@ -50,17 +50,17 @@ class RegExpProtoype extends EasyObjectValue {
 		return Value.undef;
 	}
 
-	static *source$gc(thiz, args, s) {
+	static *source$g(thiz, args, s) {
 		var rx = yield * toRegexp(thiz);
 		return Value.fromNative(rx.source);
 	}
 
-	static *global$gc(thiz, args, s) {
+	static *global$g(thiz, args, s) {
 		var rx = yield * toRegexp(thiz);
 		return Value.fromNative(rx.global);
 	}
 
-	static *ignoreCase$gc(thiz, args, s) {
+	static *ignoreCase$g(thiz, args, s) {
 		var rx = yield * toRegexp(thiz);
 		return Value.fromNative(rx.ignoreCase);
 	}

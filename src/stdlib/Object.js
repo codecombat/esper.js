@@ -67,7 +67,6 @@ function *defObjectProperty(obj, name, desc, realm) {
 
 function *getDescriptor(target, name, realm) {
 	if ( !Object.hasOwnProperty.call(target.properties, name) ) {
-		console.log(name, 'not in', target.properties);
 		return Value.undef;
 	}
 

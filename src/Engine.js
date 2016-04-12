@@ -7,6 +7,7 @@ const Value = require('./Value');
 const BridgeValue = require('./values/BridgeValue');
 const ASTPreprocessor = require('./ASTPreprocessor');
 const FutureValue = require('./values/FutureValue');
+const EasyNativeFunction = require('./values/EasyNativeFunction');
 
 function log(what) {
 	console.log('LOG', what);
@@ -16,7 +17,8 @@ let defaultOptions = {
 	strict: false,
 	foreignObjectMode: 'link',
 	addInternalStack: false,
-	executionLimit: Infinity
+	executionLimit: Infinity,
+	exposeEsperGlobal: true
 };
 
 /**
@@ -39,20 +41,32 @@ class Engine {
 	 *
 	 * @access public
 	 * @param {string} code - String of code to evaulate
-	 * @return {Promise<*>} - The result of execution, as a promise.
+	 * @return {Promise<Value>} - The result of execution, as a promise.
 	 */
 	eval(code) {
 		let ast = this.realm.parser(code);
 		return this.evalAST(ast);
 	}
 
-
+	/**
+	 * Evalute `code` and return a the result.
+	 *
+	 * @access public
+	 * @param {string} code - String of code to evaulate
+	 * @return {Value} - The result of execution
+	 */
 	evalSync(code) {
 		let ast = this.realm.parser(code);
 		return this.evalASTSync(ast);
 	}
 
-
+	/**
+	 * Evalute `ast` and return a promise for the result.
+	 *
+	 * @access public
+	 * @param {Node} ast - ESTree AST representing the code to run.
+	 * @return {Value} - The result of execution, as a promise.
+	 */
 	evalAST(ast) {
 		//console.log(escodegen.generate(ast));
 		this.loadAST(ast);
@@ -117,6 +131,7 @@ class Engine {
 
 
 	/**
+	 * Refrence to the global scope.
 	 * @return {Scope}
 	 */
 	get globalScope() {
@@ -128,7 +143,6 @@ class Engine {
 	}
 
 	addGlobalFx(name, what) {
-		const EasyNativeFunction = require('./values/EasyNativeFunction');
 		var x  = EasyNativeFunction.makeForNative(this.realm, what);
 		this.globalScope.add(name, x);
 	}

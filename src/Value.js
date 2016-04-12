@@ -52,8 +52,6 @@ class Value {
 		if ( value instanceof Value ) return value;
 		let prim = Value.fromPrimativeNative(value);
 		if ( prim ) return prim;
-		//TODO: Implement a real envirionemnt
-		//TODO: Is this cache dangerous?
 
 		if ( value instanceof Error ) {
 			if ( !realm ) throw new Error('We needed a realm, but we didnt have one.  We were sad :(');
@@ -68,11 +66,9 @@ class Value {
 		}
 
 		throw new TypeError('Tried to load an unsafe native value into the interperter:' + typeof value + ' / ' + value);
-
+		//TODO: Is this cache dangerous?
 		if ( !cache.has(value) ) {
-
 			let nue = new BridgeValue(realm, value);
-
 			cache.set(value, nue);
 			return nue;
 		}
@@ -91,28 +87,53 @@ class Value {
 	/**
 	 * Holds a value representing `null`
 	 *
-	 * @returns {UndefinedValue}
+	 * @returns {NullValue}
 	 */
 	static get null() {
 		return nil;
 	}
 
+	/**
+	 * Holds a value representing `true`
+	 *
+	 * @returns {BooleanValue} true
+	 */
 	static get true() {
 		return tru;
 	}
 
+	/**
+	 * Holds a value representing `fasle`
+	 *
+	 * @returns {BooleanValue} false
+	 */
 	static get false() {
 		return fals;
 	}
 
+	/**
+	 * Holds a value representing `NaN`
+	 *
+	 * @returns {NumberValue} NaN
+	 */
 	static get nan() {
 		return nan;
 	}
 
+	/**
+	 * Holds a value representing `''`
+	 *
+	 * @returns {StringValue} ''
+	 */
 	static get emptyString() {
 		return emptyString;
 	}
 
+	/**
+	 * Holds a value representing `0`
+	 *
+	 * @returns {NumberValue} 0
+	 */
 	static get zero() { return zero; }
 
 	static createNativeBookmark(v) {
@@ -146,6 +167,12 @@ class Value {
 		throw new Error('Unimplemented: Value#toNative');
 	}
 
+	/**
+	 * A string representation of this Value suitable for display when
+	 * debugging.
+	 * @abstract
+	 * @returns {string}
+	 */
 	get debugString() {
 		let native = this.toNative();
 		return native ? native.toString() : '???';
@@ -157,6 +184,12 @@ class Value {
 		return Value.fromNative(other, this.realm);
 	}
 
+	/**
+	 * Indexes the value to get the value of a property.
+	 * i.e. `value[name]`
+	 * @abstract
+	 * @returns {Value}
+	 */
 	*get(name, realm) {
 		let err = "Can't access get " + name + ' of that type: ' + require('util').inspect(this);
 		return CompletionRecord.makeTypeError(realm || this.realm, err);
@@ -166,32 +199,66 @@ class Value {
 		return Value.syncGenHelper(this.get(name, this.realm));
 	}
 
+	/**
+	 * Computes the javascript expression `!value`
+	 * @returns {Value}
+	 */
 	*not() {
 		return !this.truthy ? Value.true : Value.false;
 	}
 
+	/**
+	 * Computes the javascript expression `+value`
+	 * @returns {Value}
+	 */
 	*unaryPlus() {
 		return Value.fromNative(+(yield * this.toNumberValue()));
 	}
 
+	/**
+	 * Computes the javascript expression `-value`
+	 * @returns {Value}
+	 */
 	*unaryMinus() {
 		return Value.fromNative(-(yield * this.toNumberValue()));
 	}
 
+	/**
+	 * Computes the javascript expression `typeof value`
+	 * @returns {Value}
+	 */
 	*typeOf() {
 		return Value.fromNative(this.jsTypeName);
 	}
 
+	/**
+	 * Computes the javascript expression `!(value == other)`
+	 * @param {Value} other - The other value
+	 * @param {Realm} realm - The realm to use when creating resuls.
+	 * @returns {Value}
+	 */
 	*notEquals(other, realm) {
 		var result = yield * this.doubleEquals(other, realm);
 		return yield * result.not();
 	}
 
+	/**
+	 * Computes the javascript expression `!(value === other)`
+	 * @param {Value} other - The other value
+	 * @param {Realm} realm - The realm to use when creating resuls.
+	 * @returns {Value}
+	 */
 	*doubleNotEquals(other, realm) {
 		var result = yield * this.tripleEquals(other, realm);
 		return yield * result.not();
 	}
 
+	/**
+	 * Computes the javascript expression `value === other`
+	 * @param {Value} other - The other value
+	 * @param {Realm} realm - The realm to use when creating resuls.
+	 * @returns {Value}
+	 */
 	*tripleEquals(other, realm) {
 		return other === this ? Value.true : Value.false;
 	}
@@ -203,14 +270,60 @@ class Value {
 		return nue;
 	}
 
+	/**
+	 * Computes the javascript expression `value > other`
+	 * @param {Value} other - The other value
+	 * @returns {Value}
+	 */
 	*gt(other) { return this.fromNative((yield * this.toNumberNative()) > (yield * other.toNumberNative())); }
+
+	/**
+	 * Computes the javascript expression `value < other`
+	 * @param {Value} other - The other value
+	 * @returns {Value}
+	 */	
 	*lt(other) { return this.fromNative((yield * this.toNumberNative()) < (yield * other.toNumberNative())); }
+
+	/**
+	 * Computes the javascript expression `value >= other`
+	 * @param {Value} other - The other value
+	 * @returns {Value}
+	 */
 	*gte(other) { return this.fromNative((yield * this.toNumberNative()) >= (yield * other.toNumberNative())); }
+
+	/**
+	 * Computes the javascript expression `value <= other`
+	 * @param {Value} other - The other value
+	 * @returns {Value}
+	 */
 	*lte(other) { return this.fromNative((yield * this.toNumberNative()) <= (yield * other.toNumberNative())); }
 
+	/**
+	 * Computes the javascript expression `value - other`
+	 * @param {Value} other - The other value
+	 * @returns {Value}
+	 */
 	*subtract(other) { return this.fromNative((yield * this.toNumberNative()) - (yield * other.toNumberNative())); }
+
+	/**
+	 * Computes the javascript expression `value / other`
+	 * @param {Value} other - The other value
+	 * @returns {Value}
+	 */
 	*divide(other) { return this.fromNative((yield * this.toNumberNative()) / (yield * other.toNumberNative())); }
+
+	/**
+	 * Computes the javascript expression `value * other`
+	 * @param {Value} other - The other value
+	 * @returns {Value}
+	 */
 	*multiply(other) { return this.fromNative((yield * this.toNumberNative()) * (yield * other.toNumberNative())); }
+
+	/**
+	 * Computes the javascript expression `value % other`
+	 * @param {Value} other - The other value
+	 * @returns {Value}
+	 */
 	*mod(other) { return this.fromNative((yield * this.toNumberNative()) % (yield * other.toNumberNative())); }
 
 	*bitNot() { return this.fromNative(~(yield * this.toNumberNative())); }

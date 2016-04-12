@@ -27,7 +27,7 @@ class FutureValue extends Value {
 
 	/**
 	 * Creates a new future value wraping the promise p.
-	 * @param <Promise<Value>> promise
+	 * @param {Promise} promise
 	 */
 	static make(promise) {
 		var fv = new FutureValue(null);

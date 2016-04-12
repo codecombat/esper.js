@@ -11,11 +11,13 @@ class NumberObject extends EasyObjectValue {
 			if ( args.length < 1 ) return EasyObjectValue.zero;
 			return yield * args[0].toNumberValue();
 		}
-		let pv = yield * args[0].toNumberValue();
+		let pv = EasyObjectValue.zero;
+		if ( args.length > 0 ) pv = yield * args[0].toNumberValue();
 		thiz.primativeValue = pv;
 	}
 
 	callPrototype(realm) { return realm.NumberPrototype; }
+	constructorFor(realm) { return realm.NumberPrototype; }
 
 	static get MAX_VALUE$cew() { return Number.MAX_VALUE; }
 	static get MIN_VALUE$cew() { return Number.MIN_VALUE; }
@@ -25,5 +27,6 @@ class NumberObject extends EasyObjectValue {
 
 }
 
+NumberObject.prototype.wellKnownName = '%Number%';
 module.exports = NumberObject;
 
