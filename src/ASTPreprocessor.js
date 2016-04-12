@@ -17,6 +17,13 @@ function detectStrict(body) {
 	}
 }
 
+function addHiddenProperty(obj, name, value) {
+	Object.defineProperty(obj, name, {
+		value: value,
+		configurable: true
+	});
+}
+
 class ASTPreprocessor {
 
 	static process(ast) {
@@ -33,7 +40,7 @@ class ASTPreprocessor {
 		var me = (a) => ASTPreprocessor.walker(a, cbs, ast);
 		invokeCB(cbs, 'enter', ast);
 		invokeCB(cbs, 'enter' + ast.type, ast);
-		if ( parent ) ast.parent = parent;
+		if ( parent ) addHiddenProperty(ast, 'parent', parent);
 		switch ( ast.type ) {
 			case 'Program':
 				for ( let e of ast.body ) yield * me(e);
@@ -146,9 +153,9 @@ class ASTPreprocessor {
 	enterProgram(a) {
 		let scope = Object.create(null);
 
-		a.refs = Object.create(null);
-		a.vars = Object.create(null);
-		a.funcs = Object.create(null);
+		addHiddenProperty(a, 'refs', Object.create(null));
+		addHiddenProperty(a, 'vars', Object.create(null));
+		addHiddenProperty(a, 'funcs', Object.create(null));
 
 		this.funcStack.unshift(a);
 		this.scopeStack.unshift(scope);
@@ -198,9 +205,10 @@ class ASTPreprocessor {
 		this.funcStack.unshift(a);
 		let scope = Object.create(this.scopeStack[0]);
 		this.scopeStack.unshift(scope);
-		a.vars = Object.create(null);
-		a.refs = Object.create(null);
-		a.funcs = Object.create(null);
+
+		addHiddenProperty(a, 'refs', Object.create(null));
+		addHiddenProperty(a, 'vars', Object.create(null));
+		addHiddenProperty(a, 'funcs', Object.create(null));
 
 		for ( let o of a.params ) {
 			a.vars[o.name] = a;
