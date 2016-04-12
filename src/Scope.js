@@ -84,6 +84,7 @@ class Scope {
 		child.parent = this;
 		child.strict = this.strict;
 		child.global = this.global;
+		child.realm = this.realm;
 		return child;
 	}
 

@@ -20,11 +20,10 @@ class EasyObjectValue extends ObjectValue {
 		if ( this.call == 'function' ) this.clazz = 'Function';
 		this.setPrototype(objProto);
 
-		this._init();
+		this._init(realm);
 	}
 
-	_init() {
-		let realm = this.realm;
+	_init(realm) {
 		var clazz = Object.getPrototypeOf(this);
 		for ( let p of Object.getOwnPropertyNames(clazz.constructor) ) {
 			if ( p === 'length' ) continue;

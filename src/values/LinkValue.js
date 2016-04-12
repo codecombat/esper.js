@@ -9,8 +9,8 @@ const ArrayValue = require('./ArrayValue');
  */
 class LinkValue extends Value {
 
-	constructor(realm, value) {
-		super(realm);
+	constructor(value) {
+		super();
 		this.native = value;
 	}
 
@@ -38,7 +38,7 @@ class LinkValue extends Value {
 	}
 
 	makeLink(native) {
-		return LinkValue.make(native, this.realm);
+		return LinkValue.make(native);
 	}
 
 	ref(name) {
@@ -142,8 +142,8 @@ class LinkValue extends Value {
 	*toNumberValue() { return Value.fromNative((Number(this.native))); }
 	*toStringValue() { return Value.fromNative((String(this.native))); }
 
-	getPrototype() {
-		return this.realm.ObjectPrototype;
+	getPrototype(realm) {
+		return realm.ObjectPrototype;
 	}
 
 	*makeThisForNew() {

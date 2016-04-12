@@ -26,8 +26,8 @@ class FunctionObject extends EasyObjectValue {
 		return fn;
 	}
 
-	_init() {
-		super._init();
+	_init(realm) {
+		super._init(realm);
 		let cs = new PropertyDescriptor(this);
 		cs.configurable = false;
 		cs.enumerable = false;

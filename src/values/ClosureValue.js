@@ -15,12 +15,12 @@ class ClosureValue extends ObjectValue {
 	 * @param {Scope} scope - Functions up-values.
 	 */
 	constructor(func, scope) {
-		super(scope.realm);
+		let realm = scope.realm;
+		super(realm, realm.FunctionPrototype);
 		this.realm = scope.realm;
 		this.func = func;
 		this.scope = scope;
-		this.setPrototype(scope.realm.FunctionPrototype);
-		this.properties['prototype'] = new PropertyDescriptor(new ObjectValue(this.realm));
+		this.properties['prototype'] = new PropertyDescriptor(new ObjectValue(realm));
 		this.properties['name'] = new PropertyDescriptor(this.fromNative(func.id ? func.id.name : undefined));
 		this.properties['length'] = new PropertyDescriptor(this.fromNative(func.params.length));
 

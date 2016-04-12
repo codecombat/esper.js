@@ -7,8 +7,7 @@ const CompletionRecord = require('../CompletionRecord');
 
 class EasyNativeFunction extends ObjectValue {
 	constructor(realm) {
-		super(realm);
-		this.setPrototype(realm.FunctionPrototype);
+		super(realm, realm.FunctionPrototype);
 	}
 
 	static make(realm, fx, binding) {
@@ -38,10 +37,10 @@ class EasyNativeFunction extends ObjectValue {
 			if ( s ) s.strict = true;
 			let o = yield yield * this.fn.apply(this.binding, arguments, s, extra);
 			if ( o instanceof CompletionRecord ) return o;
-			if ( !(o instanceof Value) ) o = this.realm.makeForForeignObject(o);
+			if ( !(o instanceof Value) ) o = scope.realm.makeForForeignObject(o);
 			return new CompletionRecord(CompletionRecord.NORMAL, o);
 		} catch ( e ) {
-			return new CompletionRecord(CompletionRecord.THROW, this.realm.makeForForeignObject(e));
+			return new CompletionRecord(CompletionRecord.THROW, scope.realm.makeForForeignObject(e));
 		}
 	}
 

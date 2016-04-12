@@ -108,7 +108,7 @@ class ObjectObject extends EasyObjectValue {
 	//objPrototype(realm) { return realm.Function; }
 
 	static *create$e(thiz, args, s) {
-		let v = new ObjectValue(this.realm);
+		let v = new ObjectValue(s.realm);
 		let p = Value.undef;
 		if ( args.length > 0 ) {
 			p = args[0];

@@ -33,8 +33,8 @@ class BoundFunction extends ObjectValue {
 	}
 
 
-	*makeThisForNew() {
-		return yield * this.func.makeThisForNew();
+	*makeThisForNew(realm) {
+		return yield * this.func.makeThisForNew(realm);
 	}
 
 }
@@ -63,7 +63,7 @@ class FunctionPrototype extends EasyObjectValue {
 		if ( args.length > 0 ) {
 			if ( args[0].jsTypeName !== 'undefined') bthis = args[0];
 		}
-		var out = new BoundFunction(thiz, this.realm);
+		var out = new BoundFunction(thiz, s.realm);
 		if ( args.length > 1 ) out.boundArgs = args.slice(1);
 		out.boundThis = bthis;
 
@@ -79,7 +79,7 @@ class FunctionPrototype extends EasyObjectValue {
 		if ( args.length > 0 ) vthis = args.shift();
 		return yield * thiz.call(vthis, args, s);
 	}
-	static *toString(thiz, args) {
+	static *toString(thiz, args, s) {
 		if ( thiz instanceof ClosureValue ) {
 			return this.fromNative('function() { [AST] }');
 		} else if ( thiz instanceof BoundFunction ) {
@@ -87,7 +87,7 @@ class FunctionPrototype extends EasyObjectValue {
 		} else if ( thiz instanceof EasyObjectValue.EasyNativeFunction ) {
 			return this.fromNative('function() { [native code] }');
 		}
-		return CompletionRecord.makeTypeError(this.realm, 'Function.prototype.toString is not generic');
+		return CompletionRecord.makeTypeError(s.realm, 'Function.prototype.toString is not generic');
 
 	}
 

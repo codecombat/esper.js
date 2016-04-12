@@ -9,10 +9,8 @@ const Value = require('../Value');
 class RegExpValue extends ObjectValue {
 
 	constructor(realm) {
-		super(realm);
-		this.setPrototype(this.realm.RegExpPrototype);
+		super(realm, realm.RegExpPrototype);
 	}
-
 
 	static make(regexp, realm) {
 

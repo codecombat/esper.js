@@ -390,7 +390,7 @@ class Evaluator {
 		}
 
 		if ( n.type === 'NewExpression' ) {
-			thiz = yield * callee.makeThisForNew();
+			thiz = yield * callee.makeThisForNew(s.realm);
 			if ( thiz instanceof CompletionRecord ) {
 				if ( thiz.type == CompletionRecord.THROW ) return thiz;
 				thiz = thiz.value;

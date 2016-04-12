@@ -158,8 +158,7 @@ class Value {
 		return out;
 	}
 
-	constructor(realm) {
-		this.realm = realm;
+	constructor() {
 		this.serial = serial++;
 	}
 
@@ -187,8 +186,9 @@ class Value {
 
 	inspect() { return this.debugString; }
 
-	fromNative(other) {
-		return Value.fromNative(other, this.realm);
+	//TODO: Kill this
+	fromNative(other, realm) {
+		return Value.fromNative(other, realm);
 	}
 
 	/**
@@ -199,11 +199,11 @@ class Value {
 	 */
 	*get(name, realm) {
 		let err = "Can't access get " + name + ' of that type: ' + require('util').inspect(this);
-		return CompletionRecord.makeTypeError(realm || this.realm, err);
+		return CompletionRecord.makeTypeError(realm, err);
 	}
 
 	getImmediate(name) {
-		return Value.syncGenHelper(this.get(name, this.realm));
+		return Value.syncGenHelper(this.get(name));
 	}
 
 	/**
@@ -270,8 +270,8 @@ class Value {
 		return other === this ? Value.true : Value.false;
 	}
 
-	*makeThisForNew() {
-		var nue = new ObjectValue(this.realm);
+	*makeThisForNew(realm) {
+		var nue = new ObjectValue(realm);
 		var p = this.properties['prototype'];
 		if ( p ) nue.setPrototype(p.value);
 		return nue;

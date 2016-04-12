@@ -178,7 +178,7 @@ class ArrayPrototype extends EasyObjectValue {
 		//TODO: Call ToObject() on thisz;
 		let l = yield * getLength(thiz);
 		let match = args[0] || Value.undef;
-		let start = args[1] || this.fromNative(0);
+		let start = args[1] || Value.zero;
 		let startn = (yield * start.toNumberValue()).native;
 
 		if ( isNaN(startn) ) startn = 0;
@@ -188,11 +188,11 @@ class ArrayPrototype extends EasyObjectValue {
 			for ( let i = startn; i < l; ++i ) {
 				let v = yield * thiz.get(i);
 				if ( !v ) v = Value.undef;
-				if ( (yield * v.tripleEquals(match)).truthy ) return this.fromNative(i);
+				if ( (yield * v.tripleEquals(match)).truthy ) return Value.fromNative(i);
 
 			}
 		}
-		return this.fromNative(-1);
+		return Value.fromNative(-1);
 	}
 
 	static *lastIndexOf$e(thiz, args) {
@@ -205,7 +205,7 @@ class ArrayPrototype extends EasyObjectValue {
 		if ( isNaN(startn) ) startn = 0;
 		if ( startn < 0 ) startn += l;
 		if ( startn > l ) startn = l;
-		if ( startn < 0 ) return this.fromNative(-1);
+		if ( startn < 0 ) return Value.fromNative(-1);
 
 
 		//if ( isNaN(startn) ) startn = l - 1;
@@ -214,11 +214,11 @@ class ArrayPrototype extends EasyObjectValue {
 			if ( !thiz.has(i) ) continue;
 			let v = yield * thiz.get(i);
 			if ( !v ) v = Value.undef;
-			if ( (yield * v.tripleEquals(match)).truthy ) return this.fromNative(i);
+			if ( (yield * v.tripleEquals(match)).truthy ) return Value.fromNative(i);
 
 		}
 
-		return this.fromNative(-1);
+		return Value.fromNative(-1);
 	}
 
 	static *join$e(thiz, args) {
@@ -240,7 +240,7 @@ class ArrayPrototype extends EasyObjectValue {
 				else strings[i] = undefined; //TODO: THROW HERE?
 			}
 		}
-		return this.fromNative(strings.join(sepstr));
+		return Value.fromNative(strings.join(sepstr));
 	}
 
 	static *push$e(thiz, args) {
@@ -250,9 +250,9 @@ class ArrayPrototype extends EasyObjectValue {
 			yield * thiz.set(l + i, args[i]);
 		}
 
-		let nl = this.fromNative(l + args.length);
+		let nl = Value.fromNative(l + args.length);
 		yield * thiz.set('length', nl);
-		return this.fromNative(l + args.length);
+		return Value.fromNative(l + args.length);
 	}
 
 	static *pop$e(thiz, args) {
@@ -282,7 +282,7 @@ class ArrayPrototype extends EasyObjectValue {
 		let fx = args[0];
 
 		if ( args.length < 1 || !fx.isCallable ) {
-			return yield CompletionRecord.makeTypeError('First argument to reduce must be a function.');
+			return yield CompletionRecord.makeTypeError(s.realm, 'First argument to reduce must be a function.');
 		}
 
 		if ( args.length > 1 ) {
@@ -298,7 +298,7 @@ class ArrayPrototype extends EasyObjectValue {
 			}
 			acc = yield * fx.call(thiz, [acc, lv], s);
 		}
-		if ( !acc ) return yield CompletionRecord.makeTypeError(this.realm, 'Reduce an empty array with no initial value.');
+		if ( !acc ) return yield CompletionRecord.makeTypeError(s.realm, 'Reduce an empty array with no initial value.');
 		return acc;
 	}
 
@@ -309,7 +309,7 @@ class ArrayPrototype extends EasyObjectValue {
 		let fx = args[0];
 
 		if ( args.length < 1 || !fx.isCallable ) {
-			return yield CompletionRecord.makeTypeError(this.realm, 'First argument to reduceRight must be a function.');
+			return yield CompletionRecord.makeTypeError(s.realm, 'First argument to reduceRight must be a function.');
 		}
 
 		if ( args.length > 1 ) {
@@ -326,7 +326,7 @@ class ArrayPrototype extends EasyObjectValue {
 			acc = yield * fx.call(thiz, [acc, lv], s);
 		}
 
-		if ( !acc ) return yield CompletionRecord.makeTypeError(this.realm, 'Reduce an empty array with no initial value.');
+		if ( !acc ) return yield CompletionRecord.makeTypeError(s.realm, 'Reduce an empty array with no initial value.');
 		return acc;
 	}
 
@@ -444,10 +444,10 @@ class ArrayPrototype extends EasyObjectValue {
 		return thiz;
 	}
 
-	static *toString$e(thiz, args) {
+	static *toString$e(thiz, args, s) {
 		let joinfn = yield * thiz.get('join');
 		if ( !joinfn || !joinfn.isCallable ) {
-			let ots = yield * this.realm.ObjectPrototype.get('toString');
+			let ots = yield * s.realm.ObjectPrototype.get('toString');
 			return yield * ots.call(thiz, []);
 		} else {
 			return yield * joinfn.call(thiz, [defaultSeperator]);

@@ -10,10 +10,8 @@ let NumberValue;
 class ArrayValue extends ObjectValue {
 
 	constructor(realm) {
-		super(realm);
-		this.setPrototype(this.realm.ArrayPrototype);
+		super(realm, realm.ArrayPrototype);
 	}
-
 
 	*get(name, realm) {
 		return yield * super.get(name, realm);

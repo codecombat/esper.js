@@ -12,11 +12,12 @@ const NullValue = require('./NullValue');
  */
 class ObjectValue extends Value {
 
-	constructor(realm) {
-		super(realm);
+	constructor(realm, proto) {
+		super();
 		this.extensable = true;
 		this.properties = Object.create(null);
-		this.setPrototype(realm.ObjectPrototype);
+		if ( proto ) this.setPrototype(proto);
+		else if ( realm ) this.setPrototype(realm.ObjectPrototype);
 	}
 
 	ref(name, ctxthis) {
@@ -141,7 +142,7 @@ class ObjectValue extends Value {
 		while ( pt ) {
 			if ( pt === target ) return Value.true;
 			checked.push(pt);
-			pt = pt.getPrototype();
+			pt = pt.getPrototype(realm);
 			if ( checked.indexOf(pt) !== -1 ) return Value.false;
 		}
 		return Value.false;
@@ -206,7 +207,7 @@ class ObjectValue extends Value {
 		for ( let name of methodNames ) {
 			let method = yield * this.get(name);
 			if ( method && method.call ) {
-				let rescr = yield (yield * method.call(this, [], this.realm.evaluator));
+				let rescr = yield (yield * method.call(this, [])); //TODO: There should be more aruments here
 				let res = Value.undef;
 				if ( !(rescr instanceof CompletionRecord) ) res = rescr;
 				else if ( rescr.type == CompletionRecord.RETURN ) res = rescr.value;

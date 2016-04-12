@@ -13,7 +13,10 @@ const Value = require('../Value');
 
 
 class ErrorObject extends EasyObjectValue {
-
+	constructor(realm) {
+		super(realm);
+		this.realm = realm;
+	}
 	makeOne() {
 		let nue = new ErrorValue(this.realm);
 		let p = this.properties['prototype'];

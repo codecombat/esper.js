@@ -37,8 +37,7 @@ class EvalFunction extends ObjectValue {
 			else eo = new SyntaxError(e.description, e.fileName, e.lineNumber);
 
 			if ( e.stack ) eo.stack = e.stack;
-
-			return new CompletionRecord(CompletionRecord.THROW, this.fromNative(eo));
+			return new CompletionRecord(CompletionRecord.THROW, Value.fromNative(eo, scope.realm));
 		}
 
 		//TODO: Dont run in the parent scope if we are called indirectly
@@ -69,8 +68,8 @@ class Realm {
 		this.ObjectPrototype =  new (require('./stdlib/ObjectPrototype'))(this);
 		this.FunctionPrototype = new (require('./stdlib/FunctionPrototype'))(this);
 		this.Object = new (require('./stdlib/Object.js'))(this);
-		this.ObjectPrototype._init();
-		this.FunctionPrototype._init();
+		this.ObjectPrototype._init(this);
+		this.FunctionPrototype._init(this);
 		this.Object.setPrototype(this.ObjectPrototype);
 		this.FunctionPrototype.setPrototype(this.ObjectPrototype);
 

@@ -8,16 +8,16 @@ const CompletionRecord = require('../CompletionRecord');
  */
 class BridgeValue extends Value {
 
-	constructor(realm, value) {
-		super(realm);
+	constructor(value) {
+		super();
 		this.native = value;
 	}
 
 	makeBridge(value) {
-		return BridgeValue.make(value, this.realm);
+		return BridgeValue.make(value);
 	}
 
-	static make(native, realm) {
+	static make(native) {
 		if ( native === undefined ) return Value.undef;
 		let prim = Value.fromPrimativeNative(native);
 		if ( prim ) return prim;
@@ -26,7 +26,7 @@ class BridgeValue extends Value {
 			return Value.getBookmark(native);
 		}
 
-		return new BridgeValue(realm, native);
+		return new BridgeValue(native);
 	}
 
 	ref(name) {

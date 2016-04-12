@@ -12,6 +12,7 @@ class SmartLinkValue extends LinkValue {
 
 	constructor(realm, value) {
 		super(realm, value);
+		this.realm = realm;
 	}
 
 	allowRead(name) {
