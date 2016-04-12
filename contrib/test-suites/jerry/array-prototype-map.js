@@ -15,8 +15,6 @@
 
 // helper function - simple implementation
 Array.prototype.equals = function (array) {
-  console.log('T', this);
-  console.log('A', array);
   if (this.length != array.length)
     return false;
 

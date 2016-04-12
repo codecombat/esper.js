@@ -58,7 +58,6 @@ try {
   assert (false);
 }
 catch (e) {
-  Esper.dump(e);
   assert (e instanceof ReferenceError);
 }
 
