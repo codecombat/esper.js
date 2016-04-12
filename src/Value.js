@@ -3,10 +3,10 @@
 
 const CompletionRecord = require('./CompletionRecord');
 
-let undef, nil, tru, fals, nan, emptyString, zero;
+let undef, nil, tru, fals, nan, emptyString, zero, one, negone, negzero
 let cache = new WeakMap();
 let bookmarks = new WeakMap();
-let ObjectValue, PrimitiveValue, StringValue, NumberValue;
+let ObjectValue, PrimitiveValue, StringValue, NumberValue, BridgeValue;
 
 
 
@@ -33,8 +33,15 @@ class Value {
 		if ( value === null ) return nil;
 		if ( value === true ) return tru;
 		if ( value === false ) return fals;
+		if ( value === '' ) return emptyString;
 
-		if ( typeof value === 'number' ) return new NumberValue(value);
+		if ( typeof value === 'number' ) {
+			if ( Object.is(value, -0) ) return negzero;
+			if ( value === 0 ) return zero;
+			if ( value === 1 ) return one;
+			if ( value === -1 ) return negone;
+			return new NumberValue(value);
+		}
 		if ( typeof value === 'string' ) return new StringValue(value);
 		if ( typeof value === 'boolean' ) return new PrimitiveValue(value);
 	}
@@ -281,7 +288,7 @@ class Value {
 	 * Computes the javascript expression `value < other`
 	 * @param {Value} other - The other value
 	 * @returns {Value}
-	 */	
+	 */
 	*lt(other) { return this.fromNative((yield * this.toNumberNative()) < (yield * other.toNumberNative())); }
 
 	/**
@@ -397,6 +404,9 @@ nil = new NullValue();
 tru = new PrimitiveValue(true);
 fals = new PrimitiveValue(false);
 nan = new PrimitiveValue(NaN);
-emptyString = new PrimitiveValue('');
-zero = new PrimitiveValue(0);
+emptyString = new StringValue('');
 
+zero = new NumberValue(0);
+negzero = new NumberValue(-0);
+one = new NumberValue(1);
+negone = new NumberValue(-1);

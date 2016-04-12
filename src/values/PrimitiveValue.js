@@ -13,6 +13,10 @@ class PrimitiveValue extends Value {
 	constructor(value) {
 		super(null);
 		this.native = value;
+		//Object.defineProperty(this, 'native', {
+		//	'value': value,
+		//	'enumerable': true
+		//});
 	}
 
 	ref(name, realm) {
@@ -74,7 +78,7 @@ class PrimitiveValue extends Value {
 		return Value.false;
 
 	}
-	*tripleEquals(other) { return this.fromNative(this.native === other.toNative()); }
+	*tripleEquals(other) { return this.native === other.toNative() ? Value.true : Value.false; }
 
 	*add(other) { return this.fromNative(this.native + (yield * other.toPrimitiveNative())); }
 

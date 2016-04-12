@@ -9,10 +9,6 @@ const ASTPreprocessor = require('./ASTPreprocessor');
 const FutureValue = require('./values/FutureValue');
 const EasyNativeFunction = require('./values/EasyNativeFunction');
 
-function log(what) {
-	console.log('LOG', what);
-}
-
 let defaultOptions = {
 	strict: false,
 	foreignObjectMode: 'link',
@@ -147,11 +143,10 @@ class Engine {
 		this.globalScope.add(name, x);
 	}
 
-
-
 	addGlobalValue(name, what) {
 		this.globalScope.add(name, Value.fromNative(what, this.realm));
 	}
+
 	addGlobalBridge(name, what) {
 		this.globalScope.add(name, new BridgeValue(what, this.realm));
 	}

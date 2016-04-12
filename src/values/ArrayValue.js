@@ -23,7 +23,7 @@ class ArrayValue extends ObjectValue {
 		if ( !isNaN(parseInt(name)) ) {
 			let length = this.properties.length.value.native;
 			if ( name >= length ) {
-				this.properties.length.value.native = 1 + name;
+				this.properties.length.value = Value.fromNative(name + 1);
 			}
 		}
 	}
