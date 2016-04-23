@@ -154,7 +154,7 @@ class Engine {
 	fetchFunctionSync(name, shouldYield) {
 		var genfx = this.fetchFunction(name, shouldYield);
 		return function() {
-			let gen = genfx.call(this, arguments);
+			let gen = genfx.apply(this, arguments);
 			let val = gen.next();
 			//TODO: Make sure we dont await as it will loop FOREVER.
 			while (!val.done) val = gen.next();

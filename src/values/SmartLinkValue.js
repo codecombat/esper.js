@@ -11,11 +11,13 @@ const ArrayValue = require('./ArrayValue');
 class SmartLinkValue extends LinkValue {
 
 	constructor(realm, value) {
-		super(realm, value);
+		super(value);
 		this.realm = realm;
 	}
 
 	allowRead(name) {
+		//if ( name === 'call' ) return true;
+		//return true;
 		let props = this.apiProperties;
 		if ( props === null ) return false;
 		return props.indexOf(name) !== -1;
@@ -55,11 +57,7 @@ class SmartLinkValue extends LinkValue {
 		return new SmartLinkValue(realm, native);
 	}
 
-	makeLink(native) {
-		return SmartLinkValue.make(native, this.realm);
-	}
-
-	ref(name) {
+	ref(name, ctxthis) {
 		let realm = this.realm;
 		let out = super.ref(name);
 		if ( name in this.native ) {
