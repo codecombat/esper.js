@@ -444,8 +444,8 @@ class Evaluator {
 		clazz.call = function*() { return Value.undef; };
 
 		let proto = new ObjectValue(this.realm);
-		clazz.set('prototype', proto);
-		proto.set('constructor', clazz);
+		yield * clazz.set('prototype', proto);
+		yield * proto.set('constructor', clazz);
 
 		for ( let m of n.body.body ) {
 			let fx = yield * this.branch(m.value, s);
@@ -472,7 +472,7 @@ class Evaluator {
 
 	*evaluateClassDeclaration(n, s) {
 		let clazz = yield * this.evaluateClassExpression(n,s);
-		s.set(n.id.name, clazz);
+		yield * s.set(n.id.name, clazz);
 		return clazz;
 	}
 
