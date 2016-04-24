@@ -65,4 +65,20 @@ describe('Smart Link', () => {
 		});
 
 	});
+
+	describe('Reading properties', () => {
+		var obj =  {x: {y: 20}};
+		it('should do subobjects', () => {
+			expect(a('return arg.x.y', obj)).to.equal(20);
+		});
+
+		it('should do subobjects as object type', () => {
+			expect(a('return typeof arg.x', obj)).to.equal('object');
+		});
+
+		it('subobjects should be SmartLinks', () => {
+			expect(a('return Esper.str(arg.x)', obj)).to.match(/^\[SmartLink/);
+		});
+
+	});
 });

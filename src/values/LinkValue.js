@@ -37,20 +37,20 @@ class LinkValue extends Value {
 		return new LinkValue(realm, native);
 	}
 
-	makeLink(native) {
-		return LinkValue.make(native);
+	makeLink(native, realm) {
+		return LinkValue.make(native, realm);
 	}
 
-	ref(name) {
+	ref(name, realm) {
 
 		let that = this;
 		let out = Object.create(null);
 
 		let getter;
 		if ( this.native.hasOwnProperty(name) ) {
-			getter = () => this.makeLink(this.native[name]);
+			getter = () => this.makeLink(this.native[name], realm);
 		} else {
-			getter = () => this.makeLink(this.native).ref(name).value;
+			getter = () => this.makeLink(this.native).ref(name, realm).value;
 		}
 
 		out.getValue = function *() { return getter(); };
@@ -103,12 +103,12 @@ class LinkValue extends Value {
 
 
 
-	*get(name) {
+	*get(name, realm) {
 		if ( this.native.hasOwnProperty(name) ) {
-			return this.makeLink(this.native[name]);
+			return this.makeLink(this.native[name], realm);
 		}
 
-		return yield * this.makeLink(Object.getPrototypeOf(this.native)).get(name);
+		return yield * this.makeLink(Object.getPrototypeOf(this.native), realm).get(name);
 	}
 
 
@@ -124,16 +124,16 @@ class LinkValue extends Value {
 	 * @param {Value} thiz
 	 * @param {Value[]} args
 	 */
-	*call(thiz, args) {
+	*call(thiz, args, s) {
 		let realArgs = new Array(args.length);
 		for ( let i = 0; i < args.length; ++i ) {
 			realArgs[i] = args[i].toNative();
 		}
 		try {
 			let result = this.native.apply(thiz ? thiz.toNative() : undefined, realArgs);
-			return this.makeLink(result);
+			return this.makeLink(result, s.realm);
 		} catch ( e ) {
-			let result = this.makeLink(e);
+			let result = this.makeLink(e, s.realm);
 			return new CompletionRecord(CompletionRecord.THROW, result);
 		}
 

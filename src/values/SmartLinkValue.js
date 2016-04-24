@@ -10,9 +10,8 @@ const ArrayValue = require('./ArrayValue');
  */
 class SmartLinkValue extends LinkValue {
 
-	constructor(realm, value) {
+	constructor(value) {
 		super(value);
-		this.realm = realm;
 	}
 
 	allowRead(name) {
@@ -54,11 +53,15 @@ class SmartLinkValue extends LinkValue {
 			return ArrayValue.make(ia, realm);
 		}
 
-		return new SmartLinkValue(realm, native);
+		return new SmartLinkValue(native);
 	}
 
-	ref(name, ctxthis) {
-		let realm = this.realm;
+	makeLink(native, realm) {
+		return SmartLinkValue.make(native, realm);
+	}
+
+
+	ref(name, realm) {
 		let out = super.ref(name);
 		if ( name in this.native ) {
 			let noWrite = function *() { return yield CompletionRecord.makeTypeError(realm, "Can't write to protected property: " + name); };
@@ -85,7 +88,7 @@ class SmartLinkValue extends LinkValue {
 	*set(name, value, s, extra) {
 
 		if ( name in this.native ) {
-			if ( !this.allowWrite(name) ) return yield CompletionRecord.makeTypeError(this.realm, "Can't write to protected property: " + name);
+			if ( !this.allowWrite(name) ) return yield CompletionRecord.makeTypeError(s.realm, "Can't write to protected property: " + name);
 		} else {
 			//TODO: Mark value as having been written by user so they retain write permissions to it.
 		}
@@ -94,17 +97,17 @@ class SmartLinkValue extends LinkValue {
 
 	}
 
-	*get(name) {
-
+	*get(name, realm) {
 		if ( !(name in this.native) ) {
 			return Value.undef;
 		}
 
 		if ( !this.allowRead(name) ) {
-			return yield CompletionRecord.makeTypeError(this.realm, "Can't read protected property: " + name);
+			console.log("Failure", name, this.jsTypeName, JSON.stringify(this.native));
+			return yield CompletionRecord.makeTypeError(realm, "Can't read protected property: " + name);
 		}
 
-		return yield * super.get(name);
+		return yield * super.get(name, realm);
 	}
 
 	get apiProperties() {
