@@ -9,12 +9,13 @@ const Engine = require('..').Engine;
 
 const nfo = require('../package.json');
 
-let engine = new Engine();
-
 function enterRepl() {
 	function replEval(cmd, context, fn, cb) {
 		engine.eval(cmd).then(function(result) {
 			cb(null, result);
+		}, function(err) {
+			console.log(err.stack);
+			cb(null);
 		});
 	}
 
@@ -32,7 +33,13 @@ program
 	.version(nfo.version)
 	.usage('[options] [script...]')
 	.option('-i, --interactive', 'enter REPL')
+	.option('-s, --strict', 'force strict mode')
 	.parse(process.argv);
+
+
+let engine = new Engine({
+	strict: !!program.strict
+});
 
 
 let toEval = program.args.slice(0);
