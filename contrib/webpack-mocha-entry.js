@@ -1,2 +1,2 @@
-require('mocha!../test/sandboxrspec.js');
-require('mocha!../test/jerryspec.js');
+require('mocha!../test/SandboxrSpec.js');
+require('mocha!../test/JerrySpec.js');
