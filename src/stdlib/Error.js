@@ -36,7 +36,7 @@ class ErrorObject extends EasyObjectValue {
 
 	makeFrom(err) {
 		let nue = this.makeOne();
-		if ( err.message ) nue.set('message', Value.fromNative(err.message));
+		if ( err.message ) nue.setImmediate('message', Value.fromNative(err.message));
 		err.native = err;
 		return nue;
 	}

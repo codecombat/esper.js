@@ -186,8 +186,9 @@ class Engine {
 
 			while ( !value.done ) {
 				if ( !shouldYield ) yield;
-				else if ( that.evaluator.frames[0].type == 'await' ) yield;
-				else {
+				else if ( that.evaluator.frames[0].type == 'await' ) {
+					if ( !value.value.resolved ) yield;
+				} else {
 					var yieldValue = shouldYield(that);
 					if ( yieldValue !== false ) yield yieldValue;
 				}
