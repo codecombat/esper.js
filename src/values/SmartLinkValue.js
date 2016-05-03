@@ -18,7 +18,7 @@ class SmartLinkValue extends LinkValue {
 		//if ( name === 'call' ) return true;
 		//return true;
 		let props = this.apiProperties;
-		if ( props === null ) return false;
+		if ( props === null ) return true;
 		return props.indexOf(name) !== -1;
 	}
 
@@ -72,9 +72,7 @@ class SmartLinkValue extends LinkValue {
 					setValue: noWrite,
 					del: () => false
 				};
-			}
-
-			if ( !this.allowWrite(name) ) {
+			} else if ( !this.allowWrite(name) ) {
 				out.setValue = noWrite;
 			}
 
@@ -103,7 +101,6 @@ class SmartLinkValue extends LinkValue {
 		}
 
 		if ( !this.allowRead(name) ) {
-			console.log("Failure", name, this.jsTypeName, JSON.stringify(this.native));
 			return yield CompletionRecord.makeTypeError(realm, "Can't read protected property: " + name);
 		}
 
