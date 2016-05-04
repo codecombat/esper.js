@@ -14,6 +14,28 @@ function a(code, o) {
 
 }
 
+function b(code) {
+	var e = new Engine({
+		foreignObjectMode: 'smart'
+	});
+
+	class User {
+		constructor() {
+			this.name = 'Annoner';
+			this.secret = 'sauce';
+		}
+		ident() { return this.name + ' (' + this.age + ')'; }
+	}
+
+	User.prototype.apiProperties = ['name', 'age'];
+	User.prototype.apiMethods = ['ident'];
+
+
+	e.evalSync('var a = ' + code.toString());
+	var fx = e.fetchFunctionSync('a');
+	return fx.call(null, new User());
+}
+
 describe('Smart Link', () => {
 	describe('Test Harness', () => {
 
@@ -81,4 +103,31 @@ describe('Smart Link', () => {
 		});
 
 	});
+
+
+	describe('Respect API properties', () => {
+		it('read allowed property', () => {
+			expect(b(function(o) { return o.name; })).to.equal('Annoner');
+			expect(b(function(o) { return o.age; })).to.be.undefined; 
+		});
+
+		it('can\'t read unregistered property', () => {
+			expect(() => b(function(o) { return o.secret; })).to.throw();
+		});
+
+		it('can\'t overwrite properties', () => {
+			expect(() => b(function(o) { return o.name = 'Rob'; })).to.throw();
+			expect(() => b(function(o) { return o.secret = 'something'; })).to.throw();
+		});
+
+		it('supports user assinged properties', () => {
+			expect(b(function(o) { 
+				o.nue = 5;
+				o.nue += 2;
+				return o.nue;
+			})).to.equal(7);
+		});
+
+	});
+
 });

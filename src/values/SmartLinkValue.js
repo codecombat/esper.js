@@ -63,12 +63,13 @@ class SmartLinkValue extends LinkValue {
 
 	ref(name, realm) {
 		let out = super.ref(name);
-		if ( name in this.native ) {
+		let native = this.native;
+		if ( name in native ) {
 			let noWrite = function *() { return yield CompletionRecord.makeTypeError(realm, "Can't write to protected property: " + name); };
-
+			let noRead = function *() { return yield CompletionRecord.makeTypeError(realm, "Can't read protected property: " + name); }
 			if ( !this.allowRead(name) ) {
 				return {
-					getValue: function *() { return yield CompletionRecord.makeTypeError(realm, "Can't read protected property: " + name); },
+					getValue: noRead,
 					setValue: noWrite,
 					del: () => false
 				};
@@ -77,7 +78,16 @@ class SmartLinkValue extends LinkValue {
 			}
 
 		} else {
-			//TODO: Mark value as having been written by user so they retain write permissions to it.
+			let defaultAction = out.setValue;
+			if ( !native.apiUserProperties ) native.apiUserProperties = [];
+
+			if ( native.apiUserProperties.indexOf(name) == -1 ) {
+				out.setValue = function *() {
+					let ret = yield * defaultAction.apply(this, arguments);
+					native.apiUserProperties.push(name);
+					return ret;
+				};
+			}
 		}
 
 		return out;
@@ -91,7 +101,7 @@ class SmartLinkValue extends LinkValue {
 			//TODO: Mark value as having been written by user so they retain write permissions to it.
 		}
 
-		return yield * super.put(name, value, s, extra);
+		return yield * super.set(name, value, s, extra);
 
 	}
 
@@ -140,7 +150,7 @@ class SmartLinkValue extends LinkValue {
 
 	get debugString() {
 		let props = this.apiProperties;
-		return '[SmartLink: ' + this.native + ', props: ' + (props ? pops.join(',') : '[none]') + ']';
+		return '[SmartLink: ' + this.native + ', props: ' + (props ? props.join(',') : '[none]') + ']';
 	}
 
 }
