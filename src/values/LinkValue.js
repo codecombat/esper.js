@@ -7,6 +7,11 @@ const ArrayValue = require('./ArrayValue');
 /**
  * Represents a value that maps directly to an untrusted local value.
  */
+
+function invoke(target, thiz, args) {
+	return Function.prototype.apply.call(target, thiz, args);
+}
+
 class LinkValue extends Value {
 
 	constructor(value) {
@@ -50,7 +55,7 @@ class LinkValue extends Value {
 		if ( this.native.hasOwnProperty(name) ) {
 			getter = () => this.makeLink(this.native[name], realm);
 		} else {
-			getter = () => this.makeLink(this.native).ref(name, realm).value;
+			getter = () => this.makeLink(this.native,  realm).ref(name, realm).value;
 		}
 
 		out.getValue = function *() { return getter(); };
@@ -108,7 +113,7 @@ class LinkValue extends Value {
 			return this.makeLink(this.native[name], realm);
 		}
 
-		return yield * this.makeLink(Object.getPrototypeOf(this.native), realm).get(name);
+		return yield * this.makeLink(Object.getPrototypeOf(this.native), realm).get(name, realm);
 	}
 
 
@@ -130,7 +135,7 @@ class LinkValue extends Value {
 			realArgs[i] = args[i].toNative();
 		}
 		try {
-			let result = this.native.apply(thiz ? thiz.toNative() : undefined, realArgs);
+			let result = invoke(this.native, thiz ? thiz.toNative() : undefined, realArgs);
 			return this.makeLink(result, s.realm);
 		} catch ( e ) {
 			let result = this.makeLink(e, s.realm);

@@ -24,11 +24,15 @@ function b(code) {
 			this.name = 'Annoner';
 			this.secret = 'sauce';
 		}
-		ident() { return this.name + ' (' + this.age + ')'; }
+		ident() { return this.name + ' (' + (this.age || '?') + ')'; }
+		identity(o) { return o; }
+		bad() { return 'oh no!'; }
 	}
+	User.prototype.type = "User";
+	User.prototype.code = 1234;
 
-	User.prototype.apiProperties = ['name', 'age'];
-	User.prototype.apiMethods = ['ident'];
+	User.prototype.apiProperties = ['name', 'age', 'type'];
+	User.prototype.apiMethods = ['ident', 'identity'];
 
 
 	e.evalSync('var a = ' + code.toString());
@@ -88,6 +92,29 @@ describe('Smart Link', () => {
 
 	});
 
+	describe('Maps well known values', () => {
+		it('should map Object', () => {
+			expect(a('return arg === Object', Object)).to.be.true;
+		});
+
+		it('should use Object Prototype', () => {
+			expect(a('return Object.getPrototypeOf(arg) === Object.prototype', {rob: 1})).to.be.true;
+			expect(a('return arg.toString === Object.prototype.toString', {rob: 1})).to.be.true;
+		});
+
+		it('should use Function Prototype', () => {
+			//expect(a('return Object.getPrototypeOf(arg) === Function.prototype', function() {} )).to.be.true;
+			expect(a('return arg.call === Function.prototype.call', function() {} )).to.be.true;
+		});
+
+		it('should use Array Prototype', () => {
+			expect(a('return Object.getPrototypeOf(arg) === Array.prototype', [1,2,3] )).to.be.true;
+			expect(a('return arg.join === Array.prototype.join', [1,2,3] )).to.be.true;
+		});
+
+
+	});
+
 	describe('Reading properties', () => {
 		var obj =  {x: {y: 20}};
 		it('should do subobjects', () => {
@@ -105,20 +132,32 @@ describe('Smart Link', () => {
 	});
 
 
+
 	describe('Respect API properties', () => {
 		it('read allowed property', () => {
 			expect(b(function(o) { return o.name; })).to.equal('Annoner');
 			expect(b(function(o) { return o.age; })).to.be.undefined; 
+			expect(b(function(o) { return o.type; })).to.equal('User');
+			expect(b(function(o) { return o.ident(); })).to.equal('Annoner (?)');
+			expect(b(function(o) { return o.somethingThatDoesntExist; })).to.be.undefined; 
+		});
+
+		it('methods', () => {
+			expect(b(function(o) { return o.identity(7); })).to.equal(7);
+			expect(b(function(o) { return o.identity.call(null, 7); })).to.equal(7);
 		});
 
 		it('can\'t read unregistered property', () => {
 			expect(() => b(function(o) { return o.secret; })).to.throw();
+			expect(() => b(function(o) { return o.bad(); })).to.throw();
+			expect(() => b(function(o) { return o.code; })).to.throw();
 		});
 
 		it('can\'t overwrite properties', () => {
 			expect(() => b(function(o) { return o.name = 'Rob'; })).to.throw();
 			expect(() => b(function(o) { return o.secret = 'something'; })).to.throw();
 		});
+
 
 		it('supports user assinged properties', () => {
 			expect(b(function(o) { 
