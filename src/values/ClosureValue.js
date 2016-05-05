@@ -20,6 +20,7 @@ class ClosureValue extends ObjectValue {
 		this.realm = scope.realm;
 		this.func = func;
 		this.scope = scope;
+		this.returnLastValue = false;
 		this.properties['prototype'] = new PropertyDescriptor(new ObjectValue(realm));
 		this.properties['name'] = new PropertyDescriptor(this.fromNative(func.id ? func.id.name : undefined));
 		this.properties['length'] = new PropertyDescriptor(this.fromNative(func.params.length));
@@ -121,7 +122,7 @@ class ClosureValue extends ObjectValue {
 			else invokeScope.object.rawSetProperty(name, argvars[i]); //Scope isnt strict, magic happens.
 		}
 
-		var result = yield ['branch','function', this.func.body, invokeScope];
+		var result = yield ['branch','function', this.func.body, invokeScope, {returnLastValue: this.returnLastValue}];
 		return result;
 	}
 

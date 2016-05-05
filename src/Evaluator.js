@@ -159,7 +159,7 @@ class Evaluator {
 
 			// Latient values can't cross function calls.
 			// Dont do this, and you get coffeescript mode.
-			if ( lastFrame.type === 'function' ) this.lastValue = Value.undef;
+			if ( lastFrame.type === 'function' && !lastFrame.returnLastValue ) this.lastValue = Value.undef;
 
 			if ( that.frames.length === 0 ) return {done: true, value: result.value};
 		}
@@ -499,7 +499,7 @@ class Evaluator {
 		let that = this;
 		var gen = function*() {
 			do {
-				last = yield that.branchFrame('continue', n.body, s, n.label);
+				last = yield that.branchFrame('continue', n.body, s, {label: n.label});
 			} while ( (yield * that.branch(n.test,s)).truthy );
 		};
 		this.pushFrame({generator: gen(), type: 'loop', label: n.label});
@@ -548,7 +548,7 @@ class Evaluator {
 			let test = Value.true;
 			if ( n.test ) test = yield * that.branch(n.test,s);
 			while ( test.truthy ) {
-				last = yield that.branchFrame('continue', n.body, s, n.label);
+				last = yield that.branchFrame('continue', n.body, s, {label: n.label});
 				if ( n.update ) yield * that.branch(n.update,s);
 				if ( n.test ) test = yield * that.branch(n.test,s);
 			}
@@ -625,6 +625,7 @@ class Evaluator {
 		let value = new ClosureValue(n, s);
 		if ( n.type === 'ArrowFunctionExpression' ) {
 			value.thiz = s.thiz;
+			if ( n.expression ) value.returnLastValue = true;
 		}
 		return value;
 	}
@@ -998,8 +999,15 @@ class Evaluator {
 		return vout;
 	}
 
-	branchFrame(type, n, s, label) {
-		return this.pushFrame({generator: this.branch(n,s), type: type, scope: s, label: label});
+	branchFrame(type, n, s, extra) {
+		let frame = {generator: this.branch(n,s), type: type, scope: s};
+		
+		if ( extra ) {
+			for ( var k in extra ) {
+				frame[k] = extra[k];
+			}
+		}
+		return this.pushFrame(frame);
 	}
 
 	get insterment() { return this.instrument; }
