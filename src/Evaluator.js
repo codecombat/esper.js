@@ -672,13 +672,13 @@ class Evaluator {
 	*partialMemberExpression(left, n, s) {
 		if ( n.computed ) {
 			let right = yield * this.branch(n.property,s);
-			return yield * left.get(right.toNative(), this.realm);
+			return yield * left.get(right.toNative(), s.realm);
 		} else if ( n.property.type == 'Identifier') {
 			if ( !left ) throw `Cant index ${n.property.name} of undefined`;
-			return yield * left.get(n.property.name, this.realm);
+			return yield * left.get(n.property.name, s.realm);
 		} else {
 			if ( !left ) throw `Cant index ${n.property.value.toString()} of undefined`;
-			return yield * left.get(n.property.value.toString(), this.realm);
+			return yield * left.get(n.property.value.toString(), s.realm);
 		}
 	}
 

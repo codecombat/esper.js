@@ -104,6 +104,10 @@ class PrimitiveValue extends Value {
 		throw new Error('Naw');
 	}
 
+	getPrototype(realm) {
+		return this.derivePrototype(realm);
+	}
+
 	get truthy() {
 		return !!this.native;
 	}

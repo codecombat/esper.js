@@ -104,7 +104,7 @@ class Engine {
 				if ( value.value && value.value.then ) {
 					return value.value.then(handler);
 				}
-				if ( ++steps > that.options.executionLimit ) throw 'Execution Limit Reached';
+				if ( ++steps > that.options.executionLimit ) throw new Error('Execution Limit Reached');
 			}
 			return value;
 		}
@@ -118,8 +118,8 @@ class Engine {
 		let value = this.generator.next();
 		while ( !value.done ) {
 			value = this.generator.next();
-			if ( value.value && value.value.then ) throw "Can't deal with futures when running in sync mode";
-			if ( ++steps > this.options.executionLimit ) throw 'Execution Limit Reached';
+			if ( value.value && value.value.then ) throw new Error('Can\'t deal with futures when running in sync mode');
+			if ( ++steps > this.options.executionLimit ) throw new Error('Execution Limit Reached');
 		}
 		return value.value;
 	}
@@ -193,7 +193,7 @@ class Engine {
 					if ( yieldValue !== false ) yield yieldValue;
 				}
 				value = gen.next();
-				if ( ++steps > that.options.executionLimit ) throw 'Execution Limit Reached';
+				if ( ++steps > that.options.executionLimit ) throw new Error('Execution Limit Reached');
 			}
 			return value.value.toNative();
 		};

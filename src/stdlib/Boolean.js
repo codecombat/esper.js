@@ -9,10 +9,14 @@ class Boolean extends EasyObjectValue {
 		let asConstructor = ext && ext.asConstructor;
 		if ( !asConstructor ) {
 			if ( args.length < 1 ) return Value.false;
-			return (yield * args[0].toNumberValue()).truthy ? Value.true : Value.false;
+			return args[0].truthy ? Value.true : Value.false;
 		}
-		let pv = (yield * args[0].toNumberValue()).truthy ? Value.true : Value.false;
-		thiz.primativeValue = pv;
+		if ( args.length > 0 ) {
+			let pv = args[0].truthy ? Value.true : Value.false;
+			thiz.primativeValue = pv;
+		} else {
+			thiz.primativeValue = false;
+		}
 	}
 
 	callPrototype(realm) { return realm.BooleanPrototype; }
