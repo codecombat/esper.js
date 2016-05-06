@@ -20,16 +20,17 @@ class ObjectPrototype extends EasyObjectValue {
 	}
 
 
-	static *isPrototypeOf$e(thiz, args) {
+	static *isPrototypeOf$e(thiz, args, s) {
 		if ( args.length < 1 ) return Value.false;
-		let target = args[1]; //TODO: Call ToObject();
-		let pt = thiz.getPrototype(thiz.realm);
+		let target = args[0]; //TODO: Call ToObject();
+		console.log(thiz, thiz.jsTypeName);
+		let pt = thiz.getPrototype(s.realm);
 		let checked = [];
 
 		while ( pt ) {
 			if ( pt === target ) return Value.true;
 			checked.push(pt);
-			pt = pt.getPrototype();
+			pt = pt.getPrototype(s.realm);
 			if ( checked.indexOf(pt) !== -1 ) return Value.false;
 		}
 		return Value.false;

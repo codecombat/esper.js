@@ -27,7 +27,7 @@ myAppModule.controller('main', function($scope, $timeout, $http, $q, $location) 
 	$scope.fix = function(c) { return c.reverse(); };
 
 	$scope.runMode = function() {
-		return typeof $scope.frames !== 'undefined';
+		return $scope.engines.length > 0;
 	};
 
 	$scope.aceLoaded = function(ai) {

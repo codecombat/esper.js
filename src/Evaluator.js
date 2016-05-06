@@ -463,8 +463,8 @@ class Evaluator {
 					ks = m.key.name;
 				}
 
-				if ( m.static ) clazz.set(ks, fx);
-				else proto.set(ks, fx);
+				if ( m.static ) clazz.setImmediate(ks, fx);
+				else proto.setImmediate(ks, fx);
 			}
 		}
 		return clazz;
@@ -472,7 +472,7 @@ class Evaluator {
 
 	*evaluateClassDeclaration(n, s) {
 		let clazz = yield * this.evaluateClassExpression(n,s);
-		yield * s.set(n.id.name, clazz);
+		yield * s.put(n.id.name, clazz);
 		return clazz;
 	}
 
