@@ -705,8 +705,9 @@ class Evaluator {
 				nat.rawSetProperty(key, pd);
 			}
 
-			switch ( prop.kind ) {
+			switch ( prop.kind  ) {
 				case 'init':
+				default:
 					pd.value = value;
 					break;
 				case 'get':
