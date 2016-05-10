@@ -1,3 +1,4 @@
+var fs = require('fs');
 var path = require('path');
 var webpack = require('webpack');
 
@@ -58,6 +59,18 @@ module.exports = function cfg(profile, opts) {
 	}
 
 
+	var version = require('child_process').execSync('git describe --always --dirty', { cwd: __dirname });
+
+	var banner = new webpack.BannerPlugin([
+		'esper.js',
+		'',
+		'Compiled: ' + new Date().toString(),
+		'Target  : ' + target + ' (' + libraryTarget + ')',
+		'Version : ' + version,
+		'',
+		fs.readFileSync(path.join(__dirname, 'LICENSE.txt'))
+	].join("\n"), {entryOnly: true});
+
 	var cfg;
 	var parts = [opts.test ? 'esper-test' : 'esper'];
 	if ( profile != 'web' ) parts.push(profile);
@@ -88,7 +101,7 @@ module.exports = function cfg(profile, opts) {
 			]
 		},
 		plugins: [
-			
+			banner
 		],
 		resolve: { alias: {} },
 		target: target
