@@ -118,8 +118,13 @@ class ClosureValue extends ObjectValue {
 
 		for ( let i = 0; i < this.func.params.length; ++i ) {
 			let name = this.func.params[i].name;
-			if ( scope.strict ) invokeScope.add(name, args[i]); //Scope is strict, so we make a copy for the args variable
-			else invokeScope.object.rawSetProperty(name, argvars[i]); //Scope isnt strict, magic happens.
+			if ( scope.strict ) {
+				//Scope is strict, so we make a copy for the args variable
+				invokeScope.add(name, i < args.length ? args[i] : Value.undef);
+			} else {
+				//Scope isnt strict, magic happens.
+				invokeScope.object.rawSetProperty(name, argvars[i]);
+			}
 		}
 
 		var result = yield ['branch','function', this.func.body, invokeScope, {returnLastValue: this.returnLastValue}];
