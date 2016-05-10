@@ -171,12 +171,11 @@ class Evaluator {
 		let lines = e ? [e.toString()] : [];
 		for ( var f of this.frames ) {
 			//if ( f.type !== 'function' ) continue;
-			let line = 'at ';
 			if ( f.ast ) {
-				if ( f.ast ) line += (f.ast.srcName || f.ast.type) + ' ';
+				let line = 'at ' + (f.ast.srcName || f.ast.type) + ' ';
 				if ( f.ast.loc ) line += '(<src>:' + f.ast.loc.start.line + ':' + f.ast.loc.start.column + ')';
+				lines.push(line);
 			}
-			lines.push(line);
 		}
 		return lines;
 	}
