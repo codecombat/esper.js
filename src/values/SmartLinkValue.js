@@ -137,7 +137,7 @@ class SmartLinkValue extends LinkValue {
 
 
 		if ( native.apiOwnMethods ) {
-			Array.prototype.push.apply(allowed, native.apiMethods);
+			Array.prototype.push.apply(allowed, native.apiOwnMethods);
 		}
 
 
