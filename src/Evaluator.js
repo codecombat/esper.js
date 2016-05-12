@@ -82,16 +82,16 @@ class Evaluator {
 
 			switch ( val.type ) {
 				case CompletionRecord.CONTINUE:
-					if ( this.unwindStack('continue', false, val.target) ) return {done: false, val: val.value};
+					if ( this.unwindStack('continue', false, val.target) ) return {done: false, value: val.value};
 					throw new Error('Cant find matching loop frame for continue');
 				case CompletionRecord.BREAK:
-					if ( this.unwindStack('loop', false, val.target) ) return {done: false, val: val.value};
+					if ( this.unwindStack('loop', false, val.target) ) return {done: false, value: val.value};
 					throw new Error('Cant find matching loop frame for break');
 				case CompletionRecord.RETURN:
 					let rfr = this.unwindStack('return', false);
 					if ( rfr ) {
 						rfr.retValue = val.value;
-						return {done: false, val: val.value};
+						return {done: false, value: val.value};
 					}
 					throw new Error('Cant find function bounds.');
 				case CompletionRecord.THROW:
@@ -130,7 +130,7 @@ class Evaluator {
 					if ( tfr ) {
 						tfr.exception = val;
 						this.lastValue = val;
-						return {done: false, val: val.value};
+						return {done: false, value: val.value};
 					}
 					let line = -1;
 					if ( this.frames[0].ast && this.frames[0].ast.attr) {
@@ -146,9 +146,12 @@ class Evaluator {
 
 		if ( val && val.then ) {
 			this.pushFrame({generator: (function *(f) {
-				while ( !f.resolved ) yield;
-				if ( f.successful ) return f.value;
-				else return new CompletionRecord(CompletionRecord.THROW, f.value);
+				while ( !f.resolved ) yield f;
+				if ( f.successful ) {
+					return f.value;
+				} else {
+					return new CompletionRecord(CompletionRecord.THROW, f.value);
+				}
 			})(val), type: 'await'});
 			return {done: false, value: val};
 		}
@@ -159,12 +162,14 @@ class Evaluator {
 
 			// Latient values can't cross function calls.
 			// Dont do this, and you get coffeescript mode.
-			if ( lastFrame.type === 'function' && !lastFrame.returnLastValue ) this.lastValue = Value.undef;
+			if ( lastFrame.type === 'function' && !lastFrame.returnLastValue ) {
+				this.lastValue = Value.undef;
+			}
 
 			if ( that.frames.length === 0 ) return {done: true, value: result.value};
 		}
 
-		return {done: false, val: this.lastValue};
+		return {done: false, value: this.lastValue};
 	}
 
 	buildStacktrace(e) {
@@ -1001,7 +1006,7 @@ class Evaluator {
 
 	branchFrame(type, n, s, extra) {
 		let frame = {generator: this.branch(n,s), type: type, scope: s};
-		
+
 		if ( extra ) {
 			for ( var k in extra ) {
 				frame[k] = extra[k];

@@ -58,6 +58,7 @@ class FutureValue extends Value {
 		return p.then.apply(p, arguments);
 	}
 
+	get jsTypeName() { return 'internal:future'; }
 	get debugString() { return '[Future]'; }
 }
 

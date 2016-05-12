@@ -109,7 +109,12 @@ class Engine {
 			return value;
 		}
 		return new Promise(function(resolve, reject) {
-			resolve(that.generator.next());
+			try {
+				let  value = that.generator.next();
+				resolve(value);
+			} catch ( e ) {
+				reject(e);
+			}
 		}).then(handler).then((v) => v.value);
 	}
 
@@ -164,6 +169,10 @@ class Engine {
 
 	fetchFunction(name, shouldYield) {
 		var val = this.globalScope.get(name);
+		return this.makeFunctionFromClosure(val, shouldYield);
+	}
+
+	makeFunctionFromClosure(val, shouldYield) {
 		var realm = this.realm;
 		var scope = this.globalScope;
 		var that = this;
@@ -181,24 +190,30 @@ class Engine {
 			that.evaluator.pushFrame({generator: c, type: 'program', scope: scope, ast: null});
 			let gen = that.evaluator.generator();
 
-			let value = gen.next();
-			let steps = 0;
-
-			while ( !value.done ) {
-				if ( !shouldYield ) yield;
-				else if ( that.evaluator.frames[0].type == 'await' ) {
-					if ( !value.value.resolved ) yield;
-				} else {
-					var yieldValue = shouldYield(that);
-					if ( yieldValue !== false ) yield yieldValue;
-				}
-				value = gen.next();
-				if ( ++steps > that.options.executionLimit ) throw new Error('Execution Limit Reached');
-			}
-			return value.value.toNative();
+			let last = yield * that.filterGenerator(gen, shouldYield);
+			if ( last ) return last.toNative();
 		};
 	}
 
+	*filterGenerator(gen, shouldYield) {
+		let value = gen.next();
+		let steps = 0;
+		let that = this;
+
+		while ( !value.done ) {
+			if ( !shouldYield ) yield;
+			else if ( that.evaluator.frames[0].type == 'await' ) {
+				if ( !value.value.resolved ) yield;
+			} else {
+				var yieldValue = shouldYield(that);
+				if ( yieldValue !== false ) yield yieldValue;
+			}
+			value = gen.next(value.value);
+			if ( ++steps > that.options.executionLimit ) throw new Error('Execution Limit Reached');
+		}
+		console.log("Finally", value);
+		return value.value;
+	}
 }
 
 module.exports = Engine;
