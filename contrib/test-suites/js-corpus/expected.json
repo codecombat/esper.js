@@ -1,0 +1,96 @@
+{
+	"boolean.js": {
+		"stdout": [
+			"1\tobject\ttrue",
+			"2\tobject\ttrue",
+			"3\tobject\tfalse",
+			"4\tobject\ttrue",
+			"5\tobject\tfalse",
+			"6\tobject\ttrue",
+			"7\tobject\tfalse",
+			"8\tboolean\ttrue",
+			"9\tboolean\ttrue",
+			"10\tboolean\tfalse",
+			"11\tboolean\ttrue",
+			"12\tboolean\tfalse",
+			"13\tboolean\ttrue",
+			"14\tboolean\tfalse"
+		]
+	},
+	"es6.js": {
+		"stdout": [
+			"20",
+			"xyzzy",
+			"function\t30",
+			"undefined",
+			"function",
+			"function\t40",
+			"8",
+			"6",
+			"7",
+			"5",
+			"3",
+			"0",
+			"9"
+		]
+	},
+	"fib.js": {
+		"stdout": []
+	},
+	"fib2.js": {
+		"stdout": [
+			"6765"
+		]
+	},
+	"number.js": {
+		"stdout": [
+			"0\tnumber\t0\t0e+0\t0\t0",
+			"0\tnumber\t0\t0.000e+0\t0.000\t0.00",
+			"0\tobject\t0\t0e+0\t0\t0",
+			"0\tnumber\t0\t0e+0\t0\t0",
+			"100\tnumber\t100\t1e+2\t100\t100",
+			"100\tnumber\t100\t1.000e+2\t100.000\t100",
+			"100\tobject\t100\t1e+2\t100\t100",
+			"100\tnumber\t100\t1e+2\t100\t100",
+			"NaN\tnumber\tNaN\tNaN\tNaN\tNaN",
+			"NaN\tnumber\tNaN\tNaN\tNaN\tNaN",
+			"NaN\tobject\tNaN\tNaN\tNaN\tNaN",
+			"NaN\tnumber\tNaN\tNaN\tNaN\tNaN",
+			"100\tnumber\t100\t1e+2\t100\t100",
+			"100\tnumber\t100\t1.000e+2\t100.000\t100",
+			"100\tobject\t100\t1e+2\t100\t100",
+			"100\tnumber\t100\t1e+2\t100\t100"
+		]
+	},
+	"object.js": {
+		"stdout": [
+			"object\tfalse\tfalse",
+			"number\tfalse\tfalse",
+			"function\tfalse\tfalse",
+			"object\tfalse\tfalse",
+			"object\ttrue\tfalse"
+		]
+	},
+	"simple.js": {
+		"stdout": [
+			"Okay"
+		]
+	},
+	"test.js": {
+		"stdout": [
+			"Rob is\t10",
+			"-",
+			"Rob is great!\t10",
+			"Okay",
+			"Rob is great!\t20",
+			"2",
+			"11",
+			"12",
+			"13",
+			"101",
+			"102",
+			"14",
+			"103"
+		]
+	}
+}
