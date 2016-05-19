@@ -80,7 +80,7 @@ class Scope {
 
 	createChild() {
 		let child = new Scope(this.realm);
-		child.object.setPrototype(this.object);
+		child.object.eraseAndSetPrototype(this.object);
 		child.parent = this;
 		child.strict = this.strict;
 		child.global = this.global;

@@ -8,6 +8,7 @@ const FutureValue = require('./values/FutureValue');
 const RegExpValue = require('./values/RegExpValue');
 const PropertyDescriptor = require('./values/PropertyDescriptor');
 const ErrorValue = require('./values/ErrorValue');
+const ArrayValue = require('./values/ArrayValue');
 
 class Evaluator {
 	constructor(realm, n, s) {
@@ -245,7 +246,6 @@ class Evaluator {
 				result[i] = yield * this.branch(n.elements[i],s);
 			}
 		}
-		let ArrayValue = require('./values/ArrayValue');
 		return ArrayValue.make(result, this.realm);
 	}
 

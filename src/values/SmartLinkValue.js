@@ -10,8 +10,8 @@ const ArrayValue = require('./ArrayValue');
  */
 class SmartLinkValue extends LinkValue {
 
-	constructor(value) {
-		super(value);
+	constructor(value, realm) {
+		super(value, realm);
 	}
 
 	allowRead(name) {
@@ -33,31 +33,22 @@ class SmartLinkValue extends LinkValue {
 	}
 
 	static make(native, realm) {
-		if ( native === undefined ) return Value.undef;
-		if ( native instanceof Value ) return native;
-		let prim = Value.fromPrimativeNative(native);
-		if ( prim ) return prim;
-
 		let wellKnown = realm.lookupWellKnown(native);
 		if ( wellKnown ) return wellKnown;
-
-		if ( Value.hasBookmark(native) ) {
-			return Value.getBookmark(native);
-		}
 
 		if ( Array.isArray(native) ) {
 			var ia = new Array(native.length);
 			for ( let i = 0; i < native.length; ++i ) {
-				ia[i] = SmartLinkValue.make(native[i], realm);
+				ia[i] = realm.import(native[i], 'smart');
 			}
 			return ArrayValue.make(ia, realm);
 		}
 
-		return new SmartLinkValue(native);
+		return new SmartLinkValue(native, realm);
 	}
 
-	makeLink(native, realm) {
-		return SmartLinkValue.make(native, realm);
+	makeLink(value) {
+		return this.realm.import(value, 'smart');
 	}
 
 

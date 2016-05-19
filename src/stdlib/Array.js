@@ -6,6 +6,11 @@ const ArrayValue = require('../values/ArrayValue');
 
 class ArrayObject extends EasyObjectValue {
 	*call(thiz, args, s) {
+		if ( args.length === 1 && args[0].jsTypeName === 'number' ) {
+			let result = ArrayValue.make([], s.realm);
+			yield * result.set('length', args[0]);
+			return result;
+		}
 		return ArrayValue.make(args, s.realm);
 	}
 

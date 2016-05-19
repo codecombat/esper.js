@@ -14,22 +14,15 @@ function invoke(target, thiz, args) {
 
 class LinkValue extends Value {
 
-	constructor(value) {
+	constructor(value, realm) {
 		super();
 		this.native = value;
+		this.realm = realm;
 	}
 
 	static make(native, realm) {
-		if ( native === undefined ) return Value.undef;
-		let prim = Value.fromPrimativeNative(native);
-		if ( prim ) return prim;
-
 		let wellKnown = realm.lookupWellKnown(native);
 		if ( wellKnown ) return wellKnown;
-
-		if ( Value.hasBookmark(native) ) {
-			return Value.getBookmark(native);
-		}
 
 		if ( Array.isArray(native) ) {
 			var ia = new Array(native.length);
@@ -39,11 +32,7 @@ class LinkValue extends Value {
 			return ArrayValue.make(ia, realm);
 		}
 
-		return new LinkValue(realm, native);
-	}
-
-	makeLink(native, realm) {
-		return LinkValue.make(native, realm);
+		return new LinkValue(native, realm);
 	}
 
 	ref(name, realm) {
@@ -53,9 +42,9 @@ class LinkValue extends Value {
 
 		let getter;
 		if ( this.native.hasOwnProperty(name) ) {
-			getter = () => this.makeLink(this.native[name], realm);
+			getter = () => realm.import(this.native[name], this.linkKind);
 		} else {
-			getter = () => this.makeLink(this.native,  realm).ref(name, realm).value;
+			getter = () => realm.import(this.native, this.linkKind).ref(name, realm).value;
 		}
 
 		out.getValue = function *() { return getter(); };
@@ -75,6 +64,10 @@ class LinkValue extends Value {
 
 	*asString() {
 		return this.native.toString();
+	}
+
+	makeLink(value) {
+		return this.realm.import(value, this.linkKind);
 	}
 
 	*doubleEquals(other) { return this.makeLink(this.native == other.toNative()); }
@@ -166,6 +159,8 @@ class LinkValue extends Value {
 	get jsTypeName() {
 		return typeof this.native;
 	}
+
+	get linkKind() { return 'link'; }
 }
 
 module.exports = LinkValue;

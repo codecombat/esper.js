@@ -87,8 +87,18 @@ class ASTPreprocessor {
 					}
 				}
 				break;
+			case 'ObjectExpression':
+				if ( ast.properties ) {
+					for ( let e of ast.properties ) {
+						if ( e ) yield * me(e);
+					}
+				}
+				break;
+			case 'Property':
+				yield * me(ast.key);
+				yield * me(ast.value);
+				break;
 			default:
-
 				for (var p in ast) {
 					let n = ast[p];
 					if ( p === 'parent' ) continue;

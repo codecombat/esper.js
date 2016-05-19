@@ -14,6 +14,33 @@ const ASTPreprocessor = require('./ASTPreprocessor');
 const EasyNativeFunction = require('./values/EasyNativeFunction');
 const PropertyDescriptor = require('./values/PropertyDescriptor');
 
+const ObjectPrototype = require('./stdlib/ObjectPrototype');
+const FunctionPrototype = require('./stdlib/FunctionPrototype');
+const ObjectClass = require('./stdlib/Object');
+const FunctionClass = require('./stdlib/Function');
+const NumberPrototype = require('./stdlib/NumberPrototype');
+
+const StringPrototype = require('./stdlib/StringPrototype');
+
+const ArrayPrototype = require('./stdlib/ArrayPrototype');
+const ArrayClass = require('./stdlib/Array');
+const StringClass = require('./stdlib/String');
+const NumberClass = require('./stdlib/Number');
+
+
+const BooleanPrototype = require('./stdlib/BooleanPrototype');
+const BooleanClass = require('./stdlib/Boolean');
+const RegExpPrototype = require('./stdlib/RegExpPrototype');
+const RegExpClass = require('./stdlib/RegExp');
+const EsperClass = require('./stdlib/Esper');
+const ErrorPrototype = require('./stdlib/ErrorPrototype');
+const ErrorClass = require('./stdlib/Error');
+
+const AssertClass = require('./stdlib/Assert');
+const MathClass = require('./stdlib/Math.js');
+const ConsoleClass = require('./stdlib/Console');
+const JSONClass = require('./stdlib/JSON');
+
 class EvalFunction extends ObjectValue {
 
 	constructor(realm) {
@@ -48,7 +75,6 @@ class EvalFunction extends ObjectValue {
 }
 
 
-
 /**
  * Represents a javascript execution environment including
  * it's scopes and standard libraries.
@@ -65,9 +91,9 @@ class Realm {
 	constructor(options) {
 		this.options = options || {};
 		/** @type {Value} */
-		this.ObjectPrototype =  new (require('./stdlib/ObjectPrototype'))(this);
-		this.FunctionPrototype = new (require('./stdlib/FunctionPrototype'))(this);
-		this.Object = new (require('./stdlib/Object.js'))(this);
+		this.ObjectPrototype =  new ObjectPrototype(this);
+		this.FunctionPrototype = new FunctionPrototype(this);
+		this.Object = new ObjectClass(this);
 		this.ObjectPrototype._init(this);
 		this.FunctionPrototype._init(this);
 		this.Object.setPrototype(this.ObjectPrototype);
@@ -76,36 +102,36 @@ class Realm {
 		//TODO: Do this when we can make the property non enumerable.
 		this.ObjectPrototype.rawSetProperty('constructor', new PropertyDescriptor(this.Object, false));
 
-		this.Function = new (require('./stdlib/Function'))(this);
+		this.Function = new FunctionClass(this);
 
 		/** @type {Math} */
-		this.Math = new (require('./stdlib/Math.js'))(this);
+		this.Math = new MathClass(this);
 
 		/** @type {NumberPrototype} */
-		this.NumberPrototype = new (require('./stdlib/NumberPrototype'))(this);
+		this.NumberPrototype = new NumberPrototype(this);
 
 		/** @type {StringPrototype} */
-		this.StringPrototype = new (require('./stdlib/StringPrototype'))(this);
+		this.StringPrototype = new StringPrototype(this);
 
-		this.ArrayPrototype = new (require('./stdlib/ArrayPrototype'))(this);
-		this.Array = new (require('./stdlib/Array'))(this);
-		this.String = new (require('./stdlib/String'))(this);
-		this.Number = new (require('./stdlib/Number'))(this);
+		this.ArrayPrototype = new ArrayPrototype(this);
+		this.Array = new ArrayClass(this);
+		this.String = new StringClass(this);
+		this.Number = new NumberClass(this);
 
 
-		this.BooleanPrototype = new (require('./stdlib/BooleanPrototype'))(this);
-		this.Boolean = new (require('./stdlib/Boolean'))(this);
+		this.BooleanPrototype = new BooleanPrototype(this);
+		this.Boolean = new BooleanClass(this);
 
-		this.RegExpPrototype = new (require('./stdlib/RegExpPrototype'))(this);
-		this.RegExp = new (require('./stdlib/RegExp'))(this);
+		this.RegExpPrototype = new RegExpPrototype(this);
+		this.RegExp = new RegExpClass(this);
 
-		this.Esper = new (require('./stdlib/Esper'))(this);
-		this.ErrorPrototype = new (require('./stdlib/ErrorPrototype'))(this);
-		this.Error = new (require('./stdlib/Error'))(this);
+		this.Esper = new EsperClass(this);
+		this.ErrorPrototype = new ErrorPrototype(this);
+		this.Error = new ErrorClass(this);
 		this.ErrorPrototype.rawSetProperty('constructor', new PropertyDescriptor(this.Error, false));
 
 		/** @type {Value} */
-		this.console = new (require('./stdlib/Console'))(this);
+		this.console = new ConsoleClass(this);
 
 		let scope = new Scope(this);
 		scope.object.clazz = 'global';
@@ -121,7 +147,7 @@ class Realm {
 		scope.addConst('Infinity', this.fromNative(Infinity));
 
 		scope.set('console', this.console);
-		scope.set('JSON', new (require('./stdlib/JSON'))(this));
+		scope.set('JSON', new JSONClass(this));
 
 		if ( options.exposeEsperGlobal ) {
 			scope.set('Esper', this.Esper);
@@ -153,9 +179,10 @@ class Realm {
 
 		//scope.set('Date', this.fromNative(Date));
 		scope.set('eval', new EvalFunction(this));
-		scope.set('assert', new (require('./stdlib/Assert'))(this));
+		scope.set('assert', new AssertClass(this));
 
 		scope.thiz = scope.object;
+		this.importCache = new WeakMap();
 		/** @type {Scope} */
 		this.globalScope = scope;
 	}
@@ -186,18 +213,40 @@ class Realm {
 		return Value.fromNative(native, this);
 	}
 
-	makeForForeignObject(native) {
+	import(native, modeHint) {
 		if ( native instanceof Value ) return native;
-		switch ( this.options.foreignObjectMode ) {
+		if ( native === undefined ) return Value.undef;
+
+		let prim = Value.fromPrimativeNative(native);
+		if ( prim ) return prim;
+
+		//if ( this.importCache.has(native) ) {
+		//	return this.importCache.get(native);
+		//}
+
+		if ( Value.hasBookmark(native) ) {
+			return Value.getBookmark(native);
+		}
+
+		let result;
+		switch ( modeHint || this.options.foreignObjectMode ) {
 			case 'bridge':
-				return BridgeValue.make(native, this);
+				result = BridgeValue.make(native, this);
+				break;
 			case 'smart':
-				return SmartLinkValue.make(native, this);
+				result = SmartLinkValue.make(native, this);
+				break;
 			case 'link':
 			default:
-				return LinkValue.make(native, this);
+				result = LinkValue.make(native, this);
+				break;
 		}
+
+		//this.importCache.set(native, result);
+		return result;
 	}
 }
+
+Realm.prototype.makeForForeignObject = Realm.prototype.import;
 
 module.exports = Realm;

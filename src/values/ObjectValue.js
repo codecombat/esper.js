@@ -15,9 +15,9 @@ class ObjectValue extends Value {
 	constructor(realm, proto) {
 		super();
 		this.extensable = true;
-		this.properties = Object.create(null);
-		if ( proto ) this.setPrototype(proto);
-		else if ( realm ) this.setPrototype(realm.ObjectPrototype);
+		if ( proto ) this.eraseAndSetPrototype(proto);
+		else if ( realm ) this.eraseAndSetPrototype(realm.ObjectPrototype);
+		else this.properties = Object.create(null);
 	}
 
 	ref(name, ctxthis) {
@@ -161,6 +161,7 @@ class ObjectValue extends Value {
 	}
 
 	setPrototype(val) {
+		if ( !this.properties ) return this.eraseAndSetPrototype();
 		if ( val === null || val === undefined || val instanceof NullValue ) {
 			Object.setPrototypeOf(this.properties, null);
 			this.proto = null;
@@ -168,6 +169,16 @@ class ObjectValue extends Value {
 		}
 		this.proto = val;
 		Object.setPrototypeOf(this.properties, val.properties);
+	}
+
+	eraseAndSetPrototype(val) {
+		if ( val === null || val === undefined || val instanceof NullValue ) {
+			this.proto = null;
+			this.properties = Object.create(null);
+		} else {
+			this.proto = val;
+			this.properties = Object.create(val.properties);
+		}
 	}
 
 	getPrototype() {
