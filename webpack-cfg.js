@@ -22,13 +22,14 @@ module.exports = function cfg(profile, opts) {
 			polyfill.push('babel-regenerator-runtime');
 			break;
 		case 'web-ext':
+		case 'modern':
 			target = 'web';
 			break;
 		default:
 			target = 'web';
 	}
 	
-	if ( profile != 'node' ) {
+	if ( profile != 'node' && profile != 'modern' ) {
 		plugins = plugins.concat([
 			"babel-plugin-transform-es2015-template-literals",
 			"babel-plugin-transform-es2015-literals",
@@ -66,6 +67,7 @@ module.exports = function cfg(profile, opts) {
 		'',
 		'Compiled: ' + new Date().toString(),
 		'Target  : ' + target + ' (' + libraryTarget + ')',
+		'Profile : ' + profile,
 		'Version : ' + version,
 		'',
 		fs.readFileSync(path.join(__dirname, 'LICENSE.txt'))
