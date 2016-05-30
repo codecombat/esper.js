@@ -4,14 +4,14 @@
 const Value = require('../Value');
 const CompletionRecord = require('../CompletionRecord');
 const ArrayValue = require('./ArrayValue');
-/**
- * Represents a value that maps directly to an untrusted local value.
- */
 
 function invoke(target, thiz, args) {
 	return Function.prototype.apply.call(target, thiz, args);
 }
 
+/**
+ * Represents a value that maps directly to an untrusted local value.
+ */
 class LinkValue extends Value {
 
 	constructor(value, realm) {
@@ -121,6 +121,7 @@ class LinkValue extends Value {
 	 *
 	 * @param {Value} thiz
 	 * @param {Value[]} args
+	 * @param {Scope} s
 	 */
 	*call(thiz, args, s) {
 		let realArgs = new Array(args.length);

@@ -3,7 +3,7 @@
 
 const CompletionRecord = require('./CompletionRecord');
 
-let undef, nil, tru, fals, nan, emptyString, zero, one, negone, negzero
+let undef, nil, tru, fals, nan, emptyString, zero, one, negone, negzero;
 let cache = new WeakMap();
 let bookmarks = new WeakMap();
 let ObjectValue, PrimitiveValue, StringValue, NumberValue, BridgeValue;
@@ -194,6 +194,8 @@ class Value {
 	/**
 	 * Indexes the value to get the value of a property.
 	 * i.e. `value[name]`
+	 * @param {String} name
+	 * @param {Realm} realm
 	 * @abstract
 	 * @returns {Value}
 	 */

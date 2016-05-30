@@ -12,7 +12,8 @@
     "demo": "webpack && webpack --test && node contrib/ui.js",
     "cover": "./node_modules/istanbul/lib/cli.js cover node_modules/.bin/_mocha -- --reporter dot",
     "dev-server": "webpack-dev-server src/index.js --content-base contrib/ui",
-    "prepublish": "node contrib/build.js"
+    "prepublish": "node contrib/build.js",
+    "style": "jscs src"
   },
   "bin": {
     "esper": "./contrib/cli.js"

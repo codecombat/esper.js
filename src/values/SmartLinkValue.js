@@ -56,8 +56,12 @@ class SmartLinkValue extends LinkValue {
 		let out = super.ref(name, realm);
 		let native = this.native;
 		if ( name in native ) {
-			let noWrite = function *() { return yield CompletionRecord.makeTypeError(realm, "Can't write to protected property: " + name); };
-			let noRead = function *() { return yield CompletionRecord.makeTypeError(realm, "Can't read protected property: " + name); }
+			let noWrite = function *() {
+				return yield CompletionRecord.makeTypeError(realm, "Can't write to protected property: " + name);
+			};
+			let noRead = function *() {
+				return yield CompletionRecord.makeTypeError(realm, "Can't read protected property: " + name);
+			};
 			if ( !this.allowRead(name) ) {
 				return {
 					getValue: noRead,

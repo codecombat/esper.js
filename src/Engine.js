@@ -211,7 +211,6 @@ class Engine {
 			value = gen.next(value.value);
 			if ( ++steps > that.options.executionLimit ) throw new Error('Execution Limit Reached');
 		}
-		console.log("Finally", value);
 		return value.value;
 	}
 }
