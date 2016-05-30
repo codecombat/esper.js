@@ -17,6 +17,7 @@ class SmartLinkValue extends LinkValue {
 	allowRead(name) {
 		//if ( name === 'call' ) return true;
 		//return true;
+		if ( name.indexOf('esper_') === 0 ) return true;
 		let props = this.apiProperties;
 		if ( props === null ) return true;
 		return props.indexOf(name) !== -1;
@@ -105,11 +106,12 @@ class SmartLinkValue extends LinkValue {
 			return Value.undef;
 		}
 
+		if ( ('esper_' + name) in this.native ) name = 'esper_' + name;
+
 		if ( !this.allowRead(name) ) {
 			return yield CompletionRecord.makeTypeError(realm, "Can't read protected property: " + name);
 		}
 
-		if ( ('esper_' + name) in this.native ) name = 'esper_' + name;
 		return yield * super.get(name, realm);
 	}
 

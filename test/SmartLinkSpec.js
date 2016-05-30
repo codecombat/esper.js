@@ -172,6 +172,7 @@ describe('Smart Link', () => {
 	describe('esper_ method overrides', () => {
 		it('will use an esper_ property if it exists', () => {
 			expect(a('return arg.one();', {
+				apiProperties: [],
 				one: () => 1,
 				esper_one: () => 2
 			})).to.equal(2);
