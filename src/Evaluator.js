@@ -144,16 +144,17 @@ class Evaluator {
 			}
 
 		}
-
 		if ( val && val.then ) {
-			this.pushFrame({generator: (function *(f) {
-				while ( !f.resolved ) yield f;
-				if ( f.successful ) {
-					return f.value;
-				} else {
-					return new CompletionRecord(CompletionRecord.THROW, f.value);
-				}
-			})(val), type: 'await'});
+			if ( top && top.type !== 'await' ) {
+				this.pushFrame({generator: (function *(f) {
+					while ( !f.resolved ) yield f;
+					if ( f.successful ) {
+						return f.value;
+					} else {
+						return new CompletionRecord(CompletionRecord.THROW, f.value);
+					}
+				})(val), type: 'await'});
+			}
 			return {done: false, value: val};
 		}
 
