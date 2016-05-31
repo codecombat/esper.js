@@ -93,6 +93,10 @@ module.exports = function cfg(profile, opts) {
 		module: {
 			loaders: [
 				{
+					test: /json$/,
+					loader: 'json-loader'
+				},
+				{
 					test: /js$/,
 					include: [path.join(__dirname, 'src')],
 					loader: 'babel-loader',
