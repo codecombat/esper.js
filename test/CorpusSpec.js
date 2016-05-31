@@ -5,7 +5,7 @@ let path = require('path');
 let dir = path.join(__dirname, '..', 'contrib', 'test-suites', 'js-corpus');
 let expect = require('chai').expect;
 
-require('../contrib/examine-corpus.js');
+if ( fs.readdirSync ) require('../contrib/examine-corpus.js');
 
 let list = require('../contrib/test-suites/js-corpus/expected.json');
 
