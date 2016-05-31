@@ -94,7 +94,7 @@ Checklist for contributing:
 
 ## License
 
-[The MIT License](License)
+[The MIT License](LICENSE.txt)
 
 
 
