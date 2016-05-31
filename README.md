@@ -2,6 +2,10 @@
 
 A javascript self-interpreter with a focus on sandboxed execution and runtime introspection.
 
+<h3 align="center">
+<a href="http://esper.chessgears.com/">Demo</a> |
+<a href="http://esper.chessgears.com/test">Run Tests</a>
+</h3>
 
 ## Usage 
 
