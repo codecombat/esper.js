@@ -23,6 +23,7 @@ files.forEach(function(file, idx) {
 	}, "vm");
 
 	out[file] = {
+		source: source,
 		stdout: lines
 	};
 });
