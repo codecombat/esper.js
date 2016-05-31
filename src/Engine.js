@@ -102,7 +102,9 @@ class Engine {
 			while ( !value.done ) {
 				value = that.generator.next();
 				if ( value.value && value.value.then ) {
-					return value.value.then(handler);
+					return value.value.then((v) => {
+						return {done: false, value: v};
+					});
 				}
 				if ( ++steps > that.options.executionLimit ) throw new Error('Execution Limit Reached');
 			}
