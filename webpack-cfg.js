@@ -60,7 +60,13 @@ module.exports = function cfg(profile, opts) {
 	}
 
 
-	var version = require('child_process').execSync('git describe --always --dirty', { cwd: __dirname });
+	var version = '???';
+
+	try {
+		version = require('child_process').execSync('git describe --always --dirty', { cwd: __dirname });
+	} catch ( e ) {
+
+	}
 
 	var banner = new webpack.BannerPlugin([
 		'esper.js',
