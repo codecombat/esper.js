@@ -27,6 +27,16 @@ class EmptyValue extends Value {
 		return Value.false;
 	}
 
+	/**
+	 * @param {String} name
+	 * @param {Realm} realm
+	 * @returns {CompletionRecord} Indexing empty values is a type error.
+	 */
+	*get(name, realm) {
+		let err = 'Cannot read property \'' + name + '\' of ' + this.specTypeName;
+		return CompletionRecord.makeTypeError(realm, err);
+	}
+
 }
 
 module.exports = EmptyValue;
