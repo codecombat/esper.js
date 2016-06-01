@@ -130,7 +130,11 @@ class LinkValue extends Value {
 		}
 		try {
 			let result = invoke(this.native, thiz ? thiz.toNative() : undefined, realArgs);
-			return this.makeLink(result, s.realm);
+			let val = this.makeLink(result, s.realm);
+			if ( typeof s.realm.options.linkValueCallReturnValueWrapper === 'function' ) {
+				val = s.realm.options.linkValueCallReturnValueWrapper(val);
+			}
+			return val;
 		} catch ( e ) {
 			let result = this.makeLink(e, s.realm);
 			return new CompletionRecord(CompletionRecord.THROW, result);

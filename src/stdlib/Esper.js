@@ -6,9 +6,8 @@ const Value = require('../Value');
 
 
 class EsperObject extends EasyObjectValue {
-
 	static *dump$cew(thiz, args) {
-		console.log('DUMP', args);
+		console.log('Esper#dump:', args);
 		if ( typeof window !== 'undefined' ) window.dumped = args[0];
 		return Value.undef;
 	}
@@ -20,9 +19,18 @@ class EsperObject extends EasyObjectValue {
 	}
 
 	static *stack$cew(thiz, args, scope, extra) {
-		console.log(extra.evaluator);
 		return Value.fromNative(extra.evaluator.buildStacktrace().join('\n'));
 	}
+
+	static *globals$cew(thiz, args, scope, extra) {
+		return scope.global.object;
+	}
+
+	static *scope$cew(thiz, args, scope, extra) {
+		return scope.object;
+	}
+
+
 }
 
 
