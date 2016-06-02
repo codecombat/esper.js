@@ -16,8 +16,22 @@ server.on('request', (req, res) => {
 	let uri = req.url;
 	let file;
 	let contentType = 'text/plain';
+	let parts = uri.split('/');
+	if ( /^\/?docs\/$/.test(uri) ) {
+		file = path.join(__dirname, '..', 'esdoc', 'index.html');
+		contentType = 'text/html';
+	} else if ( /^\/?docs\/[a-zA-Z/_-]+[.](html|css|js|png|svg)/.test(uri) ) {
+		file = path.join.apply(path, [__dirname, '..', 'esdoc'].concat(parts.slice(2)));
+		var ext = uri.split('.').pop();
+		switch ( ext ) {
+			case 'html': contentType = 'text/html'; break;
+			case 'css': contentType = 'text/css'; break;
+			case 'js': contentType = 'text/javascript'; break;
+			case 'png': contentType = 'image/png'; break;
+			case 'svg': contentType = 'image/svg+xml'; break;
+		}
 
-	if ( /\/?esper\.js$/.test(uri) ) {
+	} else if ( /\/?esper\.js$/.test(uri) ) {
 		file = path.join(__dirname, '..', 'dist', 'esper.js');
 		contentType = 'text/javascript';
 	} else if ( /\/?esper-test\.js$/.test(uri) ) {

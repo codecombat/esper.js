@@ -9,7 +9,7 @@
     "test": "mocha",
     "repl": "node contrib/cli.js -i",
     "webpack": "webpack",
-    "demo": "node contrib/examine-corpus.js && webpack && webpack --test && node contrib/ui.js",
+    "demo": "esdoc -c esdoc.json && node contrib/examine-corpus.js && webpack && webpack --test && node contrib/ui.js",
     "cover": "./node_modules/istanbul/lib/cli.js cover node_modules/.bin/_mocha -- --reporter dot",
     "dev-server": "webpack-dev-server src/index.js --content-base contrib/ui",
     "prepublish": "node contrib/build.js",
