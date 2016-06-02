@@ -6,7 +6,7 @@ const CompletionRecord = require('../CompletionRecord');
 let StringValue;
 
 /**
- * Represents a value that maps directly to an untrusted local value.
+ * Represents a primitive value.
  */
 class PrimitiveValue extends Value {
 

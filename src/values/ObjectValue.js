@@ -8,7 +8,7 @@ const PrimitiveValue = require('./PrimitiveValue');
 const NullValue = require('./NullValue');
 
 /**
- * Represents a value that maps directly to an untrusted local value.
+ * Represents an Object.
  */
 class ObjectValue extends Value {
 
@@ -161,7 +161,7 @@ class ObjectValue extends Value {
 	}
 
 	setPrototype(val) {
-		if ( !this.properties ) return this.eraseAndSetPrototype();
+		if ( !this.properties ) return this.eraseAndSetPrototype(val);
 		if ( val === null || val === undefined || val instanceof NullValue ) {
 			Object.setPrototypeOf(this.properties, null);
 			this.proto = null;

@@ -18,6 +18,7 @@ class SmartLinkValue extends LinkValue {
 		//if ( name === 'call' ) return true;
 		//return true;
 		if ( name.indexOf('esper_') === 0 ) return true;
+		if ( name === 'hasOwnProperty' ) return true;
 		let props = this.apiProperties;
 		if ( props === null ) return true;
 		return props.indexOf(name) !== -1;
