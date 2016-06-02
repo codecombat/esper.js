@@ -1,6 +1,10 @@
-# Esper.js
+# esper.js
 
 A javascript self-interpreter with a focus on sandboxed execution and runtime introspection.
+
+[![NPM version][npm-version-image]][npm-url] [![NPM downloads][npm-downloads-image]][npm-url] [![MIT License][license-image]][license-url] [![Build Status][travis-image]][travis-url]
+[![Coverage Status][coverage-image]][coverage-url]
+
 
 <h3 align="center">
 <a href="http://esper.chessgears.com/">Demo</a> |
@@ -32,7 +36,7 @@ result.toNative() === 4;
 
 The `esper()` function takes an options object as it only parameter.
 
-#### strict
+#### `strict`
 Type: `boolean`
 Default: `false`
 
@@ -40,7 +44,7 @@ If true, force all code to be run in [strict mode](https://developer.mozilla.org
 
 #### `foreignObjectMode`
 Type: `string`
-Default: `enum`
+Default: `link`
 
 #### `addInternalStack`
 Type: `boolean`
@@ -98,4 +102,15 @@ Checklist for contributing:
 
 
 
+[license-image]: http://img.shields.io/badge/license-MIT-blue.svg?style=flat
+[license-url]: LICENSE
 
+[npm-url]: https://npmjs.org/package/esper.js
+[npm-version-image]: http://img.shields.io/npm/v/esper.js.svg?style=flat
+[npm-downloads-image]: http://img.shields.io/npm/dm/esper.js.svg?style=flat
+
+[travis-url]: http://travis-ci.org/codecombat/esper.js
+[travis-image]: http://img.shields.io/travis/codecombat/esper.js/test.svg?style=flat
+
+[coverage-url]: https://coveralls.io/r/codecombat/esper.js?branch=master
+[coverage-image]: https://coveralls.io/repos/codecombat/esper.js/badge.svg?branch=master
