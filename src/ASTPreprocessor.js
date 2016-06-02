@@ -27,6 +27,7 @@ function addHiddenProperty(obj, name, value) {
 class ASTPreprocessor {
 
 	static process(ast) {
+		if ( typeof ast !== 'object' ) throw new TypeError('Provided AST is invalid (type is ' + typeof ast + ')');
 		let nast = JSON.parse(JSON.stringify(ast));
 		ASTPreprocessor.processInPlace(nast);
 		return nast;

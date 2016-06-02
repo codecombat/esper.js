@@ -197,6 +197,22 @@ class Engine {
 		};
 	}
 
+	/**
+	 * Returns a new engine that executes in the same Realm.  Useful
+	 * for creating threads / coroutines
+	 * @return {Engine}
+	 */
+	fork() {
+		let engine = new Engine(this.options);
+		var scope = this.globalScope;
+
+		engine.realm = this.realm;
+
+		engine.evaluator = new Evaluator(this.realm, this.evaluator.ast, scope);
+		engine.evaluator.frames = [];
+		return engine;
+	}
+
 	*filterGenerator(gen, shouldYield) {
 		let value = gen.next();
 		let steps = 0;

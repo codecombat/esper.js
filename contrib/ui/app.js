@@ -27,7 +27,7 @@ myAppModule.controller('main', function($scope, $timeout, $http, $q, $location) 
 	$scope.fix = function(c) { return c.reverse(); };
 
 	$scope.runMode = function() {
-		return $scope.engines.length > 0;
+		return $scope.engines && $scope.engines.length > 0;
 	};
 
 	$scope.aceLoaded = function(ai) {
@@ -60,7 +60,7 @@ myAppModule.controller('main', function($scope, $timeout, $http, $q, $location) 
 	$scope.speed = params.speed || 5;
 	var timer = function timer() {
 		if ( $scope.speed === 0 ) return $timeout(timer, 1000);
-		if ( $scope.esper && $scope.auto ) $scope.step();
+		if ( $scope.engines && $scope.auto ) $scope.step();
 		var delay = 1000 / Math.pow(10,($scope.speed - 3) / 3);
 		if ( $scope.speed == 10 ) delay = 0;
 		$timeout(timer, delay);
@@ -122,17 +122,12 @@ myAppModule.controller('main', function($scope, $timeout, $http, $q, $location) 
 		epr.addGlobalFx('fork', function(yourFX) {
 			var parent = $scope.esper;
 			var fx = esper.Value.getBookmark(yourFX);
-			var e = parent.evaluator;
-			var E = e.constructor;
-			var newThread = new E(e.realm, e.ast, parent.globalScope);
+			var eng = parent.fork();
+			var newThread = eng.evaluator;
 			var scope = parent.globalScope.createChild();
 			let c = fx.call(esper.Value.undef, [], scope);
-			newThread.frames = [];
 			newThread.pushFrame({generator: c, type: 'program', scope: scope, ast: null});
-			var eng = new esper.Engine();
-			eng.evaluator = newThread;
 			eng.generator = newThread.generator();
-			eng.realm = e.realm;
 			$scope.engines.push(eng);
 		});
 
@@ -167,7 +162,7 @@ myAppModule.controller('main', function($scope, $timeout, $http, $q, $location) 
 	};
 
 	$scope.step = function() {
-		if ( !$scope.esper ) return;
+		if ( !$scope.engines ) return;
 		$scope.clear();
 		var terminated = [];
 		for ( var i in $scope.engines ) {
@@ -273,16 +268,17 @@ myAppModule.controller('main', function($scope, $timeout, $http, $q, $location) 
 		delete $scope.esper;
 		delete $scope.gen;
 		delete $scope.frames;
+		$scope.engines = [];
 		$scope.auto = false;
 	};
 
 	$scope.aceChanged = _.debounce(function() {
 		window.localStorage.code = $scope.code;
 		$scope.clear();
-		$scope.compile();
 	},200);
 
 	$scope.$watch('opts', function() {
 		$scope.stop();
 	}, true);
+
 });
