@@ -3,7 +3,7 @@
 A javascript self-interpreter with a focus on sandboxed execution and runtime introspection.
 
 [![NPM version][npm-version-image]][npm-url] [![NPM downloads][npm-downloads-image]][npm-url] [![MIT License][license-image]][license-url] [![Build Status][travis-image]][travis-url]
-[![Coverage Status][coverage-image]][coverage-url]
+[![Coverage Status](https://coveralls.io/repos/github/codecombat/esper.js/badge.svg?branch=master)](https://coveralls.io/github/codecombat/esper.js?branch=master)
 
 
 <h3 align="center">
@@ -111,6 +111,3 @@ Checklist for contributing:
 
 [travis-url]: http://travis-ci.org/codecombat/esper.js
 [travis-image]: http://img.shields.io/travis/codecombat/esper.js/test.svg?style=flat
-
-[coverage-url]: https://coveralls.io/r/codecombat/esper.js?branch=master
-[coverage-image]: https://coveralls.io/repos/codecombat/esper.js/badge.svg?branch=master
