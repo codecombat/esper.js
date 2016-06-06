@@ -11,6 +11,10 @@ class EvaluatorInstruction {
 		return ei;
 	}
 
+	static getEvaluator() {
+		return new EvaluatorInstruction('getEvaluator');
+	}
+
 	constructor(type) {
 		this.type = type;
 	}

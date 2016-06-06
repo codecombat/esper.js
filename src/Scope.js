@@ -92,6 +92,11 @@ class Scope {
 		return this.realm.fromNative(value);
 	}
 
+	getVariableNames() {
+		let list = [];
+		for ( var o in this.object.properties ) list.push(o);
+		return list;
+	}
 
 }
 

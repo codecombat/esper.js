@@ -14,7 +14,8 @@ let defaultOptions = {
 	foreignObjectMode: 'link',
 	addInternalStack: false,
 	executionLimit: Infinity,
-	exposeEsperGlobal: true
+	exposeEsperGlobal: true,
+	extraErrorInfo: false
 };
 
 /**

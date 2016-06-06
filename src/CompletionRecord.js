@@ -44,6 +44,14 @@ class CompletionRecord {
 		return new CompletionRecord(CompletionRecord.THROW, err);
 	}
 
+	/**
+	 * Easy access to value.addExtra.
+	 * Note: Returns a generator.
+	 */
+	addExtra(obj) {
+		return this.value.addExtra(obj);
+	}
+
 }
 module.exports = CompletionRecord;
 

@@ -88,7 +88,9 @@ class Evaluator {
 				case 'branch':
 					this.branchFrame(val.kind, val.ast, val.scope, val.extra);
 					break;
-
+				case 'getEvaluator':
+					this.lastValue = this;
+					return this.next();
 			}
 		} else if ( (val instanceof CompletionRecord) ) {
 			if ( !(val.value instanceof Value) ) {
@@ -125,6 +127,14 @@ class Evaluator {
 						if ( this.frames[i].ast ) {
 							bestFrame = this.frames[i];
 							break;
+						}
+					}
+
+					if ( val.value instanceof ErrorValue ) {
+						if ( val.value.extra ) {
+							stk += '\n-------------';
+							for ( let key in val.value.extra)
+								stk += `\n${key} => ${val.value.extra[key]}`;
 						}
 					}
 
@@ -224,10 +234,31 @@ class Evaluator {
 			case 'Identifier':
 				let iref = s.ref(n.name, s.realm);
 				if ( !iref ) {
-					if ( !create ) throw new ReferenceError(`${n.name} is not defined`);
-					if ( s.strict ) throw new ReferenceError(`${n.name} is not defined`);
-					s.global.set(n.name, Value.undef);
-					iref = s.ref(n.name, s.realm);
+					iref = {
+						getValue: function*() {
+							let err = CompletionRecord.makeReferenceError(s.realm, `${n.name} is not defined`);
+							yield * err.addExtra({type: 'UndefinedVariable', when: 'read', ident: n.name});
+							return yield  err;
+						},
+						del: function() {
+							return true;
+						}
+					};
+					if ( !create || s.strict ) {
+						iref.setValue = function *() {
+							let err = CompletionRecord.makeReferenceError(s.realm, `${n.name} is not defined`);
+							yield * err.addExtra({type: 'UndefinedVariable', when: 'write', ident: n.name});
+							return yield  err;
+						};
+					} else {
+						iref.setValue = function *(value) {
+							s.global.set(n.name, value, s);
+							let aref = s.global.ref(n.name, s.realm);
+							this.setValue = aref.setValue;
+							this.getValue = aref.getValue;
+							this.del = aref.delete;
+						};
+					}
 				}
 				this.frames[0].ast = oldAST;
 				return iref;
@@ -241,18 +272,18 @@ class Evaluator {
 				}
 
 				if ( !ref ) {
-					throw new TypeError('Cant write property of undefined: ' + idx);
+					return yield CompletionRecord.makeTypeError(s.realm, `Can't write property of undefined: ${idx}`);
 				}
 
 				if ( !ref.ref ) {
-					throw new TypeError('Cant write property of non-object type: ' + idx);
+					return yield CompletionRecord.makeTypeError(s.realm, `Can't write property of non-object type: ${idx}`);
 				}
 
 				this.frames[0].ast = oldAST;
 				return ref.ref(idx, s.realm);
 
 			default:
-				throw new Error('Couldnt resolve ref component: ' + n.type);
+				return yield CompletionRecord.makeTypeError(s.realm, `Couldnt resolve ref component: ${n.type}`);
 		}
 	}
 
@@ -269,16 +300,11 @@ class Evaluator {
 
 	*evaluateAssignmentExpression(n, s) {
 		//TODO: Account for not-strict mode
-		let ref;
 		var realm = s.realm;
-		try {
-			ref = yield * this.resolveRef(n.left, s, n.operator === '=');
-		} catch ( e ) {
-			return new CompletionRecord(CompletionRecord.THROW, this.fromNative(e));
-		}
+		let ref = yield * this.resolveRef(n.left, s, n.operator === '=');
 
 		if ( !ref && s.strict ) {
-			return new CompletionRecord(CompletionRecord.THROW, this.fromNative(new ReferenceError(`Invalid refrence in assignment.`)));
+			return CompletionRecord.makeReferenceError(s.realm, `Invalid refrence in assignment.`);
 		}
 
 		let argument = yield * this.branch(n.right, s);
@@ -398,10 +424,10 @@ class Evaluator {
 	*evaluateCallExpression(n, s, e) {
 		let thiz = Value.undef;
 
-		let callee;
+		let callee, base;
 
 		if ( n.callee.type === 'MemberExpression' ) {
-			thiz = yield * this.branch(n.callee.object, s);
+			thiz = base = yield * this.branch(n.callee.object, s);
 			callee = yield * this.partialMemberExpression(thiz, n.callee, s);
 			if ( callee instanceof CompletionRecord ) {
 				if ( callee.type == CompletionRecord.THROW ) return callee;
@@ -432,7 +458,15 @@ class Evaluator {
 
 		let name = n.callee.srcName || callee.jsTypeName;
 		if ( !callee.isCallable ) {
-			return CompletionRecord.makeTypeError(this.realm, '' + name + ' is not a function');
+			let err = CompletionRecord.makeTypeError(this.realm, '' + name + ' is not a function');
+			yield * err.addExtra({
+				type: 'CallNonFunction',
+				target: callee,
+				targetAst: n.callee,
+				targetName: name,
+				base: base
+			});
+			return yield err;
 		}
 
 		let callResult = callee.call(thiz, args, s, {
@@ -545,7 +579,9 @@ class Evaluator {
 		if ( !s.has(n.name) ) {
 			// Allow undeclared varibles to be null?
 			if ( false ) return Value.undef;
-			return CompletionRecord.makeReferenceError(this.realm, `${n.name} is not defined`);
+			let err = CompletionRecord.makeReferenceError(this.realm, `${n.name} is not defined`);
+			yield * err.addExtra({type: 'UndefinedVariable', when: 'read', ident: n.name});
+			return yield err;
 		}
 		return s.get(n.name);
 	}
@@ -842,13 +878,10 @@ class Evaluator {
 
 	*evaluateUpdateExpression(n, s) {
 		//TODO: Need to support something like ++x[1];
-		let nue, ref;
-		try {
-			ref = yield * this.resolveRef(n.argument, s, true);
-		} catch ( e ) {
-			return new CompletionRecord(CompletionRecord.THROW, this.fromNative(e));
-		}
+		let nue;
+		let ref = yield * this.resolveRef(n.argument, s, true);
 		let old = Value.nan;
+
 		if ( ref ) old = yield * ref.getValue();
 		if ( old === undefined ) old = Value.nan;
 		switch (n.operator) {
@@ -864,14 +897,12 @@ class Evaluator {
 
 	*evaulateUnaryExpression(n, s) {
 		if ( n.operator === 'delete' ) {
-			let ref;
-			try {
-				ref = yield * this.resolveRef(n.argument, s);
-
-			} catch ( e ) {
-				if ( n.argument.type !== 'MemberExpression' ) return Value.true;
-				return new CompletionRecord(CompletionRecord.THROW, this.fromNative(e));
+			if ( n.argument.type !== 'MemberExpression' && n.argument.type !== 'Identifier' ) {
+				//This isnt something you can delete?
+				return Value.true;
 			}
+
+			let ref = yield * this.resolveRef(n.argument, s);
 			if ( !ref ) return Value.false;
 			if ( ref.isVariable ) { return Value.false; }
 			let worked = ref.del(s);

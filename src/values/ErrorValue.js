@@ -4,6 +4,7 @@
 const PrimitiveValue = require('./PrimitiveValue');
 const ObjectValue = require('./ObjectValue');
 const Value = require('../Value');
+const EvaluatorInstruction = require('../EvaluatorInstruction');
 
 class ErrorInstance extends ObjectValue {
 	createNativeAnalog() {
@@ -32,6 +33,24 @@ class ErrorInstance extends ObjectValue {
 		}
 
 		return out;
+	}
+
+	*addExtra(extra) {
+		if ( !this.realm.options.extraErrorInfo ) return;
+		let evaluator = yield EvaluatorInstruction.getEvaluator();
+		let scope = evaluator.frames[0].scope;
+		extra.ast = evaluator.frames[0].ast;
+		extra.scope = scope;
+		switch ( extra.type ) {
+			case 'UndefinedVariable':
+			case 'SmartAccessDenied':
+				extra.canidates = scope.getVariableNames();
+				break;
+			case 'CallNonFunction':
+				if ( extra.base && extra.base.properties ) extra.canidates = Object.keys(extra.base.properties);
+				break;
+		}
+		this.extra = extra;
 	}
 }
 
