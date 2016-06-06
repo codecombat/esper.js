@@ -9,6 +9,14 @@ const RegExpValue = require('./values/RegExpValue');
 const PropertyDescriptor = require('./values/PropertyDescriptor');
 const ErrorValue = require('./values/ErrorValue');
 const ArrayValue = require('./values/ArrayValue');
+const EvaluatorInstruction = require('./EvaluatorInstruction');
+
+class Frame {
+	constructor(type, o) {
+		this.type = type;
+		for ( var k in o ) this[k] = o[k];
+	}
+}
 
 class Evaluator {
 	constructor(realm, n, s) {
@@ -75,11 +83,20 @@ class Evaluator {
 
 		let val = result.value;
 
-		if ( Array.isArray(val) ) {
-			val.shift();
-			this.branchFrame.apply(this, val);
+		if ( val instanceof EvaluatorInstruction ) {
+			switch ( val.type ) {
+				case 'branch':
+					this.branchFrame(val.kind, val.ast, val.scope, val.extra);
+					break;
+
+			}
 		} else if ( (val instanceof CompletionRecord) ) {
-			if ( !(val.value instanceof Value) ) throw new Error('Value isnt of type Value');
+			if ( !(val.value instanceof Value) ) {
+				if ( val.value instanceof Error ) {
+					throw new Error("Value was an error: " + val.value.stack);
+				}
+				throw new Error('Value isnt of type Value, its' + val.value.toString());
+			}
 
 			switch ( val.type ) {
 				case CompletionRecord.CONTINUE:
@@ -187,7 +204,7 @@ class Evaluator {
 		return lines;
 	}
 	pushFrame(frame) {
-		this.frames.unshift(frame);
+		this.frames.unshift(new Frame(frame.type, frame));
 	}
 
 	popFrame() {
@@ -568,7 +585,7 @@ class Evaluator {
 	*evaluateForInStatement(n, s) {
 		let last = Value.undef;
 		let object = yield * this.branch(n.right,s);
-		let names = object.observableProperties();
+		let names = object.observableProperties(s.realm);
 		let that = this;
 		let ref;
 
@@ -582,7 +599,7 @@ class Evaluator {
 		var gen = function*() {
 			for ( let name of names ) {
 				yield * ref.setValue(name);
-				last = yield * that.branch(n.body, s);
+				last = yield that.branchFrame('continue', n.body, s, {label: n.label});
 			}
 		};
 		this.pushFrame({generator: gen(), type: 'loop', label: n.label});
@@ -596,7 +613,7 @@ class Evaluator {
 	*evaluateForOfStatement(n, s) {
 		let last = Value.undef;
 		let object = yield * this.branch(n.right,s);
-		let names = object.observableProperties();
+		let names = object.observableProperties(s.realm);
 		let that = this;
 		let ref;
 
@@ -610,7 +627,7 @@ class Evaluator {
 		var gen = function*() {
 			for ( let name of names ) {
 				yield * ref.setValue(yield * object.get(yield * name.toStringNative()));
-				last = yield * that.branch(n.body, s);
+				last = yield that.branchFrame('continue', n.body, s, {label: n.label});
 			}
 		};
 		this.pushFrame({generator: gen(), type: 'loop', label: n.label});

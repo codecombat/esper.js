@@ -17,31 +17,52 @@ function detectStrict(body) {
 	}
 }
 
-function addHiddenProperty(obj, name, value) {
-	Object.defineProperty(obj, name, {
-		value: value,
-		configurable: true
-	});
+
+class ASTNode {
+	constructor(o) {
+		if ( typeof o === 'object' ) {
+			for ( var k in o ) this[k] = o[k];
+		}
+	}
+
+	addHiddenProperty(name, value) {
+		Object.defineProperty(this, name, {
+			value: value,
+			configurable: true
+		});
+	}
+
+	source() {
+		if ( !this._source ) return;
+		if ( !this.range ) return;
+		return this._source.substring(this.range[0], this.range[1]);
+	}
+
 }
 
 class ASTPreprocessor {
 
-	static process(ast) {
+	static process(ast, extra) {
 		if ( typeof ast !== 'object' ) throw new TypeError('Provided AST is invalid (type is ' + typeof ast + ')');
-		let nast = JSON.parse(JSON.stringify(ast));
-		ASTPreprocessor.processInPlace(nast);
+		let nast = JSON.parse(JSON.stringify(ast), function(n, o) {
+			if ( o === null ) return null;
+			if ( typeof o !== 'object' ) return o;
+			if ( o.type ) {
+				let z = new ASTNode(o);
+				if ( extra && extra.source ) z.addHiddenProperty('_source', extra.source);
+				return z;
+			}
+			return o;
+		});
+		new ASTPreprocessor(nast).start();
 		return nast;
-	}
-
-	static processInPlace(ast) {
-		new ASTPreprocessor(ast).start();
 	}
 
 	static *walker(ast, cbs, parent) {
 		var me = (a) => ASTPreprocessor.walker(a, cbs, ast);
 		invokeCB(cbs, 'enter', ast);
 		invokeCB(cbs, 'enter' + ast.type, ast);
-		if ( parent ) addHiddenProperty(ast, 'parent', parent);
+		if ( parent ) ast.addHiddenProperty('parent', parent);
 		switch ( ast.type ) {
 			case 'Program':
 				for ( let e of ast.body ) yield * me(e);
@@ -164,9 +185,9 @@ class ASTPreprocessor {
 	enterProgram(a) {
 		let scope = Object.create(null);
 
-		addHiddenProperty(a, 'refs', Object.create(null));
-		addHiddenProperty(a, 'vars', Object.create(null));
-		addHiddenProperty(a, 'funcs', Object.create(null));
+		a.addHiddenProperty('refs', Object.create(null));
+		a.addHiddenProperty('vars', Object.create(null));
+		a.addHiddenProperty('funcs', Object.create(null));
 
 		this.funcStack.unshift(a);
 		this.scopeStack.unshift(scope);
@@ -217,9 +238,9 @@ class ASTPreprocessor {
 		let scope = Object.create(this.scopeStack[0]);
 		this.scopeStack.unshift(scope);
 
-		addHiddenProperty(a, 'refs', Object.create(null));
-		addHiddenProperty(a, 'vars', Object.create(null));
-		addHiddenProperty(a, 'funcs', Object.create(null));
+		a.addHiddenProperty('refs', Object.create(null));
+		a.addHiddenProperty('vars', Object.create(null));
+		a.addHiddenProperty('funcs', Object.create(null));
 
 		for ( let o of a.params ) {
 			a.vars[o.name] = a;

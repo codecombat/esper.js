@@ -110,7 +110,7 @@ class LinkValue extends Value {
 	}
 
 
-	*observableProperties() {
+	*observableProperties(realm) {
 		for ( let p in this.native ) {
 			yield this.makeLink(p);
 		}

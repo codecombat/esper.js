@@ -8,7 +8,10 @@ const CompletionRecord = require('../CompletionRecord');
 const EasyObjectValue = require('../values/EasyObjectValue');
 const _g = require('../GenDash');
 
-function *toRegexp(x) {
+function *toRegexp(x, realm) {
+	if ( !x.regexp ) {
+		return yield CompletionRecord.makeTypeError(realm, 'Calling regex method on non regex.');
+	}
 	return x.regexp;
 }
 
@@ -17,16 +20,17 @@ class RegExpProtoype extends EasyObjectValue {
 		super(realm);
 		this.regexp = new RegExp();
 	}
-	static *test(thiz, args) {
-		var rx = yield * toRegexp(thiz);
+	static *test(thiz, args, s) {
+		var rx = yield * toRegexp(thiz, s.realm);
 		var str = undefined;
 		if ( args.length > 0 ) str = yield * args[0].toStringNative();
 		return this.fromNative(rx.test(str));
 	}
 
 	static *exec(thiz, args, s) {
-		var rx = yield * toRegexp(thiz);
-		rx.lastIndex = yield * (yield * thiz.get('lastIndex')).toIntNative();
+		var rx = yield * toRegexp(thiz, s.realm);
+		let li = yield * thiz.get('lastIndex');
+		rx.lastIndex = yield * li.toIntNative();
 		var str = undefined;
 		if ( args.length > 0 ) str = yield * args[0].toStringNative();
 
@@ -43,35 +47,25 @@ class RegExpProtoype extends EasyObjectValue {
 	}
 
 	static *compile(thiz, args, s) {
-		yield * toRegexp(thiz);
+		yield * toRegexp(thiz, s.realm);
 		let rv = yield * s.realm.RegExp.call(Value.null, args, s);
-		thiz.regexp = rv.regexp;
+		let regexp = rv.regexp;
+		thiz.regexp = regexp;
+		yield * thiz.set('source', Value.fromNative(regexp.source));
+		yield * thiz.set('global', Value.fromNative(regexp.global));
+		yield * thiz.set('ignoreCase', Value.fromNative(regexp.ignoreCase));
+		yield * thiz.set('multiline', Value.fromNative(regexp.multiline));
 		yield * thiz.set('lastIndex', Value.zero);
 		return Value.undef;
 	}
 
-	static *source$g(thiz, args, s) {
-		var rx = yield * toRegexp(thiz);
-		return Value.fromNative(rx.source);
-	}
+	static get source$cw() { return Value.fromNative('(?:)'); }
+	static get global$cw() { return Value.fromNative(false); }
+	static get ignoreCase$cw() { return Value.fromNative(false); }
+	static get multiline$cw() { return Value.fromNative(false); }
 
-	static *global$g(thiz, args, s) {
-		var rx = yield * toRegexp(thiz);
-		return Value.fromNative(rx.global);
-	}
-
-	static *ignoreCase$g(thiz, args, s) {
-		var rx = yield * toRegexp(thiz);
-		return Value.fromNative(rx.ignoreCase);
-	}
-
-	static *multiline$gc(thiz, args, s) {
-		var rx = yield * toRegexp(thiz);
-		return Value.fromNative(rx.multiline);
-	}
-
-	static *toString(thiz, args) {
-		var rx = yield * toRegexp(thiz);
+	static *toString(thiz, args, s) {
+		var rx = yield * toRegexp(thiz, s.realm);
 		return Value.fromNative(rx.toString());
 	}
 

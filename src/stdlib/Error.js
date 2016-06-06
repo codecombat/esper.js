@@ -24,19 +24,27 @@ class ErrorObject extends EasyObjectValue {
 		return nue;
 	}
 
-	make(message) {
+	make(message, name) {
 		let nue = this.makeOne();
 		if ( message ) {
 			nue.setImmediate('message', Value.fromNative(message));
 			nue.properties['message'].enumerable = false;
+			nue.createNativeAnalog().message = message;
 		}
-		nue.createNativeAnalog().message = message;
+
+		if ( name ) {
+			nue.setImmediate('name', Value.fromNative(name));
+			nue.properties['name'].enumerable = false;
+			nue.createNativeAnalog().name = name;
+		}
+
 		return nue;
 	}
 
 	makeFrom(err) {
 		let nue = this.makeOne();
 		if ( err.message ) nue.setImmediate('message', Value.fromNative(err.message));
+		if ( err.name ) nue.setImmediate('message', Value.fromNative(err.name));
 		err.native = err;
 		return nue;
 	}

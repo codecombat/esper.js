@@ -4,6 +4,7 @@
 const Value = require('../Value');
 const PropertyDescriptor = require('./PropertyDescriptor');
 const ObjectValue = require('./ObjectValue');
+const EvaluatorInstruction = require('../EvaluatorInstruction');
 
 /**
  * Represents a value that maps directly to an untrusted local value.
@@ -109,7 +110,7 @@ class ClosureValue extends ObjectValue {
 		}
 
 		if ( !invokeScope.strict ) {
-			argsObj.add('callee', this);
+			yield * argsObj.set('callee', this);
 		}
 
 		yield * argsObj.set('length', this.fromNative(args.length));
@@ -127,7 +128,7 @@ class ClosureValue extends ObjectValue {
 			}
 		}
 
-		var result = yield ['branch','function', this.func.body, invokeScope, {returnLastValue: this.returnLastValue}];
+		var result = yield EvaluatorInstruction.branch('function', this.func.body, invokeScope, {returnLastValue: this.returnLastValue});
 		return result;
 	}
 

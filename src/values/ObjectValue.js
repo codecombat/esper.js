@@ -15,6 +15,7 @@ class ObjectValue extends Value {
 	constructor(realm, proto) {
 		super();
 		this.extensable = true;
+		this.realm = realm;
 		if ( proto ) this.eraseAndSetPrototype(proto);
 		else if ( realm ) this.eraseAndSetPrototype(realm.ObjectPrototype);
 		else this.properties = Object.create(null);
@@ -148,7 +149,7 @@ class ObjectValue extends Value {
 		return Value.false;
 	}
 
-	*observableProperties() {
+	*observableProperties(realm) {
 		for ( let p in this.properties ) {
 			if ( !this.properties[p].enumerable ) continue;
 			yield this.fromNative(p);
@@ -218,7 +219,7 @@ class ObjectValue extends Value {
 		for ( let name of methodNames ) {
 			let method = yield * this.get(name);
 			if ( method && method.call ) {
-				let rescr = yield (yield * method.call(this, [])); //TODO: There should be more aruments here
+				let rescr = yield (yield * method.call(this, [], this.realm.globalScope)); //TODO: There should be more aruments here
 				let res = Value.undef;
 				if ( !(rescr instanceof CompletionRecord) ) res = rescr;
 				else if ( rescr.type == CompletionRecord.RETURN ) res = rescr.value;

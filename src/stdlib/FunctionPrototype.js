@@ -81,6 +81,8 @@ class FunctionPrototype extends EasyObjectValue {
 	}
 	static *toString(thiz, args, s) {
 		if ( thiz instanceof ClosureValue ) {
+			let astsrc = thiz.func.source();
+			if ( astsrc ) return this.fromNative(astsrc);
 			return this.fromNative('function() { [AST] }');
 		} else if ( thiz instanceof BoundFunction ) {
 			return this.fromNative('function() { [bound function] }');

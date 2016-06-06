@@ -41,7 +41,7 @@ class Engine {
 	 */
 	eval(code) {
 		let ast = this.realm.parser(code);
-		return this.evalAST(ast);
+		return this.evalAST(ast, code);
 	}
 
 	/**
@@ -53,7 +53,7 @@ class Engine {
 	 */
 	evalSync(code) {
 		let ast = this.realm.parser(code);
-		return this.evalASTSync(ast);
+		return this.evalASTSync(ast, code);
 	}
 
 	/**
@@ -61,32 +61,33 @@ class Engine {
 	 *
 	 * @access public
 	 * @param {Node} ast - ESTree AST representing the code to run.
+	 * @param {string} codeRef - The code that was used to generate the AST.
 	 * @return {Value} - The result of execution, as a promise.
 	 */
-	evalAST(ast) {
+	evalAST(ast, codeRef) {
 		//console.log(escodegen.generate(ast));
-		this.loadAST(ast);
+		this.loadAST(ast, codeRef);
 		let p = this.run();
 		p.then(() => delete this.generator);
 		return p;
 	}
 
-	evalASTSync(ast) {
-		this.loadAST(ast);
+	evalASTSync(ast, codeRef) {
+		this.loadAST(ast, codeRef);
 		let value = this.runSync();
 		delete this.generator;
 		return value;
 	}
 
-	loadAST(ast) {
-		let past = ASTPreprocessor.process(ast);
+	loadAST(ast, source) {
+		let past = ASTPreprocessor.process(ast, {source: source});
 		this.evaluator = new Evaluator(this.realm, past, this.globalScope);
 		this.generator = this.evaluator.generator();
 	}
 
 	load(code) {
 		let ast = this.realm.parser(code);
-		this.loadAST(ast);
+		this.loadAST(ast, code);
 	}
 
 	step() {

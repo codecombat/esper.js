@@ -96,8 +96,8 @@ class PrimitiveValue extends Value {
 		return yield * pt.get(name, realm, this);
 	}
 
-	*observableProperties() {
-		throw new Error('Dont do this yet');
+	*observableProperties(realm) {
+		yield * this.derivePrototype(realm).observableProperties(realm);
 	}
 
 	*makeThisForNew() {

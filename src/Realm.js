@@ -13,6 +13,7 @@ const BridgeValue = require('./values/BridgeValue');
 const ASTPreprocessor = require('./ASTPreprocessor');
 const EasyNativeFunction = require('./values/EasyNativeFunction');
 const PropertyDescriptor = require('./values/PropertyDescriptor');
+const EvaluatorInstruction = require('./EvaluatorInstruction');
 
 const ObjectPrototype = require('./stdlib/ObjectPrototype');
 const FunctionPrototype = require('./stdlib/FunctionPrototype');
@@ -68,7 +69,7 @@ class EvalFunction extends ObjectValue {
 		}
 
 		//TODO: Dont run in the parent scope if we are called indirectly
-		let bak = yield ['branch', 'eval', ast, scope.parent ? scope.parent : scope];
+		let bak = yield EvaluatorInstruction.branch('eval', ast, scope.parent ? scope.parent : scope);
 		//console.log("EVALED: ", bak);
 		return bak;
 	}

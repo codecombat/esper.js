@@ -32,7 +32,7 @@ describe("Duk Tests", function() {
 			}	
 			var engine = new Engine();
 			engine.env.print = print;
-			engine.eval(src);
+			engine.evalSync(src);
 			expect(out).to.equal(expected);
 		});
 	}

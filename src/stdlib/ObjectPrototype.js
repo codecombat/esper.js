@@ -23,6 +23,7 @@ class ObjectPrototype extends EasyObjectValue {
 	static *isPrototypeOf$e(thiz, args, s) {
 		if ( args.length < 1 ) return Value.false;
 		let target = args[0]; //TODO: Call ToObject();
+		if ( !target.getPrototype ) return yield CompletionRecord.makeTypeError(s.realm, "No prototype.");
 		let pt = target.getPrototype(s.realm);
 		let checked = [pt];
 		while ( pt ) {

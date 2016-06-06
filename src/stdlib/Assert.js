@@ -31,8 +31,7 @@ class AssertFunction extends ObjectValue {
 
 		if ( args[0].truthy ) return Value.undef;
 		if ( args.length > 1 ) why = yield * args[1].toStringNative();
-		let err = new Error(why);
-		err.name = 'AssertionError';
+		let err = scope.realm.Error.make(why, 'AssertionError');
 		return new CompletionRecord(CompletionRecord.THROW, err);
 	}
 
@@ -46,8 +45,7 @@ class AssertFunction extends ObjectValue {
 		} else if ( ext.callNode && ext.callNode.arguments[0] ) {
 			reason = (ext.callNode.arguments[0].srcName || '???');
 		}
-		let err = new Error(reason);
-		err.name = 'AssertionError';
+		let err = scope.realm.Error.make(reason, 'AssertionError');
 		return new CompletionRecord(CompletionRecord.THROW, err);
 	}
 }
