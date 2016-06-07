@@ -6,10 +6,7 @@ function fib(x) {
 	return result;
 }
 
-for ( var i = 1; i < 150; ++i ) {
-	print(i);
-	if ( i % 2 == 1 ) continue;
+for ( var i = 1; i < 3; ++i ) {
 	var f = fib(i);
 	print(i, "\t", f);
-
 }

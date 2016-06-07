@@ -8,6 +8,20 @@ const PrimitiveValue = require('./PrimitiveValue');
 const NullValue = require('./NullValue');
 const GenDash = require('../GenDash');
 
+let alwaysFalse = () => false;
+let undefinedReturningGenerator = function*() { return Value.undef; }
+
+class ObjRefrence {
+	constructor(object, name, ctxthis) {
+		this.object = object;
+		this.name = name;
+		this.ctxthis = ctxthis;
+	}
+	del(s) { return this.object.delete(this.name, s); }
+	getValue(s) { return this.object.get(this.name, this.ctxthis || this.object, s) }
+	setValue(value, s) { return this.object.set(this.name, value, s); }
+}
+
 /**
  * Represents an Object.
  */
@@ -25,41 +39,40 @@ class ObjectValue extends Value {
 	ref(name, ctxthis) {
 		var existing = this.properties[name];
 		let thiz = this;
-		var ret = {};
 
 		let get;
 		if ( existing ) {
-			ret.isVariable = existing.isVariable;
-			ret.del = (s) => {
-				return this.delete(name, s);
-			};
-			ret.getValue = existing.getValue.bind(existing, ctxthis || this);
-			ret.setValue = this.set.bind(this, name);
+			return new ObjRefrence(this, name, ctxthis);
 		} else {
-			ret.isVariable = false;
-			ret.del = (s) => false;
-			ret.getValue = function *() { return Value.undef; };
-			ret.setValue = function *(to, s) { return yield * thiz.set(name, to, s); };
+			return {
+				name: name,
+				object: thiz,
+				isVariable: false,
+				del: alwaysFalse,
+				getValue:  undefinedReturningGenerator,
+				setValue: function (to, s) { return this.object.set(this.name, to, s); }
+			};
+
 		}
-		return ret;
 	}
 
-	*set(name, value, s, extra) {
+	//Note: Returns generator by tailcall.
+	set(name, value, s, extra) {
+		let thiz = this;
 		extra = extra || {};
 		if ( !Object.prototype.hasOwnProperty.call(this.properties, name) ) {
 			if ( !this.extensable ) {
 				//TODO: Should we throw here in strict mode?
-				return;
+				return Value.undef.fastGen();
 			}
 			let v = new PropertyDescriptor(value);
-			v.del = () => this.delete(name);
 			v.enumerable = 'enumerable' in extra ? extra.enumerable : true;
 			this.properties[name] = v;
 
-			return yield * v.setValue(this, value, s);
+			return v.setValue(this, value, s);
 		}
 
-		return yield * this.properties[name].setValue(this, value, s);
+		return this.properties[name].setValue(this, value, s);
 
 	}
 

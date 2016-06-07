@@ -73,7 +73,7 @@ class ASTPreprocessor {
 		var me = (a) => ASTPreprocessor.walker(a, cbs, ast);
 		invokeCB(cbs, 'enter', ast);
 		invokeCB(cbs, 'enter' + ast.type, ast);
-		if ( parent ) ast.addHiddenProperty('parent', parent);
+		if ( parent && ast instanceof ASTNode ) ast.addHiddenProperty('parent', parent);
 		switch ( ast.type ) {
 			case 'Program':
 				for ( let e of ast.body ) yield * me(e);

@@ -20,6 +20,10 @@ class Scope {
 	 * @returns {Value}
 	 */
 	get(name) {
+		//Fast property access in the common case.
+		let prop = this.object.properties[name];
+		if ( !prop ) return Value.undef;
+		if ( !prop.getter ) return prop.value;
 		return this.object.getImmediate(name);
 	}
 
@@ -55,10 +59,6 @@ class Scope {
 		this.writeTo.setImmediate(name, value);
 	}
 
-	unset(name) {
-		delete this.variables[name];
-	}
-
 	has(name) {
 		return this.object.has(name);
 	}
@@ -69,13 +69,14 @@ class Scope {
 	 * @param {Value} value - New vaalue of variable
 	 * @param {Scope} s - Code scope to run setter functions in
 	 */
-	*put(name, value, s) {
+	put(name, value, s) {
 		let variable = this.object.properties[name];
 		if ( variable ) {
-			return yield * variable.setValue(this.object, value, s);
+			return variable.setValue(this.object, value, s);
 		}
 		var v = new PropertyDescriptor(value, this);
 		this.writeTo.properties[name] = v;
+		return Value.undef.fastGen();
 	}
 
 	createChild() {

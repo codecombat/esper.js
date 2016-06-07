@@ -21,11 +21,14 @@ class Value {
 	 * @param {any} value - The value to convert
 	 */
 	static fromPrimativeNative(value) {
-		if ( value === undefined ) return undef;
-		if ( value === null ) return nil;
+		if ( !value )  {
+			if ( value === undefined ) return undef;
+			if ( value === null ) return nil;
+			if ( value === false ) return fals;
+			if ( value === '' ) return emptyString;
+		}
+
 		if ( value === true ) return tru;
-		if ( value === false ) return fals;
-		if ( value === '' ) return emptyString;
 
 		if ( typeof value === 'number' ) {
 			if ( Object.is(value, -0) ) return negzero;
@@ -402,6 +405,11 @@ class Value {
 
 	*toPrimitiveValue(preferedType) { throw new Error('Unimplemented: Value#jsTypeName'); }
 	*toPrimitiveNative(preferedType) { return (yield * this.toPrimitiveValue()).native; }
+
+	/**
+	 * Quickly make a generator for this value
+	 */
+	*fastGen() { return this; }
 
 }
 module.exports = Value;

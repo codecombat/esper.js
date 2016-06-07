@@ -322,29 +322,30 @@ class Evaluator {
 		}
 	}
 
-	*doBinaryEvaluation(operator, left, right, realm) {
+	//NOTE: Returns generator, fast return yield *;
+	doBinaryEvaluation(operator, left, right, realm) {
 		switch ( operator ) {
-			case '==': return yield * left.doubleEquals(right, realm);
-			case '!=': return yield * left.notEquals(right, realm);
-			case '===': return yield * left.tripleEquals(right, realm);
-			case '!==': return yield * left.doubleNotEquals(right, realm);
-			case '+': return yield * left.add(right, realm);
-			case '-': return yield * left.subtract(right, realm);
-			case '*': return yield * left.multiply(right, realm);
-			case '/': return yield * left.divide(right, realm);
-			case '%': return yield * left.mod(right, realm);
-			case '|': return yield * left.bitOr(right, realm);
-			case '^': return yield * left.bitXor(right, realm);
-			case '&': return yield * left.bitAnd(right, realm);
-			case 'in': return yield * right.inOperator(left, realm);
-			case 'instanceof': return yield * left.instanceOf(right, realm);
-			case '>': return yield * left.gt(right, realm);
-			case '<': return yield * left.lt(right, realm);
-			case '>=': return yield * left.gte(right, realm);
-			case '<=': return yield * left.lte(right, realm);
-			case '<<': return yield * left.shiftLeft(right, realm);
-			case '>>': return yield * left.shiftRight(right, realm);
-			case '>>>': return yield * left.shiftRightZF(right, realm);
+			case '==': return left.doubleEquals(right, realm);
+			case '!=': return left.notEquals(right, realm);
+			case '===': return left.tripleEquals(right, realm);
+			case '!==': return left.doubleNotEquals(right, realm);
+			case '+': return left.add(right, realm);
+			case '-': return left.subtract(right, realm);
+			case '*': return left.multiply(right, realm);
+			case '/': return left.divide(right, realm);
+			case '%': return left.mod(right, realm);
+			case '|': return left.bitOr(right, realm);
+			case '^': return left.bitXor(right, realm);
+			case '&': return left.bitAnd(right, realm);
+			case 'in': return right.inOperator(left, realm);
+			case 'instanceof': return left.instanceOf(right, realm);
+			case '>': return left.gt(right, realm);
+			case '<': return left.lt(right, realm);
+			case '>=': return left.gte(right, realm);
+			case '<=': return left.lte(right, realm);
+			case '<<': return left.shiftLeft(right, realm);
+			case '>>': return left.shiftRight(right, realm);
+			case '>>>': return left.shiftRightZF(right, realm);
 			default:
 				throw new Error('Unknown binary operator: ' + operator);
 		}
