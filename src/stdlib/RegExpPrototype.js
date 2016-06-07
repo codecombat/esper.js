@@ -30,7 +30,9 @@ class RegExpProtoype extends EasyObjectValue {
 	static *exec(thiz, args, s) {
 		var rx = yield * toRegexp(thiz, s.realm);
 		let li = yield * thiz.get('lastIndex');
-		rx.lastIndex = yield * li.toIntNative();
+		li = yield * li.toIntNative();
+		if ( li < 0 ) li = 0; //Work around incorrect V8 behavior.
+		rx.lastIndex = li;
 		var str = undefined;
 		if ( args.length > 0 ) str = yield * args[0].toStringNative();
 

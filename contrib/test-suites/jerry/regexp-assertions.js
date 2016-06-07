@@ -172,5 +172,5 @@ assert(result.index === 6);
 t = new RegExp ("abc","g");
 t.lastIndex = -12;
 result = t.exec("abc   abc");
-assert(!result);
-assert(t.lastIndex === 0);
+assert(result);
+assert(t.lastIndex === 3);
