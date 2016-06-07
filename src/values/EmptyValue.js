@@ -33,8 +33,10 @@ class EmptyValue extends Value {
 	 * @returns {CompletionRecord} Indexing empty values is a type error.
 	 */
 	*get(name, realm) {
-		let err = 'Cannot read property \'' + name + '\' of ' + this.specTypeName;
-		return CompletionRecord.makeTypeError(realm, err);
+		let str = 'Cannot read property \'' + name + '\' of ' + this.specTypeName;
+		let err = CompletionRecord.makeTypeError(realm, str);
+		yield * err.addExtra({code: 'IndexEmpty', target: this, prop: name});
+		return err;
 	}
 
 }

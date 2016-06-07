@@ -38,6 +38,17 @@ class ASTNode {
 		return this._source.substring(this.range[0], this.range[1]);
 	}
 
+	toString() {
+		let extra = Object.keys(this).map((k) => {
+			let v = this[k];
+			if ( v === null || typeof v === 'function' ) return;
+			if ( k == 'range' || k == 'loc' || k == 'nodeID') return;
+			if ( v instanceof ASTNode ) return `${k}: [ASTNode: ${v.type}]`;
+			else return `${k}: ${JSON.stringify(v)}`;
+		}).filter((v) => !!v).join(', ');
+		return `[ASTNode: ${this.type} ${extra}]`;
+	}
+
 }
 
 class ASTPreprocessor {

@@ -231,7 +231,7 @@ class ObjectObject extends EasyObjectValue {
 	static *getPrototypeOf(thiz, args, s) {
 		let target = EasyObjectValue.undef;
 		if ( args.length > 0 ) target = args[0];
-		if ( !target.getPrototype ) return yield CompletionRecord.makeTypeError(s.realm, "No prototype.");
+		if ( !target.getPrototype ) return yield CompletionRecord.makeTypeError(s.realm, 'No prototype.');
 		let proto = target.getPrototype(s.realm);
 		if ( proto ) return proto;
 		return EasyObjectValue.null;

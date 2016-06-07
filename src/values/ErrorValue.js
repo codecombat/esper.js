@@ -18,7 +18,7 @@ class ErrorInstance extends ObjectValue {
 				frames.shift();
 			}
 			this.native.stack = header + '\n' + frames.join('\n');
-
+			for ( var k in this.extra ) this.native[k] = this.extra[k];
 
 		}
 		return this.native;
@@ -38,17 +38,32 @@ class ErrorInstance extends ObjectValue {
 	*addExtra(extra) {
 		if ( !this.realm.options.extraErrorInfo ) return;
 		let evaluator = yield EvaluatorInstruction.getEvaluator();
-		let scope = evaluator.topFrame.scope;
-		extra.ast = evaluator.topFrame.ast;
-		extra.scope = scope;
-		switch ( extra.type ) {
-			case 'UndefinedVariable':
-			case 'SmartAccessDenied':
-				extra.canidates = scope.getVariableNames();
-				break;
-			case 'CallNonFunction':
-				if ( extra.base && extra.base.properties ) extra.canidates = Object.keys(extra.base.properties);
-				break;
+		if ( evaluator ) {
+			let scope = evaluator.topFrame.scope;
+			let ast = extra.ast = evaluator.topFrame.ast;
+			extra.scope = scope;
+
+			if ( extra.ast.loc ) {
+				extra.line = extra.ast.loc.start.line;
+			}
+
+			switch ( extra.code ) {
+				case 'UndefinedVariable':
+				case 'SmartAccessDenied':
+					extra.canidates = scope.getVariableNames();
+					break;
+				case 'CallNonFunction':
+					if ( extra.base && extra.base.properties ) {
+						//TODO: This doesnt take the prototype into account.
+						extra.canidates = Object.keys(extra.base.properties);
+					}
+					break;
+				case 'IndexEmpty':
+					break;
+			}
+		}
+		if ( this.native ) {
+			for ( var k in extra ) this.native[k] = extra[k];
 		}
 		this.extra = extra;
 	}

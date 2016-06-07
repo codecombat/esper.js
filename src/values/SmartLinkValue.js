@@ -60,12 +60,12 @@ class SmartLinkValue extends LinkValue {
 		if ( name in native ) {
 			let noWrite = function *() {
 				let err = CompletionRecord.makeTypeError(realm, "Can't write to protected property: " + name);
-				yield * err.addExtra({type: 'SmartAccessDenied', when: 'write', ident: name});
+				yield * err.addExtra({code: 'SmartAccessDenied', when: 'write', ident: name});
 				return yield err;
 			};
 			let noRead = function *() {
 				let err = CompletionRecord.makeTypeError(realm, "Can't read protected property: " + name);
-				yield * err.addExtra({type: 'SmartAccessDenied', when: 'read', ident: name});
+				yield * err.addExtra({code: 'SmartAccessDenied', when: 'read', ident: name});
 				return yield err;
 			};
 			if ( !this.allowRead(name) ) {

@@ -15,7 +15,8 @@ let defaultOptions = {
 	addInternalStack: false,
 	executionLimit: Infinity,
 	exposeEsperGlobal: true,
-	extraErrorInfo: false
+	extraErrorInfo: false,
+	addExtraErrorInfoToStacks: false
 };
 
 /**

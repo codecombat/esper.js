@@ -67,7 +67,7 @@ class Evaluator {
 		return false;
 	}
 
-	next() {
+	next(lastValueOveride) {
 		let that = this;
 		let frames = this.frames;
 		let top = frames[0];
@@ -82,7 +82,7 @@ class Evaluator {
 			delete top.retValue;
 		}
 
-		result = top.generator.next(this.lastValue);
+		result = top.generator.next(lastValueOveride || this.lastValue);
 
 		let val = result.value;
 
@@ -92,7 +92,7 @@ class Evaluator {
 					this.branchFrame(val.kind, val.ast, val.scope, val.extra);
 					return this.next();
 				case 'getEvaluator':
-					return this.next();
+					return this.next(this);
 			}
 		}
 
@@ -137,7 +137,7 @@ class Evaluator {
 	processCompletionValueMeaning(val) {
 		if ( !(val.value instanceof Value) ) {
 			if ( val.value instanceof Error ) {
-				throw new Error("Value was an error: " + val.value.stack);
+				throw new Error('Value was an error: ' + val.value.stack);
 			}
 			throw new Error('Value isnt of type Value, its' + val.value.toString());
 		}
@@ -171,10 +171,13 @@ class Evaluator {
 				}
 
 				if ( val.value instanceof ErrorValue ) {
-					if ( val.value.extra ) {
+					if ( this.realm.options.addExtraErrorInfoToStacks && val.value.extra ) {
 						stk += '\n-------------';
-						for ( let key in val.value.extra)
-							stk += `\n${key} => ${val.value.extra[key]}`;
+						for ( let key in val.value.extra ) {
+							let vv = val.value.extra[key];
+							if ( vv instanceof Value ) stk += `\n${key} => ${vv.debugString}`;
+							else stk += `\n${key} => ${vv}`;
+						}
 					}
 				}
 
@@ -248,7 +251,7 @@ class Evaluator {
 					iref = {
 						getValue: function*() {
 							let err = CompletionRecord.makeReferenceError(s.realm, `${n.name} is not defined`);
-							yield * err.addExtra({type: 'UndefinedVariable', when: 'read', ident: n.name});
+							yield * err.addExtra({code: 'UndefinedVariable', when: 'read', ident: n.name});
 							return yield  err;
 						},
 						del: function() {
@@ -258,7 +261,7 @@ class Evaluator {
 					if ( !create || s.strict ) {
 						iref.setValue = function *() {
 							let err = CompletionRecord.makeReferenceError(s.realm, `${n.name} is not defined`);
-							yield * err.addExtra({type: 'UndefinedVariable', when: 'write', ident: n.name});
+							yield * err.addExtra({code: 'UndefinedVariable', when: 'write', ident: n.name});
 							return yield  err;
 						};
 					} else {
@@ -478,7 +481,7 @@ class Evaluator {
 		if ( !callee.isCallable ) {
 			let err = CompletionRecord.makeTypeError(this.realm, '' + name + ' is not a function');
 			yield * err.addExtra({
-				type: 'CallNonFunction',
+				code: 'CallNonFunction',
 				target: callee,
 				targetAst: n.callee,
 				targetName: name,
@@ -592,7 +595,6 @@ class Evaluator {
 		return Value.undef;
 	}
 
-
 	*evalutaeExpressionStatement(n, s) {
 		if ( this.yieldPower > 4 ) yield;
 		return yield * this.branch(n.expression,s);
@@ -605,7 +607,7 @@ class Evaluator {
 			// Allow undeclared varibles to be null?
 			if ( false ) return Value.undef;
 			let err = CompletionRecord.makeReferenceError(this.realm, `${n.name} is not defined`);
-			yield * err.addExtra({type: 'UndefinedVariable', when: 'read', ident: n.name});
+			yield * err.addExtra({code: 'UndefinedVariable', when: 'read', ident: n.name});
 			return yield err;
 		}
 		return s.get(n.name);

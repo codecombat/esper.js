@@ -47,6 +47,7 @@ class CompletionRecord {
 	/**
 	 * Easy access to value.addExtra.
 	 * Note: Returns a generator.
+	 * @param {Object} obj - Extra properties
 	 */
 	addExtra(obj) {
 		return this.value.addExtra(obj);
