@@ -35,7 +35,7 @@ class EasyNativeFunction extends ObjectValue {
 		try {
 			let s = scope ? scope.createChild() : scope;
 			if ( s ) s.strict = true;
-			let o = yield yield * this.fn.apply(this.binding, arguments, s, extra);
+			let o = yield * this.fn.apply(this.binding, arguments, s, extra);
 			if ( o instanceof CompletionRecord ) return o;
 			if ( !(o instanceof Value) ) o = scope.realm.makeForForeignObject(o);
 			return new CompletionRecord(CompletionRecord.NORMAL, o);

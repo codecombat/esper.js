@@ -24,6 +24,7 @@ class Evaluator {
 		let that = this;
 		this.lastValue = null;
 		this.ast = n;
+		this.yieldPower = 5;
 		/**
 		 * @type {Object[]}
 		 * @property {Generator} generator
@@ -48,11 +49,13 @@ class Evaluator {
 				for (; j < this.frames.length; ++j ) if ( this.frames[j].type != 'finally' ) break;
 				let fr = this.frames[j];
 				this.frames.splice(0,i + 1);
+				this.topFrame = this.frames[0];
 				Array.prototype.unshift.apply(this.frames, finallyFrames);
 				return fr;
 			} else if ( target == 'return' && this.frames[i].retValue ) {
 				let fr = this.frames[i];
 				this.frames.splice(0, i);
+				this.topFrame = this.frames[0];
 				Array.prototype.unshift.apply(this.frames, finallyFrames);
 				return fr;
 			} else if ( !canCrossFxBounds && this.frames[i].type == 'function' ) {
@@ -66,7 +69,8 @@ class Evaluator {
 
 	next() {
 		let that = this;
-		let top = that.frames[0];
+		let frames = this.frames;
+		let top = frames[0];
 		let result;
 		//console.log(top.type, top.ast && top.ast.type);
 
@@ -79,7 +83,6 @@ class Evaluator {
 		}
 
 		result = top.generator.next(this.lastValue);
-		if ( that.instrument ) that.instrument();
 
 		let val = result.value;
 
@@ -87,90 +90,20 @@ class Evaluator {
 			switch ( val.type ) {
 				case 'branch':
 					this.branchFrame(val.kind, val.ast, val.scope, val.extra);
-					break;
+					return this.next();
 				case 'getEvaluator':
-					this.lastValue = this;
 					return this.next();
 			}
-		} else if ( (val instanceof CompletionRecord) ) {
-			if ( !(val.value instanceof Value) ) {
-				if ( val.value instanceof Error ) {
-					throw new Error("Value was an error: " + val.value.stack);
-				}
-				throw new Error('Value isnt of type Value, its' + val.value.toString());
-			}
-
-			switch ( val.type ) {
-				case CompletionRecord.CONTINUE:
-					if ( this.unwindStack('continue', false, val.target) ) return {done: false, value: val.value};
-					throw new Error('Cant find matching loop frame for continue');
-				case CompletionRecord.BREAK:
-					if ( this.unwindStack('loop', false, val.target) ) return {done: false, value: val.value};
-					throw new Error('Cant find matching loop frame for break');
-				case CompletionRecord.RETURN:
-					let rfr = this.unwindStack('return', false);
-					if ( rfr ) {
-						rfr.retValue = val.value;
-						return {done: false, value: val.value};
-					}
-					throw new Error('Cant find function bounds.');
-				case CompletionRecord.THROW:
-					//TODO: Fix this nonsense:
-					let e = val.value.toNative();
-					//val.value.native = e;
-
-					let smallStack;
-					if ( e && e.stack ) smallStack = e.stack.split(/\n/).slice(0,4).join('\n');
-					let stk = this.buildStacktrace(e).join('\n    ');
-					var bestFrame = undefined;
-					for ( let i = 0; i < this.frames.length; ++i ) {
-						if ( this.frames[i].ast ) {
-							bestFrame = this.frames[i];
-							break;
-						}
-					}
-
-					if ( val.value instanceof ErrorValue ) {
-						if ( val.value.extra ) {
-							stk += '\n-------------';
-							for ( let key in val.value.extra)
-								stk += `\n${key} => ${val.value.extra[key]}`;
-						}
-					}
-
-					if ( e instanceof Error ) {
-						e.stack = stk;
-						if ( smallStack && this.realm.options.addInternalStack ) e.stack += '\n-------------\n' + smallStack;
-						if ( bestFrame ) {
-							e.range = bestFrame.ast.range;
-							e.loc = bestFrame.ast.loc;
-						}
-					}
-
-					if ( val.value instanceof ErrorValue ) {
-						if ( !val.value.has('stack') ) {
-							val.value.setImmediate('stack', Value.fromNative(stk));
-							val.value.properties['stack'].enumerable = false;
-						}
-					}
-
-					let tfr = this.unwindStack('catch', true);
-					if ( tfr ) {
-						tfr.exception = val;
-						this.lastValue = val;
-						return {done: false, value: val.value};
-					}
-					let line = -1;
-					if ( this.frames[0].ast && this.frames[0].ast.attr) {
-						line = this.frames[0].ast.attr.pos.start_line;
-					}
-					//console.log(this.buildStacktrace(val.value.toNative()));
-					throw val.value.toNative();
-				case CompletionRecord.NORMAL:
-					val = val.value;
-			}
-
 		}
+
+		if ( val instanceof CompletionRecord ) {
+			this.processCompletionValueMeaning(val);
+			this.lastValue = val.value;
+			return this.next();
+		}
+
+		if ( that.instrument ) that.instrument(this, val);
+
 		if ( val && val.then ) {
 			if ( top && top.type !== 'await' ) {
 				this.pushFrame({generator: (function *(f) {
@@ -195,10 +128,87 @@ class Evaluator {
 				this.lastValue = Value.undef;
 			}
 
-			if ( that.frames.length === 0 ) return {done: true, value: result.value};
+			if ( frames.length === 0 ) return {done: true, value: result.value};
 		}
 
 		return {done: false, value: this.lastValue};
+	}
+
+	processCompletionValueMeaning(val) {
+		if ( !(val.value instanceof Value) ) {
+			if ( val.value instanceof Error ) {
+				throw new Error("Value was an error: " + val.value.stack);
+			}
+			throw new Error('Value isnt of type Value, its' + val.value.toString());
+		}
+
+		switch ( val.type ) {
+			case CompletionRecord.CONTINUE:
+				if ( this.unwindStack('continue', false, val.target) ) return true;
+				throw new Error('Cant find matching loop frame for continue');
+			case CompletionRecord.BREAK:
+				if ( this.unwindStack('loop', false, val.target) ) return true;
+				throw new Error('Cant find matching loop frame for break');
+			case CompletionRecord.RETURN:
+				let rfr = this.unwindStack('return', false);
+				if ( !rfr ) throw new Error('Cant find function bounds.');
+				rfr.retValue = val.value;
+				return true;
+			case CompletionRecord.THROW:
+				//TODO: Fix this nonsense:
+				let e = val.value.toNative();
+				//val.value.native = e;
+
+				let smallStack;
+				if ( e && e.stack ) smallStack = e.stack.split(/\n/).slice(0,4).join('\n');
+				let stk = this.buildStacktrace(e).join('\n    ');
+				var bestFrame = undefined;
+				for ( let i = 0; i < this.frames.length; ++i ) {
+					if ( this.frames[i].ast ) {
+						bestFrame = this.frames[i];
+						break;
+					}
+				}
+
+				if ( val.value instanceof ErrorValue ) {
+					if ( val.value.extra ) {
+						stk += '\n-------------';
+						for ( let key in val.value.extra)
+							stk += `\n${key} => ${val.value.extra[key]}`;
+					}
+				}
+
+				if ( e instanceof Error ) {
+					e.stack = stk;
+					if ( smallStack && this.realm.options.addInternalStack ) e.stack += '\n-------------\n' + smallStack;
+					if ( bestFrame ) {
+						e.range = bestFrame.ast.range;
+						e.loc = bestFrame.ast.loc;
+					}
+				}
+
+				if ( val.value instanceof ErrorValue ) {
+					if ( !val.value.has('stack') ) {
+						val.value.setImmediate('stack', Value.fromNative(stk));
+						val.value.properties['stack'].enumerable = false;
+					}
+				}
+
+				let tfr = this.unwindStack('catch', true);
+				if ( tfr ) {
+					tfr.exception = val;
+					this.lastValue = val;
+					return true;
+				}
+				let line = -1;
+				if ( this.topFrame.ast && this.topFrame.ast.attr) {
+					line = this.topFrame.ast.attr.pos.start_line;
+				}
+				//console.log(this.buildStacktrace(val.value.toNative()));
+				throw val.value.toNative();
+			case CompletionRecord.NORMAL:
+				return false;
+		}
 	}
 
 	buildStacktrace(e) {
@@ -215,11 +225,12 @@ class Evaluator {
 	}
 	pushFrame(frame) {
 		this.frames.unshift(new Frame(frame.type, frame));
+		this.topFrame = this.frames[0];
 	}
 
 	popFrame() {
 		let frame = this.frames.shift();
-
+		this.topFrame = this.frames[0];
 		return frame;
 	}
 
@@ -228,8 +239,8 @@ class Evaluator {
 	}
 
 	*resolveRef(n, s, create) {
-		let oldAST = this.frames[0].ast;
-		this.frames[0].ast = n;
+		let oldAST = this.topFrame.ast;
+		this.topFrame.ast = n;
 		switch (n.type) {
 			case 'Identifier':
 				let iref = s.ref(n.name, s.realm);
@@ -260,7 +271,7 @@ class Evaluator {
 						};
 					}
 				}
-				this.frames[0].ast = oldAST;
+				this.topFrame.ast = oldAST;
 				return iref;
 			case 'MemberExpression':
 				let idx;
@@ -279,7 +290,7 @@ class Evaluator {
 					return yield CompletionRecord.makeTypeError(s.realm, `Can't write property of non-object type: ${idx}`);
 				}
 
-				this.frames[0].ast = oldAST;
+				this.topFrame.ast = oldAST;
 				return ref.ref(idx, s.realm);
 
 			default:
@@ -295,6 +306,7 @@ class Evaluator {
 				result[i] = yield * this.branch(n.elements[i],s);
 			}
 		}
+		if ( this.yieldPower > 0 ) yield;
 		return ArrayValue.make(result, this.realm);
 	}
 
@@ -310,6 +322,7 @@ class Evaluator {
 		let argument = yield * this.branch(n.right, s);
 		let value;
 		let cur;
+		if ( this.yieldPower > 0 ) yield;
 		switch ( n.operator ) {
 			case '=':
 				value = argument;
@@ -403,6 +416,7 @@ class Evaluator {
 		let left = yield * this.branch(n.left,s);
 		let right = yield * this.branch(n.right,s);
 		var realm = this.realm;
+		if ( this.yieldPower > 0 ) yield;
 		return yield * this.doBinaryEvaluation(n.operator, left, right, realm);
 	}
 
@@ -417,6 +431,7 @@ class Evaluator {
 
 	*evaluateBreakStatement(n, s) {
 		let label = n.label ? n.label.name : undefined;
+		if ( this.yieldPower > 0 ) yield;
 		return new CompletionRecord(CompletionRecord.BREAK, Value.undef, label);
 	}
 
@@ -457,6 +472,9 @@ class Evaluator {
 		}
 
 		let name = n.callee.srcName || callee.jsTypeName;
+
+		if ( this.yieldPower > 0 ) yield;
+
 		if ( !callee.isCallable ) {
 			let err = CompletionRecord.makeTypeError(this.realm, '' + name + ' is not a function');
 			yield * err.addExtra({
@@ -466,7 +484,7 @@ class Evaluator {
 				targetName: name,
 				base: base
 			});
-			return yield err;
+			return err;
 		}
 
 		let callResult = callee.call(thiz, args, s, {
@@ -503,6 +521,7 @@ class Evaluator {
 		yield * clazz.set('prototype', proto);
 		yield * proto.set('constructor', clazz);
 
+		if ( this.yieldPower > 0 ) yield;
 		for ( let m of n.body.body ) {
 			let fx = yield * this.branch(m.value, s);
 
@@ -534,6 +553,7 @@ class Evaluator {
 
 	*evaluateConditionalExpression(n, s) {
 		let test = yield * this.branch(n.test, s);
+		if ( this.yieldPower > 0 ) yield;
 		if ( test.truthy ) {
 			return yield * this.branch(n.consequent, s);
 		} else {
@@ -547,6 +567,7 @@ class Evaluator {
 
 	*evaluateContinueStatement(n, s) {
 		let label = n.label ? n.label.name : undefined;
+		if ( this.yieldPower > 0 ) yield;
 		return new CompletionRecord(CompletionRecord.CONTINUE, Value.undef, label);
 	}
 
@@ -558,7 +579,8 @@ class Evaluator {
 				last = yield that.branchFrame('continue', n.body, s, {label: n.label});
 			} while ( (yield * that.branch(n.test,s)).truthy );
 		};
-		this.pushFrame({generator: gen(), type: 'loop', label: n.label});
+		if ( this.yieldPower > 0 ) yield;
+		this.pushFrame({generator: gen(), type: 'loop', label: n.label, ast: n});
 
 
 		let finished = yield;
@@ -566,15 +588,18 @@ class Evaluator {
 	}
 
 	*evaluateEmptyStatement(n, s) {
+		if ( this.yieldPower > 4 ) yield;
 		return Value.undef;
 	}
 
 
 	*evalutaeExpressionStatement(n, s) {
+		if ( this.yieldPower > 4 ) yield;
 		return yield * this.branch(n.expression,s);
 	}
 
 	*evaluateIdentifier(n, s) {
+		if ( this.yieldPower > 0 ) yield;
 		if ( n.name === 'undefined' ) return Value.undef;
 		if ( !s.has(n.name) ) {
 			// Allow undeclared varibles to be null?
@@ -587,6 +612,7 @@ class Evaluator {
 	}
 
 	*evaluateIfStatement(n, s) {
+		if ( this.yieldPower > 0 ) yield;
 		let test = yield * this.branch(n.test, s);
 		if ( test.truthy ) {
 			return yield * this.branch(n.consequent, s);
@@ -599,6 +625,7 @@ class Evaluator {
 	}
 
 	*evaluateForStatement(n, s) {
+		if ( this.yieldPower > 0 ) yield;
 		let last = Value.undef;
 		if ( n.init ) yield * this.branch(n.init,s);
 		let that = this;
@@ -611,7 +638,7 @@ class Evaluator {
 				if ( n.test ) test = yield * that.branch(n.test,s);
 			}
 		};
-		this.pushFrame({generator: gen(), type: 'loop', label: n.label});
+		this.pushFrame({generator: gen(), type: 'loop', label: n.label, ast: n});
 
 
 		let finished = yield;
@@ -619,6 +646,7 @@ class Evaluator {
 	}
 
 	*evaluateForInStatement(n, s) {
+		if ( this.yieldPower > 0 ) yield;
 		let last = Value.undef;
 		let object = yield * this.branch(n.right,s);
 		let names = object.observableProperties(s.realm);
@@ -638,7 +666,7 @@ class Evaluator {
 				last = yield that.branchFrame('continue', n.body, s, {label: n.label});
 			}
 		};
-		this.pushFrame({generator: gen(), type: 'loop', label: n.label});
+		this.pushFrame({generator: gen(), type: 'loop', label: n.label, ast: n});
 
 
 		let finished = yield;
@@ -647,6 +675,7 @@ class Evaluator {
 
 	//TODO: For of does more crazy Symbol iterator stuff
 	*evaluateForOfStatement(n, s) {
+		if ( this.yieldPower > 0 ) yield;
 		let last = Value.undef;
 		let object = yield * this.branch(n.right,s);
 		let names = object.observableProperties(s.realm);
@@ -674,12 +703,14 @@ class Evaluator {
 	}
 
 	*evaluateFunctionDeclaration(n, s) {
+		if ( this.yieldPower > 0 ) yield;
 		let closure = new ClosureValue(n, s);
 		s.add(n.id.name, closure);
 		return Value.undef;
 	}
 
 	*evaluateFunctionExpression(n, s) {
+		if ( this.yieldPower > 0 ) yield;
 		let value = new ClosureValue(n, s);
 		if ( n.type === 'ArrowFunctionExpression' ) {
 			value.thiz = s.thiz;
@@ -689,10 +720,12 @@ class Evaluator {
 	}
 
 	*evaluateLabeledStatement(n, s) {
+		if ( this.yieldPower > 4 ) yield;
 		return yield * this.branch(n.body, s);
 	}
 
 	*evaulateLiteral(n, s) {
+		if ( this.yieldPower > 3 ) yield;
 		if ( n.regex ) {
 			return RegExpValue.make(new RegExp(n.regex.pattern, n.regex.flags), s.realm);
 		} else if ( n.value === null ) {
@@ -709,6 +742,7 @@ class Evaluator {
 
 	*evaluateLogicalExpression(n, s) {
 		let left = yield * this.branch(n.left,s);
+		if ( this.yieldPower > 0 ) yield;
 		switch ( n.operator ) {
 			case '&&':
 				if ( left.truthy ) return yield * this.branch(n.right,s);
@@ -723,6 +757,7 @@ class Evaluator {
 	}
 
 	*evaluateMemberExpression(n, s) {
+		if ( this.yieldPower > 0 ) yield;
 		let left = yield * this.branch(n.object,s);
 		return yield * this.partialMemberExpression(left, n, s);
 	}
@@ -778,6 +813,7 @@ class Evaluator {
 			}
 
 		}
+		if ( this.yieldPower > 0 ) yield;
 		return nat;
 	}
 
@@ -788,6 +824,7 @@ class Evaluator {
 			s.add(v, Value.undef);
 		}
 		if ( n.strict === true ) s.strict = true;
+		if ( this.yieldPower > 4 ) yield;
 		for ( let statement of n.body ) {
 			result = yield * this.branch(statement, s);
 		}
@@ -797,11 +834,13 @@ class Evaluator {
 	*evaluateReturnStatement(n, s) {
 		let retVal = Value.undef;
 		if ( n.argument ) retVal = yield * this.branch(n.argument,s);
+		if ( this.yieldPower > 0 ) yield;
 		return new CompletionRecord(CompletionRecord.RETURN, retVal);
 	}
 
 	*evaluateSequenceExpression(n, s) {
 		let last = Value.undef;
+		if ( this.yieldPower > 4 ) yield;
 		for ( let expr of n.expressions ) {
 			last = yield * this.branch(expr,s);
 		}
@@ -809,6 +848,7 @@ class Evaluator {
 	}
 
 	*evaluateSwitchStatement(n, s) {
+		if ( this.yieldPower > 0 ) yield;
 		let discriminant = yield * this.branch(n.discriminant, s);
 		let last = Value.undef;
 		let that = this;
@@ -852,16 +892,19 @@ class Evaluator {
 	}
 
 	*evaluateThisExpression(n, s) {
+		if ( this.yieldPower > 0 ) yield;
 		if ( s.thiz ) return s.thiz;
 		else return Value.undef;
 	}
 
 	*evaluateThrowStatement(n, s) {
 		let value = yield * this.branch(n.argument, s);
+		if ( this.yieldPower > 0 ) yield;
 		return new CompletionRecord(CompletionRecord.THROW, value);
 	}
 
 	*evaluateTryStatement(n, s) {
+		if ( this.yieldPower > 0 ) yield;
 		if ( n.finalizer ) this.pushFrame({generator: this.branch(n.finalizer,s), type: 'finally', scope: s});
 		let result = yield this.branchFrame('catch', n.block, s);
 		if ( result instanceof CompletionRecord && result.type == CompletionRecord.THROW ) {
@@ -879,6 +922,7 @@ class Evaluator {
 	*evaluateUpdateExpression(n, s) {
 		//TODO: Need to support something like ++x[1];
 		let nue;
+		if ( this.yieldPower > 0 ) yield;
 		let ref = yield * this.resolveRef(n.argument, s, true);
 		let old = Value.nan;
 
@@ -896,6 +940,7 @@ class Evaluator {
 	}
 
 	*evaulateUnaryExpression(n, s) {
+		if ( this.yieldPower > 0 ) yield;
 		if ( n.operator === 'delete' ) {
 			if ( n.argument.type !== 'MemberExpression' && n.argument.type !== 'Identifier' ) {
 				//This isnt something you can delete?
@@ -932,6 +977,7 @@ class Evaluator {
 
 	*evaluateVariableDeclaration(n, s) {
 		let kind = n.kind;
+		if ( this.yieldPower > 0 ) yield;
 		for ( let decl of n.declarations ) {
 			let value = Value.undef;
 			if ( decl.init ) value = yield * this.branch(decl.init,s);
@@ -947,6 +993,7 @@ class Evaluator {
 	}
 
 	*evaluateWhileStatement(n, s) {
+		if ( this.yieldPower > 0 ) yield;
 		let last = Value.undef;
 		let that = this;
 		var gen = function*() {
@@ -962,8 +1009,9 @@ class Evaluator {
 	}
 
 	*evaluateWithStatement(n, s) {
-		if ( s.strict ) return yield CompletionRecord.makeSyntaxError(this.realm, 'Strict mode code may not include a with statement');
-		return yield CompletionRecord.makeSyntaxError(this.realm, 'With statement not supported by esper');
+		if ( this.yieldPower > 0 ) yield;
+		if ( s.strict ) return CompletionRecord.makeSyntaxError(this.realm, 'Strict mode code may not include a with statement');
+		return CompletionRecord.makeSyntaxError(this.realm, 'With statement not supported by esper');
 	}
 
 	/**
@@ -972,49 +1020,56 @@ class Evaluator {
 	 * @param {Scope} s - Current evaluation scope
 	 */
 	dispatch(n, s) {
-		switch ( n.type ) {
-			case 'ArrayExpression': return this.evaluateArrayExpression(n,s);
-			case 'ArrowFunctionExpression': return this.evaluateFunctionExpression(n,s);
-			case 'AssignmentExpression': return this.evaluateAssignmentExpression(n,s);
-			case 'BinaryExpression': return this.evaulateBinaryExpression(n,s);
-			case 'BreakStatement': return this.evaluateBreakStatement(n,s);
-			case 'BlockStatement': return this.evaluateBlockStatement(n,s);
-			case 'CallExpression': return this.evaluateCallExpression(n,s);
-			case 'ClassDeclaration': return this.evaluateClassDeclaration(n,s);
-			case 'ClassExpression': return this.evaluateClassExpression(n,s);
-			case 'ConditionalExpression': return this.evaluateConditionalExpression(n,s);
-			case 'DebuggerStatement': return this.evaluateEmptyStatement(n,s);
-			case 'DoWhileStatement': return this.evaluateDoWhileStatement(n,s);
-			case 'ContinueStatement': return this.evaluateContinueStatement(n,s);
-			case 'EmptyStatement': return this.evaluateEmptyStatement(n,s);
-			case 'ExpressionStatement': return this.evalutaeExpressionStatement(n,s);
-			case 'ForStatement': return this.evaluateForStatement(n,s);
-			case 'ForInStatement': return this.evaluateForInStatement(n,s);
-			case 'ForOfStatement': return this.evaluateForOfStatement(n,s);
-			case 'FunctionDeclaration': return this.evaluateFunctionDeclaration(n,s);
-			case 'FunctionExpression': return this.evaluateFunctionExpression(n,s);
-			case 'Identifier': return this.evaluateIdentifier(n,s);
-			case 'IfStatement': return this.evaluateIfStatement(n,s);
-			case 'LabeledStatement': return this.evaluateLabeledStatement(n,s);
-			case 'Literal': return this.evaulateLiteral(n,s);
-			case 'LogicalExpression': return this.evaluateLogicalExpression(n,s);
-			case 'MemberExpression': return this.evaluateMemberExpression(n,s);
-			case 'NewExpression': return this.evaluateCallExpression(n,s);
-			case 'ObjectExpression': return this.evaluateObjectExpression(n,s);
-			case 'Program': return this.evaluateProgram(n,s);
-			case 'ReturnStatement': return this.evaluateReturnStatement(n,s);
-			case 'SequenceExpression': return this.evaluateSequenceExpression(n,s);
-			case 'SwitchStatement': return this.evaluateSwitchStatement(n,s);
-			case 'ThisExpression': return this.evaluateThisExpression(n,s);
-			case 'ThrowStatement': return this.evaluateThrowStatement(n,s);
-			case 'TryStatement': return this.evaluateTryStatement(n,s);
-			case 'UnaryExpression': return this.evaulateUnaryExpression(n,s);
-			case 'UpdateExpression': return this.evaluateUpdateExpression(n,s);
-			case 'VariableDeclaration': return this.evaluateVariableDeclaration(n,s);
-			case 'WhileStatement': return this.evaluateWhileStatement(n,s);
-			case 'WithStatement': return this.evaluateWithStatement(n,s);
+		if ( !n.dispatch ) {
+			n.dispatch = this.findNextStep(n.type);
+		}
+		return n.dispatch.call(this, n, s);
+	}
+
+	findNextStep(type) {
+		switch ( type ) {
+			case 'ArrayExpression': return this.evaluateArrayExpression;
+			case 'ArrowFunctionExpression': return this.evaluateFunctionExpression;
+			case 'AssignmentExpression': return this.evaluateAssignmentExpression;
+			case 'BinaryExpression': return this.evaulateBinaryExpression;
+			case 'BreakStatement': return this.evaluateBreakStatement;
+			case 'BlockStatement': return this.evaluateBlockStatement;
+			case 'CallExpression': return this.evaluateCallExpression;
+			case 'ClassDeclaration': return this.evaluateClassDeclaration;
+			case 'ClassExpression': return this.evaluateClassExpression;
+			case 'ConditionalExpression': return this.evaluateConditionalExpression;
+			case 'DebuggerStatement': return this.evaluateEmptyStatement;
+			case 'DoWhileStatement': return this.evaluateDoWhileStatement;
+			case 'ContinueStatement': return this.evaluateContinueStatement;
+			case 'EmptyStatement': return this.evaluateEmptyStatement;
+			case 'ExpressionStatement': return this.evalutaeExpressionStatement;
+			case 'ForStatement': return this.evaluateForStatement;
+			case 'ForInStatement': return this.evaluateForInStatement;
+			case 'ForOfStatement': return this.evaluateForOfStatement;
+			case 'FunctionDeclaration': return this.evaluateFunctionDeclaration;
+			case 'FunctionExpression': return this.evaluateFunctionExpression;
+			case 'Identifier': return this.evaluateIdentifier;
+			case 'IfStatement': return this.evaluateIfStatement;
+			case 'LabeledStatement': return this.evaluateLabeledStatement;
+			case 'Literal': return this.evaulateLiteral;
+			case 'LogicalExpression': return this.evaluateLogicalExpression;
+			case 'MemberExpression': return this.evaluateMemberExpression;
+			case 'NewExpression': return this.evaluateCallExpression;
+			case 'ObjectExpression': return this.evaluateObjectExpression;
+			case 'Program': return this.evaluateProgram;
+			case 'ReturnStatement': return this.evaluateReturnStatement;
+			case 'SequenceExpression': return this.evaluateSequenceExpression;
+			case 'SwitchStatement': return this.evaluateSwitchStatement;
+			case 'ThisExpression': return this.evaluateThisExpression;
+			case 'ThrowStatement': return this.evaluateThrowStatement;
+			case 'TryStatement': return this.evaluateTryStatement;
+			case 'UnaryExpression': return this.evaulateUnaryExpression;
+			case 'UpdateExpression': return this.evaluateUpdateExpression;
+			case 'VariableDeclaration': return this.evaluateVariableDeclaration;
+			case 'WhileStatement': return this.evaluateWhileStatement;
+			case 'WithStatement': return this.evaluateWithStatement;
 			default:
-				throw new Error('Unknown AST Node Type: ' + n.type);
+				throw new Error('Unknown AST Node Type: ' + type);
 		}
 	}
 
@@ -1032,29 +1087,23 @@ class Evaluator {
 	 * @param {Scope} s - Current evaluation scope
 	 */
 	*branch(n, s) {
-		let gen = this.dispatch(n,s);
-		let oldAST = this.frames[0].ast;
-		this.frames[0].ast = n;
-		let result = gen.next();
+		let oldAST = this.topFrame.ast;
+		this.topFrame.ast = n;
 
-		let val = result.value;
-		if ( val instanceof CompletionRecord ) val = val.value;
-		this.frames[0].value = val;
-		while ( !result.done ) {
-			let down = yield result.value;
-			result = gen.next(down);
-		}
+		let result = yield * this.dispatch(n,s);
+		this.topFrame.value = result;
 
-		yield result.value;
-		this.frames[0].ast = oldAST;
-		//yield result.value;
-		let vout = result.value;
-		while ( vout instanceof CompletionRecord ) vout = vout.value;
-		return vout;
+		if ( result instanceof CompletionRecord ) result = yield result;
+		if ( result && result.then ) result = yield result;
+
+		this.topFrame.value = result;
+		this.topFrame.ast = oldAST;
+
+		return result;
 	}
 
 	branchFrame(type, n, s, extra) {
-		let frame = {generator: this.branch(n,s), type: type, scope: s};
+		let frame = {generator: this.branch(n,s), type: type, scope: s, ast: n};
 
 		if ( extra ) {
 			for ( var k in extra ) {

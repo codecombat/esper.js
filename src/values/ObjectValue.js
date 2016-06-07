@@ -126,9 +126,9 @@ class ObjectValue extends Value {
 	}
 
 	*get(name, realm, ctxthis) {
-		let ref = this.ref(name, ctxthis || this);
-		if ( ref ) return yield * ref.getValue();
-		return Value.undef;
+		var existing = this.properties[name];
+		if ( !existing ) return Value.undef;
+		return yield * existing.getValue(ctxthis || this);
 	}
 
 	*instanceOf(other, realm) {

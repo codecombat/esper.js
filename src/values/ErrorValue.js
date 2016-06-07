@@ -38,8 +38,8 @@ class ErrorInstance extends ObjectValue {
 	*addExtra(extra) {
 		if ( !this.realm.options.extraErrorInfo ) return;
 		let evaluator = yield EvaluatorInstruction.getEvaluator();
-		let scope = evaluator.frames[0].scope;
-		extra.ast = evaluator.frames[0].ast;
+		let scope = evaluator.topFrame.scope;
+		extra.ast = evaluator.topFrame.ast;
 		extra.scope = scope;
 		switch ( extra.type ) {
 			case 'UndefinedVariable':
