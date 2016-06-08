@@ -53,9 +53,19 @@ class ErrorInstance extends ObjectValue {
 					extra.canidates = scope.getVariableNames();
 					break;
 				case 'CallNonFunction':
+					let list;
 					if ( extra.base && extra.base.properties ) {
-						//TODO: This doesnt take the prototype into account.
-						extra.canidates = Object.keys(extra.base.properties);
+						list = extra.base.properties;
+					} else {
+						list = scope.object.properties;
+					}
+
+					extra.canidates = [];
+					for ( let k in list ) {
+						let v = list[k];
+						if ( v.value && v.value.isCallable ) {
+							extra.canidates.push(k);
+						}
 					}
 					break;
 				case 'IndexEmpty':

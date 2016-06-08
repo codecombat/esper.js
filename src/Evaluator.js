@@ -251,7 +251,7 @@ class Evaluator {
 					iref = {
 						getValue: function*() {
 							let err = CompletionRecord.makeReferenceError(s.realm, `${n.name} is not defined`);
-							yield * err.addExtra({code: 'UndefinedVariable', when: 'read', ident: n.name});
+							yield * err.addExtra({code: 'UndefinedVariable', when: 'read', ident: n.name, strict: s.strict});
 							return yield  err;
 						},
 						del: function() {
@@ -261,7 +261,7 @@ class Evaluator {
 					if ( !create || s.strict ) {
 						iref.setValue = function *() {
 							let err = CompletionRecord.makeReferenceError(s.realm, `${n.name} is not defined`);
-							yield * err.addExtra({code: 'UndefinedVariable', when: 'write', ident: n.name});
+							yield * err.addExtra({code: 'UndefinedVariable', when: 'write', ident: n.name, strict: s.strict});
 							return yield  err;
 						};
 					} else {
@@ -607,7 +607,7 @@ class Evaluator {
 			// Allow undeclared varibles to be null?
 			if ( false ) return Value.undef;
 			let err = CompletionRecord.makeReferenceError(this.realm, `${n.name} is not defined`);
-			yield * err.addExtra({code: 'UndefinedVariable', when: 'read', ident: n.name});
+			yield * err.addExtra({code: 'UndefinedVariable', when: 'read', ident: n.name, strict: s.strict});
 			return yield err;
 		}
 		return s.get(n.name);

@@ -142,6 +142,10 @@ class LinkValue extends Value {
 
 	}
 
+	get isCallable() {
+		return ( typeof this.native === 'function' );
+	}
+
 	*toNumberValue() { return Value.fromNative((Number(this.native))); }
 	*toStringValue() { return Value.fromNative((String(this.native))); }
 
