@@ -34,6 +34,17 @@ class SmartLinkValue extends LinkValue {
 		return allowed.indexOf(name) != -1;
 	}
 
+	getPropertyValueMap() {
+		let list  = {};
+		for ( let p in this.native ) {
+			let v = this.native[p];
+			if ( this.allowRead(p) ) {
+				list[p] = this.makeLink(v);
+			}
+		}
+		return list;
+	}
+
 	static make(native, realm) {
 		let wellKnown = realm.lookupWellKnown(native);
 		if ( wellKnown ) return wellKnown;

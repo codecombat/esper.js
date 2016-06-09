@@ -16,7 +16,7 @@ describe('Extra Error Info', () => {
 			expect(e.code).to.equal('UndefinedVariable');
 			expect(e.when).to.equal('read');
 			expect(e.strict).to.be.true;
-			expect(e.canidates).to.contain('otherthing');
+			expect(e.candidates).to.contain('otherthing');
 			expect(e.ast.type).to.equal('Identifier');
 		}
 	});
@@ -28,8 +28,39 @@ describe('Extra Error Info', () => {
 		} catch ( e ) {
 			expect(e.line).to.equal(2);
 			expect(e.code).to.equal('CallNonFunction');
-			expect(e.canidates).to.contain('a');
-			expect(e.canidates).to.not.contain('b');
+			expect(e.candidates).to.contain('a');
+			expect(e.candidates).to.not.contain('b');
+			expect(e.ast.type).to.equal('CallExpression');
+		}
+	});
+
+	it('CallNonFunction on Link', () => {
+		try {
+			var e = new Engine({extraErrorInfo: true});
+			e.addGlobal('rob', {a: 10, b: function() {}});
+			e.evalSync('console.log(rob.c());');
+			expect(false).to.be.true;
+		} catch ( e ) {
+			expect(e.line).to.equal(1);
+			expect(e.code).to.equal('CallNonFunction');
+			expect(e.candidates).to.contain('b');
+			expect(e.candidates).to.not.contain('a');
+			expect(e.ast.type).to.equal('CallExpression');
+		}
+	});
+
+	it('CallNonFunction on SmartLink', () => {
+		try {
+			var e = new Engine({extraErrorInfo: true, foreignObjectMode: 'smart'});
+			e.addGlobal('rob', {a: 10, b: function() {}, c: function() {}, apiMethods: ['c']});
+			e.evalSync('console.log(rob.d());');
+			expect(false).to.be.true;
+		} catch ( e ) {
+			expect(e.line).to.equal(1);
+			expect(e.code).to.equal('CallNonFunction');
+			expect(e.candidates).to.contain('c');
+			expect(e.candidates).to.not.contain('b');
+			expect(e.candidates).to.not.contain('a');
 			expect(e.ast.type).to.equal('CallExpression');
 		}
 	});
@@ -41,8 +72,8 @@ describe('Extra Error Info', () => {
 		} catch ( e ) {
 			expect(e.line).to.equal(4);
 			expect(e.code).to.equal('CallNonFunction');
-			expect(e.canidates).to.contain('y');
-			expect(e.canidates).to.not.contain('z');
+			expect(e.candidates).to.contain('y');
+			expect(e.candidates).to.not.contain('z');
 			expect(e.ast.type).to.equal('CallExpression');
 		}
 	});

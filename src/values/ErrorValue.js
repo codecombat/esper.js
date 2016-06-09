@@ -50,21 +50,21 @@ class ErrorInstance extends ObjectValue {
 			switch ( extra.code ) {
 				case 'UndefinedVariable':
 				case 'SmartAccessDenied':
-					extra.canidates = scope.getVariableNames();
+					extra.candidates = scope.getVariableNames();
 					break;
 				case 'CallNonFunction':
 					let list;
-					if ( extra.base && extra.base.properties ) {
-						list = extra.base.properties;
+					if ( extra.base && extra.base.getPropertyValueMap ) {
+						list = extra.base.getPropertyValueMap();
 					} else {
-						list = scope.object.properties;
+						list = scope.object.getPropertyValueMap();
 					}
 
-					extra.canidates = [];
+					extra.candidates = [];
 					for ( let k in list ) {
 						let v = list[k];
-						if ( v.value && v.value.isCallable ) {
-							extra.canidates.push(k);
+						if ( v && v.isCallable ) {
+							extra.candidates.push(k);
 						}
 					}
 					break;
@@ -74,7 +74,7 @@ class ErrorInstance extends ObjectValue {
 		}
 		if ( this.native ) {
 			for ( var k in extra ) {
-				if ( ['ast', 'scope', 'canidates'].indexOf(k) !== -1 ) {
+				if ( ['ast', 'scope', 'candidates', 'targetAst'].indexOf(k) !== -1 ) {
 					Object.defineProperty(this.native, k, {
 						value: extra[k],
 						enumerable: false

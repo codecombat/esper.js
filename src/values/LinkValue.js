@@ -146,6 +146,15 @@ class LinkValue extends Value {
 		return ( typeof this.native === 'function' );
 	}
 
+	getPropertyValueMap() {
+		let list  = {};
+		for ( let p in this.native ) {
+			let v = this.native[p];
+			list[p] = this.makeLink(v);
+		}
+		return list;
+	}
+
 	*toNumberValue() { return Value.fromNative((Number(this.native))); }
 	*toStringValue() { return Value.fromNative((String(this.native))); }
 

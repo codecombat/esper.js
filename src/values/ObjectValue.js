@@ -172,6 +172,17 @@ class ObjectValue extends Value {
 		return;
 	}
 
+	getPropertyValueMap() {
+		let list  = {};
+		for ( let p in this.properties ) {
+			let v = this.properties[p];
+			if ( v.value ) {
+				list[p] = v.value;
+			}
+		}
+		return list;
+	}
+
 	hasOwnProperty(name) {
 		return Object.prototype.hasOwnProperty.call(this.properties, name);
 	}
