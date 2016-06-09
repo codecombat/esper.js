@@ -2,6 +2,7 @@
 /* @flow */
 
 const CompletionRecord = require('./CompletionRecord');
+const GenDash = require('./GenDash');
 
 let undef, nil, tru, fals, nan, emptyString, zero, one, negone, negzero;
 let cache = new WeakMap();
@@ -15,15 +16,6 @@ let serial = 0;
  * Represents a value a variable could take.
  */
 class Value {
-	static syncGenHelper(gen) {
-		var val = gen.next();
-		if ( !val.done ) {
-			console.log('This code path uses a helper, but the actual method yielded...');
-			throw new Error('This code path uses a helper, but the actual method yielded...');
-		}
-		return val.value;
-	}
-
 	/**
 	 * Convert a native javascript primative value to a Value
 	 * @param {any} value - The value to convert
@@ -205,7 +197,7 @@ class Value {
 	}
 
 	getImmediate(name) {
-		return Value.syncGenHelper(this.get(name));
+		return GenDash.syncGenHelper(this.get(name));
 	}
 
 	/**

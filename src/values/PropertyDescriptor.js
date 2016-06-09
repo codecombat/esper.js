@@ -17,9 +17,8 @@ class PropertyDescriptor {
 		this.writable = true;
 	}
 
-	set(value) {
-		if ( !this.writable ) return;
-		this.value = value;
+	get direct() {
+		return !this.getter && !this.setter && this.writable;
 	}
 
 	*getValue(thiz) {

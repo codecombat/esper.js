@@ -6,6 +6,7 @@ const PropertyDescriptor = require('./PropertyDescriptor');
 const CompletionRecord = require('../CompletionRecord');
 const PrimitiveValue = require('./PrimitiveValue');
 const NullValue = require('./NullValue');
+const GenDash = require('../GenDash');
 
 /**
  * Represents an Object.
@@ -67,7 +68,13 @@ class ObjectValue extends Value {
 	}
 
 	setImmediate(name, value) {
-		return Value.syncGenHelper(this.set(name, value, this.realm));
+		if ( Object.prototype.hasOwnProperty.call(this.properties, name) ) {
+			if ( this.properties[name].direct ) {
+				this.properties[name].value = value;
+				return;
+			}
+		}
+		return GenDash.syncGenHelper(this.set(name, value, this.realm));
 	}
 
 
@@ -128,7 +135,15 @@ class ObjectValue extends Value {
 	*get(name, realm, ctxthis) {
 		var existing = this.properties[name];
 		if ( !existing ) return Value.undef;
+		if ( existing.direct ) return existing.value;
 		return yield * existing.getValue(ctxthis || this);
+	}
+
+	getImmediate(name, realm, ctxthis) {
+		var existing = this.properties[name];
+		if ( !existing ) return Value.undef;
+		if ( existing.direct ) return existing.value;
+		return GenDash.syncGenHelper(existing.getValue(ctxthis || this));
 	}
 
 	*instanceOf(other, realm) {

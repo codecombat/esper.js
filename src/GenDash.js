@@ -68,6 +68,18 @@ class GenDash {
 		return out;
 	}
 
+	static *identity(value) {
+		return value;
+	}
+
+	static syncGenHelper(gen) {
+		var val = gen.next();
+		if ( !val.done ) {
+			console.log('This code path uses a helper, but the actual method yielded...');
+			throw new Error('This code path uses a helper, but the actual method yielded...');
+		}
+		return val.value;
+	}
 }
 
 module.exports = GenDash;
