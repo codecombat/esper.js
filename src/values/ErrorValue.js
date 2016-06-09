@@ -73,7 +73,16 @@ class ErrorInstance extends ObjectValue {
 			}
 		}
 		if ( this.native ) {
-			for ( var k in extra ) this.native[k] = extra[k];
+			for ( var k in extra ) {
+				if ( ['ast', 'scope', 'canidates'].indexOf(k) !== -1 ) {
+					Object.defineProperty(this.native, k, {
+						value: extra[k],
+						enumerable: false
+					});
+				} else {
+					this.native[k] = extra[k];
+				}
+			}
 		}
 		this.extra = extra;
 	}
