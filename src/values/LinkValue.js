@@ -92,7 +92,7 @@ class LinkValue extends Value {
 	*gte(other) { return this.makeLink(this.native >= other.toNative()); }
 	*lte(other) { return this.makeLink(this.native <= other.toNative()); }
 
-	*inOperator(other) { return this.makeLink(this.native in other.toNative()); }
+	*inOperator(other) { return this.makeLink(other.toNative() in this.native); }
 	*instanceOf(other) { return this.makeLink(this.native instanceof other.toNative()); }
 
 	*unaryPlus() { return this.makeLink(+this.native); }
