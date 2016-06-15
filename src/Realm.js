@@ -85,8 +85,24 @@ class Realm {
 		console.log.apply(console, arguments);
 	}
 
-	parser(code) {
-		return esprima.parse(code, {loc: true, range: true});
+	parser(code, options) {
+		options = options || {};
+		let opts = {loc: true, range: true};
+		if ( options.inFunctionBody ) {
+			opts.tolerant = true;
+			opts.allowReturnOutsideFunction = true;
+		}
+
+		let ast = esprima.parse(code, opts);
+		let errors = [];
+		if ( ast.errors ) {
+			errors = ast.errors.filter((x) => {
+				if ( options.inFunctionBody && x.message === 'Illegal return statement' ) return false;
+			});
+		}
+		delete ast.errors;
+		if ( errors.length > 0 ) throw errors[0];
+		return ast;
 	}
 
 	constructor(options) {

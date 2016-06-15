@@ -7,7 +7,7 @@ const GenDash = require('./GenDash');
 let undef, nil, tru, fals, nan, emptyString, zero, one, negone, negzero;
 let cache = new WeakMap();
 let bookmarks = new WeakMap();
-let ObjectValue, PrimitiveValue, StringValue, NumberValue, BridgeValue;
+let ObjectValue, PrimitiveValue, StringValue, NumberValue, BridgeValue, Evaluator;
 
 
 
@@ -135,10 +135,30 @@ class Value {
 	 */
 	static get zero() { return zero; }
 
-	static createNativeBookmark(v) {
+	static createNativeBookmark(v, realm) {
 		var out;
+		let thiz = this;
 		if ( typeof v.call === 'function' ) {
-			out = function Bookmark() { throw new Error('Atempted to invoke bookmark for ' + v.debugString); };
+			switch ( realm.options.bookmarkInvocationMode ) {
+				case 'loop':
+
+				out = function Bookmark() {
+					let Evaluator = require('./Evaluator');
+					let cthis = realm.makeForForeignObject(this);
+					let c = v.call(cthis, [], realm.globalScope);
+					let evalu = new Evaluator(realm, null, realm.globalScope);
+					evalu.pushFrame({type: 'program', generator: c, scope: realm.globalScope});
+					let gen = evalu.generator();
+					let result;
+					do {
+						result = gen.next();
+					} while ( !result.done );
+					return result.value.toNative();
+				};
+				break;
+				default:
+				out = function Bookmark() { throw new Error('Atempted to invoke bookmark for ' + v.debugString); };
+			}
 		} else {
 			out = {};
 		}

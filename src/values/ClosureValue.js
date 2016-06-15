@@ -30,7 +30,7 @@ class ClosureValue extends ObjectValue {
 	}
 
 	toNative() {
-		return Value.createNativeBookmark(this);
+		return Value.createNativeBookmark(this, this.realm);
 	}
 
 	get debugString() {

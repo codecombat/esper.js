@@ -32,7 +32,18 @@ class Evaluator {
 		 * @property {ast} ast
 		 */
 		this.frames = [];
-		this.pushFrame({generator: this.dispatch(n,s), type: 'program', scope: s, ast: n});
+		if ( n ) this.pushAST(n, s);
+	}
+
+	pushAST(n, s) {
+		let that = this;
+		let gen = n ? this.dispatch(n,s) : (function*() {
+			let val = yield;
+			console.log("Wub", val);
+			console.log(that.frames);
+			return val;
+		})();
+		this.pushFrame({generator: gen, type: 'program', scope: s, ast: n});
 	}
 
 	unwindStack(target, canCrossFxBounds, label) {

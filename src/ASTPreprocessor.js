@@ -162,9 +162,14 @@ class ASTPreprocessor {
 	start() {
 		this.counter = 0;
 		this.depth = 0;
-		this.scopeStack = [];
-		this.varStack = [];
-		this.funcStack = [];
+
+		let globalScope = Object.create(null);
+		let globalVars = Object.create(null);
+		let globalFuncs = Object.create(null);
+
+		this.scopeStack = [globalScope];
+		this.varStack = [globalVars];
+		this.funcStack = [globalFuncs];
 		for ( var x of this.gen ) {
 
 		}

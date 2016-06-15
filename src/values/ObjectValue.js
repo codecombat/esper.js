@@ -94,7 +94,7 @@ class ObjectValue extends Value {
 	toNative() {
 
 		//TODO: This is really a mess and should maybe be somewhere else.
-		var bk = Value.createNativeBookmark(this);
+		var bk = Value.createNativeBookmark(this, this.realm);
 		if ( this.jsTypeName === 'function' ) return bk;
 
 		for ( let p in this.properties ) {

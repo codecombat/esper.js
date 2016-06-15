@@ -8,6 +8,7 @@ const BridgeValue = require('./values/BridgeValue');
 const ASTPreprocessor = require('./ASTPreprocessor');
 const FutureValue = require('./values/FutureValue');
 const EasyNativeFunction = require('./values/EasyNativeFunction');
+const ClosureValue = require('./values/ClosureValue');
 
 let defaultOptions = {
 	strict: false,
@@ -16,7 +17,8 @@ let defaultOptions = {
 	executionLimit: Infinity,
 	exposeEsperGlobal: true,
 	extraErrorInfo: false,
-	addExtraErrorInfoToStacks: false
+	addExtraErrorInfoToStacks: false,
+	bookmarkInvocationMode: 'error'
 };
 
 /**
@@ -32,6 +34,7 @@ class Engine {
 			else this.options[k] = defaultOptions[k];
 		}
 		this.realm = new Realm(this.options);
+		this.evaluator = new Evaluator(this.realm, null, this.globalScope);
 	}
 
 	/**
@@ -83,7 +86,8 @@ class Engine {
 
 	loadAST(ast, source) {
 		let past = ASTPreprocessor.process(ast, {source: source});
-		this.evaluator = new Evaluator(this.realm, past, this.globalScope);
+		this.evaluator.frames = [];
+		this.evaluator.pushAST(past, this.globalScope);
 		this.generator = this.evaluator.generator();
 	}
 
@@ -177,10 +181,52 @@ class Engine {
 		return this.makeFunctionFromClosure(val, shouldYield);
 	}
 
-	makeFunctionFromClosure(val, shouldYield) {
+	functionFromSource(source, shouldYield) {
+		let code = source;
+		let ast = this.realm.parser(code, {inFunctionBody: true});
+		return this.functionFromAST(ast, shouldYield);
+	}
+
+	functionFromAST(ast, shouldYield, source) {
+		let past = {
+			type: 'FunctionExpression',
+			body: {type: 'BlockStatement', body: ast.body},
+			params: [],
+		};
+		past = ASTPreprocessor.process(past, {source: source});
+		let fx = new ClosureValue(past, this.globalScope);
+		return this.makeFunctionFromClosure(fx, shouldYield, this.evaluator);
+	}
+
+	functionFromSourceSync(source, shouldYield) {
+		let genfx = this.functionFromSource(source, shouldYield);
+		return function() {
+			let gen = genfx.apply(this, arguments);
+			let val = gen.next();
+			//TODO: Make sure we dont await as it will loop FOREVER.
+			while (!val.done) val = gen.next();
+			return val.value;
+		};
+	}
+
+	functionFromASTSync(ast, shouldYield, source) {
+		let genfx = this.functionFromAST(ast, shouldYield, source);
+		return function() {
+			let gen = genfx.apply(this, arguments);
+			let val = gen.next();
+			//TODO: Make sure we dont await as it will loop FOREVER.
+			while (!val.done) val = gen.next();
+			return val.value;
+		};
+	}
+
+	makeFunctionFromClosure(val, shouldYield, evalu) {
+
 		var realm = this.realm;
 		var scope = this.globalScope;
 		var that = this;
+		let evaluator = evalu || this.evaluator;
+		if ( !evaluator ) throw new Error("Evaluator is falsey");
 		if ( !val ) return;
 
 		return function*() {
@@ -192,10 +238,10 @@ class Engine {
 
 
 			let c = val.call(realThis, realArgs, scope);
-			that.evaluator.pushFrame({generator: c, type: 'program', scope: scope, ast: null});
-			let gen = that.evaluator.generator();
+			evaluator.pushFrame({type: 'program', generator: c, scope: scope});
+			let gen = evaluator.generator();
 
-			let last = yield * that.filterGenerator(gen, shouldYield);
+			let last = yield * that.filterGenerator(gen, shouldYield, evaluator);
 			if ( last ) return last.toNative();
 		};
 	}
@@ -211,26 +257,33 @@ class Engine {
 
 		engine.realm = this.realm;
 
-		engine.evaluator = new Evaluator(this.realm, this.evaluator.ast, scope);
-		engine.evaluator.frames = [];
+		engine.evaluator = this.makeEvaluatorClone();
 		return engine;
 	}
 
-	*filterGenerator(gen, shouldYield) {
+	makeEvaluatorClone() {
+		let evaluator = new Evaluator(this.realm, this.evaluator.ast, this.globalScope);
+		evaluator.frames = [];
+		if ( this.evaluator.insturment ) {
+			evaluator.insturment = this.evaluator.insturment;
+		}
+		return evaluator;
+	}
+
+	*filterGenerator(gen, shouldYield, evaluator) {
 		let value = gen.next();
 		let steps = 0;
-		let that = this;
-
+		if ( !evaluator ) throw new Error("Evaluator is falsey");
 		while ( !value.done ) {
 			if ( !shouldYield ) yield;
-			else if ( that.evaluator.topFrame.type == 'await' ) {
+			else if ( evaluator.topFrame.type == 'await' ) {
 				if ( !value.value.resolved ) yield;
 			} else {
-				var yieldValue = shouldYield(that);
+				var yieldValue = shouldYield(this, evaluator);
 				if ( yieldValue !== false ) yield yieldValue;
 			}
 			value = gen.next(value.value);
-			if ( ++steps > that.options.executionLimit ) throw new Error('Execution Limit Reached');
+			if ( ++steps > this.options.executionLimit ) throw new Error('Execution Limit Reached');
 		}
 		return value.value;
 	}

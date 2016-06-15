@@ -16,4 +16,6 @@ esper.eval = function(source) {
 	return new Engine().evalSync(source).toNative();
 };
 
+esper.version = require('../package.json').version;
+
 module.exports = esper;

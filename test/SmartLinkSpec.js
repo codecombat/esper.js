@@ -27,6 +27,7 @@ function b(code) {
 		ident() { return this.name + ' (' + (this.age || '?') + ')'; }
 		identity(o) { return o; }
 		bad() { return 'oh no!'; }
+		toString() { return this.name; }
 	}
 	User.prototype.type = "User";
 	User.prototype.code = 1234;
