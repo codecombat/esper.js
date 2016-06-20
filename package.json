@@ -79,6 +79,7 @@
     "webpack-dev-server": "^1.14.1"
   },
   "dependencies": {
-    "commander": "^2.9.0"
+    "commander": "^2.9.0",
+    "regenerator": "^0.8.46"
   }
 }

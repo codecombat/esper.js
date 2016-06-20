@@ -1,5 +1,7 @@
 'use strict';
 
+let compiler = new (require('./jit/Compiler'))();
+
 function invokeCB(o, name) {
 	if ( !(name in o ) ) return;
 	var args = Array.prototype.slice.call(arguments, 2);
@@ -20,6 +22,8 @@ function detectStrict(body) {
 
 class ASTNode {
 	constructor(o) {
+		this.visits = 0;
+		this.dispatch = false;
 		if ( typeof o === 'object' ) {
 			for ( var k in o ) this[k] = o[k];
 		}
@@ -358,6 +362,9 @@ class EsperASTInstructions {
 
 	exit(a) {
 		this.log('Exiting', a.type);
+		if ( compiler.canCompile(a) ) {
+			a.dispatch = compiler.compileNode(a);
+		}
 		--this.depth;
 	}
 
