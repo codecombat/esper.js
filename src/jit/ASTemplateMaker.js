@@ -1,11 +1,14 @@
+
 'use strict';
 
 var esprima = require('esprima');
 var escodegen = require('escodegen');
 
+
+let templateId = 0;
 module.exports = function(fn) {
+	++templateId;
 	let source = fn.toString();
-	console.log(source);
 	let parsed = esprima.parse(source);
 	let astFx = parsed.body[0];
 	let params = astFx.params.map((v,k) => v.name);
@@ -16,8 +19,9 @@ module.exports = function(fn) {
 
 	let xf = JSON.parse(JSON.stringify(astParts), (k, n) => {
 		let c = n;
+		if ( !c ) return n;
 		if ( !c.type ) return n;
-		if ( c.type === 'ExpressionStatement' ) n = c.expression;
+		if ( c.type === 'ExpressionStatement' && typeof  c.expression === 'string' ) return c.expression;
 		if ( c.type !== 'Identifier' ) return n;
 		if ( params.indexOf(c.name) === -1 ) return n;
 		let s = c.name;
@@ -29,7 +33,15 @@ module.exports = function(fn) {
 		if ( /^[$]/.test(v) ) return '{type: "Identifier", name: ' + v + '}';
 		return v;
 	});
-	params.push('return ' + str + ';');
-	let out = Function.apply(null, params);
-	return out;
+
+	str = str.replace(/\$\$"/g, function(f, v) {
+		return '$$' + templateId + '$" + idx';
+	});
+
+	console.log(str);
+
+	let out = new Function('var idx = 0; return function(' + params.join(',') + ') { ++idx; return ' + str + '; }');
+	let idx = 0;
+
+	return out();
 };
