@@ -24,7 +24,8 @@ class Evaluator {
 		let that = this;
 		this.lastValue = null;
 		this.ast = n;
-		this.yieldPower = 5;
+		this.defaultYieldPower = 5;
+		this.yieldPower = this.defaultYieldPower;
 		/**
 		 * @type {Object[]}
 		 * @property {Generator} generator
@@ -38,7 +39,7 @@ class Evaluator {
 	pushAST(n, s) {
 		let that = this;
 		let gen = n ? this.dispatch(n,s) : (function*() {
-			return yield;
+			return yield EvaluatorInstruction.stepMinor;
 		})();
 		this.pushFrame({generator: gen, type: 'program', scope: s, ast: n});
 	}
@@ -57,13 +58,13 @@ class Evaluator {
 				for (; j < this.frames.length; ++j ) if ( this.frames[j].type != 'finally' ) break;
 				let fr = this.frames[j];
 				this.frames.splice(0,i + 1);
-				this.topFrame = this.frames[0];
+				this.saveFrameShortcuts();
 				Array.prototype.unshift.apply(this.frames, finallyFrames);
 				return fr;
 			} else if ( target == 'return' && this.frames[i].retValue ) {
 				let fr = this.frames[i];
 				this.frames.splice(0, i);
-				this.topFrame = this.frames[0];
+				this.saveFrameShortcuts();
 				Array.prototype.unshift.apply(this.frames, finallyFrames);
 				return fr;
 			} else if ( !canCrossFxBounds && this.frames[i].type == 'function' ) {
@@ -101,6 +102,9 @@ class Evaluator {
 					return this.next();
 				case 'getEvaluator':
 					return this.next(this);
+				case 'step':
+					if ( that.instrument ) that.instrument(this, val);
+					return {done: false, value: this.lastValue};
 			}
 		}
 
@@ -109,7 +113,7 @@ class Evaluator {
 			this.lastValue = val.value;
 			return this.next();
 		}
-
+		//if ( !val ) console.log("Bad val somewhere around", this.topFrame.type);
 		if ( that.instrument ) that.instrument(this, val);
 
 		if ( val && val.then ) {
@@ -235,18 +239,111 @@ class Evaluator {
 		return lines;
 	}
 	pushFrame(frame) {
+		frame.srcAst = frame.ast;
+		if ( frame.yieldPower === undefined ) frame.yieldPower = this.defaultYieldPower;
 		this.frames.unshift(new Frame(frame.type, frame));
-		this.topFrame = this.frames[0];
+		this.saveFrameShortcuts();
 	}
 
 	popFrame() {
 		let frame = this.frames.shift();
-		this.topFrame = this.frames[0];
+		this.saveFrameShortcuts();
 		return frame;
+	}
+
+	saveFrameShortcuts() {
+		let prev = this.yieldPower;
+		if ( this.frames.length == 0 ) {
+			this.topFrame = undefined;
+			this.yieldPower = this.defaultYieldPower;
+		} else {
+			this.topFrame = this.frames[0];
+			this.yieldPower = this.topFrame.yieldPower;
+		}
 	}
 
 	fromNative(native) {
 		return this.realm.valueFromNative(native);
+	}
+
+
+	/**
+	 * @private
+	 * @param {object} n - AST Node to dispatch
+	 * @param {Scope} s - Current evaluation scope
+	 */
+	dispatch(n, s) {
+		if ( !n.dispatch ) {
+			n.dispatch = this.findNextStep(n.type);
+		}
+		return n.dispatch(this, n, s);
+	}
+
+
+
+	generator() {
+		return {next: this.next.bind(this), throw: (e) => { throw e; }};
+	}
+
+	breakFrames() {
+
+	}
+
+
+
+	/**
+	 * @private
+	 * @param {object} n - AST Node to dispatch
+	 * @param {Scope} s - Current evaluation scope
+	 */
+	*branch(n, s) {
+		let oldAST = this.topFrame.ast;
+		let tf = this.topFrame;
+		tf.ast = n;
+
+		let result = yield * this.dispatch(n,s);
+		tf.value = result;
+
+		if ( result instanceof CompletionRecord ) result = yield result;
+		if ( result && result.then ) result = yield result;
+		tf.value = result;
+		tf.ast = oldAST;
+
+		return result;
+	}
+
+	branchEx(n, s) {
+		let oldAST = this.topFrame.ast;
+		let tf = this.topFrame;
+		tf.ast = n;
+
+		let og = this.dispatch(n,s);
+		let stage = 0;
+		let result = undefined;
+		function branchNext(inp) {
+			switch (stage) {
+				case 0:
+					let x = og.next(inp);
+					console.log('Sending', x);
+					if ( !x.done ) return x;
+					result = inp = x.value;
+					stage = 2;
+					if ( result instanceof CompletionRecord ) return {done: false, value: result};
+				case 2:
+					result = inp;
+					stage = 3;
+					if ( result && result.then ) return {done: false, value: result};
+				case 3:
+					result = inp;
+					tf.value = result;
+					tf.ast = oldAST;
+					return {done: true, value: result};
+				default:
+					throw "ohn oo"
+			}
+
+		};
+		return {next: branchNext, throw: (x) => { throw x } };
 	}
 
 	*resolveRef(n, s, create) {
@@ -260,7 +357,7 @@ class Evaluator {
 						getValue: function*() {
 							let err = CompletionRecord.makeReferenceError(s.realm, `${n.name} is not defined`);
 							yield * err.addExtra({code: 'UndefinedVariable', when: 'read', ident: n.name, strict: s.strict});
-							return yield  err;
+							return yield err;
 						},
 						del: function() {
 							return true;
@@ -270,7 +367,7 @@ class Evaluator {
 						iref.setValue = function *() {
 							let err = CompletionRecord.makeReferenceError(s.realm, `${n.name} is not defined`);
 							yield * err.addExtra({code: 'UndefinedVariable', when: 'write', ident: n.name, strict: s.strict});
-							return yield  err;
+							return yield err;
 						};
 					} else {
 						iref.setValue = function *(value) {
@@ -349,35 +446,6 @@ class Evaluator {
 			default:
 				throw new Error('Unknown binary operator: ' + operator);
 		}
-	}
-
-	generator() {
-		return {next: this.next.bind(this), throw: (e) => { throw e; }};
-	}
-
-	breakFrames() {
-
-	}
-
-	/**
-	 * @private
-	 * @param {object} n - AST Node to dispatch
-	 * @param {Scope} s - Current evaluation scope
-	 */
-	*branch(n, s) {
-		let oldAST = this.topFrame.ast;
-		this.topFrame.ast = n;
-
-		let result = yield * this.dispatch(n,s);
-		this.topFrame.value = result;
-
-		if ( result instanceof CompletionRecord ) result = yield result;
-		if ( result && result.then ) result = yield result;
-
-		this.topFrame.value = result;
-		this.topFrame.ast = oldAST;
-
-		return result;
 	}
 
 	branchFrame(type, n, s, extra) {

@@ -18,7 +18,8 @@ let defaultOptions = {
 	exposeEsperGlobal: true,
 	extraErrorInfo: false,
 	addExtraErrorInfoToStacks: false,
-	bookmarkInvocationMode: 'error'
+	bookmarkInvocationMode: 'error',
+	yieldPower: 5
 };
 
 /**
@@ -35,6 +36,7 @@ class Engine {
 		}
 		this.realm = new Realm(this.options);
 		this.evaluator = new Evaluator(this.realm, null, this.globalScope);
+		this.evaluator.defaultYieldPower = this.options.yieldPower;
 	}
 
 	/**
@@ -46,7 +48,7 @@ class Engine {
 	 */
 	eval(code) {
 		let ast = this.realm.parser(code);
-		return this.evalAST(ast, code);
+		return this.evalAST(ast, {source: code});
 	}
 
 	/**
@@ -58,7 +60,7 @@ class Engine {
 	 */
 	evalSync(code) {
 		let ast = this.realm.parser(code);
-		return this.evalASTSync(ast, code);
+		return this.evalASTSync(ast, {source: code});
 	}
 
 	/**
@@ -69,25 +71,26 @@ class Engine {
 	 * @param {string} codeRef - The code that was used to generate the AST.
 	 * @return {Value} - The result of execution, as a promise.
 	 */
-	evalAST(ast, codeRef) {
+	evalAST(ast, opts) {
 		//console.log(escodegen.generate(ast));
-		this.loadAST(ast, codeRef);
+		this.loadAST(ast, opts);
 		let p = this.run();
 		p.then(() => delete this.generator);
 		return p;
 	}
 
-	evalASTSync(ast, codeRef) {
-		this.loadAST(ast, codeRef);
+	evalASTSync(ast, opts) {
+		this.loadAST(ast, opts);
 		let value = this.runSync();
 		delete this.generator;
 		return value;
 	}
 
-	loadAST(ast, source) {
-		let past = ASTPreprocessor.process(ast, {source: source});
+	loadAST(ast, opts) {
+		let past = ASTPreprocessor.process(ast, opts);
 		this.evaluator.frames = [];
 		this.evaluator.pushAST(past, this.globalScope);
+		this.evaluator.ast = past;
 		this.generator = this.evaluator.generator();
 	}
 

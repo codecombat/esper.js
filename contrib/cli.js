@@ -5,9 +5,8 @@
 const fs = require('fs');
 const repl = require('repl');
 const program = require('commander');
-const Engine = require('..').Engine;
-
-const nfo = require('../package.json');
+const esper = require('..');
+const Engine = esper.Engine;
 
 function enterRepl() {
 	function replEval(cmd, context, fn, cb) {
@@ -30,7 +29,7 @@ function enterRepl() {
 
 
 program
-	.version(nfo.version)
+	.version(esper.version)
 	.usage('[options] [script...]')
 	.option('-i, --interactive', 'enter REPL')
 	.option('-s, --strict', 'force strict mode')
@@ -52,7 +51,7 @@ function next() {
 	}
 	var fn = toEval.shift();
 	console.log(fn);
-	var code = fs.readFileSync(fn);
+	var code = fs.readFileSync(fn, 'utf8');
 	return engine.eval(code).then(function(val) {
 		return next();
 	}).catch(function(e) {

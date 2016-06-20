@@ -20,4 +20,9 @@ class EvaluatorInstruction {
 	}
 }
 
+EvaluatorInstruction.stepMinor = new EvaluatorInstruction('step');
+EvaluatorInstruction.stepMajor = new EvaluatorInstruction('step');
+EvaluatorInstruction.stepStatement = new EvaluatorInstruction('step');
+EvaluatorInstruction.waitForFramePop = new EvaluatorInstruction('waitForFramePop');
+
 module.exports = EvaluatorInstruction;

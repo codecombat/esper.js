@@ -127,8 +127,11 @@ class ClosureValue extends ObjectValue {
 				invokeScope.object.rawSetProperty(name, argvars[i]);
 			}
 		}
-
-		var result = yield EvaluatorInstruction.branch('function', this.func.body, invokeScope, {returnLastValue: this.returnLastValue});
+		let opts = {returnLastValue: this.returnLastValue};
+		if ( this.func.nonUserCode ) {
+			opts.yieldPower = -1;
+		}
+		var result = yield EvaluatorInstruction.branch('function', this.func.body, invokeScope, opts);
 		return result;
 	}
 

@@ -15,6 +15,8 @@ class PropertyDescriptor {
 		this.configurable = true;
 		this.enumerable = enumerable !== undefined ? !!enumerable : true;
 		this.writable = true;
+		this.getter = undefined;
+		this.setter = undefined;
 	}
 
 	get direct() {

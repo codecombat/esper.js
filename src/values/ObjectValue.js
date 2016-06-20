@@ -81,14 +81,22 @@ class ObjectValue extends Value {
 	}
 
 	setImmediate(name, value) {
-		if ( Object.prototype.hasOwnProperty.call(this.properties, name) ) {
-			if ( this.properties[name].direct ) {
-				this.properties[name].value = value;
-				return;
+		if ( name in this.properties ) {
+			if ( Object.prototype.hasOwnProperty.call(this.properties, name) ) {
+				if ( this.properties[name].direct ) {
+					this.properties[name].value = value;
+					return;
+				}
 			}
+		} else if ( this.extensable ) {
+			let v = new PropertyDescriptor(value);
+			v.del = this.delete.bind(this, name);
+			this.properties[name] = v;
+			return;
 		}
 		return GenDash.syncGenHelper(this.set(name, value, this.realm));
 	}
+
 
 
 	has(name) {

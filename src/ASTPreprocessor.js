@@ -44,6 +44,7 @@ class ASTNode {
 			if ( v === null || typeof v === 'function' ) return;
 			if ( k == 'range' || k == 'loc' || k == 'nodeID') return;
 			if ( v instanceof ASTNode ) return `${k}: [ASTNode: ${v.type}]`;
+			if ( Array.isArray(v) ) return '[...]';
 			else return `${k}: ${JSON.stringify(v)}`;
 		}).filter((v) => !!v).join(', ');
 		return `[ASTNode: ${this.type} ${extra}]`;
@@ -65,7 +66,7 @@ class ASTPreprocessor {
 			}
 			return o;
 		});
-		new ASTPreprocessor(nast).start();
+		new ASTPreprocessor(nast, extra).start();
 		return nast;
 	}
 
@@ -154,7 +155,8 @@ class ASTPreprocessor {
 	}
 
 
-	constructor(ast) {
+	constructor(ast, options) {
+		this.options = options || {};
 		this.ast = ast;
 		this.gen = ASTPreprocessor.walker(ast, this);
 	}
@@ -257,6 +259,10 @@ class ASTPreprocessor {
 		a.addHiddenProperty('refs', Object.create(null));
 		a.addHiddenProperty('vars', Object.create(null));
 		a.addHiddenProperty('funcs', Object.create(null));
+
+		if ( this.options.nonUserCode ) {
+			a.addHiddenProperty('nonUserCode', true);
+		}
 
 		for ( let o of a.params ) {
 			a.vars[o.name] = a;

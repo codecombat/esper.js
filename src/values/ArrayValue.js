@@ -31,6 +31,12 @@ class ArrayValue extends ObjectValue {
 		return super.set(name, v);
 	}
 
+	setImmediate(name, v) {
+		this.adjustLength(name);
+		return super.setImmediate(name, v);
+	}
+
+
 	toNative() {
 		let out = new Array();
 

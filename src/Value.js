@@ -4,7 +4,7 @@
 const CompletionRecord = require('./CompletionRecord');
 const GenDash = require('./GenDash');
 
-let undef, nil, tru, fals, nan, emptyString, zero, one, negone, negzero;
+let undef, nil, tru, fals, nan, emptyString, zero, one, negone, negzero, smallIntValues;
 let cache = new WeakMap();
 let bookmarks = new WeakMap();
 let ObjectValue, PrimitiveValue, StringValue, NumberValue, BridgeValue, Evaluator;
@@ -31,10 +31,13 @@ class Value {
 		if ( value === true ) return tru;
 
 		if ( typeof value === 'number' ) {
-			if ( Object.is(value, -0) ) return negzero;
-			if ( value === 0 ) return zero;
-			if ( value === 1 ) return one;
-			if ( value === -1 ) return negone;
+			if ( value === 0 ) {
+				return 1/value > 0 ? zero : negzero;
+			}
+			if ( value|0 === value ) {
+				let snv = smallIntValues[value+1];
+				if ( snv ) return snv;
+			}
 			return new NumberValue(value);
 		}
 		if ( typeof value === 'string' ) return new StringValue(value);
@@ -432,3 +435,8 @@ zero = new NumberValue(0);
 negzero = new NumberValue(-0);
 one = new NumberValue(1);
 negone = new NumberValue(-1);
+smallIntValues = [
+	negone, zero,
+	one, new NumberValue(2), new NumberValue(3), new NumberValue(4), new NumberValue(5),
+	new NumberValue(6), new NumberValue(7), new NumberValue(8), new NumberValue(9)
+	]

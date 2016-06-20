@@ -145,7 +145,7 @@ myAppModule.controller('main', function($scope, $timeout, $http, $q, $location) 
 		delete $scope.error;
 		$scope.esper = epr;
 		$scope.engines = [epr];
-		$scope.ast = $scope.esper.evaluator.ast;
+		$scope.ast = epr.evaluator.ast;
 		window.engine = epr;
 	};
 

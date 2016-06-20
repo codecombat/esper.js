@@ -21,7 +21,7 @@ function *evaluateArrayExpression(e, n, s) {
 			result[i] = yield * e.branch(n.elements[i],s);
 		}
 	}
-	if ( e.yieldPower > 0 ) yield;
+	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepMinor;
 	return ArrayValue.make(result, e.realm);
 }
 
@@ -37,7 +37,7 @@ function *evaluateAssignmentExpression(e, n, s) {
 	let argument = yield * e.branch(n.right, s);
 	let value;
 	let cur;
-	if ( e.yieldPower > 0 ) yield;
+	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepMinor;
 	switch ( n.operator ) {
 		case '=':
 			value = argument;
@@ -102,9 +102,8 @@ function *evaluateAssignmentExpression(e, n, s) {
 function *evaulateBinaryExpression(e, n, s) {
 	let left = yield * e.branch(n.left,s);
 	let right = yield * e.branch(n.right,s);
-	var realm = e.realm;
-	if ( e.yieldPower > 0 ) yield;
-	return yield * e.doBinaryEvaluation(n.operator, left, right, realm);
+	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepMinor;
+	return yield * e.doBinaryEvaluation(n.operator, left, right, s);
 }
 
 function *evaluateBlockStatement(e, n, s) {
@@ -118,7 +117,7 @@ function *evaluateBlockStatement(e, n, s) {
 
 function *evaluateBreakStatement(e, n, s) {
 	let label = n.label ? n.label.name : undefined;
-	if ( e.yieldPower > 0 ) yield;
+	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepMinor;
 	return new CompletionRecord(CompletionRecord.BREAK, Value.undef, label);
 }
 
@@ -160,7 +159,7 @@ function *evaluateCallExpression(e, n, s) {
 
 	let name = n.callee.srcName || callee.jsTypeName;
 
-	if ( e.yieldPower > 0 ) yield;
+	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepMajor;
 
 	if ( !callee.isCallable ) {
 		let err = CompletionRecord.makeTypeError(e.realm, '' + name + ' is not a function');
@@ -208,7 +207,7 @@ function *evaluateClassExpression(e, n, s) {
 	yield * clazz.set('prototype', proto);
 	yield * proto.set('constructor', clazz);
 
-	if ( e.yieldPower > 0 ) yield;
+	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepMinor;
 	for ( let m of n.body.body ) {
 		let fx = yield * e.branch(m.value, s);
 
@@ -240,7 +239,7 @@ function *evaluateClassDeclaration(e, n, s) {
 
 function *evaluateConditionalExpression(e, n, s) {
 	let test = yield * e.branch(n.test, s);
-	if ( e.yieldPower > 0 ) yield;
+	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepMinor;
 	if ( test.truthy ) {
 		return yield * e.branch(n.consequent, s);
 	} else {
@@ -255,7 +254,7 @@ function *evaluateConditionalExpression(e, n, s) {
 function *evaluateContinueStatement(e, n, s) {
 	let label = n.label ? n.label.name : undefined;
 	let val = new CompletionRecord(CompletionRecord.CONTINUE, Value.undef, label);
-	if ( e.yieldPower > 0 ) yield;
+	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepMinor;
 	return val;
 }
 
@@ -267,26 +266,26 @@ function *evaluateDoWhileStatement(e, n, s) {
 			last = yield that.branchFrame('continue', n.body, s, {label: n.label});
 		} while ( (yield * that.branch(n.test,s)).truthy );
 	};
-	if ( e.yieldPower > 0 ) yield;
+	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepMinor;
 	e.pushFrame({generator: gen(), type: 'loop', label: n.label, ast: n});
 
 
-	let finished = yield;
+	let finished = yield EvaluatorInstruction.waitForFramePop;
 	return Value.undef;
 }
 
 function *evaluateEmptyStatement(e, n, s) {
-	if ( e.yieldPower > 4 ) yield;
+	if ( e.yieldPower > 4 ) yield EvaluatorInstruction.stepMinor;
 	return Value.undef;
 }
 
 function *evaluateExpressionStatement(e, n, s) {
-	if ( e.yieldPower > 4 ) yield;
+	if ( e.yieldPower > 4 ) yield EvaluatorInstruction.stepMinor;
 	return yield * e.branch(n.expression,s);
 }
 
 function *evaluateIdentifier(e, n, s) {
-	if ( e.yieldPower > 1 ) yield;
+	if ( e.yieldPower > 1 ) yield EvaluatorInstruction.stepMinor;
 	if ( n.name === 'undefined' ) return Value.undef;
 	if ( !s.has(n.name) ) {
 		// Allow undeclared varibles to be null?
@@ -299,7 +298,7 @@ function *evaluateIdentifier(e, n, s) {
 }
 
 function *evaluateIfStatement(e, n, s) {
-	if ( e.yieldPower > 0 ) yield;
+	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepStatement;
 	let test = yield * e.branch(n.test, s);
 	if ( test.truthy ) {
 		return yield * e.branch(n.consequent, s);
@@ -311,29 +310,30 @@ function *evaluateIfStatement(e, n, s) {
 	return Value.undef;
 }
 
-function *evaluateForStatement(e, n, s) {
-	if ( e.yieldPower > 0 ) yield;
+function* genForLoop(e, n, s) {
+	let test = Value.true;
+	if ( n.test ) test = yield * e.branch(n.test,s);
 	let last = Value.undef;
+	while ( test.truthy ) {
+		last = yield e.branchFrame('continue', n.body, s, {label: n.label});
+		if ( n.update ) yield * e.branch(n.update,s);
+		if ( n.test ) test = yield * e.branch(n.test,s);
+	}
+};
+
+function *evaluateForStatement(e, n, s) {
+	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepStatement;
 	if ( n.init ) yield * e.branch(n.init,s);
-	let that = e;
-	var gen = function*() {
-		let test = Value.true;
-		if ( n.test ) test = yield * that.branch(n.test,s);
-		while ( test.truthy ) {
-			last = yield that.branchFrame('continue', n.body, s, {label: n.label});
-			if ( n.update ) yield * that.branch(n.update,s);
-			if ( n.test ) test = yield * that.branch(n.test,s);
-		}
-	};
-	e.pushFrame({generator: gen(), type: 'loop', label: n.label, ast: n});
+
+	e.pushFrame({generator: genForLoop(e, n, s), type: 'loop', label: n.label, ast: n});
 
 
-	let finished = yield;
+	let finished = yield EvaluatorInstruction.waitForFramePop;
 	return Value.undef;
 }
 
 function *evaluateForInStatement(e, n, s) {
-	if ( e.yieldPower > 0 ) yield;
+	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepStatement;
 	let last = Value.undef;
 	let object = yield * e.branch(n.right,s);
 	let names = object.observableProperties(s.realm);
@@ -356,13 +356,13 @@ function *evaluateForInStatement(e, n, s) {
 	e.pushFrame({generator: gen(), type: 'loop', label: n.label, ast: n});
 
 
-	let finished = yield;
+	let finished = yield EvaluatorInstruction.waitForFramePop;
 	return Value.undef;
 }
 
 //TODO: For of does more crazy Symbol iterator stuff
 function *evaluateForOfStatement(e, n, s) {
-	if ( e.yieldPower > 0 ) yield;
+	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepStatement;
 	let last = Value.undef;
 	let object = yield * e.branch(n.right,s);
 	let names = object.observableProperties(s.realm);
@@ -385,19 +385,19 @@ function *evaluateForOfStatement(e, n, s) {
 	e.pushFrame({generator: gen(), type: 'loop', label: n.label});
 
 
-	let finished = yield;
+	let finished = yield EvaluatorInstruction.waitForFramePop;
 	return Value.undef;
 }
 
 function *evaluateFunctionDeclaration(e, n, s) {
-	if ( e.yieldPower > 0 ) yield;
+	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepMajor;
 	let closure = new ClosureValue(n, s);
 	s.add(n.id.name, closure);
 	return Value.undef;
 }
 
 function *evaluateFunctionExpression(e, n, s) {
-	if ( e.yieldPower > 0 ) yield;
+	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepMajor;
 	let value = new ClosureValue(n, s);
 	if ( n.type === 'ArrowFunctionExpression' ) {
 		value.thiz = s.thiz;
@@ -407,12 +407,12 @@ function *evaluateFunctionExpression(e, n, s) {
 }
 
 function *evaluateLabeledStatement(e, n, s) {
-	if ( e.yieldPower > 4 ) yield;
+	if ( e.yieldPower > 4 ) yield EvaluatorInstruction.stepMinor;
 	return yield * e.branch(n.body, s);
 }
 
 function *evaulateLiteral(e, n, s) {
-	if ( e.yieldPower > 3 ) yield;
+	if ( e.yieldPower > 3 ) yield EvaluatorInstruction.stepMinor;
 	if ( n.regex ) {
 		return RegExpValue.make(new RegExp(n.regex.pattern, n.regex.flags), s.realm);
 	} else if ( n.value === null ) {
@@ -429,7 +429,7 @@ function *evaulateLiteral(e, n, s) {
 
 function *evaluateLogicalExpression(e, n, s) {
 	let left = yield * e.branch(n.left,s);
-	if ( e.yieldPower > 0 ) yield;
+	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepMajor;
 	switch ( n.operator ) {
 		case '&&':
 			if ( left.truthy ) return yield * e.branch(n.right,s);
@@ -444,7 +444,7 @@ function *evaluateLogicalExpression(e, n, s) {
 }
 
 function *evaluateMemberExpression(e, n, s) {
-	if ( e.yieldPower > 0 ) yield;
+	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepMinor;
 	let left = yield * e.branch(n.object,s);
 	return yield * e.partialMemberExpression(left, n, s);
 }
@@ -487,7 +487,7 @@ function *evaluateObjectExpression(e, n, s) {
 		}
 
 	}
-	if ( e.yieldPower > 0 ) yield;
+	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepMajor;
 	return nat;
 }
 
@@ -498,7 +498,7 @@ function *evaluateProgram(e, n, s) {
 		s.add(v, Value.undef);
 	}
 	if ( n.strict === true ) s.strict = true;
-	if ( e.yieldPower > 4 ) yield;
+	if ( e.yieldPower > 4 ) yield EvaluatorInstruction.stepMajor;
 	for ( let statement of n.body ) {
 		result = yield * e.branch(statement, s);
 	}
@@ -508,13 +508,13 @@ function *evaluateProgram(e, n, s) {
 function *evaluateReturnStatement(e, n, s) {
 	let retVal = Value.undef;
 	if ( n.argument ) retVal = yield * e.branch(n.argument,s);
-	if ( e.yieldPower > 0 ) yield;
+	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepMajor;
 	return new CompletionRecord(CompletionRecord.RETURN, retVal);
 }
 
 function *evaluateSequenceExpression(e, n, s) {
 	let last = Value.undef;
-	if ( e.yieldPower > 4 ) yield;
+	if ( e.yieldPower > 4 ) yield EvaluatorInstruction.stepMajor;
 	for ( let expr of n.expressions ) {
 		last = yield * e.branch(expr,s);
 	}
@@ -522,10 +522,9 @@ function *evaluateSequenceExpression(e, n, s) {
 }
 
 function *evaluateSwitchStatement(e, n, s) {
-	if ( e.yieldPower > 0 ) yield;
+	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepMajor;
 	let discriminant = yield * e.branch(n.discriminant, s);
 	let last = Value.undef;
-	let that = e;
 	let matches = 0;
 	let matchVals = new Array(n.cases.length);
 	let matched = false;
@@ -533,7 +532,7 @@ function *evaluateSwitchStatement(e, n, s) {
 	for ( let i = 0; i < n.cases.length; ++i ) {
 		let cas = n.cases[i];
 		if ( cas.test ) {
-			let testval = yield * that.branch(cas.test, s);
+			let testval = yield * e.branch(cas.test, s);
 			let equality = yield * testval.tripleEquals(discriminant);
 			if ( equality.truthy ) ++matches;
 			matchVals[i] = equality.truthy;
@@ -541,7 +540,7 @@ function *evaluateSwitchStatement(e, n, s) {
 	}
 
 
-	let gen = function*() {
+	let genSwitch = function*(e, n) {
 
 		for ( let i = 0; i < n.cases.length; ++i ) {
 			let cas = n.cases[i];
@@ -554,31 +553,31 @@ function *evaluateSwitchStatement(e, n, s) {
 				matched = true;
 			}
 			for ( let statement of cas.consequent ) {
-				last = yield * that.branch(statement, s);
+				last = yield * e.branch(statement, s);
 			}
 		}
 	};
 
-	e.pushFrame({generator: gen(), type: 'loop', label: n.label});
-	let finished = yield;
+	e.pushFrame({generator: genSwitch(e, n), type: 'loop', label: n.label});
+	let finished = yield EvaluatorInstruction.waitForFramePop;
 
 	return last;
 }
 
 function *evaluateThisExpression(e, n, s) {
-	if ( e.yieldPower > 0 ) yield;
+	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepMajor;
 	if ( s.thiz ) return s.thiz;
 	else return Value.undef;
 }
 
 function *evaluateThrowStatement(e, n, s) {
 	let value = yield * e.branch(n.argument, s);
-	if ( e.yieldPower > 0 ) yield;
+	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepMajor;
 	return new CompletionRecord(CompletionRecord.THROW, value);
 }
 
 function *evaluateTryStatement(e, n, s) {
-	if ( e.yieldPower > 0 ) yield;
+	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepMajor;
 	if ( n.finalizer ) e.pushFrame({generator: e.branch(n.finalizer,s), type: 'finally', scope: s});
 	let result = yield e.branchFrame('catch', n.block, s);
 	if ( result instanceof CompletionRecord && result.type == CompletionRecord.THROW ) {
@@ -596,7 +595,7 @@ function *evaluateTryStatement(e, n, s) {
 function *evaluateUpdateExpression(e, n, s) {
 	//TODO: Need to support something like ++x[1];
 	let nue;
-	if ( e.yieldPower > 0 ) yield;
+	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepMajor;
 	let ref = yield * e.resolveRef(n.argument, s, true);
 	let old = Value.nan;
 
@@ -614,7 +613,7 @@ function *evaluateUpdateExpression(e, n, s) {
 }
 
 function *evaulateUnaryExpression(e, n, s) {
-	if ( e.yieldPower > 0 ) yield;
+	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepMajor;
 	if ( n.operator === 'delete' ) {
 		if ( n.argument.type !== 'MemberExpression' && n.argument.type !== 'Identifier' ) {
 			//e isnt something you can delete?
@@ -650,7 +649,7 @@ function *evaulateUnaryExpression(e, n, s) {
 
 function *evaluateVariableDeclaration(e, n, s) {
 	let kind = n.kind;
-	if ( e.yieldPower > 0 ) yield;
+	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepMajor;
 	for ( let decl of n.declarations ) {
 		let value = Value.undef;
 		if ( decl.init ) value = yield * e.branch(decl.init,s);
@@ -665,25 +664,27 @@ function *evaluateVariableDeclaration(e, n, s) {
 	return Value.undef;
 }
 
-function *evaluateWhileStatement(e, n, s) {
-	if ( e.yieldPower > 0 ) yield;
+function* genWhileLoop(e, n, s) {
 	let last = Value.undef;
-	let that = e;
-	var gen = function*() {
-		while ( (yield * that.branch(n.test,s)).truthy ) {
-			that.topFrame.ast = n;
-			last = yield that.branchFrame('continue', n.body, s);
-		}
-	};
-	e.pushFrame({generator: gen(), type: 'loop', label: n.label, ast: n});
+	while ( (yield * e.branch(n.test,s)).truthy ) {
+		e.topFrame.ast = n;
+		last = yield e.branchFrame('continue', n.body, s);
+	}
+}
+
+function *evaluateWhileStatement(e, n, s) {
+	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepMajor;
 
 
-	let finished = yield;
+	e.pushFrame({generator: genWhileLoop(e, n, s), type: 'loop', label: n.label, ast: n});
+
+
+	let finished = yield EvaluatorInstruction.waitForFramePop;
 	return Value.undef;
 }
 
 function *evaluateWithStatement(e, n, s) {
-	if ( e.yieldPower > 0 ) yield;
+	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepMajor;
 	if ( s.strict ) return CompletionRecord.makeSyntaxError(e.realm, 'Strict mode code may not include a with statement');
 	return CompletionRecord.makeSyntaxError(e.realm, 'With statement not supported by esper');
 }
