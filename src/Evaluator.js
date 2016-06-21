@@ -38,7 +38,7 @@ class Evaluator {
 
 	pushAST(n, s) {
 		let that = this;
-		let gen = n ? this.dispatch(n,s) : (function*() {
+		let gen = n ? this.branch(n,s) : (function*() {
 			return yield EvaluatorInstruction.stepMinor;
 		})();
 		this.pushFrame({generator: gen, type: 'program', scope: s, ast: n});
@@ -79,70 +79,80 @@ class Evaluator {
 	next(lastValueOveride) {
 		let that = this;
 		let frames = this.frames;
-		let top = frames[0];
-		let result;
-		//console.log(top.type, top.ast && top.ast.type);
 
-		if ( top.exception ) {
-			this.lastValue = top.exception;
-			delete top.exception;
-		} else if ( top.retValue ) {
-			this.lastValue = top.retValue;
-			delete top.retValue;
-		}
+		//Implement proper tailcalls by hand.
+		do {
+			let top = frames[0];
+			let result;
+			//console.log(top.type, top.ast && top.ast.type);
 
-		result = top.generator.next(lastValueOveride || this.lastValue);
-
-		let val = result.value;
-
-		if ( val instanceof EvaluatorInstruction ) {
-			switch ( val.type ) {
-				case 'branch':
-					this.branchFrame(val.kind, val.ast, val.scope, val.extra);
-					return this.next();
-				case 'getEvaluator':
-					return this.next(this);
-				case 'step':
-					if ( that.instrument ) that.instrument(this, val);
-					return {done: false, value: this.lastValue};
-			}
-		}
-
-		if ( val instanceof CompletionRecord ) {
-			this.processCompletionValueMeaning(val);
-			this.lastValue = val.value;
-			return this.next();
-		}
-		//if ( !val ) console.log("Bad val somewhere around", this.topFrame.type);
-		if ( that.instrument ) that.instrument(this, val);
-
-		if ( val && val.then ) {
-			if ( top && top.type !== 'await' ) {
-				this.pushFrame({generator: (function *(f) {
-					while ( !f.resolved ) yield f;
-					if ( f.successful ) {
-						return f.value;
-					} else {
-						return new CompletionRecord(CompletionRecord.THROW, f.value);
-					}
-				})(val), type: 'await'});
-			}
-			return {done: false, value: val};
-		}
-
-		this.lastValue = val;
-		if ( result.done ) {
-			let lastFrame = that.popFrame();
-
-			// Latient values can't cross function calls.
-			// Dont do this, and you get coffeescript mode.
-			if ( lastFrame.type === 'function' && !lastFrame.returnLastValue ) {
-				this.lastValue = Value.undef;
+			if ( top.exception ) {
+				this.lastValue = top.exception;
+				delete top.exception;
+			} else if ( top.retValue ) {
+				this.lastValue = top.retValue;
+				delete top.retValue;
 			}
 
-			if ( frames.length === 0 ) return {done: true, value: result.value};
-		}
+			result = top.generator.next(lastValueOveride || this.lastValue);
+			lastValueOveride = undefined;
+			let val = result.value;
 
+			if ( val instanceof EvaluatorInstruction ) {
+				switch ( val.type ) {
+					case 'branch':
+						this.branchFrame(val.kind, val.ast, val.scope, val.extra);
+						continue;
+					case 'getEvaluator':
+						return this.next(this);
+						continue;
+					case 'waitForFramePop':
+						continue;
+					case 'framePushed':
+						continue;
+					case 'event':
+					case 'step':
+						if ( that.instrument ) that.instrument(this, val);
+						return {done: false, value: val};
+				}
+			}
+
+			if ( val instanceof CompletionRecord ) {
+				this.processCompletionValueMeaning(val);
+				this.lastValue = val.value;
+				continue;
+			}
+			//if ( !val ) console.log("Bad val somewhere around", this.topFrame.type);
+			if ( that.instrument ) that.instrument(this, val);
+
+			if ( val && val.then ) {
+				if ( top && top.type !== 'await' ) {
+					this.pushFrame({generator: (function *(f) {
+						while ( !f.resolved ) yield f;
+						if ( f.successful ) {
+							return f.value;
+						} else {
+							return new CompletionRecord(CompletionRecord.THROW, f.value);
+						}
+					})(val), type: 'await'});
+				}
+				return {done: false, value: val};
+			}
+
+			this.lastValue = val;
+			if ( result.done ) {
+				let lastFrame = that.popFrame();
+
+				// Latient values can't cross function calls.
+				// Dont do this, and you get coffeescript mode.
+				if ( lastFrame.type === 'function' && !lastFrame.returnLastValue ) {
+					this.lastValue = Value.undef;
+				}
+
+				if ( frames.length === 0 ) return {done: true, value: result.value};
+				else continue;
+			}
+		} while ( false );
 		return {done: false, value: this.lastValue};
 	}
 
@@ -312,40 +322,6 @@ class Evaluator {
 		return result;
 	}
 
-	branchEx(n, s) {
-		let oldAST = this.topFrame.ast;
-		let tf = this.topFrame;
-		tf.ast = n;
-
-		let og = this.dispatch(n,s);
-		let stage = 0;
-		let result = undefined;
-		function branchNext(inp) {
-			switch (stage) {
-				case 0:
-					let x = og.next(inp);
-					console.log('Sending', x);
-					if ( !x.done ) return x;
-					result = inp = x.value;
-					stage = 2;
-					if ( result instanceof CompletionRecord ) return {done: false, value: result};
-				case 2:
-					result = inp;
-					stage = 3;
-					if ( result && result.then ) return {done: false, value: result};
-				case 3:
-					result = inp;
-					tf.value = result;
-					tf.ast = oldAST;
-					return {done: true, value: result};
-				default:
-					throw "ohn oo"
-			}
-
-		};
-		return {next: branchNext, throw: (x) => { throw x } };
-	}
-
 	*resolveRef(n, s, create) {
 		let oldAST = this.topFrame.ast;
 		this.topFrame.ast = n;
@@ -456,7 +432,8 @@ class Evaluator {
 				frame[k] = extra[k];
 			}
 		}
-		return this.pushFrame(frame);
+		this.pushFrame(frame);
+		return EvaluatorInstruction.framePushed;
 	}
 
 	/**
