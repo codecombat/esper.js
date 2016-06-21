@@ -18,11 +18,18 @@ class EvaluatorInstruction {
 	constructor(type) {
 		this.type = type;
 	}
+
+	mark(o) {
+		for ( let k in o ) this[k] = o[k];
+		return this;
+	}
 }
 
 EvaluatorInstruction.stepMinor = new EvaluatorInstruction('step');
 EvaluatorInstruction.stepMajor = new EvaluatorInstruction('step');
 EvaluatorInstruction.stepStatement = new EvaluatorInstruction('step');
 EvaluatorInstruction.waitForFramePop = new EvaluatorInstruction('waitForFramePop');
+EvaluatorInstruction.framePushed = new EvaluatorInstruction('framePushed');
 
+EvaluatorInstruction.eventLoopBodyStart = new EvaluatorInstruction('event').mark({event: 'loopBodyStart'});
 module.exports = EvaluatorInstruction;

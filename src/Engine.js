@@ -37,6 +37,7 @@ class Engine {
 		this.realm = new Realm(this.options);
 		this.evaluator = new Evaluator(this.realm, null, this.globalScope);
 		this.evaluator.defaultYieldPower = this.options.yieldPower;
+		this.evaluator.yieldPower = this.options.yieldPower;
 	}
 
 	/**
@@ -282,7 +283,7 @@ class Engine {
 			else if ( evaluator.topFrame.type == 'await' ) {
 				if ( !value.value.resolved ) yield;
 			} else {
-				var yieldValue = shouldYield(this, evaluator);
+				var yieldValue = shouldYield(this, evaluator, value.value);
 				if ( yieldValue !== false ) yield yieldValue;
 			}
 			value = gen.next(value.value);

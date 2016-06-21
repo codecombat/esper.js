@@ -1,6 +1,6 @@
 {
   "name": "esper.js",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Esper javascript interperter.",
   "main": "src/index.js",
   "scripts": {
