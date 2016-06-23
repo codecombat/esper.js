@@ -119,16 +119,17 @@ class ObjectValue extends Value {
 		if ( this.jsTypeName === 'function' ) return bk;
 
 		for ( let p in this.properties ) {
-			let po = this.properties[p];
-			if ( Object.prototype.hasOwnProperty.call(bk, p) ) continue;
+			let name = p; //work around bug in FF where the scope of p is incorrect
+			let po = this.properties[name];
+			if ( Object.prototype.hasOwnProperty.call(bk, name) ) continue;
 			if ( bk[p] !== undefined ) continue;
 
 			Object.defineProperty(bk, p, {
 				get: () => {
-					var c = this.properties[p].value;
+					var c = this.properties[name].value;
 					return c === undefined ? undefined : c.toNative();
 				},
-				set: (v) => { this.properties[p].value = Value.fromNative(v, this.realm); },
+				set: (v) => { this.properties[name].value = Value.fromNative(v, this.realm); },
 				enumerable: po.enumerable,
 				configurable: po.configurable
 			});

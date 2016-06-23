@@ -77,7 +77,6 @@ class Evaluator {
 	}
 
 	next(lastValueOveride) {
-		let that = this;
 		let frames = this.frames;
 
 		//Implement proper tailcalls by hand.
@@ -104,15 +103,16 @@ class Evaluator {
 						this.branchFrame(val.kind, val.ast, val.scope, val.extra);
 						continue;
 					case 'getEvaluator':
+						//lastValueOveride = this;
+						//continue;
 						return this.next(this);
-						continue;
 					case 'waitForFramePop':
 						continue;
 					case 'framePushed':
 						continue;
 					case 'event':
 					case 'step':
-						if ( that.instrument ) that.instrument(this, val);
+						if ( this.instrument ) this.instrument(this, val);
 						return {done: false, value: val};
 				}
 			}
@@ -123,7 +123,7 @@ class Evaluator {
 				continue;
 			}
 			//if ( !val ) console.log("Bad val somewhere around", this.topFrame.type);
-			if ( that.instrument ) that.instrument(this, val);
+			if ( this.instrument ) this.instrument(this, val);
 
 			if ( val && val.then ) {
 				if ( top && top.type !== 'await' ) {
@@ -141,7 +141,7 @@ class Evaluator {
 
 			this.lastValue = val;
 			if ( result.done ) {
-				let lastFrame = that.popFrame();
+				let lastFrame = this.popFrame();
 
 				// Latient values can't cross function calls.
 				// Dont do this, and you get coffeescript mode.
