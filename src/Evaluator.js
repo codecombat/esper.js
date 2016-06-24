@@ -276,21 +276,6 @@ class Evaluator {
 		return this.realm.valueFromNative(native);
 	}
 
-
-	/**
-	 * @private
-	 * @param {object} n - AST Node to dispatch
-	 * @param {Scope} s - Current evaluation scope
-	 */
-	dispatch(n, s) {
-		if ( !n.dispatch ) {
-			n.dispatch = this.findNextStep(n.type);
-		}
-		return n.dispatch(this, n, s);
-	}
-
-
-
 	generator() {
 		return {next: this.next.bind(this), throw: (e) => { throw e; }};
 	}
@@ -299,28 +284,6 @@ class Evaluator {
 
 	}
 
-
-
-	/**
-	 * @private
-	 * @param {object} n - AST Node to dispatch
-	 * @param {Scope} s - Current evaluation scope
-	 */
-	*branch(n, s) {
-		let oldAST = this.topFrame.ast;
-		let tf = this.topFrame;
-		tf.ast = n;
-
-		let result = yield * this.dispatch(n,s);
-		tf.value = result;
-
-		if ( result instanceof CompletionRecord ) result = yield result;
-		if ( result && result.then ) result = yield result;
-		tf.value = result;
-		tf.ast = oldAST;
-
-		return result;
-	}
 
 	*resolveRef(n, s, create) {
 		let oldAST = this.topFrame.ast;
@@ -436,14 +399,39 @@ class Evaluator {
 		return EvaluatorInstruction.framePushed;
 	}
 
+	beforeNode(n) {
+		let tf = this.topFrame;
+		let state = {top: tf, ast: tf.ast, node: n};
+		tf.ast = n;
+		return state;
+	}
+
+	afterNode(state, r) {
+		let tf = this.topFrame;
+		tf.value = r;
+		tf.ast = state.ast;
+	}
+
 	/**
 	 * @private
 	 * @param {object} n - AST Node to dispatch
 	 * @param {Scope} s - Current evaluation scope
 	 */
-	dispatch(n, s) {
+	branch(n, s) {
 		if ( !n.dispatch ) {
-			n.dispatch = this.findNextStep(n.type);
+			let nextStep = this.findNextStep(n.type);
+
+			n.dispatch = function*(that, n, s) {
+				let state = that.beforeNode(n);
+
+				let result = yield * nextStep(that, n,s);
+				if ( result instanceof CompletionRecord ) result = yield result;
+				if ( result && result.then ) result = yield result;
+
+				that.afterNode(state, result);
+
+				return result;
+			};
 		}
 		return n.dispatch(this, n, s);
 	}
