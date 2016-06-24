@@ -139,7 +139,6 @@ module.exports = function cfg(profile, opts) {
 		delete cfg.output.library;
 		delete cfg.output.libraryTarget;
 
-		cfg.output.filename = 'esper-test.js';
 		cfg.module.loaders.push({
 			test: /\.js$/,
 			include: [path.join(__dirname, 'contrib', 'test-suites', 'sandboxr')],

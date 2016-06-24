@@ -37,9 +37,15 @@ server.on('request', (req, res) => {
 	} else if ( /\/?esper-test\.js$/.test(uri) ) {
 		file = path.join(__dirname, '..', 'dist', 'esper-test.js');
 		contentType = 'text/javascript';
+	} else if ( /\/?esper-test\.modern\.js$/.test(uri) ) {
+		file = path.join(__dirname, '..', 'dist', 'esper-test.modern.js');
+		contentType = 'text/javascript';
 	} else if ( /\/$/.test(uri) ) {
 		contentType = 'text/html';
 		file = path.join(__dirname, 'ui', 'index.html');
+	} else if ( /\/test-modern/.test(uri) ) {
+		contentType = 'text/html';
+		file = path.join(__dirname, 'ui', 'test-modern.html');
 	} else if ( /\/test/.test(uri) ) {
 		contentType = 'text/html';
 		file = path.join(__dirname, 'ui', 'test.html');
