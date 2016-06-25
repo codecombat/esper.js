@@ -17,10 +17,10 @@ function resolves(e,  value) {
 	return f.value;
 }
 
-describe('FutureValue', () => {
-	describe('Basic Tests', () => {
+describe('FutureValue', function() {
+	describe('Basic Tests', function() {
 
-		it('simple', () => {
+		it('simple', function() {
 
 			var e = new Engine({
 				foreignObjectMode: 'smart'
@@ -39,7 +39,7 @@ describe('FutureValue', () => {
 			expect(val.toNative()).to.equal(22);
 		});
 
-		it('Fetch function', () => {
+		it('Fetch function', function() {
 
 			var e = new Engine({
 				foreignObjectMode: 'smart'
@@ -57,14 +57,14 @@ describe('FutureValue', () => {
 			fv.resolve(Value.fromNative(22));
 			expect(resolves(gen)).to.equal(22);
 		});
-		it('Simple Run test', () => {
+		it('Simple Run test', function() {
 			var e = new Engine();
 			e.load('2+2');
 			return e.run().then((v) => {
 				expect(v.toNative()).to.equal(4);
 			});
 		});
-		it('Run with async callback.', () => {
+		it('Run with async callback.', function() {
 
 			var e = new Engine({
 				foreignObjectMode: 'smart'
@@ -73,7 +73,7 @@ describe('FutureValue', () => {
 			var fv = new FutureValue(e.realm);
 			e.addGlobal('fv', fv);
 			e.load('function a(o) { return o; }; a(fv);');
-			setTimeout(() => fv.resolve(Value.fromNative(22)), 1000);
+			setTimeout(function() { fv.resolve(Value.fromNative(22)) }, 1000);
 
 			return e.run().then((value) => {
 				expect(value.toNative()).to.equal(22);
