@@ -739,4 +739,7 @@ function findNextStep(type) {
 	}
 }
 
-module.exports = findNextStep;
+module.exports = {
+	evaluateIdentifier,
+	findNextStep
+};

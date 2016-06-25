@@ -4,13 +4,19 @@
 var esprima = require('esprima');
 var escodegen = require('escodegen');
 
-
 let templateId = 0;
 module.exports = function(fn) {
 	++templateId;
-	let source = fn.toString();
-	let parsed = esprima.parse(source);
-	let astFx = parsed.body[0];
+	let astFx;
+
+	if ( typeof fn === 'function' ) {
+		let source = fn.toString();
+		let parsed = esprima.parse(source);
+		astFx = parsed.body[0];
+	} else {
+		astFx = fn;
+	}
+
 	let params = astFx.params.map((v,k) => v.name);
 
 	let astParts = astFx.body;
@@ -29,7 +35,9 @@ module.exports = function(fn) {
 	});
 	let str = JSON.stringify(xf, null, '    ');
 	str = str.replace(/"%%%([^%"]+)%%%"/g, function(f, v) {
-		if ( /^[_]/.test(v) ) return '{type: "Literal", value: ' + v + '}';
+		if ( /^[_]/.test(v) ) {
+			return '{type: "Literal", value: ' + v + '}';
+		}
 		if ( /^[$]/.test(v) ) return '{type: "Identifier", name: ' + v + '}';
 		return v;
 	});
@@ -38,7 +46,7 @@ module.exports = function(fn) {
 		return '$$' + templateId + '$" + idx';
 	});
 
-	console.log(str);
+	//console.log(str);
 
 	let out = new Function('var idx = 0; return function(' + params.join(',') + ') { ++idx; return ' + str + '; }');
 	let idx = 0;

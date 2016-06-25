@@ -351,6 +351,10 @@ class EsperASTInstructions {
 		this.scopeStack.shift();
 		this.funcStack.shift();
 		delete a.refs;
+
+		if ( this.options.compile === 'pre' && compiler.canCompile(a.body) ) {
+			a.body.dispatch = compiler.compileNode(a.body);
+		}
 		//this.log("VARS:", Object.getOwnPropertyNames(a.vars).join(', '));
 	}
 
@@ -362,9 +366,6 @@ class EsperASTInstructions {
 
 	exit(a) {
 		this.log('Exiting', a.type);
-		if ( compiler.canCompile(a) ) {
-			a.dispatch = compiler.compileNode(a);
-		}
 		--this.depth;
 	}
 

@@ -497,6 +497,6 @@ class Evaluator {
 	set insterment(v) { this.instrument = v; }
 }
 
-Evaluator.prototype.findNextStep = require('./EvaluatorHandlers');
+Evaluator.prototype.findNextStep = require('./EvaluatorHandlers').findNextStep;
 
 module.exports = Evaluator;

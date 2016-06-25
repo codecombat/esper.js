@@ -1,20 +1,26 @@
 'use strict';
 
 const templates = require('./ASTemplates');
+const escodegen = require('escodegen');
 const FXGenerator = require('./FXGenerator');
 
 const Value = require('../Value');
 const CompletionRecord = require('../CompletionRecord');
 const ClosureValue = require('../values/ClosureValue');
 const EvaluatorInstruction = require('../EvaluatorInstruction');
+const EvaluatorHandlers = require('../EvaluatorHandlers');
 
 class Compiler {
 	canCompile(n) {
 		switch (n.type) {
 			case 'Literal':
-				return typeof n.regex == 'undefined';
+				return typeof n.regex == 'undefined' && n.value !== null;
+			case 'Identifier':
+			case 'BlockStatement':
+				return true;
+
 		}
-		return false;
+		return true;
 	}
 
 	compileNode(n) {
@@ -23,7 +29,8 @@ class Compiler {
 		let fx = templates.W(body);
 		return FXGenerator(fx, {
 			Value: Value,
-			CompletionRecord: CompletionRecord
+			CompletionRecord: CompletionRecord,
+			EvaluatorHandlers: EvaluatorHandlers
 		});
 	}
 
@@ -33,15 +40,47 @@ class Compiler {
 			case 'Literal':
 				body = this.compileLiteral(n);
 				break;
+			case 'Identifier':
+				body = this.compileIdentifier(n);
+				break;
+			case 'BlockStatement':
+				body = this.compileBlockStatement(n);
+				break;
+			case 'ExpressionStatement':
+				body = this.compileExpressionStatement(n);
+				break;
 			default:
-				throw new Error(`Dont know how to compile ${n.type}`);
+				body = this.compileFallBack(n);
 		}
-
+		body.leadingComments = [{type: 'block', value: '\n' + escodegen.generate(n) + '\n'}];
 		return templates.premble(body);
 	}
 
 	compileLiteral(n) {
 		return templates.V('result', n.value);
+	}
+
+	compileIdentifier(n) {
+		if ( n.name !== 'undefined' ) return templates.evaluateIdentifier(n.name);
+		return templates.undef('result', undefined);
+	}
+
+	compileFallBack(n) {
+		return templates.fallBack(n.type, 'n', 's');
+	}
+
+	compileExpressionStatement(n) {
+		return templates.wrapHandoff('expression', this.compileNodeBody(n.expression));
+	}
+
+	compileBlockStatement(n) {
+		let parts = [];
+		parts.push(templates.assignNToVar('blockStatementHolder'));
+		for ( let i = 0; i < n.body.length; ++i ) {
+			parts.push(templates.assignNToPartIndex(i, 'blockStatementHolder'));
+			parts.push(this.compileNodeBody(n.body[i]));
+		}
+		return {type: 'BlockStatement', body: parts};
 	}
 }
 
