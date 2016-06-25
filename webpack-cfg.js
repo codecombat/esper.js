@@ -120,6 +120,10 @@ module.exports = function configure(profile, opts) {
 					query: {
 						plugins: plugins
 					}
+				},
+				{
+					test: /ASTemplates.js$/,
+					loader: path.join(__dirname, 'contrib', 'astemplate-loader.js')
 				}
 			]
 		},
@@ -128,7 +132,8 @@ module.exports = function configure(profile, opts) {
 			pluginFilter
 		],
 		resolve: { alias: {} },
-		target: target
+		target: target,
+		node: {fs: 'empty'}
 	};
 
 	if ( opts.min ) {
@@ -139,6 +144,10 @@ module.exports = function configure(profile, opts) {
 	if ( profile == 'nashorn' ) {
 		cfg.resolve.alias['esprima'] = path.join(__dirname, 'contrib', 'nash-esprima.js');
 	}
+
+	//if ( profile == 'modern' ) {
+		cfg.resolve.alias['regenerator'] = path.join(__dirname, 'contrib', 'empty-module.js');
+	//}
 
 	if ( profile == 'node' || profile == 'node-old' || profile == 'web-ext' ) {
 		cfg.externals = {
@@ -168,8 +177,6 @@ module.exports = function configure(profile, opts) {
 			loader: path.join(__dirname, 'contrib', 'list-loader.js')
 		});	
 		cfg.entry[0] = './contrib/webpack-mocha-entry.js';
-		cfg.node = {fs: 'empty'};
-
 	}
 
 	return cfg;

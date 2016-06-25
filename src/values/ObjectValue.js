@@ -31,6 +31,7 @@ class ObjectValue extends Value {
 		super();
 		this.extensable = true;
 		this.realm = realm;
+		this.proto = null;
 		if ( proto ) this.eraseAndSetPrototype(proto);
 		else if ( realm ) this.eraseAndSetPrototype(realm.ObjectPrototype);
 		else this.properties = Object.create(null);

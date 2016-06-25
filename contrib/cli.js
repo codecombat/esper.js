@@ -34,14 +34,15 @@ program
 	.option('-i, --interactive', 'enter REPL')
 	.option('-s, --strict', 'force strict mode')
 	.option('-d, --debug', 'turn on performance debugging')
+	.option('-c, --compile <mode>', 'set compileing mode')
 	.parse(process.argv);
 
 
 let engine = new Engine({
 	strict: !!program.strict,
 	debug: !!program.debug,
-	addInternalStack: !!program.debug
-
+	addInternalStack: !!program.debug,
+	compile: program.compile || 'pre'
 });
 
 

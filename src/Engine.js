@@ -20,7 +20,8 @@ let defaultOptions = {
 	addExtraErrorInfoToStacks: false,
 	bookmarkInvocationMode: 'error',
 	yieldPower: 5,
-	debug: false
+	debug: false,
+	compile: 'pre'
 };
 
 /**
@@ -93,6 +94,8 @@ class Engine {
 	}
 
 	loadAST(ast, opts) {
+		opts = opts || {};
+		opts.compile = this.options.compile;
 		let past = ASTPreprocessor.process(ast, opts);
 		this.evaluator.frames = [];
 		this.evaluator.pushAST(past, this.globalScope);
@@ -102,7 +105,7 @@ class Engine {
 
 	load(code) {
 		let ast = this.realm.parser(code);
-		this.loadAST(ast, code);
+		this.loadAST(ast, {source: code});
 	}
 
 	step() {
