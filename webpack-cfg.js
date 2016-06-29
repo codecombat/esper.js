@@ -104,7 +104,7 @@ module.exports = function cfg(profile, opts) {
 				},
 				{
 					test: /js$/,
-					include: [path.join(__dirname, 'src')],
+					include: [path.join(__dirname, 'src'),path.join(__dirname, 'test')],
 					loader: 'babel-loader',
 					query: {
 						plugins: plugins
