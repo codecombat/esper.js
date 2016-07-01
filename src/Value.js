@@ -406,8 +406,8 @@ class Value {
 		return nv.native;
 	}
 
-	*toPrimitiveValue(preferedType) { throw new Error('Unimplemented: Value#jsTypeName'); }
-	*toPrimitiveNative(preferedType) { return (yield * this.toPrimitiveValue()).native; }
+	*toPrimitiveValue(preferedType) { throw new Error('Unimplemented: Value#toPrimitiveValue'); }
+	*toPrimitiveNative(preferedType) { return (yield * this.toPrimitiveValue(preferedType)).native; }
 
 	/**
 	 * Quickly make a generator for this value

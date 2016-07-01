@@ -178,6 +178,15 @@ class LinkValue extends Value {
 		return typeof this.native;
 	}
 
+	*toPrimitiveValue(preferedType) {
+		switch ( preferedType ) {
+			case 'string':
+				return Value.fromNative(this.native.toString());
+			default:
+				return Value.fromNative(this.native.valueOf());
+		}
+	}
+
 	get linkKind() { return 'link'; }
 }
 
