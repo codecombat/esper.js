@@ -33,11 +33,13 @@ program
 	.usage('[options] [script...]')
 	.option('-i, --interactive', 'enter REPL')
 	.option('-s, --strict', 'force strict mode')
+	.option('-d, --debug', 'turn on performance debugging')
 	.parse(process.argv);
 
 
 let engine = new Engine({
-	strict: !!program.strict
+	strict: !!program.strict,
+	debug: !!program.debug
 });
 
 

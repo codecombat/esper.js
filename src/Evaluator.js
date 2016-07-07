@@ -26,6 +26,8 @@ class Evaluator {
 		this.ast = n;
 		this.defaultYieldPower = 5;
 		this.yieldPower = this.defaultYieldPower;
+		this.debug = false;
+		this.profile = false;
 		/**
 		 * @type {Object[]}
 		 * @property {Generator} generator
@@ -43,7 +45,13 @@ class Evaluator {
 		})();
 		this.pushFrame({generator: gen, type: 'program', scope: s, ast: n});
 	}
-
+	processLostFrames(frames) {
+		for ( let f of frames ) {
+			if ( f.profileName ) {
+				this.incrCtr('fxTime', f.profileName, Date.now() - f.entered);
+			}
+		}
+	}
 	unwindStack(target, canCrossFxBounds, label) {
 		let finallyFrames = [];
 		for ( let i = 0; i < this.frames.length; ++i ) {
@@ -57,13 +65,13 @@ class Evaluator {
 				let j = i + 1;
 				for (; j < this.frames.length; ++j ) if ( this.frames[j].type != 'finally' ) break;
 				let fr = this.frames[j];
-				this.frames.splice(0,i + 1);
+				this.processLostFrames(this.frames.splice(0,i + 1));
 				this.saveFrameShortcuts();
 				Array.prototype.unshift.apply(this.frames, finallyFrames);
 				return fr;
 			} else if ( target == 'return' && this.frames[i].retValue ) {
 				let fr = this.frames[i];
-				this.frames.splice(0, i);
+				this.processLostFrames(this.frames.splice(0, i));
 				this.saveFrameShortcuts();
 				Array.prototype.unshift.apply(this.frames, finallyFrames);
 				return fr;
@@ -143,16 +151,26 @@ class Evaluator {
 			if ( result.done ) {
 				let lastFrame = this.popFrame();
 
+				if ( lastFrame.profileName ) {
+					this.processLostFrames([lastFrame]);
+				}
+
 				// Latient values can't cross function calls.
 				// Dont do this, and you get coffeescript mode.
 				if ( lastFrame.type === 'function' && !lastFrame.returnLastValue ) {
 					this.lastValue = Value.undef;
 				}
 
-				if ( frames.length === 0 ) return {done: true, value: result.value};
+				if ( frames.length === 0 ) {
+					if ( this.debug ) {
+						this.dumpProfilingInformation();
+					}
+					return {done: true, value: result.value};
+				}
 				else continue;
 			}
 		} while ( false );
+
 		return {done: false, value: this.lastValue};
 	}
 
@@ -394,6 +412,9 @@ class Evaluator {
 			for ( var k in extra ) {
 				frame[k] = extra[k];
 			}
+			if ( extra.profileName ) {
+				frame.entered = Date.now();
+			}
 		}
 		this.pushFrame(frame);
 		return EvaluatorInstruction.framePushed;
@@ -402,6 +423,7 @@ class Evaluator {
 	beforeNode(n) {
 		let tf = this.topFrame;
 		let state = {top: tf, ast: tf.ast, node: n};
+		if ( this.debug ) this.incrCtr('astInvocationCount', n.type);
 		tf.ast = n;
 		return state;
 	}
@@ -434,6 +456,40 @@ class Evaluator {
 			};
 		}
 		return n.dispatch(this, n, s);
+	}
+
+	incrCtr(n, c, v) {
+		if ( v === undefined ) v = 1;
+		if ( !this.profile ) this.profile = {};
+		let o = this.profile[n];
+		if ( !o ) {
+			o = {};
+			this.profile[n] = o;
+		}
+		c = c || '???';
+		if ( c in o ) o[c] += v
+		else o[c] = v;
+	}
+
+
+	dumpProfilingInformation() {
+		function lpad(s, l) { return s + new Array(Math.max(l - s.length,1)).join(' '); }
+
+		if ( !this.profile ) {
+			console.log("===== Profile: None collected =====");
+			return;
+		}
+
+		console.log('===== Profile =====');
+		for ( let  sec in this.profile ) {
+			console.log(sec + ' Stats:');
+			let o = this.profile[sec];
+			let okeys = Object.keys(o).sort((a,b) => o[b] - o[a]);
+			for ( let name of okeys ) {
+				console.log(`  ${lpad(name, 20)}: ${o[name]}`);
+			}
+		}
+		console.log('=================');
 	}
 
 	get insterment() { return this.instrument; }

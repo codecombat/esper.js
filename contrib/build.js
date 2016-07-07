@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var webpack = require('webpack');
 var fx = require('../webpack-cfg');
@@ -11,7 +11,7 @@ function make(profile, opts) {
 			if ( err ) return rej(err);
 			console.log(status.toString({color: true}));
 			res(status);
-		})
+		});
 	});
 }
 

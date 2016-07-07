@@ -52,7 +52,7 @@ class ClosureValue extends ObjectValue {
 	 * @param {Value[]} args
 	 * @param {Scope} scope
 	 */
-	*call(thiz, args, scope) {
+	*call(thiz, args, scope, extra) {
 		//TODO: This way of scoping is entirelly wrong.
 		if ( !scope ) scope = this.scope;
 		let invokeScope;
@@ -128,6 +128,9 @@ class ClosureValue extends ObjectValue {
 			}
 		}
 		let opts = {returnLastValue: this.returnLastValue};
+		if ( extra && extra.evaluator && extra.evaluator.debug ) {
+			opts['profileName'] = extra.callNode.callee.srcName;
+		}
 		if ( this.func.nonUserCode ) {
 			opts.yieldPower = -1;
 		}

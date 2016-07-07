@@ -173,6 +173,10 @@ function *evaluateCallExpression(e, n, s) {
 		return err;
 	}
 
+	if ( e.debug ) {
+		e.incrCtr('fxInvocationCount', n.callee.srcName);
+	}
+
 	let callResult = callee.call(thiz, args, s, {
 		asConstructor: n.type === 'NewExpression',
 		callNode: n,

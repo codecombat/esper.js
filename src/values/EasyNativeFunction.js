@@ -33,13 +33,22 @@ class EasyNativeFunction extends ObjectValue {
 
 	*call(thiz, argz, scope, extra) {
 		try {
+			let profile = false;
+			let start = 0;
+			if ( extra && extra.evaluator && extra.evaluator.debug ) {
+				profile = true;
+				start = Date.now();
+			}
 			let s = scope ? scope.createChild() : scope;
 			if ( s ) s.strict = true;
 			let o = yield * this.fn.apply(this.binding, arguments, s, extra);
 			if ( o instanceof CompletionRecord ) return o;
 			if ( !(o instanceof Value) ) o = scope.realm.makeForForeignObject(o);
+			if ( profile ) extra.evaluator.incrCtr('fxTime', extra.callNode.callee.srcName, Date.now() - start);
 			return new CompletionRecord(CompletionRecord.NORMAL, o);
+
 		} catch ( e ) {
+			if ( profile ) extra.evaluator.incrCtr('fxTime', extra.callNode.callee.srcName, Date.now() - start);
 			return new CompletionRecord(CompletionRecord.THROW, scope.realm.makeForForeignObject(e));
 		}
 	}

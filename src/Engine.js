@@ -19,7 +19,8 @@ let defaultOptions = {
 	extraErrorInfo: false,
 	addExtraErrorInfoToStacks: false,
 	bookmarkInvocationMode: 'error',
-	yieldPower: 5
+	yieldPower: 5,
+	debug: false
 };
 
 /**
@@ -36,6 +37,10 @@ class Engine {
 		}
 		this.realm = new Realm(this.options);
 		this.evaluator = new Evaluator(this.realm, null, this.globalScope);
+		if ( this.options.debug ) {
+			this.evaluator.debug = true;
+		}
+
 		this.evaluator.defaultYieldPower = this.options.yieldPower;
 		this.evaluator.yieldPower = this.options.yieldPower;
 	}
@@ -270,6 +275,9 @@ class Engine {
 		evaluator.frames = [];
 		if ( this.evaluator.insturment ) {
 			evaluator.insturment = this.evaluator.insturment;
+		}
+		if ( this.evaluator.debug ) {
+			evaluator.debug = true;
 		}
 		return evaluator;
 	}
