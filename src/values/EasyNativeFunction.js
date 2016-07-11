@@ -32,9 +32,9 @@ class EasyNativeFunction extends ObjectValue {
 	}
 
 	*call(thiz, argz, scope, extra) {
+		let profile = false;
+		let start = 0;
 		try {
-			let profile = false;
-			let start = 0;
 			if ( extra && extra.evaluator && extra.evaluator.debug ) {
 				profile = true;
 				start = Date.now();

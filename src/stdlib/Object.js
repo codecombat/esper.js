@@ -240,4 +240,6 @@ class ObjectObject extends EasyObjectValue {
 	toNativeCounterpart() { return Object; }
 }
 
+ObjectObject.prototype.wellKnownName = '%Object%';
+
 module.exports = ObjectObject;

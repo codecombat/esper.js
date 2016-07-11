@@ -39,7 +39,9 @@ program
 
 let engine = new Engine({
 	strict: !!program.strict,
-	debug: !!program.debug
+	debug: !!program.debug,
+	addInternalStack: !!program.debug
+
 });
 
 
