@@ -30,6 +30,12 @@ class EsperObject extends EasyObjectValue {
 		return scope.object;
 	}
 
+	static *pickle(thiz,  args, scope, extra) {
+		let d = scope.realm.dehydrate(args[0]);
+		let dj = JSON.stringify(d, null, '  ');
+		return Value.fromNative(dj);
+	}
+
 
 }
 

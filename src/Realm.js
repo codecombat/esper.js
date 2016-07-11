@@ -222,6 +222,22 @@ class Realm {
 
 	}
 
+	lookupWellKnownByName(v) {
+		switch ( v ) {
+			case '%Object%':  return this.Object;
+			case '%ObjectPrototype%':  return this.ObjectPrototype;
+			case '%Function%':  return this.Function;
+			case '%FunctionPrototype%':  return this.FunctionPrototype;
+			case '%Math%':  return this.Math;
+			case '%Number%':  return this.Number;
+			case '%NumberPrototype%':  return this.NumberPrototype;
+			case '%Array%':  return this.Array;
+			case '%ArrayPrototype%':  return this.ArrayPrototype;
+			case '%RegExp%':  return this.RegExp;
+			case '%RegExpPrototype%':  return this.RegExpPrototype;
+		}
+	}
+
 	valueFromNative(native) {
 		return Value.fromNative(native, this);
 	}
@@ -261,6 +277,42 @@ class Realm {
 
 		//this.importCache.set(native, result);
 		return result;
+	}
+
+	dehydrate(value) {
+		let state = {
+			refrences: {},
+		};
+
+		let val = this._dehydrate(value, state);
+		return {root: val, refrences: state.refrences};
+
+	}
+
+	_dehydrate(value, state) {
+		if ( value instanceof PrimitiveValue ) return {'$v': value.native};
+		if ( value === Value.null ) return {'$t': 'null'};
+		if ( value === Value.undef ) return {'$t': 'undefined'};
+		if ( value.wellKnownName ) return {'$s': value.wellKnownName};
+		if ( !(value.serial in state.refrences) ) {
+			let ref = {
+				'$t': value.isCallable ? 'function' : 'object',
+				'prop': {}
+			};
+			state.refrences[value.serial] = ref;
+			ref.proto = this._dehydrate(value.getPrototype(this) || Value.null, state);
+			for ( let k in value.properties ) {
+				if ( !Object.prototype.hasOwnProperty.call(value.properties, k) ) continue;
+				let prop = value.properties[k];
+				ref.prop[k] = {
+					v: this._dehydrate(prop.value, state),
+					e: prop.enumerable && undefined,
+					w: prop.writable && undefined,
+					c: prop.configurable && undefined
+				};
+			}
+		}
+		return {'$ref': value.serial};
 	}
 }
 
