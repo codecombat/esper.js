@@ -29,8 +29,6 @@ class EsperObject extends EasyObjectValue {
 	static *scope$cew(thiz, args, scope, extra) {
 		return scope.object;
 	}
-
-
 }
 
 

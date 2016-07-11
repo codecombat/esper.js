@@ -205,6 +205,22 @@ class Realm {
 
 	}
 
+	lookupWellKnownByName(v) {
+		switch ( v ) {
+			case '%Object%':  return this.Object;
+			case '%ObjectPrototype%':  return this.ObjectPrototype;
+			case '%Function%':  return this.Function;
+			case '%FunctionPrototype%':  return this.FunctionPrototype;
+			case '%Math%':  return this.Math;
+			case '%Number%':  return this.Number;
+			case '%NumberPrototype%':  return this.NumberPrototype;
+			case '%Array%':  return this.Array;
+			case '%ArrayPrototype%':  return this.ArrayPrototype;
+			case '%RegExp%':  return this.RegExp;
+			case '%RegExpPrototype%':  return this.RegExpPrototype;
+		}
+	}
+
 	valueFromNative(native) {
 		return Value.fromNative(native, this);
 	}
