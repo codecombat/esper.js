@@ -28,6 +28,7 @@ class Evaluator {
 		this.yieldPower = this.defaultYieldPower;
 		this.debug = false;
 		this.profile = false;
+		this.lastASTNodeProcessed = null;
 		/**
 		 * @type {Object[]}
 		 * @property {Generator} generator
@@ -166,8 +167,7 @@ class Evaluator {
 						this.dumpProfilingInformation();
 					}
 					return {done: true, value: result.value};
-				}
-				else continue;
+				} else continue;
 			}
 		} while ( false );
 
@@ -202,7 +202,7 @@ class Evaluator {
 				let smallStack;
 				if ( e && e.stack ) smallStack = e.stack.split(/\n/).slice(0,4).join('\n');
 				let stk = this.buildStacktrace(e).join('\n    ');
-				var bestFrame = undefined;
+				let bestFrame;
 				for ( let i = 0; i < this.frames.length; ++i ) {
 					if ( this.frames[i].ast ) {
 						bestFrame = this.frames[i];
@@ -423,6 +423,7 @@ class Evaluator {
 	beforeNode(n) {
 		let tf = this.topFrame;
 		let state = {top: tf, ast: tf.ast, node: n};
+		this.lastASTNodeProcessed = n;
 		if ( this.debug ) this.incrCtr('astInvocationCount', n.type);
 		tf.ast = n;
 		return state;
