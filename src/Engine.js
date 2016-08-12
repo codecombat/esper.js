@@ -49,7 +49,7 @@ class Engine {
 	 * Evalute `code` and return a promise for the result.
 	 *
 	 * @access public
-	 * @param {string} code - String of code to evaulate
+	 * @param {string} code - String of code to evaluate
 	 * @return {Promise<Value>} - The result of execution, as a promise.
 	 */
 	eval(code) {
@@ -61,7 +61,7 @@ class Engine {
 	 * Evalute `code` and return a the result.
 	 *
 	 * @access public
-	 * @param {string} code - String of code to evaulate
+	 * @param {string} code - String of code to evaluate
 	 * @return {Value} - The result of execution
 	 */
 	evalSync(code) {

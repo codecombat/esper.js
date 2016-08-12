@@ -99,7 +99,7 @@ function *evaluateAssignmentExpression(e, n, s) {
 	return value;
 }
 
-function *evaulateBinaryExpression(e, n, s) {
+function *evaluateBinaryExpression(e, n, s) {
 	let left = yield * e.branch(n.left,s);
 	let right = yield * e.branch(n.right,s);
 	if ( e.yieldPower >= 4 ) yield EvaluatorInstruction.stepMinor;
@@ -417,7 +417,7 @@ function *evaluateLabeledStatement(e, n, s) {
 	return yield * e.branch(n.body, s);
 }
 
-function *evaulateLiteral(e, n, s) {
+function *evaluateLiteral(e, n, s) {
 	if ( e.yieldPower >= 5 ) yield EvaluatorInstruction.stepMinor;
 	if ( n.regex ) {
 		return RegExpValue.make(new RegExp(n.regex.pattern, n.regex.flags), s.realm);
@@ -618,7 +618,7 @@ function *evaluateUpdateExpression(e, n, s) {
 	return old;
 }
 
-function *evaulateUnaryExpression(e, n, s) {
+function *evaluateUnaryExpression(e, n, s) {
 	if ( e.yieldPower >= 4 ) yield EvaluatorInstruction.stepMajor;
 	if ( n.operator === 'delete' ) {
 		if ( n.argument.type !== 'MemberExpression' && n.argument.type !== 'Identifier' ) {
@@ -697,7 +697,7 @@ function findNextStep(type) {
 		case 'ArrayExpression': return evaluateArrayExpression;
 		case 'ArrowFunctionExpression': return evaluateFunctionExpression;
 		case 'AssignmentExpression': return evaluateAssignmentExpression;
-		case 'BinaryExpression': return evaulateBinaryExpression;
+		case 'BinaryExpression': return evaluateBinaryExpression;
 		case 'BreakStatement': return evaluateBreakStatement;
 		case 'BlockStatement': return evaluateBlockStatement;
 		case 'CallExpression': return evaluateCallExpression;
@@ -717,7 +717,7 @@ function findNextStep(type) {
 		case 'Identifier': return evaluateIdentifier;
 		case 'IfStatement': return evaluateIfStatement;
 		case 'LabeledStatement': return evaluateLabeledStatement;
-		case 'Literal': return evaulateLiteral;
+		case 'Literal': return evaluateLiteral;
 		case 'LogicalExpression': return evaluateLogicalExpression;
 		case 'MemberExpression': return evaluateMemberExpression;
 		case 'NewExpression': return evaluateCallExpression;
@@ -729,7 +729,7 @@ function findNextStep(type) {
 		case 'ThisExpression': return evaluateThisExpression;
 		case 'ThrowStatement': return evaluateThrowStatement;
 		case 'TryStatement': return evaluateTryStatement;
-		case 'UnaryExpression': return evaulateUnaryExpression;
+		case 'UnaryExpression': return evaluateUnaryExpression;
 		case 'UpdateExpression': return evaluateUpdateExpression;
 		case 'VariableDeclaration': return evaluateVariableDeclaration;
 		case 'WhileStatement': return evaluateWhileStatement;
@@ -740,4 +740,3 @@ function findNextStep(type) {
 }
 
 module.exports = findNextStep;
-
