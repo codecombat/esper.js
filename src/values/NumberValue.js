@@ -17,9 +17,6 @@ class NumberValue extends PrimitiveValue {
 			let on = yield * other.toNumberValue();
 			return yield * this.doubleEquals(on);
 		}
-
-		return Value.false;
-
 	}
 
 	*add(other) { return this.fromNative(this.native + (yield * other.toPrimitiveNative())); }
