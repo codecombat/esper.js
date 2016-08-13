@@ -40,7 +40,6 @@ class ObjectValue extends Value {
 		var existing = this.properties[name];
 		let thiz = this;
 
-		let get;
 		if ( existing ) {
 			return new ObjRefrence(this, name, ctxthis);
 		} else {
@@ -58,7 +57,6 @@ class ObjectValue extends Value {
 
 	//Note: Returns generator by tailcall.
 	set(name, value, s, extra) {
-		let thiz = this;
 		extra = extra || {};
 		if ( !Object.prototype.hasOwnProperty.call(this.properties, name) ) {
 			if ( !this.extensable ) {
@@ -186,7 +184,7 @@ class ObjectValue extends Value {
 		return Value.false;
 	}
 
-	*observableProperties(realm) {
+	*observableProperties(/* realm */) {
 		for ( let p in this.properties ) {
 			if ( !this.properties[p].enumerable ) continue;
 			yield this.fromNative(p);
@@ -283,7 +281,7 @@ class ObjectValue extends Value {
 		return yield * prim.toNumberValue();
 	}
 
-	*toObjectValue(realm) { return this; }
+	*toObjectValue(/* realm */) { return this; }
 
 	*toStringValue() {
 		let prim = yield * this.toPrimitiveValue('string');

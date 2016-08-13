@@ -2,7 +2,6 @@
 /* @flow */
 
 const Value = require('../Value');
-const CompletionRecord = require('../CompletionRecord');
 let StringValue;
 
 /**
@@ -31,8 +30,8 @@ class PrimitiveValue extends Value {
 		return yield * this.derivePrototype(realm).get(what, realm);
 	}
 
-	*set(what, to, realm) {
-		//Can't set primative properties.
+	*set(/* what, to, realm */) {
+		// Can't set primitive properties.
 	}
 
 
@@ -83,7 +82,7 @@ class PrimitiveValue extends Value {
 	*add(other) { return this.fromNative(this.native + (yield * other.toPrimitiveNative())); }
 
 	*inOperator(other) { return this.fromNative(this.native in other.toNative()); }
-	*instanceOf(other) { return Value.false; }
+	*instanceOf(/* other */) { return Value.false; }
 
 	*unaryPlus() { return this.fromNative(+this.native); }
 	*unaryMinus() { return this.fromNative(-this.native); }
@@ -116,7 +115,7 @@ class PrimitiveValue extends Value {
 		return typeof this.native;
 	}
 
-	*toPrimitiveValue(preferedType) { return this; }
+	*toPrimitiveValue(/* preferedType */) { return this; }
 	*toStringValue() {
 		if ( typeof this.native === 'string' ) return this;
 		return this.fromNative(String(this.native));
@@ -132,5 +131,3 @@ class PrimitiveValue extends Value {
 module.exports = PrimitiveValue;
 
 StringValue = require('./StringValue');
-
-

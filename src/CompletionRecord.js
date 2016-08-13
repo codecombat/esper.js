@@ -1,7 +1,5 @@
 'use strict';
 
-let Value = require('./Value');
-
 class CompletionRecord {
 	constructor(type, value, target) {
 		if ( value === undefined ) {
@@ -63,5 +61,3 @@ CompletionRecord.BREAK = 1;
 CompletionRecord.CONTINUE = 2;
 CompletionRecord.RETURN = 3;
 CompletionRecord.THROW = 4;
-
-

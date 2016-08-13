@@ -4,7 +4,7 @@ const EasyObjectValue = require('../values/EasyObjectValue');
 const Value = require('../Value');
 
 class BooleanPrototype extends EasyObjectValue {
-	static *toString$e(thiz, argz) {
+	static *toString$e(thiz/* , args */) {
 		if ( thiz.primativeValue.truthy ) return Value.fromNative('true');
 		else return Value.fromNative('false');
 	}

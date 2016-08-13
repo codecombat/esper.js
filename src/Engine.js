@@ -2,11 +2,9 @@
 
 const Evaluator = require('./Evaluator');
 const Realm = require('./Realm');
-const Scope = require('./Scope');
 const Value = require('./Value');
 const BridgeValue = require('./values/BridgeValue');
 const ASTPreprocessor = require('./ASTPreprocessor');
-const FutureValue = require('./values/FutureValue');
 const EasyNativeFunction = require('./values/EasyNativeFunction');
 const ClosureValue = require('./values/ClosureValue');
 
@@ -262,7 +260,6 @@ class Engine {
 	 */
 	fork() {
 		let engine = new Engine(this.options);
-		var scope = this.globalScope;
 
 		engine.realm = this.realm;
 

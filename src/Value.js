@@ -7,7 +7,7 @@ const GenDash = require('./GenDash');
 let undef, nil, tru, fals, nan, emptyString, zero, one, negone, negzero, smallIntValues;
 let cache = new WeakMap();
 let bookmarks = new WeakMap();
-let ObjectValue, PrimitiveValue, StringValue, NumberValue, BridgeValue, Evaluator;
+let ObjectValue, PrimitiveValue, StringValue, NumberValue, BridgeValue;
 
 
 
@@ -143,7 +143,6 @@ class Value {
 
 	static createNativeBookmark(v, realm) {
 		var out;
-		let thiz = this;
 		if ( typeof v.call === 'function' ) {
 			switch ( realm.options.bookmarkInvocationMode ) {
 				case 'loop':
@@ -286,7 +285,7 @@ class Value {
 	 * @param {Realm} realm - The realm to use when creating resuls.
 	 * @returns {Value}
 	 */
-	*tripleEquals(other, realm) {
+	*tripleEquals(other/* , realm */) {
 		return other === this ? Value.true : Value.false;
 	}
 
@@ -406,7 +405,7 @@ class Value {
 		return nv.native;
 	}
 
-	*toPrimitiveValue(preferedType) { throw new Error('Unimplemented: Value#toPrimitiveValue'); }
+	*toPrimitiveValue(/* preferedType */) { throw new Error('Unimplemented: Value#toPrimitiveValue'); }
 	*toPrimitiveNative(preferedType) { return (yield * this.toPrimitiveValue(preferedType)).native; }
 
 	/**

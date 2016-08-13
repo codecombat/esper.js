@@ -1,7 +1,6 @@
 'use strict';
 
 const Value = require('../Value');
-const CompletionRecord = require('../CompletionRecord');
 
 const EasyObjectValue = require('../values/EasyObjectValue');
 

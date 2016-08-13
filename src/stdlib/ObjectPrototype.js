@@ -5,6 +5,7 @@ const EasyObjectValue = require('../values/EasyObjectValue');
 const Value = require('../Value');
 const NullValue = require('../values/NullValue');
 const UndefinedValue = require('../values/UndefinedValue');
+const CompletionRecord = require('../CompletionRecord');
 
 class ObjectPrototype extends EasyObjectValue {
 	constructor(realm) {
@@ -42,13 +43,13 @@ class ObjectPrototype extends EasyObjectValue {
 	}
 	static *toLocaleString$e(thiz, args) { return yield * ObjectPrototype.toString$e(thiz, args); }
 
-	static *toString$e(thiz, args) {
+	static *toString$e(thiz/* , args */) {
 		if ( thiz instanceof UndefinedValue ) return this.fromNative('[object Undefined]');
 		if ( thiz instanceof NullValue ) return this.fromNative('[object Null]');
 		return this.fromNative('[object ' + thiz.clazz + ']');
 	}
 
-	static *valueOf$e(thiz, args) {
+	static *valueOf$e(thiz/* , args */) {
 		if ( thiz.specTypeName === 'object' ) return thiz;
 		//TODO: Need to follow the ToObject() conversion
 		return thiz;

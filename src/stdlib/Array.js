@@ -1,7 +1,6 @@
 'use strict';
 
 const EasyObjectValue = require('../values/EasyObjectValue');
-const ObjectValue = require('../values/ObjectValue');
 const ArrayValue = require('../values/ArrayValue');
 
 class ArrayObject extends EasyObjectValue {

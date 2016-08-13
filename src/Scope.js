@@ -30,7 +30,6 @@ class Scope {
 	ref(name) {
 		var vhar = this.object.properties[name];
 		if (!vhar) return undefined;
-		var that = this;
 		var o = {
 			setValue: vhar.setValue.bind(vhar, this),
 			getValue: vhar.getValue.bind(vhar, this),

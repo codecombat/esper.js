@@ -54,7 +54,7 @@ class LinkValue extends Value {
 		return out;
 	}
 
-	*set(name, value, s, extra) {
+	*set(name, value/* , s, extra */) {
 		this.native[name] = value.toNative();
 	}
 
@@ -110,7 +110,7 @@ class LinkValue extends Value {
 	}
 
 
-	*observableProperties(realm) {
+	*observableProperties(/* realm */) {
 		for ( let p in this.native ) {
 			yield this.makeLink(p);
 		}

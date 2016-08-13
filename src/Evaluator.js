@@ -2,13 +2,7 @@
 
 const Value = require('./Value');
 const CompletionRecord = require('./CompletionRecord');
-const ClosureValue = require('./values/ClosureValue');
-const ObjectValue = require('./values/ObjectValue');
-const FutureValue = require('./values/FutureValue');
-const RegExpValue = require('./values/RegExpValue');
-const PropertyDescriptor = require('./values/PropertyDescriptor');
 const ErrorValue = require('./values/ErrorValue');
-const ArrayValue = require('./values/ArrayValue');
 const EvaluatorInstruction = require('./EvaluatorInstruction');
 
 class Frame {
@@ -21,7 +15,6 @@ class Frame {
 class Evaluator {
 	constructor(realm, n, s) {
 		this.realm = realm;
-		let that = this;
 		this.lastValue = null;
 		this.ast = n;
 		this.defaultYieldPower = 5;
@@ -40,7 +33,6 @@ class Evaluator {
 	}
 
 	pushAST(n, s) {
-		let that = this;
 		let gen = n ? this.branch(n,s) : (function*() {
 			return yield EvaluatorInstruction.stepMinor;
 		})();
@@ -243,10 +235,6 @@ class Evaluator {
 					this.lastValue = val;
 					return true;
 				}
-				let line = -1;
-				if ( this.topFrame.ast && this.topFrame.ast.attr) {
-					line = this.topFrame.ast.attr.pos.start_line;
-				}
 				//console.log(this.buildStacktrace(val.value.toNative()));
 				throw val.value.toNative();
 			case CompletionRecord.NORMAL:
@@ -280,7 +268,6 @@ class Evaluator {
 	}
 
 	saveFrameShortcuts() {
-		let prev = this.yieldPower;
 		if ( this.frames.length == 0 ) {
 			this.topFrame = undefined;
 			this.yieldPower = this.defaultYieldPower;

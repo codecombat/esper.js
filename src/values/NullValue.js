@@ -9,7 +9,7 @@ class NullValue extends EmptyValue {
 	get jsTypeName() { return 'object'; }
 	get specTypeName() { return 'null'; }
 
-	*tripleEquals(other, realm) {
+	*tripleEquals(other/* , realm */) {
 		return other instanceof NullValue ? Value.true : Value.false;
 	}
 
@@ -17,7 +17,7 @@ class NullValue extends EmptyValue {
 		return 'null';
 	}
 
-	*toPrimitiveValue(preferedType) { return this; }
+	*toPrimitiveValue(/* preferedType */) { return this; }
 	*toNumberValue() { return Value.zero; }
 	*toStringValue() { return Value.fromNative('null'); }
 

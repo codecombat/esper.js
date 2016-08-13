@@ -2,11 +2,8 @@
 
 const EasyObjectValue = require('../values/EasyObjectValue');
 const ObjectValue = require('../values/ObjectValue');
-const ArrayValue = require('../values/ArrayValue');
-const PrimitiveValue = require('../values/PrimitiveValue');
 const EmptyValue = require('../values/EmptyValue');
 const ErrorValue = require('../values/ErrorValue');
-const CompletionRecord = require('../CompletionRecord');
 const PropertyDescriptor = require('../values/PropertyDescriptor');
 const Value = require('../Value');
 
@@ -53,7 +50,7 @@ class ErrorObject extends EasyObjectValue {
 		return this.makeOne();
 	}
 
-	*call(thiz, args, s, e) {
+	*call(thiz, args, s/* , e */) {
 
 		if ( thiz instanceof EmptyValue ) {
 			thiz = this.makeOne();
@@ -90,4 +87,3 @@ class ErrorObject extends EasyObjectValue {
 ErrorObject.prototype.wellKnownName = '%Error%';
 
 module.exports = ErrorObject;
-

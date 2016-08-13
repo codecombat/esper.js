@@ -1,7 +1,6 @@
 'use strict';
 
 
-const PrimitiveValue = require('./PrimitiveValue');
 const ObjectValue = require('./ObjectValue');
 const Value = require('../Value');
 

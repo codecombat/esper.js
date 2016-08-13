@@ -1,9 +1,7 @@
 'use strict';
 
 
-const PrimitiveValue = require('./PrimitiveValue');
 const ObjectValue = require('./ObjectValue');
-const Value = require('../Value');
 const EvaluatorInstruction = require('../EvaluatorInstruction');
 
 class ErrorInstance extends ObjectValue {
@@ -39,9 +37,8 @@ class ErrorInstance extends ObjectValue {
 		if ( !this.realm.options.extraErrorInfo ) return;
 		let evaluator = yield EvaluatorInstruction.getEvaluator();
 		if ( evaluator ) {
-			let scope = evaluator.topFrame.scope;
-			let ast = extra.ast = evaluator.topFrame.ast;
-			extra.scope = scope;
+			let scope = extra.scope = evaluator.topFrame.scope;
+			extra.ast = evaluator.topFrame.ast;
 
 			if ( extra.ast.loc ) {
 				extra.line = extra.ast.loc.start.line;

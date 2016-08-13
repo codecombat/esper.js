@@ -95,15 +95,15 @@ class JSONObject extends EasyObjectValue {
 		}
 	}
 
-	static *stringify(thiz, args, s) {
+	static *stringify(thiz, args/* , s */) {
 		let arr = [];
 		let v = Value.undef;
-		let replacer = null;
+		// let replacer = null;
 		let str;
 		let strincr;
 
 		if ( args.length > 0 ) v = args[0];
-		if ( args.length > 1 ) replacer = args[1];
+		// if ( args.length > 1 ) replacer = args[1];
 		if ( args.length > 2 ) {
 			str = '';
 			if ( args[2].jsTypeName === 'number' ) {

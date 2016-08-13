@@ -178,9 +178,9 @@ class ASTPreprocessor {
 	}
 
 	log() {
-		let str = Array.prototype.join.call(arguments, ', ');
-		let indent = new Array(this.depth).join('  ');
-		//console.log(indent + str);
+		// let str = Array.prototype.join.call(arguments, ', ');
+		// let indent = new Array(this.depth).join('  ');
+		// console.log(indent + str);
 	}
 
 	enter(a) {
@@ -340,7 +340,7 @@ class ASTPreprocessor {
 
 	exitProgram(a) {
 		this.scopeStack.shift();
-		var vars = this.varStack.shift();
+		this.varStack.shift();
 		//this.log("VARS:", Object.getOwnPropertyNames(a.vars).join(', '));
 	}
 

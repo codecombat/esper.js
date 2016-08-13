@@ -1,5 +1,4 @@
 'use strict';
-const EmptyValue = require('./EmptyValue');
 const Value = require('../Value');
 
 function defer() {

@@ -4,10 +4,8 @@ const Value = require('./Value');
 const CompletionRecord = require('./CompletionRecord');
 const ClosureValue = require('./values/ClosureValue');
 const ObjectValue = require('./values/ObjectValue');
-const FutureValue = require('./values/FutureValue');
 const RegExpValue = require('./values/RegExpValue');
 const PropertyDescriptor = require('./values/PropertyDescriptor');
-const ErrorValue = require('./values/ErrorValue');
 const ArrayValue = require('./values/ArrayValue');
 const EvaluatorInstruction = require('./EvaluatorInstruction');
 
@@ -115,7 +113,7 @@ function *evaluateBlockStatement(e, n, s) {
 }
 
 
-function *evaluateBreakStatement(e, n, s) {
+function *evaluateBreakStatement(e, n/* , s */) {
 	let label = n.label ? n.label.name : undefined;
 	if ( e.yieldPower >= 1 ) yield EvaluatorInstruction.stepMinor;
 	return new CompletionRecord(CompletionRecord.BREAK, Value.undef, label);
@@ -255,7 +253,7 @@ function *evaluateConditionalExpression(e, n, s) {
 }
 
 
-function *evaluateContinueStatement(e, n, s) {
+function *evaluateContinueStatement(e, n/* , s */) {
 	let label = n.label ? n.label.name : undefined;
 	let val = new CompletionRecord(CompletionRecord.CONTINUE, Value.undef, label);
 	if ( e.yieldPower >= 1 ) yield EvaluatorInstruction.stepMinor;
@@ -263,22 +261,21 @@ function *evaluateContinueStatement(e, n, s) {
 }
 
 function *evaluateDoWhileStatement(e, n, s) {
-	let last = Value.undef;
 	let that = e;
 	var gen = function*() {
 		do {
-			last = yield that.branchFrame('continue', n.body, s, {label: n.label});
+			yield that.branchFrame('continue', n.body, s, {label: n.label});
 		} while ( (yield * that.branch(n.test,s)).truthy );
 	};
 	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepMinor;
 	e.pushFrame({generator: gen(), type: 'loop', label: n.label, ast: n});
 
 
-	let finished = yield EvaluatorInstruction.waitForFramePop;
+	yield EvaluatorInstruction.waitForFramePop;
 	return Value.undef;
 }
 
-function *evaluateEmptyStatement(e, n, s) {
+function *evaluateEmptyStatement(e/* , n, s */) {
 	if ( e.yieldPower >= 5 ) yield EvaluatorInstruction.stepMinor;
 	return Value.undef;
 }
@@ -317,15 +314,14 @@ function *evaluateIfStatement(e, n, s) {
 function* genForLoop(e, n, s) {
 	let test = Value.true;
 	if ( n.test ) test = yield * e.branch(n.test,s);
-	let last = Value.undef;
 	while ( test.truthy ) {
 		e.topFrame.ast = n;
 		if ( e.yieldPower > 0 ) yield EvaluatorInstruction.eventLoopBodyStart;
-		last = yield e.branchFrame('continue', n.body, s, {label: n.label});
+		yield e.branchFrame('continue', n.body, s, {label: n.label});
 		if ( n.update ) yield * e.branch(n.update,s);
 		if ( n.test ) test = yield * e.branch(n.test,s);
 	}
-};
+}
 
 function *evaluateForStatement(e, n, s) {
 	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepStatement;
@@ -334,13 +330,12 @@ function *evaluateForStatement(e, n, s) {
 	e.pushFrame({generator: genForLoop(e, n, s), type: 'loop', label: n.label, ast: n});
 
 
-	let finished = yield EvaluatorInstruction.waitForFramePop;
+	yield EvaluatorInstruction.waitForFramePop;
 	return Value.undef;
 }
 
 function *evaluateForInStatement(e, n, s) {
 	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepStatement;
-	let last = Value.undef;
 	let object = yield * e.branch(n.right,s);
 	let names = object.observableProperties(s.realm);
 	let that = e;
@@ -356,20 +351,20 @@ function *evaluateForInStatement(e, n, s) {
 	var gen = function*() {
 		for ( let name of names ) {
 			yield * ref.setValue(name);
-			last = yield that.branchFrame('continue', n.body, s, {label: n.label});
+			yield that.branchFrame('continue', n.body, s, {label: n.label});
 		}
 	};
 	e.pushFrame({generator: gen(), type: 'loop', label: n.label, ast: n});
 
 
-	let finished = yield EvaluatorInstruction.waitForFramePop;
+	yield EvaluatorInstruction.waitForFramePop;
 	return Value.undef;
 }
 
 //TODO: For of does more crazy Symbol iterator stuff
 function *evaluateForOfStatement(e, n, s) {
 	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepStatement;
-	let last = Value.undef;
+	Value.undef;
 	let object = yield * e.branch(n.right,s);
 	let names = object.observableProperties(s.realm);
 	let that = e;
@@ -385,13 +380,13 @@ function *evaluateForOfStatement(e, n, s) {
 	var gen = function*() {
 		for ( let name of names ) {
 			yield * ref.setValue(yield * object.get(yield * name.toStringNative()));
-			last = yield that.branchFrame('continue', n.body, s, {label: n.label});
+			yield that.branchFrame('continue', n.body, s, {label: n.label});
 		}
 	};
 	e.pushFrame({generator: gen(), type: 'loop', label: n.label});
 
 
-	let finished = yield EvaluatorInstruction.waitForFramePop;
+	yield EvaluatorInstruction.waitForFramePop;
 	return Value.undef;
 }
 
@@ -565,7 +560,7 @@ function *evaluateSwitchStatement(e, n, s) {
 	};
 
 	e.pushFrame({generator: genSwitch(e, n), type: 'loop', label: n.label});
-	let finished = yield EvaluatorInstruction.waitForFramePop;
+	yield EvaluatorInstruction.waitForFramePop;
 
 	return last;
 }
@@ -671,18 +666,18 @@ function *evaluateVariableDeclaration(e, n, s) {
 }
 
 function* genWhileLoop(e, n, s) {
-	let last = Value.undef;
+	Value.undef;
 	while ( (yield * e.branch(n.test,s)).truthy ) {
 		e.topFrame.ast = n;
 		if ( e.yieldPower > 0 ) yield EvaluatorInstruction.eventLoopBodyStart;
-		last = yield e.branchFrame('continue', n.body, s);
+		yield e.branchFrame('continue', n.body, s);
 	}
 }
 
 function *evaluateWhileStatement(e, n, s) {
 	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepMajor;
 	e.pushFrame({generator: genWhileLoop(e, n, s), type: 'loop', label: n.label, ast: n});
-	let finished = yield EvaluatorInstruction.waitForFramePop;
+	yield EvaluatorInstruction.waitForFramePop;
 	return Value.undef;
 }
 
@@ -740,4 +735,3 @@ function findNextStep(type) {
 }
 
 module.exports = findNextStep;
-

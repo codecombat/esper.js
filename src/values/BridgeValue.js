@@ -86,7 +86,7 @@ class BridgeValue extends Value {
 		this.native[name] = value.toNative();
 	}
 
-	*observableProperties(realm) {
+	*observableProperties(/* realm */) {
 		for ( let p in this.native ) {
 			yield this.makeBridge(p);
 		}

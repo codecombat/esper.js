@@ -93,7 +93,7 @@ class FunctionPrototype extends EasyObjectValue {
 
 	}
 
-	*call(thiz, args, s) {
+	*call(/* thiz, args, s */) {
 		return EasyObjectValue.undef;
 	}
 

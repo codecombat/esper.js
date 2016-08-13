@@ -5,7 +5,7 @@ const Value = require('../Value');
 class UndefinedValue extends EmptyValue {
 	toNative() { return undefined; }
 	get jsTypeName() { return 'undefined'; }
-	*tripleEquals(other, realm) {
+	*tripleEquals(other/* , realm */) {
 		return other instanceof UndefinedValue ? Value.true : Value.false;
 	}
 
@@ -15,7 +15,7 @@ class UndefinedValue extends EmptyValue {
 		return 'undefined';
 	}
 
-	*toPrimitiveValue(preferedType) { return this; }
+	*toPrimitiveValue(/* preferedType */) { return this; }
 	*toNumberValue() { return Value.nan; }
 	*toStringValue() { return Value.fromNative('undefined'); }
 

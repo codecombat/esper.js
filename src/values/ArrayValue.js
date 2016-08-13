@@ -1,10 +1,8 @@
 'use strict';
 
 
-const PrimitiveValue = require('./PrimitiveValue');
 const ObjectValue = require('./ObjectValue');
 const Value = require('../Value');
-let NumberValue;
 
 
 class ArrayValue extends ObjectValue {
@@ -80,5 +78,3 @@ class ArrayValue extends ObjectValue {
 ArrayValue.prototype.clazz = 'Array';
 
 module.exports = ArrayValue;
-
-NumberValue = require('./NumberValue');

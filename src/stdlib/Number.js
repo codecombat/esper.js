@@ -1,7 +1,6 @@
 'use strict';
 
 const EasyObjectValue = require('../values/EasyObjectValue');
-const CompletionRecord = require('../CompletionRecord');
 
 
 class NumberObject extends EasyObjectValue {
@@ -29,4 +28,3 @@ class NumberObject extends EasyObjectValue {
 
 NumberObject.prototype.wellKnownName = '%Number%';
 module.exports = NumberObject;
-

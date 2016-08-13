@@ -1,7 +1,6 @@
 'use strict';
 
 const EasyObjectValue = require('../values/EasyObjectValue');
-const ObjectValue = require('../values/ObjectValue');
 const ArrayValue = require('../values/ArrayValue');
 const PrimitiveValue = require('../values/PrimitiveValue');
 const CompletionRecord = require('../CompletionRecord');
@@ -47,11 +46,6 @@ function *shiftLeft(arr, start, amt) {
 class ArrayPrototype extends EasyObjectValue {
 
 	static *concat$e(thiz, args, s) {
-		let fx = Value.undef;
-		let targ = Value.undef;
-		if ( args.length > 0 ) fx = args[0];
-		if ( args.length > 1 ) targ = args[1];
-
 		var out = [];
 		var toCopy = [thiz].concat(args);
 
@@ -168,7 +162,7 @@ class ArrayPrototype extends EasyObjectValue {
 		for ( let i = 0; i < l; ++i ) {
 			if ( !thiz.has(i) ) continue;
 			let v = yield * thiz.get(i);
-			let res = yield * fx.call(targ, [v, Value.fromNative(i), thiz], s);
+			yield * fx.call(targ, [v, Value.fromNative(i), thiz], s);
 		}
 
 		return Value.undef;
@@ -255,7 +249,7 @@ class ArrayPrototype extends EasyObjectValue {
 		return Value.fromNative(l + args.length);
 	}
 
-	static *pop$e(thiz, args) {
+	static *pop$e(thiz/* , args */) {
 		yield * forceArrayness(thiz);
 		let l = yield * getLength(thiz);
 		if ( l < 1 ) return Value.undef;
@@ -330,7 +324,7 @@ class ArrayPrototype extends EasyObjectValue {
 		return acc;
 	}
 
-	static *shift$e(thiz, args) {
+	static *shift$e(thiz/* , args */) {
 		yield * forceArrayness(thiz);
 		let l = yield * getLength(thiz);
 		if ( l < 1 ) return Value.undef;
@@ -369,9 +363,6 @@ class ArrayPrototype extends EasyObjectValue {
 
 	static *splice$e(thiz, args, s) {
 		//TODO: Call ToObject() on thisz;
-
-
-		let result = [];
 
 
 		let deleteCount;
@@ -474,4 +465,3 @@ class ArrayPrototype extends EasyObjectValue {
 ArrayPrototype.prototype.wellKnownName = '%ArrayPrototype%';
 
 module.exports = ArrayPrototype;
-

@@ -3,13 +3,9 @@
 const EasyObjectValue = require('../values/EasyObjectValue');
 const Value = require('../Value');
 
-function makeNumber(num) {
-	return 0 + num.toNative();
-}
-
 function wrapMathFunction(name) {
 	let fn = Math[name];
-	return function*(thiz, args, realm) {
+	return function*(thiz, args/* , realm */) {
 		let length = args.length;
 		let argz = new Array(length);
 		for ( let i = 0; i < length; ++i ) {

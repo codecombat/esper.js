@@ -1,7 +1,6 @@
 'use strict';
 
 const EasyObjectValue = require('../values/EasyObjectValue');
-const CompletionRecord = require('../CompletionRecord');
 const PropertyDescriptor = require('../values/PropertyDescriptor');
 
 class StringObject extends EasyObjectValue {

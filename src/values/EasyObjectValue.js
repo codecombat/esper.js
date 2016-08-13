@@ -4,7 +4,6 @@
 const Value = require('../Value');
 const PropertyDescriptor = require('./PropertyDescriptor');
 const ObjectValue = require('./ObjectValue');
-const CompletionRecord = require('../CompletionRecord');
 const EasyNativeFunction = require('./EasyNativeFunction');
 
 class EasyObjectValue extends ObjectValue {

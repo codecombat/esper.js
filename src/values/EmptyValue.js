@@ -19,7 +19,7 @@ class EmptyValue extends Value {
 		else return Value.false;
 	}
 
-	*observableProperties(realm) {
+	*observableProperties(/* realm */) {
 		return;
 	}
 
