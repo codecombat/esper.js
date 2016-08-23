@@ -77,4 +77,16 @@ describe('Extra Error Info', () => {
 			expect(e.ast.type).to.equal('CallExpression');
 		}
 	});
+
+	it('Change an added global const', () => {
+		var engine = new Engine({extraErrorInfo: true, strict: true});
+		engine.addGlobalValue("pi", 3.14, {const: true});
+		try {
+			engine.evalSync('pi = 3;');
+			expct(false).to.equal(true);
+		} catch ( e ) {
+			expect(e.name).to.equal('TypeError');
+		}
+		expect(engine.globalScope.get('pi').toNative()).to.equal(3.14);
+	});
 })

@@ -157,21 +157,24 @@ class Engine {
 		return this.realm.globalScope;
 	}
 
-	addGlobal(name, what) {
-		this.globalScope.add(name, this.realm.makeForForeignObject(what));
+	addGlobal(name, what, opts) {
+		opts = opts || {};
+		if ( !(what instanceof Value) ) what = this.realm.makeForForeignObject(what);
+		if ( !opts.const ) this.globalScope.add(name, what);
+		else this.globalScope.addConst(name, what);
 	}
 
-	addGlobalFx(name, what) {
+	addGlobalFx(name, what, opts) {
 		var x  = EasyNativeFunction.makeForNative(this.realm, what);
-		this.globalScope.add(name, x);
+		this.addGlobal(name, x, opts);
 	}
 
-	addGlobalValue(name, what) {
-		this.globalScope.add(name, Value.fromNative(what, this.realm));
+	addGlobalValue(name, what, opts) {
+		this.addGlobal(name, Value.fromNative(what, this.realm), opts);
 	}
 
-	addGlobalBridge(name, what) {
-		this.globalScope.add(name, new BridgeValue(what, this.realm));
+	addGlobalBridge(name, what, opts) {
+		this.addGlobal(name, new BridgeValue(what, this.realm), opts);
 	}
 
 	fetchFunctionSync(name, shouldYield) {
