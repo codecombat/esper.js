@@ -66,7 +66,10 @@ class ASTPreprocessor {
 			}
 			return o;
 		});
-		new ASTPreprocessor(nast, extra).start();
+
+		var options = extra || {};
+		var cbs = new EsperASTInstructions(ast, options);
+		new ASTPreprocessor(nast, extra).start(cbs);
 		return nast;
 	}
 
@@ -155,13 +158,25 @@ class ASTPreprocessor {
 	}
 
 
-	constructor(ast, options) {
-		this.options = options || {};
+	constructor(ast) {
 		this.ast = ast;
-		this.gen = ASTPreprocessor.walker(ast, this);
 	}
 
-	start() {
+	start(cbs) {
+		var gen = ASTPreprocessor.walker(this.ast, cbs);
+		for ( var x of gen ) {
+
+		}
+	}
+
+
+}
+ASTPreprocessor.ASTNode = ASTNode;
+
+class EsperASTInstructions {
+	constructor(ast, options) {
+		this.ast = ast;
+		this.options = options;
 		this.counter = 0;
 		this.depth = 0;
 
@@ -172,9 +187,6 @@ class ASTPreprocessor {
 		this.scopeStack = [globalScope];
 		this.varStack = [globalVars];
 		this.funcStack = [globalFuncs];
-		for ( var x of this.gen ) {
-
-		}
 	}
 
 	log() {

@@ -2,7 +2,6 @@
 
 const Scope = require('./Scope');
 const Value = require('./Value');
-const esprima = require('esprima');
 const CompletionRecord = require('./CompletionRecord');
 const ObjectValue = require('./values/ObjectValue');
 const PrimitiveValue = require('./values/PrimitiveValue.js');
@@ -86,23 +85,7 @@ class Realm {
 	}
 
 	parser(code, options) {
-		options = options || {};
-		let opts = {loc: true, range: true};
-		if ( options.inFunctionBody ) {
-			opts.tolerant = true;
-			opts.allowReturnOutsideFunction = true;
-		}
-
-		let ast = esprima.parse(code, opts);
-		let errors = [];
-		if ( ast.errors ) {
-			errors = ast.errors.filter((x) => {
-				if ( options.inFunctionBody && x.message === 'Illegal return statement' ) return false;
-			});
-		}
-		delete ast.errors;
-		if ( errors.length > 0 ) throw errors[0];
-		return ast;
+		throw new Error('No parser loaded.  Please load the lang-javascript plugin.');
 	}
 
 	constructor(options) {

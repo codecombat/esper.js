@@ -2,7 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var webpack = require('webpack');
 
-module.exports = function cfg(profile, opts) {
+module.exports = function configure(profile, opts) {
 	opts = opts || {};
 	var target;
 	var libraryTarget = 'umd';
@@ -79,6 +79,16 @@ module.exports = function cfg(profile, opts) {
 		fs.readFileSync(path.join(__dirname, 'LICENSE.txt'))
 	].join("\n"), {entryOnly: true});
 
+	var esper_plugins = require('./plugin-list.js');
+
+	var pluginFilter = new webpack.ContextReplacementPlugin(/plugins/, function(req) {
+		if ( req.request == '../plugins' ) {
+			var pll = esper_plugins.join('|');
+			req.regExp = new RegExp('(' + pll + ')\/index.js$','i');
+		}
+		console.log(req);
+	});
+
 	var cfg;
 	var parts = [opts.test ? 'esper-test' : 'esper'];
 	if ( profile != 'web' ) parts.push(profile);
@@ -104,7 +114,8 @@ module.exports = function cfg(profile, opts) {
 				},
 				{
 					test: /js$/,
-					include: [path.join(__dirname, 'src'),path.join(__dirname, 'test')],
+					include: [path.join(__dirname, 'src'),path.join(__dirname, 'test'),path.join(__dirname, 'plugins')],
+					exclude: /node_modules/,
 					loader: 'babel-loader',
 					query: {
 						plugins: plugins
@@ -113,7 +124,8 @@ module.exports = function cfg(profile, opts) {
 			]
 		},
 		plugins: [
-			banner
+			banner,
+			pluginFilter
 		],
 		resolve: { alias: {} },
 		target: target
@@ -143,7 +155,7 @@ module.exports = function cfg(profile, opts) {
 			test: /\.js$/,
 			include: [path.join(__dirname, 'contrib', 'test-suites', 'sandboxr')],
 			loader: 'babel-loader',
-			query: { plugins: plugins },
+			query: { plugins: plugins }
 		});
 		cfg.module.loaders.push({
 			test: /\.js$/,
