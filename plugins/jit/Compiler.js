@@ -4,11 +4,11 @@ const templates = require('./ASTemplates');
 const escodegen = require('escodegen');
 const FXGenerator = require('./FXGenerator');
 
-const Value = require('../Value');
-const CompletionRecord = require('../CompletionRecord');
-const ClosureValue = require('../values/ClosureValue');
-const EvaluatorInstruction = require('../EvaluatorInstruction');
-const EvaluatorHandlers = require('../EvaluatorHandlers');
+const Value = require('../../src/Value');
+const CompletionRecord = require('../../src/CompletionRecord');
+const ClosureValue = require('../../src/values/ClosureValue');
+const EvaluatorInstruction = require('../../src/EvaluatorInstruction');
+const EvaluatorHandlers = require('../../src/EvaluatorHandlers');
 
 class Compiler {
 	canCompile(n) {
