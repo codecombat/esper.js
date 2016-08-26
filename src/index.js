@@ -1,12 +1,15 @@
 'use strict';
 /* @flow */
 
-const Engine = require('./Engine');
+let Engine;
 
 function esper(opts) {
 	return new Engine(opts);
 }
+module.exports = esper;
 
+Engine = require('./Engine');
+esper.plugins = {};
 esper.Engine = Engine;
 esper.Value = require('./Value');
 esper.ASTPreprocessor = require('./ASTPreprocessor');
@@ -17,7 +20,7 @@ esper.eval = function(source) {
 };
 
 esper.version = require('../package.json').version;
-esper.plugins = {};
+
 
 esper.plugin = function(n) {
 	let pl;
@@ -27,8 +30,6 @@ esper.plugin = function(n) {
 	}
 	return esper.plugins[n];
 };
-
-module.exports = esper;
 
 var list = require('../plugin-list.js');
 for ( let pl of list ) esper.plugin(pl);

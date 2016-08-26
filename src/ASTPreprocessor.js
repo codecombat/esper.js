@@ -1,6 +1,6 @@
 'use strict';
-
-let compiler = new (require('./jit/Compiler'))();
+let esper = require('./index.js');
+let compiler;
 
 function invokeCB(o, name) {
 	if ( !(name in o ) ) return;
@@ -179,6 +179,11 @@ ASTPreprocessor.ASTNode = ASTNode;
 
 class EsperASTInstructions {
 	constructor(ast, options) {
+
+		if ( !compiler && esper.plugins['jit']) {
+			compiler = new (esper.plugins['jit'].Compiler)();
+		}
+
 		this.ast = ast;
 		this.options = options;
 		this.counter = 0;
@@ -352,7 +357,7 @@ class EsperASTInstructions {
 		this.funcStack.shift();
 		delete a.refs;
 
-		if ( this.options.compile === 'pre' && compiler.canCompile(a.body) ) {
+		if ( compiler && this.options.compile === 'pre' && compiler.canCompile(a.body) ) {
 			a.body.dispatch = compiler.compileNode(a.body);
 		}
 		//this.log("VARS:", Object.getOwnPropertyNames(a.vars).join(', '));
