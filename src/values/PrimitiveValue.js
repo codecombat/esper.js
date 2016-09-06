@@ -27,11 +27,11 @@ class PrimitiveValue extends Value {
 		return out;
 	}
 
-	*get(what, realm) {
-		return yield * this.derivePrototype(realm).get(what, realm);
+	*get(name, realm) {
+		return yield * this.derivePrototype(realm).get(name, realm, this);
 	}
 
-	*set(what, to, realm) {
+	*set(name, to, realm) {
 		//Can't set primative properties.
 	}
 
@@ -89,13 +89,6 @@ class PrimitiveValue extends Value {
 	*unaryMinus() { return this.fromNative(-this.native); }
 	*not() { return this.fromNative(!this.native); }
 
-
-
-	*get(name, realm) {
-		let pt = this.derivePrototype(realm);
-		return yield * pt.get(name, realm, this);
-	}
-
 	*observableProperties(realm) {
 		yield * this.derivePrototype(realm).observableProperties(realm);
 	}
@@ -132,5 +125,3 @@ class PrimitiveValue extends Value {
 module.exports = PrimitiveValue;
 
 StringValue = require('./StringValue');
-
-
