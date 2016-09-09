@@ -1,6 +1,6 @@
 {
   "name": "esper.js",
-  "version": "0.1.7",
+  "version": "0.2.0",
   "description": "Esper javascript interperter.",
   "main": "src/index.js",
   "scripts": {
@@ -14,7 +14,7 @@
     "dev-server": "webpack-dev-server src/index.js --content-base contrib/ui",
     "preinstall": "node contrib/install-plugin-deps.js",
     "prepublish": "node contrib/build.js",
-    "style": "jscs src"
+    "style": "jscs src plugins/*/*.js"
   },
   "bin": {
     "esper": "./contrib/cli.js"

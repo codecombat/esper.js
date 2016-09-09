@@ -375,5 +375,6 @@ class EsperASTInstructions {
 	}
 
 }
+ASTPreprocessor.ASTNode = ASTNode;
 
 module.exports = ASTPreprocessor;
