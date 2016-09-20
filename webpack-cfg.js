@@ -85,8 +85,8 @@ module.exports = function configure(profile, opts) {
 		if ( req.request == '../plugins' ) {
 			var pll = esper_plugins.join('|');
 			req.regExp = new RegExp('(' + pll + ')\/index.js$','i');
+			console.log(req);
 		}
-		console.log(req);
 	});
 
 	var cfg;
