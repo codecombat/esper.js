@@ -63,7 +63,7 @@ describe('Plugin: ast-css', function() {
 
 		it('should detect possibly forgotten calls', function() {
 			var matches = ast.find('ExpressionStatement>:matches(Literal,MemberExpression,Identifier)');
-			var lines = matches.map(function(n) { return n.loc.start.line});
+			var lines = matches.map(function(n) { return n.loc.start.line; });
 			expect(lines).to.deep.equal([7,9]);
 		});
 
@@ -85,7 +85,7 @@ describe('Plugin: ast-css', function() {
 			ensureCantFind('WhileStatement>:downTo(breakable)BreakStatement');
 			ensureFind('WhileStatement:not(>:downTo(breakable)BreakStatement)');
 			ensureFind(fullTest);
-		});	
+		});
 		describe('Broken', function() {
 			before(function() {
 				var e = new Engine();
@@ -117,7 +117,7 @@ describe('Plugin: ast-css', function() {
 			});
 			ensureFind('WhileStatement:not(>:downTo(breakable)BreakStatement)');
 			ensureFind(fullTest);
-		});	
+		});
 		describe('No extra code', function() {
 			before(function() {
 				var e = new Engine();

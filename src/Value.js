@@ -32,9 +32,9 @@ class Value {
 
 		if ( typeof value === 'number' ) {
 			if ( value === 0 ) {
-				return 1/value > 0 ? zero : negzero;
+				return 1 / value > 0 ? zero : negzero;
 			}
-			if ( value|0 === value ) {
+			if ( value | 0 === value ) {
 				let snv = smallIntValues[value+1];
 				if ( snv ) return snv;
 			}
