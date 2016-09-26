@@ -48,11 +48,26 @@ class Engine {
 		this.evaluator.yieldPower = this.options.yieldPower;
 
 		if ( this.language.startupCode ) {
-			this.evalAST(this.language.startupCode(), {});
+			this.loadLangaugeStartupCode();
 		}
 	}
 
+	loadLangaugeStartupCode() {
+		let past = this.preprocessAST(this.language.startupCode(),{});
+		let stdlib_eval = new Evaluator(this.realm, null, this.globalScope);
+		stdlib_eval.frames = [];
+		stdlib_eval.pushAST(past, this.globalScope);
+		stdlib_eval.ast = past;
+
+		let gen = stdlib_eval.generator();
+		let val = gen.next();
+		while ( !val.done ) val = gen.next();
+	}
+
 	get language() {
+		if ( !(this.options.language in esper.languages) ) {
+			throw new Error(`Unknown language ${this.options.language}. Load the lang-${this.options.language} plugin?`);
+		}
 		return esper.languages[this.options.language];
 	}
 
@@ -103,10 +118,15 @@ class Engine {
 		return value;
 	}
 
-	loadAST(ast, opts) {
+	preprocessAST(ast, opts) {
 		opts = opts || {};
 		opts.compile = this.options.compile;
 		let past = ASTPreprocessor.process(ast, opts);
+		return past;
+	}
+
+	loadAST(ast, opts) {
+		let past = this.preprocessAST(ast, opts);
 		this.evaluator.frames = [];
 		this.evaluator.pushAST(past, this.globalScope);
 		this.evaluator.ast = past;
@@ -137,11 +157,12 @@ class Engine {
 				}
 				if ( ++steps > that.options.executionLimit ) throw new Error('Execution Limit Reached');
 			}
+			that.generator = undefined;
 			return value;
 		}
 		return new Promise(function(resolve, reject) {
 			try {
-				let  value = that.generator.next();
+				let value = that.generator.next();
 				resolve(value);
 			} catch ( e ) {
 				reject(e);

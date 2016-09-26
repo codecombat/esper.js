@@ -38,7 +38,7 @@ function wrapStringPrototype(name) {
 class StringPrototype extends EasyObjectValue {
 	static get length$cew() { return StringPrototype.fromNative(0); }
 
-	static *valueOf(thiz) {
+	static *valueOf$e(thiz) {
 		if ( thiz.specTypeName === 'string' ) return thiz;
 		if ( thiz.specTypeName === 'object' ) {
 			let pv = thiz.primativeValue;
@@ -47,15 +47,15 @@ class StringPrototype extends EasyObjectValue {
 		throw new TypeError('Couldnt get there.');
 	}
 
-	static *concat(thiz, args, realm) {
+	static *concat$e(thiz, args, realm) {
 		let base = yield * thiz.toStringNative();
 		let realArgs = yield * _g.map(args, function*(v) { return yield * v.toStringNative(); });
 		let out = String.prototype.concat.apply(base, realArgs);
 		return realm.fromNative(out);
 	}
 
-	static *toString(thiz) {
-		return yield * StringPrototype.valueOf(thiz);
+	static *toString$e(thiz) {
+		return yield * StringPrototype.valueOf$e(thiz);
 	}
 }
 
@@ -63,21 +63,21 @@ class StringPrototype extends EasyObjectValue {
 StringPrototype.prototype.wellKnownName = '%StringProtoype%';
 StringPrototype.prototype.clazz = 'String';
 
-StringPrototype.charAt = wrapStringPrototype('charAt');
-StringPrototype.charCodeAt = wrapStringPrototype('charCodeAt');
-StringPrototype.substring = wrapStringPrototype('substring');
-StringPrototype.substr = wrapStringPrototype('substr');
-StringPrototype.split = wrapStringPrototype('split');
-StringPrototype.slice = wrapStringPrototype('slice');
-StringPrototype.lastIndexOf = wrapStringPrototype('lastIndexOf');
-StringPrototype.indexOf = wrapStringPrototype('indexOf');
-StringPrototype.search = wrapStringPrototype('search');
-StringPrototype.trim = wrapStringPrototype('trim');
-StringPrototype.toUpperCase = wrapStringPrototype('toUpperCase');
-StringPrototype.toLocaleUpperCase = wrapStringPrototype('toLocaleUpperCase');
-StringPrototype.toLowerCase = wrapStringPrototype('toLowerCase');
-StringPrototype.toLocaleLowerCase = wrapStringPrototype('toLocaleLowerCase');
-StringPrototype.localeCompare = wrapStringPrototype('localeCompare');
+StringPrototype.charAt$e = wrapStringPrototype('charAt');
+StringPrototype.charCodeAt$e = wrapStringPrototype('charCodeAt');
+StringPrototype.substring$e = wrapStringPrototype('substring');
+StringPrototype.substr$e = wrapStringPrototype('substr');
+StringPrototype.split$e = wrapStringPrototype('split');
+StringPrototype.slice$e = wrapStringPrototype('slice');
+StringPrototype.lastIndexOf$e = wrapStringPrototype('lastIndexOf');
+StringPrototype.indexOf$e = wrapStringPrototype('indexOf');
+StringPrototype.search$e = wrapStringPrototype('search');
+StringPrototype.trim$e = wrapStringPrototype('trim');
+StringPrototype.toUpperCase$e = wrapStringPrototype('toUpperCase');
+StringPrototype.toLocaleUpperCase$e = wrapStringPrototype('toLocaleUpperCase');
+StringPrototype.toLowerCase$e = wrapStringPrototype('toLowerCase');
+StringPrototype.toLocaleLowerCase$e = wrapStringPrototype('toLocaleLowerCase');
+StringPrototype.localeCompare$e = wrapStringPrototype('localeCompare');
 
 
 module.exports = StringPrototype;

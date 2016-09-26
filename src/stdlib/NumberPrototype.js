@@ -5,7 +5,7 @@ const EasyObjectValue = require('../values/EasyObjectValue');
 
 class NumberPrototype extends EasyObjectValue {
 
-	static *valueOf(thiz) {
+	static *valueOf$e(thiz) {
 		if ( thiz.specTypeName === 'number' ) return thiz;
 		if ( thiz.specTypeName === 'object' ) {
 			let pv = thiz.primativeValue;
@@ -15,7 +15,7 @@ class NumberPrototype extends EasyObjectValue {
 	}
 
 
-	static *toExponential(thiz, argz) {
+	static *toExponential$e(thiz, argz) {
 		let a;
 		if ( argz.length > 0 ) {
 			a = yield * argz[0].toNumberNative();
@@ -24,7 +24,7 @@ class NumberPrototype extends EasyObjectValue {
 		return this.fromNative(num.toExponential(a));
 	}
 
-	static *toFixed(thiz, argz) {
+	static *toFixed$e(thiz, argz) {
 		let a;
 		if ( argz.length > 0 ) {
 			a = yield * argz[0].toNumberNative();
@@ -33,7 +33,7 @@ class NumberPrototype extends EasyObjectValue {
 		return this.fromNative(num.toFixed(a));
 	}
 
-	static *toPrecision(thiz, argz) {
+	static *toPrecision$e(thiz, argz) {
 		let a;
 		if ( argz.length > 0 ) {
 			a = yield * argz[0].toNumberNative();
@@ -42,7 +42,7 @@ class NumberPrototype extends EasyObjectValue {
 		return this.fromNative(num.toPrecision(a));
 	}
 
-	static *toString(thiz, argz) {
+	static *toString$e(thiz, argz) {
 		let a;
 		if ( argz.length > 0 ) {
 			a = yield * argz[0].toNumberNative();

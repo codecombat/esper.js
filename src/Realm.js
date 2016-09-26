@@ -86,8 +86,9 @@ class Realm {
 	}
 
 	parser(code, options) {
-		if ( !esper.languages[this.language] ) throw new Error(`Unknown language ${this.language}. Load the lang-${this.language} plugin.`);
-		console.log("L", this.language, esper.languages[this.language].name);
+		if ( !esper.languages[this.language] ) {
+			throw new Error(`Unknown language ${this.language}. Load the lang-${this.language} plugin?`);
+		}
 		return esper.languages[this.language].parser(code, options);
 	}
 
