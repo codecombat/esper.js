@@ -35,6 +35,7 @@ program
 	.option('-s, --strict', 'force strict mode')
 	.option('-d, --debug', 'turn on performance debugging')
 	.option('-c, --compile <mode>', 'set compileing mode')
+	.option('-l, --language <language>', `set langauge (${Object.keys(esper.languages).join(', ')})`)
 	.parse(process.argv);
 
 
@@ -42,7 +43,8 @@ let engine = new Engine({
 	strict: !!program.strict,
 	debug: !!program.debug,
 	addInternalStack: !!program.debug,
-	compile: program.compile || 'pre'
+	compile: program.compile || 'pre',
+	language: program.language || 'javascript'
 });
 
 

@@ -21,7 +21,7 @@ esper.eval = function(source) {
 
 esper.version = require('../package.json').version;
 
-
+esper.languages = {};
 esper.plugin = function(n) {
 	let pl;
 	if ( !esper.plugins[n] ) {

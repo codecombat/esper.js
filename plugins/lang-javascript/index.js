@@ -22,9 +22,10 @@ function parser(code, options) {
 }
 
 
-esper.Realm.prototype.parser = parser;
 
-module.exports = {
+esper.languages.javascript = module.exports = {
+	name: 'javascript',
 	esprima: esprima,
 	parser: parser
 };
+

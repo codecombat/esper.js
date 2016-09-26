@@ -40,6 +40,7 @@ const AssertClass = require('./stdlib/Assert');
 const MathClass = require('./stdlib/Math.js');
 const ConsoleClass = require('./stdlib/Console');
 const JSONClass = require('./stdlib/JSON');
+const esper = require('./index.js');
 
 class EvalFunction extends ObjectValue {
 
@@ -85,11 +86,14 @@ class Realm {
 	}
 
 	parser(code, options) {
-		throw new Error('No parser loaded.  Please load the lang-javascript plugin.');
+		if ( !esper.languages[this.language] ) throw new Error(`Unknown language ${this.language}. Load the lang-${this.language} plugin.`);
+		console.log("L", this.language, esper.languages[this.language].name);
+		return esper.languages[this.language].parser(code, options);
 	}
 
 	constructor(options) {
 		this.options = options || {};
+		this.language = options.language || 'javascript';
 		/** @type {Value} */
 		this.ObjectPrototype =  new ObjectPrototype(this);
 		this.FunctionPrototype = new FunctionPrototype(this);

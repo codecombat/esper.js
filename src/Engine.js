@@ -1,5 +1,6 @@
 'use strict';
 
+const esper = require('./index.js');
 const Evaluator = require('./Evaluator');
 const Realm = require('./Realm');
 const Scope = require('./Scope');
@@ -21,7 +22,8 @@ let defaultOptions = {
 	bookmarkInvocationMode: 'error',
 	yieldPower: 5,
 	debug: false,
-	compile: 'pre'
+	compile: 'pre',
+	language: 'javascript'
 };
 
 /**
@@ -44,6 +46,14 @@ class Engine {
 
 		this.evaluator.defaultYieldPower = this.options.yieldPower;
 		this.evaluator.yieldPower = this.options.yieldPower;
+
+		if ( this.language.startupCode ) {
+			this.evalAST(this.language.startupCode(), {});
+		}
+	}
+
+	get language() {
+		return esper.languages[this.options.language];
 	}
 
 	/**
