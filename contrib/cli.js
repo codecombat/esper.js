@@ -35,6 +35,8 @@ program
 	.option('-s, --strict', 'force strict mode')
 	.option('-d, --debug', 'turn on performance debugging')
 	.option('-c, --compile <mode>', 'set compileing mode')
+	.option('-e, --eval <script>', 'evaluate script')
+	.option('-p, --print <script>', 'evaluate script and print result')	
 	.option('-l, --language <language>', `set langauge (${Object.keys(esper.languages).join(', ')})`)
 	.parse(process.argv);
 
@@ -48,7 +50,10 @@ let engine = new Engine({
 });
 
 
-let toEval = program.args.slice(0);
+let toEval = program.args.slice(0).map((f) => ({type: 'file', value: f}));
+if ( program.eval ) toEval.push({type: 'str', value: program.eval + '\n'});
+if ( program.print ) toEval.push({type: 'str', value: program.print + '\n', print: true});
+
 if ( toEval.length < 1 ) program.interactive = true;
 
 function next() {
@@ -57,9 +62,15 @@ function next() {
 		else return process.exit();
 	}
 	var fn = toEval.shift();
-	console.log(fn);
-	var code = fs.readFileSync(fn, 'utf8');
+	var code;
+	if ( fn.type === 'file' ) {
+		console.log(fn.value);
+		code = fs.readFileSync(fn.value, 'utf8');
+	} else {
+		code = fn.value;
+	}
 	return engine.eval(code).then(function(val) {
+		if ( fn.print ) console.log(val.debugString);
 		return next();
 	}).catch(function(e) {
 		console.log(e.stack);
