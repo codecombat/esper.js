@@ -1,7 +1,6 @@
 'use strict';
 
 const skulpty = require('skulpty');
-const esper = require('../..');
 const esprima = require('esprima');
 
 function parser(code, options) {
@@ -14,9 +13,12 @@ function parser(code, options) {
 const startupCode = require('./startupCode.js');
 const startupCodeAST = esprima.parse(startupCode);
 
-esper.languages.python = module.exports = {
+let plugin = module.exports = {
 	name: 'python',
 	skulpty: skulpty,
 	parser: parser,
+	init: function(esper) {
+		esper.languages.python = plugin;
+	},
 	startupCode: () => startupCodeAST
 };

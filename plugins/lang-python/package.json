@@ -9,5 +9,6 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "skulpty": "git://github.com/codecombat/skulpty"
   }
 }
