@@ -206,11 +206,13 @@ function compileRTL(opts) {
 
 
 
-esper.ASTPreprocessor.prototype.find = function(sel) { return find(this.ast, sel).map((x) => x[0]); };
-esper.ASTPreprocessor.ASTNode.prototype.find = function(sel) { return find(this, sel, null).map((x) => x[0]); };
-esper.ASTPreprocessor.ASTNode.prototype.matches = function(sel) { return matches(this, sel, null); };
+function init(esper) {
+	esper.ASTPreprocessor.prototype.find = function(sel) { return find(this.ast, sel).map((x) => x[0]); };
+	esper.ASTPreprocessor.ASTNode.prototype.find = function(sel) { return find(this, sel, null).map((x) => x[0]); };
+	esper.ASTPreprocessor.ASTNode.prototype.matches = function(sel) { return matches(this, sel, null); };
+}
 
-
-module.exports = {
-	find: find
+let plugin = module.exports = {
+	find: find,
+	init: init
 };

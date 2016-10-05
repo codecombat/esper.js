@@ -21,12 +21,16 @@ esper.eval = function(source) {
 
 esper.version = require('../package.json').version;
 
-esper.languages = {};
+esper.languages = {
+	javascript: require('./lang-javascript.js')
+};
+
 esper.plugin = function(n) {
 	let pl;
 	if ( !esper.plugins[n] ) {
 		let pl = require('../plugins/' + n + '/index.js');
 		esper.plugins[n] = pl;
+		pl.init(esper);
 	}
 	return esper.plugins[n];
 };

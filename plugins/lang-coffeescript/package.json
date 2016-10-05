@@ -1,5 +1,5 @@
 {
-  "name": "esper-lang-javascript",
+  "name": "esper-lang-coffeescript",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,5 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "coffee-script-redux": "^2.0.0-beta8"
+  }
 }

@@ -1,1 +1,4 @@
--c --no-timeouts
+-c
+--no-timeouts
+test/*.js
+plugins/*/test/*.js

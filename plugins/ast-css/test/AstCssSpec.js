@@ -1,6 +1,6 @@
 'use strict';
 var expect = require('chai').expect;
-var esper = require('../src/index.js');
+var esper = require('../../../src/index.js');
 var Engine = esper.Engine;
 
 if ( !esper.plugins['ast-css'] ) {

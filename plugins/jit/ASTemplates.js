@@ -12,12 +12,11 @@ exports.premble = template(function* premble(stuffToDo) {
 	var state$$ = e.beforeNode(n);
 	stuffToDo;
 
-
 	if ( result instanceof CompletionRecord ) result = yield result;
 	if ( result && result.then ) result = yield result;
 
 	e.afterNode(state$$, result);
-})
+});
 
 exports.V = template(function *V($target, _val) {
 	$target = Value.fromNative(_val);
