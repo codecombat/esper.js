@@ -34,6 +34,7 @@ describe('Jerry Tests', function() {
 			it(file, function() {
 				//console.log("\n");
 				//console.log(file);
+				this.timeout(5000);
 				var engine = new Engine({strict: false, executionLimit: 100000});
 				engine.evalSync(src);
 				expect(true).to.be.true;

@@ -9,15 +9,27 @@ const EvaluatorInstruction = require('../EvaluatorInstruction');
 class ErrorInstance extends ObjectValue {
 	createNativeAnalog() {
 		if ( !this.native ) {
+			let stack;
 			let NativeClass = this.proto.nativeClass || Error;
 			this.native = new NativeClass();
-
-			let frames = this.native.stack.split(/\n/);
-			let header = frames.shift();
-			while ( /at (ErrorInstance.createNativeAnalog|ErrorObject.make|Function.makeTypeError)/.test(frames[0]) ) {
-				frames.shift();
+			if ( !this.native.stack ) {
+				try {
+					throw native;
+				} catch ( e ) {
+					stack = e.stack;
+				}
+			} else {
+				stack = this.native.stack;
 			}
-			this.native.stack = header + '\n' + frames.join('\n');
+
+			let frames = stack ? stack.split(/\n/) : [];
+			if ( stack.length > 1 ) {
+			let header = frames.shift();
+				while ( /at (ErrorInstance.createNativeAnalog|ErrorObject.make|Function.makeTypeError)/.test(frames[0]) ) {
+					frames.shift();
+				}
+				this.native.stack = header + '\n' + frames.join('\n');
+			}
 			for ( var k in this.extra ) this.native[k] = this.extra[k];
 
 		}
