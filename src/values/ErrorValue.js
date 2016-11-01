@@ -54,7 +54,7 @@ class ErrorInstance extends ObjectValue {
 			let scope = evaluator.topFrame.scope;
 			let ast = extra.ast = evaluator.topFrame.ast;
 			extra.scope = scope;
-
+			//TODO: Sometiems scope is undefined, figure out why.
 			if ( extra.ast.loc ) {
 				extra.line = extra.ast.loc.start.line;
 			}
@@ -62,7 +62,7 @@ class ErrorInstance extends ObjectValue {
 			switch ( extra.code ) {
 				case 'UndefinedVariable':
 				case 'SmartAccessDenied':
-					extra.candidates = scope.getVariableNames();
+					if ( scope ) extra.candidates = scope.getVariableNames();
 					break;
 				case 'CallNonFunction':
 					let list;
