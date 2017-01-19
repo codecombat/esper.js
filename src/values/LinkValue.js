@@ -40,14 +40,7 @@ class LinkValue extends Value {
 		let that = this;
 		let out = Object.create(null);
 
-		let getter;
-		if ( this.native.hasOwnProperty(name) ) {
-			getter = () => realm.import(this.native[name], this.linkKind);
-		} else {
-			getter = () => realm.import(this.native, this.linkKind).ref(name, realm).value;
-		}
-
-		out.getValue = function *() { return getter(); };
+		out.getValue = function *() { return yield * that.get(name, realm); };
 		out.setValue = function *(to) { return yield * that.set(name, to); };
 		out.del = function() { return false; };
 

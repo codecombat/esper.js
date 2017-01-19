@@ -1,17 +1,18 @@
 'use strict';
 var expect = require('chai').expect;
 var Engine = require('../src/index.js').Engine;
+var esper = require('../src/index.js');
 
 function a(code, o) {
 	var e = new Engine({
-		foreignObjectMode: 'smart'
+		foreignObjectMode: 'smart',
+		addExtraErrorInfoToStacks: true
 	});
 
 	e.evalSync('function a(arg) {\n' + code + '}');
 	var fx = e.fetchFunctionSync('a');
 	var args = Array.prototype.slice.call(arguments, 1);
 	return fx.apply(null, args);
-
 }
 
 function b(code) {
@@ -132,6 +133,35 @@ describe('Smart Link', () => {
 
 	});
 
+	it('Privlaged Threads', () => {
+		var e = new Engine({
+			foreignObjectMode: 'smart',
+			addExtraErrorInfoToStacks: true
+		});
+		e.realm.globalScope.add('x', esper.Value.undef);
+		let run = function (code) {
+			e.evalSync('function a(arg) {\n' + code + '}');
+			var fx = e.fetchFunctionSync('a');
+			var args = Array.prototype.slice.call(arguments, 1);
+			return fx.apply(null, args);
+		};
+
+		class User {
+			constructor() {
+				this.name = 'Annoner';
+				this.secret = 'sauce';
+			}
+		}
+
+		User.prototype.apiProperties = ['name'];
+		var u = new User();
+		run('x = arg', u);
+		//expect(run('return Esper.str(x)')).to.equal("[SmartLink: Annoner, props: name,age,type,ident,identity]");
+		expect(() => run('x.secret')).to.throw();
+		esper.SmartLinkValue.makeThreadPrivlaged(e.evaluator);
+		expect(run('return x.secret')).to.equal('sauce');
+
+	});
 
 
 	describe('Respect API properties', () => {
@@ -161,7 +191,7 @@ describe('Smart Link', () => {
 
 
 		it('supports user assinged properties', () => {
-			expect(b(function(o) { 
+			expect(b(function(o) {
 				o.nue = 5;
 				o.nue += 2;
 				return o.nue;
@@ -178,6 +208,59 @@ describe('Smart Link', () => {
 				esper_one: () => 2
 			})).to.equal(2);
 		});
+		it('respects esper_ properties wrt getters', () => {
+			var obj = { one: 5 };
+			Object.defineProperty(obj, 'esper_one', {
+				get: function() { return this.one * 2; },
+			});
+			expect(a('return arg.one;', obj)).to.equal(10);
+			expect(obj.one).to.equal(5);
+		});
+		it('respects esper_ properties wrt getters and setters', () => {
+			var obj = { one: 5, apiUserProperties: ['one'] };
+			Object.defineProperty(obj, 'esper_one', {
+				get: function() { return this.one * 2; },
+				set: function(v) { this.one = v+1; },
+				enumerable: true
+			});
+			expect(a('return arg.one;', obj)).to.equal(10);
+			expect(a('arg.one = 2; return arg.one', obj)).to.equal(6);
+			expect(obj.one).to.equal(3);
+		});
+
+		it('respects esper_ properties wrt getters and setters w/ Privlaged Threads', () => {
+			var obj = { one: 5, apiUserProperties: ['x'] };
+			Object.defineProperty(obj, 'esper_one', {
+				get: function() { return this.one * 2; },
+				set: function(v) { this.one = v+1; },
+				enumerable: true
+			});
+
+			var e = new Engine({
+				foreignObjectMode: 'smart',
+				addExtraErrorInfoToStacks: true,
+				addInternalStack: true
+			});
+			e.realm.globalScope.add('x', esper.Value.undef);
+			let run = function (code) {
+				e.evalSync('function a(arg) {\n' + code + '}');
+				var fx = e.fetchFunctionSync('a');
+				var args = Array.prototype.slice.call(arguments, 1);
+				try {
+					var out = fx.apply(null, args);
+				} catch ( e ) {
+					console.log("EE", e.stack);
+					throw e;
+				}
+
+				return out;
+			};
+			esper.SmartLinkValue.makeThreadPrivlaged(e.evaluator);
+			expect(run('return arg.one;', obj)).to.equal(10);
+			expect(run('arg.one = 2; return arg.one', obj)).to.equal(6);
+			expect(obj.one).to.equal(3);
+		});
+
 	});
 
 });

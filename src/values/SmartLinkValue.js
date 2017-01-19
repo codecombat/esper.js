@@ -5,16 +5,21 @@ const Value = require('../Value');
 const LinkValue = require('./LinkValue');
 const CompletionRecord = require('../CompletionRecord');
 const ArrayValue = require('./ArrayValue');
+const EvaluatorInstruction = require('../EvaluatorInstruction');
 /**
  * Represents a value that maps directly to an untrusted local value.
  */
+
+let privilegedThreads = new WeakSet();
+
 class SmartLinkValue extends LinkValue {
 
 	constructor(value, realm) {
 		super(value, realm);
 	}
 
-	allowRead(name) {
+	allowRead(name, e) {
+		if ( e && privilegedThreads.has(e) ) return true;
 		//if ( name === 'call' ) return true;
 		//return true;
 		if ( name.indexOf('esper_') === 0 ) return true;
@@ -24,7 +29,9 @@ class SmartLinkValue extends LinkValue {
 		return props.indexOf(name) !== -1;
 	}
 
-	allowWrite(name) {
+	allowWrite(name, e) {
+		if ( e && privilegedThreads.has(e) ) return true;
+		if ( name.indexOf('esper_') === 0 ) name = name.substr(6);
 		var allowed = [];
 		var native = this.native;
 		if ( native.apiUserProperties ) {
@@ -66,65 +73,40 @@ class SmartLinkValue extends LinkValue {
 
 
 	ref(name, realm) {
-		let out = super.ref(name, realm);
 		let native = this.native;
-		if ( name in native ) {
-			let noWrite = function *() {
-				let err = CompletionRecord.makeTypeError(realm, "Can't write to protected property: " + name);
-				yield * err.addExtra({code: 'SmartAccessDenied', when: 'write', ident: name});
-				return yield err;
-			};
-			let noRead = function *() {
-				let err = CompletionRecord.makeTypeError(realm, "Can't read protected property: " + name);
-				yield * err.addExtra({code: 'SmartAccessDenied', when: 'read', ident: name});
-				return yield err;
-			};
-			if ( !this.allowRead(name) ) {
-				return {
-					getValue: noRead,
-					setValue: noWrite,
-					del: () => false
-				};
-			} else if ( !this.allowWrite(name) ) {
-				out.setValue = noWrite;
-			}
+		let owner = this;
+		if ( ('esper_' + name) in native ) name = 'esper_' + name;
 
+		return super.ref(name, realm);
+	}
+
+	*set(name, value, s) {
+		let evaluator = yield EvaluatorInstruction.getEvaluator();
+		let native = this.native;
+		if ( name in this.native ) {
+			if ( !this.allowWrite(name, evaluator) ) return yield CompletionRecord.makeTypeError(s.realm, "Can't write to protected property: " + name);
 		} else {
-			let defaultAction = out.setValue;
 			if ( !native.apiUserProperties ) native.apiUserProperties = [];
 
 			if ( native.apiUserProperties.indexOf(name) == -1 ) {
-				out.setValue = function *() {
-					let ret = yield * defaultAction.apply(this, arguments);
-					native.apiUserProperties.push(name);
-					return ret;
-				};
+				native.apiUserProperties.push(name);
 			}
 		}
 
-		return out;
-	}
-
-	*set(name, value, s, extra) {
-
-		if ( name in this.native ) {
-			if ( !this.allowWrite(name) ) return yield CompletionRecord.makeTypeError(s.realm, "Can't write to protected property: " + name);
-		} else {
-			//TODO: Mark value as having been written by user so they retain write permissions to it.
-		}
-
-		return yield * super.set(name, value, s, extra);
+		return yield * super.set(name, value, s);
 
 	}
 
 	*get(name, realm) {
-		if ( !(name in this.native) ) {
+		let evaluator = yield EvaluatorInstruction.getEvaluator();
+		let native = this.native;
+		if ( ('esper_' + name) in this.native ) name = 'esper_' + name;
+
+		if ( !(name in native) ) {
 			return Value.undef;
 		}
 
-		if ( ('esper_' + name) in this.native ) name = 'esper_' + name;
-
-		if ( !this.allowRead(name) ) {
+		if ( !this.allowRead(name, evaluator) ) {
 			return yield CompletionRecord.makeTypeError(realm, "Can't read protected property: " + name);
 		}
 
@@ -168,5 +150,15 @@ class SmartLinkValue extends LinkValue {
 	}
 
 }
+
+SmartLinkValue.makeThreadPrivileged = function(e) {
+	privilegedThreads.add(e);
+};
+
+SmartLinkValue.isThreadPrivileged = function(e) {
+	return privilegedThreads.has(e);
+};
+
+SmartLinkValue.makeThreadPrivlaged = SmartLinkValue.makeThreadPrivileged;
 
 module.exports = SmartLinkValue;

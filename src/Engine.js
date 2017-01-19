@@ -10,6 +10,7 @@ const ASTPreprocessor = require('./ASTPreprocessor');
 const FutureValue = require('./values/FutureValue');
 const EasyNativeFunction = require('./values/EasyNativeFunction');
 const ClosureValue = require('./values/ClosureValue');
+const SmartLinkValue = require('./values/SmartLinkValue');
 
 let defaultOptions = {
 	strict: false,
@@ -200,6 +201,9 @@ class Engine {
 
 	addGlobalFx(name, what, opts) {
 		var x  = EasyNativeFunction.makeForNative(this.realm, what);
+		x.makeThisForNew = function*(realm) {
+			return Value.null;
+		};
 		this.addGlobal(name, x, opts);
 	}
 
@@ -282,7 +286,9 @@ class Engine {
 				realArgs[i] = realm.makeForForeignObject(arguments[i]);
 			}
 
-
+			if ( !val.isCallable ) {
+				throw new TypeError(val.debugStr + ' is not a function.');
+			}
 			let c = val.call(realThis, realArgs, scope);
 			evaluator.pushFrame({type: 'program', generator: c, scope: scope});
 			let gen = evaluator.generator();
@@ -316,6 +322,11 @@ class Engine {
 		if ( this.evaluator.debug ) {
 			evaluator.debug = true;
 		}
+
+		if ( SmartLinkValue.isThreadPrivileged(this.evaluator) ) {
+			SmartLinkValue.makeThreadPrivileged(evaluator);
+		}
+
 		return evaluator;
 	}
 

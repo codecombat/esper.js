@@ -352,6 +352,7 @@ function *evaluateForInStatement(e, n, s) {
 	} else {
 		ref = s.ref(n.left.name, s.realm);
 	}
+	if ( !ref ) throw new Error('Couldnt find anything to write to for:' + n.left.name);
 
 	var gen = function*() {
 		for ( let name of names ) {
