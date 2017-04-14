@@ -14,6 +14,10 @@ esper.Engine = Engine;
 esper.Value = require('./Value');
 esper.ASTPreprocessor = require('./ASTPreprocessor');
 esper.FutureValue = require('./values/FutureValue');
+esper.SmartLinkValue = require('./values/SmartLinkValue');
+esper.ObjectValue = require('./values/ObjectValue');
+esper.EasyNativeFunction = require('./values/EasyNativeFunction');
+esper.EasyObjectValue = require('./values/EasyObjectValue');
 esper.Realm = require('./Realm');
 esper.eval = function(source) {
 	return new Engine().evalSync(source).toNative();
