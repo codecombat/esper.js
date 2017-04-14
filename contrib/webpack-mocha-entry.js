@@ -1,8 +1,8 @@
-require('mocha!../test/SandboxrSpec.js');
-require('mocha!../test/JerrySpec.js');
-require('mocha!../test/CorpusSpec.js');
+require('mocha-loader!../test/SandboxrSpec.js');
+require('mocha-loader!../test/JerrySpec.js');
+require('mocha-loader!../test/CorpusSpec.js');
 
-require('mocha!../test/FutureValueSpec.js');
-require('mocha!../test/SmartLinkSpec.js');
-require('mocha!../test/MiscSpec.js');
-require('mocha!../test/ErrorInfoSpec.js');
+require('mocha-loader!../test/FutureValueSpec.js');
+require('mocha-loader!../test/SmartLinkSpec.js');
+require('mocha-loader!../test/MiscSpec.js');
+require('mocha-loader!../test/ErrorInfoSpec.js');

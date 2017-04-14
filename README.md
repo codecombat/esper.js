@@ -71,7 +71,7 @@ Creates a global named `Esper` inside the interpreter with introspection and met
 
 Esper utilizes the webpack build system to create a single file suitable for use in the browser.
 
-#### `--profile=<profile>`
+#### `--env.profile=<profile>`
 
 | Profile | Use |
 | --- | --- |
@@ -79,12 +79,12 @@ Esper utilizes the webpack build system to create a single file suitable for use
 | modern | Creates an single ES6 compatible file.  More performance than web, but requires a modern browser.  |
 | nashorn | Crates a single file targeting the [Java Nashorn engine](http://openjdk.java.net/projects/nashorn/).  Uses Nashorn's parser instead of embedded esprima. |
 
-#### `--test`
+#### `--env.test`
 
 Creates a test builds that embeds the unit tests.  Including this file in a `<script>` tag will take over the page and
 display the test output in real time.
 
-#### `--min`
+#### `--env.min`
 
 Minify the resulting build using UglifyJS.
 

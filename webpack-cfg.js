@@ -68,7 +68,7 @@ module.exports = function configure(profile, opts) {
 
 	}
 
-	var banner = new webpack.BannerPlugin([
+	var banner = new webpack.BannerPlugin({banner: [
 		'esper.js',
 		'',
 		'Compiled: ' + new Date().toString(),
@@ -77,7 +77,7 @@ module.exports = function configure(profile, opts) {
 		'Version : ' + version,
 		'',
 		fs.readFileSync(path.join(__dirname, 'LICENSE.txt'))
-	].join("\n"), {entryOnly: true});
+	].join("\n"), entryOnly: true});
 
 	var esper_plugins = require('./plugin-list.js');
 

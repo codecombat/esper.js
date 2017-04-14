@@ -7,9 +7,11 @@ var opts = {min: false, name: process.env.ESPER_PROFILE ? 'esper.js' : undefined
 
 while ( args.length ) {
 	var opt = args.shift();
-	if ( !/^--[a-z]+=?/.test(opt) ) continue;
+	if ( !/^--[a-z.]+=?/.test(opt) ) continue;
 	var parts = opt.split(/=/,2);
-	switch ( parts[0] ) {
+	var part = parts[0];
+	part = part.replace(/--env\./,'--');
+	switch ( part ) {
 		case '--profile':
 			profile = parts[1];
 			break;
