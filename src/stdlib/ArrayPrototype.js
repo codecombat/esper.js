@@ -232,7 +232,7 @@ class ArrayPrototype extends EasyObjectValue {
 			let v = yield * thiz.get(i);
 			if ( !v ) strings[i] = '';
 			else {
-				if ( v.jsTypeName == 'undefined' ) {
+				if ( v.specTypeName == 'undefined' || v.specTypeName == 'null' ) {
 					continue;
 				}
 				let sv = (yield * v.toStringValue());

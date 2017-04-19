@@ -19,11 +19,15 @@ class ArrayValue extends ObjectValue {
 
 	adjustLength(name) {
 		if ( !isNaN(parseInt(name)) ) {
-			let length = this.properties.length.value.native;
+			let length = this.getLengthSync();
 			if ( name >= length ) {
 				this.properties.length.value = Value.fromNative(name + 1);
 			}
 		}
+	}
+
+	getLengthSync() {
+		return this.properties.length.value.native;
 	}
 
 	set(name, v) {
@@ -38,11 +42,22 @@ class ArrayValue extends ObjectValue {
 
 
 	toNative() {
-		let out = new Array();
-
+		let out = new Array(this.getLengthSync());
 		for ( let i of Object.keys(this.properties)) {
+			if ( i === "length" ) continue;
 			let po = this.properties[i];
-			if ( po && po.value ) out[i] = po.value.toNative();
+			if ( po && po.value ) {
+				if ( !po.direct ) {
+					Object.defineProperty(out, i, {
+						enumerable: po.enumerable,
+						writable: po.writable,
+						configurable: po.configurable,
+						value: po.value.toNative()
+					});
+				} else {
+					out[i] = po.value.toNative();
+				}
+			}
 		}
 		return out;
 	}

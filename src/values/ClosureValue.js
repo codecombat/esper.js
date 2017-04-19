@@ -39,7 +39,7 @@ class ClosureValue extends ObjectValue {
 	}
 
 	get truthy() {
-		return !true;
+		return true;
 	}
 
 	*doubleEquals(other) {
@@ -110,10 +110,15 @@ class ClosureValue extends ObjectValue {
 		}
 
 		if ( !invokeScope.strict ) {
+			let calleeProp = new PropertyDescriptor(this.fromNative(args.length));
+			calleeProp.enumerable = false;
+			argsObj.rawSetProperty('callee', calleeProp);
 			yield * argsObj.set('callee', this);
 		}
 
-		yield * argsObj.set('length', this.fromNative(args.length));
+		let lengthProp = new PropertyDescriptor(this.fromNative(args.length));
+		lengthProp.enumerable = false;
+		argsObj.rawSetProperty('length', lengthProp);
 
 		invokeScope.add('arguments', argsObj);
 
