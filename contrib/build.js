@@ -1,12 +1,13 @@
 'use strict';
 
 var webpack = require('webpack');
-var fx = require('../webpack-cfg');
+var fx = require('../webpack.config.js');
 
 function make(profile, opts) {
 	return new Promise(function(res, rej) {
-		var cfg = fx(profile, opts);
-		var compiler = webpack(cfg);
+		opts = opts || {};
+		opts.profile = profile;
+		var compiler = webpack(fx(opts));
 		compiler.run(function(err, status) {
 			if ( err ) return rej(err);
 			console.log(status.toString({color: true}));
