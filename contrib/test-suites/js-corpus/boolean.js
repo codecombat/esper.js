@@ -1,6 +1,6 @@
 var i = 0;
 function inspect(x) {
-	console.log(++i, typeof x, x);
+	console.log([++i, typeof x, x].join("\t"));
 }
 
 inspect(new Boolean('Rob'));

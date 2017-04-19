@@ -72,7 +72,8 @@ class PrimitiveValue extends Value {
 				return Value.false;
 			}
 		} else if ( typeof native == 'boolean' ) {
-			return yield * this.toNumberValue().doubleEquals(other);
+			let num = yield * this.toNumberValue();
+			return yield * num.doubleEquals(other);
 		}
 
 		return Value.false;
