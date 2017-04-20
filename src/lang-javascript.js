@@ -2,7 +2,8 @@
 const esprima = require('esprima');
 
 module.exports = {
-	name: 'javascript',
+	name: 'lang-javascript',
+	esprima: esprima,
 	parser: function parser(code, options) {
 		options = options || {};
 		let opts = {loc: true, range: true};

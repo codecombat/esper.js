@@ -23,9 +23,15 @@ myAppModule.controller('main', function($scope, $timeout, $http, $q, $location) 
 
 	$scope.opts = {forceVar: true, decorateLuaObjects: true, luaCalls: true, luaOperators: true,
 		encloseWithFunctions: false, useStrict: false, noMutliReturnSquish: false};
-
+	$scope.languages = Object.keys(esper.languages);
+	$scope.language = window.localStorage.language || 'javascript';
+	$scope.setLangauge = function(l) {
+		$scope.language = l;
+		window.localStorage.language = l;
+		$scope.stop();
+	};
 	$scope.fix = function(c) { return c.reverse(); };
-
+	window.s = $scope
 	$scope.runMode = function() {
 		return $scope.engines && $scope.engines.length > 0;
 	};
@@ -73,10 +79,23 @@ myAppModule.controller('main', function($scope, $timeout, $http, $q, $location) 
 
 	$scope.isASTOpen = function(ast) {
 		if (!ast) return false;
+		if (typeof ast !== 'object' ) return false;
 		return ast._open !== false;
 	};
 
+	$scope.hilightAST = function(ast) {
+		var range = ast && ast.loc;
+		if ( $scope.hilightedMarker ) {
+			$scope.ace.session.removeMarker($scope.hilightedMarker);
+			$scope.hilightedMarker = undefined;
+		}
+		if ( !range ) return;
+		var rr = new $scope.Range(range.start.line - 1, range.start.column, range.end.line - 1, range.end.column);
+		$scope.hilightedMarker = $scope.ace.session.addMarker(rr, 'asthover', 'text');
+	};
+
 	$scope.tgl = function(ast) {
+		if ( !ast ) return;
 		if ( ast._open === false ) delete ast._open;
 		else ast._open = false;
 	};
@@ -89,7 +108,7 @@ myAppModule.controller('main', function($scope, $timeout, $http, $q, $location) 
 			if ( p === 'loc' ) continue;
 			if ( p === 'type' ) continue;
 			if ( p === 'nodeID' ) continue;
-			if ( n === null ) continue;
+			if ( !n ) continue;
 			if ( angular.isArray(n) ) {
 				for ( var i in n ) {
 					if ( typeof n[i].type === 'string' ) out.push(n[i]);
@@ -106,7 +125,9 @@ myAppModule.controller('main', function($scope, $timeout, $http, $q, $location) 
 	};
 
 	$scope.compile = function() {
-		var epr = new esper.Engine();
+		var epr = new esper.Engine({
+			language: $scope.language
+		});
 		epr.addGlobalFx('fetch', function(url) {
 			return esper.FutureValue.make($http({
 				url: url,
@@ -155,6 +176,10 @@ myAppModule.controller('main', function($scope, $timeout, $http, $q, $location) 
 	};
 
 	$scope.clear = function() {
+		if ( $scope.hilightedMarker ) {
+			$scope.ace.session.removeMarker($scope.hilightedMarker);
+			$scope.hilightedMarker = undefined;
+		}
 		angular.forEach($scope.marker, function(marker) {
 			$scope.ace.session.removeMarker(marker);
 		});
@@ -230,7 +255,7 @@ myAppModule.controller('main', function($scope, $timeout, $http, $q, $location) 
 				if ( f.ast ) {
 					o.node = f.ast.type;
 					o.name = f.ast.srcName;
-					o.loc = f.ast.loc.start.line + ':' + f.ast.loc.start.column;
+					if ( f.ast.loc ) o.loc = f.ast.loc.start.line + ':' + f.ast.loc.start.column;
 				}
 				if ( f.value ) o.value = f.value.debugString;
 				if ( f.scope ) {
@@ -242,17 +267,20 @@ myAppModule.controller('main', function($scope, $timeout, $http, $q, $location) 
 
 			if ( ast ) {
 				var range = ast.loc;
-				var ln = range.start.line - 1;
-				if ( $scope.brekpoints[ln] && $scope.skipBP != ln ) {
-					$scope.skipBP = ln;
-					$scope.auto = false;
-				} else if ( $scope.skipBP != ln ) {
-					delete $scope.skipBP;
+				if ( range && range.start && range.end ) {
+					var ln = range.start.line - 1;
+					if ( $scope.brekpoints[ln] && $scope.skipBP != ln ) {
+						$scope.skipBP = ln;
+						$scope.auto = false;
+					} else if ( $scope.skipBP != ln ) {
+						delete $scope.skipBP;
+					}
+					
+					var rr = new $scope.Range(range.start.line - 1, range.start.column, range.end.line - 1, range.end.column);
+					$scope.marker.push($scope.ace.session.addMarker(rr,'executing', 'text'));
+					//$scope.ace.session.selection.setRange(rr);
+					//$scope.output = JSON.stringify(frames,null,'  ');
 				}
-				var rr = new $scope.Range(range.start.line - 1, range.start.column, range.end.line - 1, range.end.column);
-				$scope.marker.push($scope.ace.session.addMarker(rr,'executing', 'text'));
-				//$scope.ace.session.selection.setRange(rr);
-				//$scope.output = JSON.stringify(frames,null,'  ');
 			}
 
 			$scope.frames = lines;

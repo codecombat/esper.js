@@ -1,24 +1,42 @@
 'use strict';
 
 const skulpty = require('skulpty');
-const esprima = require('esprima');
 
 function parser(code, options) {
 	options = options || {};
 	let opts = {locations: true, ranges: true};
 	let ast = skulpty.parse(code, opts);
+	let fixThis = {
+		'type': 'VariableDeclaration',
+		'declarations': [
+			{
+				'type': 'VariableDeclarator',
+				'id': {
+					'type': 'Identifier',
+					'name': 'self'
+				},
+				'init': {
+					'type': 'ThisExpression'
+				}
+			}
+		],
+		'kind': 'var',
+		'userCode': false
+	};
+	ast.body.unshift(fixThis);
 	return ast;
 }
 
 const startupCode = require('./startupCode.js');
-const startupCodeAST = esprima.parse(startupCode);
+let startupCodeAST;
 
 let plugin = module.exports = {
-	name: 'python',
+	name: 'lang-python',
 	skulpty: skulpty,
 	parser: parser,
 	init: function(esper) {
 		esper.languages.python = plugin;
+		startupCodeAST = esper.languages.javascript.esprima.parse(startupCode);
 	},
 	startupCode: () => startupCodeAST
 };

@@ -19,15 +19,23 @@ describe('Plugin: lang-python', function() {
 		var orig_run = utils.run;
 		function run(code) {
 			try {
-				code = code.split(/\r\n|[\n\r\u2028\u2029]/g).join("\n");
-				code = 'def foo():\n' + code + "\n\nfoo()";
+				code = code.replace(/\s*$/,'')
+				var lines = code.split(/\r\n|[\n\r\u2028\u2029]/g);
+
+				lines = lines.map((function(line) { return line.replace(/\t/g,'    '); }));
+				let toTrim = lines[0].match(/^[ ]*/)[0].length;
+				lines = lines.map(function (line) { return line.substring(toTrim); });
+				for (var i in lines) lines[i] = "  " + lines[i];
+
+				code = 'def foo():\n' + lines.join("\n") + "\n\nfoo()";
 				var ast = utils.parse(code);
 				var engine = new esper.Engine({language: 'python'});
 				engine.loadAST(ast);
-				return engine.runSync().toNative();
+				var result = engine.runSync();
+				return result.toNative();
 			}
 			catch (e) {
-				console.log(code + "\n" + e.toString());
+				//console.log(code + "\n" + e.stack);
 				return e;
 			}
 		}

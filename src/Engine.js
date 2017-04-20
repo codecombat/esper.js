@@ -234,14 +234,18 @@ class Engine {
 	functionFromSource(source, shouldYield) {
 		let code = source;
 		let ast = this.realm.parser(code, {inFunctionBody: true});
-		return this.functionFromAST(ast, shouldYield);
+		return this.functionFromAST(ast, shouldYield, source);
 	}
 
 	functionFromAST(ast, shouldYield, source) {
+		if ( ast.type === 'Program' ) ast = ast.body;
+		if ( Array.isArray(ast) ) ast = {type: 'BlockStatement', body: ast};
+		if ( ast.type !== 'BlockStatement' ) ast = {type: 'BlockStatement', body: [ast]};
+
 		let past = {
 			type: 'FunctionExpression',
-			body: {type: 'BlockStatement', body: ast.body},
-			params: [],
+			body: ast,
+			params: []
 		};
 		past = ASTPreprocessor.process(past, {source: source});
 		let fx = new ClosureValue(past, this.globalScope);

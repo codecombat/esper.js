@@ -10,7 +10,7 @@
 	<title>Esper.JS</title>
 
 	<!-- Bootstrap core CSS -->
-	<link href="http://bootswatch.com/darkly/bootstrap.css" rel="stylesheet">
+	<link href="https://bootswatch.com/darkly/bootstrap.css" rel="stylesheet">
 
 	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!--[if lt IE 9]>
@@ -21,13 +21,14 @@
 	<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.2/ace.js"></script>
-	<script src="http://angular-ui.github.io/ui-ace/dist/ui-ace.min.js"></script>
+	<script src="https://angular-ui.github.io/ui-ace/dist/ui-ace.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.1.0/ui-bootstrap.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.1.0/ui-bootstrap-tpls.min.js"></script>
 	<script src="esper.js"></script>
 	<script src="https://estools.github.io/escodegen/escodegen.browser.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.2/mode-lua.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.2/mode-javascript.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.2/mode-python.js"></script>	
 	<!-- <script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script> -->
 	<style>
 	.ace_editor { height: 500px; background-color: black; }
@@ -38,7 +39,12 @@
 	.footer { margin-top: 20px; }
 	.modal-body hr { margin-top: 0; margin-bottom: 0; }
 	.executing {
-		background-color: rgba(255,105,180,0.72); padding: 2px; position: absolute; z-index: 8;
+		background-color: rgba(255,105,180,0.72);
+		padding: 2px; position: absolute; z-index: 8;
+	}
+	.asthover {
+		background-color: rgba(0,105,180,0.72); 
+		padding: 2px; position: absolute; z-index: 8;
 	}
 	.nav-tabs { border: none; }
 	.nav-tabs > li.active > a, .nav-tabs > li.active > a:active, .nav-tabs > li.active > a:focus { 
@@ -50,6 +56,8 @@
 	    background-image: url(breakpoint.png);
 	    background-position: 3px center;
 	}
+	#lang-button { border-width: 0px }
+	.dropdown-menu li>a { cursor: pointer; }
 	.tab-content {
 		border: 1px solid #cccccc; border-radius: 4px; 
 		border-top-left-radius: 0px;
@@ -75,20 +83,35 @@
 </head>
 
 <body ng-app="MyApp" ng-controller="main">
-
+	<a href="https://github.com/codecombat/esper.js">
+		<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png">
+	</a>
 	<div class="container">
 		
 		<div class="header">
 			<ul class="nav nav-pills pull-right">
+			    <!-- Single button -->
+			    <li>
+					<div class="btn-group" uib-dropdown is-open="status.isopen">
+						<button id="lang-button" type="button" class="btn btn-primary" uib-dropdown-toggle ng-disabled="disabled">
+					{{language}} <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="lang-button">
+							<li role="menuitem" ng-repeat="lang in languages">
+								<a ng-click="setLangauge(lang)">{{lang}}</a>
+							</li>
+						</ul>
+					</div>
+				</li>
 				<li class="active"><a href="#" data-toggle="modal" data-target="#options">Options</a></li>
-				<li class=""><a href="/test">Tests</a></li>
+				<li ><a href="test">Tests</a></li>
 			</ul>
 
 			<input style="float: right; margin-top: 10px; margin-right: 20px; width: 200px" ng-model="speed" type="range" min="0" max="10" step="1" />
 			<h3 class="text-muted">esper.js</h3>
 		</div>
 
-		<div style="position: relative; top: -50px; margin-bottom: -40px; margin-left: 150px; margin-right: 300px">
+		<div style="position: relative; top: -50px; margin-bottom: -40px; margin-left: 150px; margin-right: 500px">
 			<div ng-if="!runMode()" style="margin-top: 10px;"><a href="#" ng-click="start()" class="btn btn-success"><i class="glyphicon glyphicon-play"></i></a> </div>
 			<div ng-if="runMode()" style="margin-top: 10px;">
 				<div  class="btn-group" role="group">
@@ -107,7 +130,7 @@
 					 useWrapMode : true,
 					 showGutter: true,
 					 theme:'twilight',
-					 mode: 'javascript',
+					 mode: language,
 					 onLoad: aceLoaded,
 					 onChange: aceChanged,
 				 }"></div>
@@ -148,7 +171,7 @@
 <script type="text/javascript" src="app.js"></script>
 <script type="text/ng-template" id="ast-node.html">
 	<div >
-		<div ng-click="tgl(ast)" style="cursor: pointer;">
+		<div ng-click="tgl(ast)" style="cursor: pointer;" ng-mouseover="hilightAST(ast)">
 			<span ng-show="!isASTOpen(ast)">[+]</span>
 			<span ng-show="isASTOpen(ast)">[-]</span>
 			 <b style="color: cyan"> {{ast.type}}</b>  ({{ast.nodeID}})  <i style="color:lime">{{ast.srcName}}</i>

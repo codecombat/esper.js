@@ -9,6 +9,6 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "coffee-script-redux": "^2.0.0-beta8"
+    "coffee-script-redux": "git://github.com/basicer/CoffeeScriptRedux"
   }
 }

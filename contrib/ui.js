@@ -34,8 +34,9 @@ server.on('request', (req, res) => {
 	} else if ( /\/?esper\.js$/.test(uri) ) {
 		file = path.join(__dirname, '..', 'dist', 'esper.js');
 		contentType = 'text/javascript';
-	} else if ( /\/?esper-test\.js$/.test(uri) ) {
-		file = path.join(__dirname, '..', 'dist', 'esper-test.js');
+	} else if ( /\/?esper-[a-z-]*\.js$/.test(uri) ) {
+		let matches = uri.match(/\/?(esper-[a-z-]*\.js)$/);
+		file = path.join(__dirname, '..', 'dist', matches[1]);
 		contentType = 'text/javascript';
 	} else if ( /\/?esper-test\.modern\.js$/.test(uri) ) {
 		file = path.join(__dirname, '..', 'dist', 'esper-test.modern.js');

@@ -9,7 +9,7 @@ function esper(opts) {
 module.exports = esper;
 
 Engine = require('./Engine');
-esper.plugins = {};
+esper.plugins = {'lang-javascript': require('./lang-javascript.js')};
 esper.Engine = Engine;
 esper.Value = require('./Value');
 esper.ASTPreprocessor = require('./ASTPreprocessor');
@@ -26,20 +26,33 @@ esper.eval = function(source) {
 esper.version = require('../package.json').version;
 
 esper.languages = {
-	javascript: require('./lang-javascript.js')
+	javascript: esper.plugins['lang-javascript']
 };
 
-esper.plugin = function(n) {
+esper.plugin = function(name) {
 	let pl;
-	if ( !esper.plugins[n] ) {
-		let pl = require('../plugins/' + n + '/index.js');
-		esper.plugins[n] = pl;
-		pl.init(esper);
+	if ( !esper.plugins[name] ) {
+		//console.log("Loading ", name, '../plugins/' + name + '/index.js');
+		let pl = require('../plugins/' + name + '/index.js');
+		if ( name != pl.name ) throw new Error(`Loaded plugin as "${n}" but it had name "${pl.name}"`);
+		if ( !esper.plugins[name] ) esper._registerPlugin(pl);
 	}
-	return esper.plugins[n];
+	return esper.plugins[name];
+};
+
+esper._registerPlugin = function(pl) {
+	if ( typeof pl.init !== "function" ) throw new Error("Tried to add a plugin without an init method.");
+	if ( typeof pl.name !== "string" ) throw new Error("Tried to add a plugin without a name.");
+	esper.plugins[pl.name] = pl;
+	pl.init(esper);
 };
 
 var list = require('../plugin-list.js');
-for ( let pl of list ) esper.plugin(pl);
+esper.pluginList = list;
+for ( let pl in list ) {
+	if ( list[pl] == "bundle" ) esper.plugin(pl);
+}
+
+
 
 

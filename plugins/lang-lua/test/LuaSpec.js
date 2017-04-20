@@ -3,7 +3,7 @@ var expect = require('chai').expect;
 var esper = require('../../../src/index.js');
 var Engine = esper.Engine;
 
-if ( !esper.plugins['lang-lua'] ) {
+if ( !esper.pluginList['lang-lua'] ) {
 	return it('Plugin: lang-lua [disabled]', function() {});
 }
 
@@ -60,8 +60,8 @@ describe('Plugin: lang-lua', function() {
 			it("Simple Test " + idx++, function(done) {
 				if ( typeof(code) != "string" ) code = code.join("\n");
 				var engine = new esper.Engine({language: 'lua'});
-				var a = engine.evalSync(code);
-				expect(a.toNative()).to.equal(result);
+				var a = engine.functionFromSourceSync(code);
+				expect(a()).to.equal(result);
 				done();
 			});
 
