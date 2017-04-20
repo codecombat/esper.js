@@ -26,8 +26,22 @@ describe('Plugin: ast-css', function() {
 		});
 	};
 
-	const fullTest = 'Literal[raw=true].test < loop:not(>:downTo(breakable)BreakStatement)~ExpressionStatement';
-
+	const fullTest = 'Literal[raw=true] < loop.test:not(>:downTo(breakable)break)~ExpressionStatement';
+	describe('dot', function() {
+		before(function() {
+			var e = new Engine();
+			e.load([
+				'hero.say',
+				'someOtherCall(10)',
+				'someIdentifier',
+				'rob[1][2]'
+			].join('\n'));
+			ast = e.evaluator.ast;
+		});
+		//ensureFind('MemberExpression.object>Identifier[name="hero"]');
+		ensureFind('CallExpression.arguments>*');
+		ensureFind('MemberExpression[computed=true].object>MemberExpression[computed=true]');
+	});
 	describe('basic', function() {
 
 		before(function() {
@@ -52,13 +66,13 @@ describe('Plugin: ast-css', function() {
 			expect(ast.matches('Program')).to.be.true;
 		});
 
-		ensureFind('WhileStatement');
+		ensureFind('while');
 		ensureFind('loop');
-		ensureFind('Literal.test < loop');
+		ensureFind('Literal < loop.test');
 		ensureFind('Literal[raw=true]');
-		ensureFind('loop BreakStatement');
-		ensureFind('IfStatement>BreakStatement');
-		ensureFind('IfStatement>BreakStatement.consequent');
+		ensureFind('loop break');
+		ensureFind('if>break');
+		ensureFind('if.consequent>break');
 		ensureFind('loop+ExpressionStatement CallExpression');
 
 		it('should detect possibly forgotten calls', function() {
@@ -97,10 +111,10 @@ describe('Plugin: ast-css', function() {
 				].join('\n'));
 				ast = e.evaluator.ast;
 			});
-			ensureFind('loop:matches(>Literal[raw=true].test)~ExpressionStatement');
+			ensureFind('loop.test:matches(>Literal[raw=true])~ExpressionStatement');
 			ensureFind('loop:matches(>:downTo(breakable)BreakStatement)');
 			ensureFind('WhileStatement>:downTo(breakable)BreakStatement');
-			ensureFind('Literal.test < loop:matches(>:downTo(breakable)BreakStatement)~ExpressionStatement');
+			ensureFind('Literal < loop.test:matches(>:downTo(breakable)BreakStatement)~ExpressionStatement');
 			ensureCantFind(fullTest);
 
 		});
