@@ -34,7 +34,7 @@ esper.plugin = function(name) {
 	if ( !esper.plugins[name] ) {
 		//console.log("Loading ", name, '../plugins/' + name + '/index.js');
 		let pl = require('../plugins/' + name + '/index.js');
-		if ( name != pl.name ) throw new Error(`Loaded plugin as "${n}" but it had name "${pl.name}"`);
+		if ( name != pl.name ) throw new Error(`Loaded plugin as "${name}" but it had name "${pl.name}"`);
 		if ( !esper.plugins[name] ) esper._registerPlugin(pl);
 	}
 	return esper.plugins[name];

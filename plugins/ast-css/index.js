@@ -213,6 +213,7 @@ function init(esper) {
 }
 
 let plugin = module.exports = {
+	name: "ast-css",
 	find: find,
 	init: init
 };
