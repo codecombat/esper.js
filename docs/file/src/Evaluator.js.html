@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/Evaluator.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ASTPreprocessor.js~ASTPreprocessor.html">ASTPreprocessor</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CompletionRecord.js~CompletionRecord.html">CompletionRecord</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html">Evaluator</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/EvaluatorInstruction.js~EvaluatorInstruction.html">EvaluatorInstruction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/GenDash.js~GenDash.html">GenDash</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Realm.js~Realm.html">Realm</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Scope.js~Scope.html">Scope</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Value.js~Value.html">Value</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">stdlib</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Array.js~ArrayObject.html">ArrayObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ArrayPrototype.js~ArrayPrototype.html">ArrayPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Assert.js~AssertFunction.html">AssertFunction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Boolean.js~Boolean.html">Boolean</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/BooleanPrototype.js~BooleanPrototype.html">BooleanPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Console.js~Console.html">Console</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Error.js~ErrorObject.html">ErrorObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ErrorPrototype.js~ErrorPrototype.html">ErrorPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Esper.js~EsperObject.html">EsperObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Function.js~FunctionObject.html">FunctionObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/FunctionPrototype.js~FunctionPrototype.html">FunctionPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/JSON.js~JSONObject.html">JSONObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Math.js~MathObject.html">MathObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Number.js~NumberObject.html">NumberObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/NumberPrototype.js~NumberPrototype.html">NumberPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Object.js~ObjectObject.html">ObjectObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ObjectPrototype.js~ObjectPrototype.html">ObjectPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExp.js~RegExpObject.html">RegExpObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExpPrototype.js~RegExpProtoype.html">RegExpProtoype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/String.js~StringObject.html">StringObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/StringPrototype.js~StringPrototype.html">StringPrototype</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">values</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ArrayValue.js~ArrayValue.html">ArrayValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/BridgeValue.js~BridgeValue.html">BridgeValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ClosureValue.js~ClosureValue.html">ClosureValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/EasyNativeFunction.js~EasyNativeFunction.html">EasyNativeFunction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/EasyObjectValue.js~EasyObjectValue.html">EasyObjectValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/EmptyValue.js~EmptyValue.html">EmptyValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ErrorValue.js~ErrorInstance.html">ErrorInstance</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/FutureValue.js~FutureValue.html">FutureValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/LinkValue.js~LinkValue.html">LinkValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/NullValue.js~NullValue.html">NullValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/NumberValue.js~NumberValue.html">NumberValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ObjectValue.js~ObjectValue.html">ObjectValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/PrimitiveValue.js~PrimitiveValue.html">PrimitiveValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/PropertyDescriptor.js~PropertyDescriptor.html">PropertyDescriptor</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/RegExpValue.js~RegExpValue.html">RegExpValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/SmartLinkValue.js~SmartLinkValue.html">SmartLinkValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/StringValue.js~StringValue.html">StringValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/UndefinedValue.js~UndefinedValue.html">UndefinedValue</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/Evaluator.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
+
+const Value = require(&apos;./Value&apos;);
+const CompletionRecord = require(&apos;./CompletionRecord&apos;);
+const ClosureValue = require(&apos;./values/ClosureValue&apos;);
+const ObjectValue = require(&apos;./values/ObjectValue&apos;);
+const FutureValue = require(&apos;./values/FutureValue&apos;);
+const RegExpValue = require(&apos;./values/RegExpValue&apos;);
+const PropertyDescriptor = require(&apos;./values/PropertyDescriptor&apos;);
+const ErrorValue = require(&apos;./values/ErrorValue&apos;);
+const ArrayValue = require(&apos;./values/ArrayValue&apos;);
+const EvaluatorInstruction = require(&apos;./EvaluatorInstruction&apos;);
+
+class Frame {
+	constructor(type, o) {
+		this.type = type;
+		for ( var k in o ) this[k] = o[k];
+	}
+}
+
+class Evaluator {
+	constructor(realm, n, s) {
+		this.realm = realm;
+		let that = this;
+		this.lastValue = null;
+		this.ast = n;
+		this.defaultYieldPower = 5;
+		this.yieldPower = this.defaultYieldPower;
+		this.debug = false;
+		this.profile = false;
+		this.lastASTNodeProcessed = null;
+		/**
+		 * @type {Object[]}
+		 * @property {Generator} generator
+		 * @property {string} type
+		 * @property {ast} ast
+		 */
+		this.frames = [];
+		if ( n ) this.pushAST(n, s);
+	}
+
+	pushAST(n, s) {
+		let that = this;
+		let gen = n ? this.branch(n,s) : (function*() {
+			return yield EvaluatorInstruction.stepMinor;
+		})();
+		this.pushFrame({generator: gen, type: &apos;program&apos;, scope: s, ast: n});
+	}
+	processLostFrames(frames) {
+		for ( let f of frames ) {
+			if ( f.profileName ) {
+				this.incrCtr(&apos;fxTime&apos;, f.profileName, Date.now() - f.entered);
+			}
+		}
+	}
+	unwindStack(target, canCrossFxBounds, label) {
+		let finallyFrames = [];
+		for ( let i = 0; i &lt; this.frames.length; ++i ) {
+			let t = this.frames[i].type;
+			let match = t == target || (target == &apos;return&apos; &amp;&amp; t == &apos;function&apos; );
+			if ( match &amp;&amp; label ) {
+				match = label == this.frames[i].label;
+			}
+
+			if ( match ) {
+				let j = i + 1;
+				for (; j &lt; this.frames.length; ++j ) if ( this.frames[j].type != &apos;finally&apos; ) break;
+				let fr = this.frames[j];
+				this.processLostFrames(this.frames.splice(0,i + 1));
+				this.saveFrameShortcuts();
+				Array.prototype.unshift.apply(this.frames, finallyFrames);
+				return fr;
+			} else if ( target == &apos;return&apos; &amp;&amp; this.frames[i].retValue ) {
+				let fr = this.frames[i];
+				this.processLostFrames(this.frames.splice(0, i));
+				this.saveFrameShortcuts();
+				Array.prototype.unshift.apply(this.frames, finallyFrames);
+				return fr;
+			} else if ( !canCrossFxBounds &amp;&amp; this.frames[i].type == &apos;function&apos; ) {
+				break;
+			} else if ( t == &apos;finally&apos; ) {
+				finallyFrames.push(this.frames[i]);
+			}
+		}
+		return false;
+	}
+
+	next(lastValueOveride) {
+		let frames = this.frames;
+
+		//Implement proper tailcalls by hand.
+		do {
+			let top = frames[0];
+			let result;
+			//console.log(top.type, top.ast &amp;&amp; top.ast.type);
+
+			if ( top.exception ) {
+				this.lastValue = top.exception;
+				delete top.exception;
+			} else if ( top.retValue ) {
+				this.lastValue = top.retValue;
+				delete top.retValue;
+			}
+
+			result = top.generator.next(lastValueOveride || this.lastValue);
+			lastValueOveride = undefined;
+			let val = result.value;
+
+			if ( val instanceof EvaluatorInstruction ) {
+				switch ( val.type ) {
+					case &apos;branch&apos;:
+						this.branchFrame(val.kind, val.ast, val.scope, val.extra);
+						continue;
+					case &apos;getEvaluator&apos;:
+						//lastValueOveride = this;
+						//continue;
+						return this.next(this);
+					case &apos;waitForFramePop&apos;:
+						continue;
+					case &apos;framePushed&apos;:
+						continue;
+					case &apos;event&apos;:
+					case &apos;step&apos;:
+						if ( this.instrument ) this.instrument(this, val);
+						return {done: false, value: val};
+				}
+			}
+
+			if ( val instanceof CompletionRecord ) {
+				this.processCompletionValueMeaning(val);
+				this.lastValue = val.value;
+				continue;
+			}
+			//if ( !val ) console.log(&quot;Bad val somewhere around&quot;, this.topFrame.type);
+			if ( this.instrument ) this.instrument(this, val);
+
+			if ( val &amp;&amp; val.then ) {
+				if ( top &amp;&amp; top.type !== &apos;await&apos; ) {
+					this.pushFrame({generator: (function *(f) {
+						while ( !f.resolved ) yield f;
+						if ( f.successful ) {
+							return f.value;
+						} else {
+							return new CompletionRecord(CompletionRecord.THROW, f.value);
+						}
+					})(val), type: &apos;await&apos;});
+				}
+				return {done: false, value: val};
+			}
+
+			this.lastValue = val;
+			if ( result.done ) {
+				let lastFrame = this.popFrame();
+
+				if ( lastFrame.profileName ) {
+					this.processLostFrames([lastFrame]);
+				}
+
+				// Latient values can&apos;t cross function calls.
+				// Dont do this, and you get coffeescript mode.
+				if ( lastFrame.type === &apos;function&apos; &amp;&amp; !lastFrame.returnLastValue ) {
+					this.lastValue = Value.undef;
+				}
+
+				if ( frames.length === 0 ) {
+					if ( this.debug ) {
+						this.dumpProfilingInformation();
+					}
+					return {done: true, value: result.value};
+				} else continue;
+			}
+		} while ( false );
+
+		return {done: false, value: this.lastValue};
+	}
+
+	processCompletionValueMeaning(val) {
+		if ( !(val.value instanceof Value) ) {
+			if ( val.value instanceof Error ) {
+				throw new Error(&apos;Value was an error: &apos; + val.value.stack);
+			}
+			throw new Error(&apos;Value isnt of type Value, its&apos; + val.value.toString());
+		}
+
+		switch ( val.type ) {
+			case CompletionRecord.CONTINUE:
+				if ( this.unwindStack(&apos;continue&apos;, false, val.target) ) return true;
+				throw new Error(&apos;Cant find matching loop frame for continue&apos;);
+			case CompletionRecord.BREAK:
+				if ( this.unwindStack(&apos;loop&apos;, false, val.target) ) return true;
+				throw new Error(&apos;Cant find matching loop frame for break&apos;);
+			case CompletionRecord.RETURN:
+				let rfr = this.unwindStack(&apos;return&apos;, false);
+				if ( !rfr ) throw new Error(&apos;Cant find function bounds.&apos;);
+				rfr.retValue = val.value;
+				return true;
+			case CompletionRecord.THROW:
+				//TODO: Fix this nonsense:
+				let e = val.value.toNative();
+				//val.value.native = e;
+
+				let smallStack;
+				if ( e &amp;&amp; e.stack ) smallStack = e.stack.split(/\n/).slice(0,4).join(&apos;\n&apos;);
+				let stk = this.buildStacktrace(e).join(&apos;\n    &apos;);
+				let bestFrame;
+				for ( let i = 0; i &lt; this.frames.length; ++i ) {
+					if ( this.frames[i].ast ) {
+						bestFrame = this.frames[i];
+						break;
+					}
+				}
+
+				if ( val.value instanceof ErrorValue ) {
+					if ( this.realm.options.addExtraErrorInfoToStacks &amp;&amp; val.value.extra ) {
+						stk += &apos;\n-------------&apos;;
+						for ( let key in val.value.extra ) {
+							let vv = val.value.extra[key];
+							if ( vv instanceof Value ) stk += `\n${key} =&gt; ${vv.debugString}`;
+							else stk += `\n${key} =&gt; ${vv}`;
+						}
+					}
+				}
+
+				if ( e instanceof Error ) {
+					e.stack = stk;
+					if ( smallStack &amp;&amp; this.realm.options.addInternalStack ) e.stack += &apos;\n-------------\n&apos; + smallStack;
+					if ( bestFrame ) {
+						e.range = bestFrame.ast.range;
+						e.loc = bestFrame.ast.loc;
+					}
+				}
+
+				if ( val.value instanceof ErrorValue ) {
+					if ( !val.value.has(&apos;stack&apos;) ) {
+						val.value.setImmediate(&apos;stack&apos;, Value.fromNative(stk));
+						val.value.properties[&apos;stack&apos;].enumerable = false;
+					}
+				}
+
+				let tfr = this.unwindStack(&apos;catch&apos;, true);
+				if ( tfr ) {
+					tfr.exception = val;
+					this.lastValue = val;
+					return true;
+				}
+				let line = -1;
+				if ( this.topFrame.ast &amp;&amp; this.topFrame.ast.attr) {
+					line = this.topFrame.ast.attr.pos.start_line;
+				}
+				//console.log(this.buildStacktrace(val.value.toNative()));
+				throw val.value.toNative();
+			case CompletionRecord.NORMAL:
+				return false;
+		}
+	}
+
+	buildStacktrace(e) {
+		let lines = e ? [e.toString()] : [];
+		for ( var f of this.frames ) {
+			//if ( f.type !== &apos;function&apos; ) continue;
+			if ( f.ast ) {
+				let line = &apos;at &apos; + (f.ast.srcName || f.ast.type) + &apos; &apos;;
+				if ( f.ast.loc ) line += &apos;(&lt;src&gt;:&apos; + f.ast.loc.start.line + &apos;:&apos; + f.ast.loc.start.column + &apos;)&apos;;
+				lines.push(line);
+			}
+		}
+		return lines;
+	}
+	pushFrame(frame) {
+		frame.srcAst = frame.ast;
+		if ( frame.yieldPower === undefined ) frame.yieldPower = this.defaultYieldPower;
+		this.frames.unshift(new Frame(frame.type, frame));
+		this.saveFrameShortcuts();
+	}
+
+	popFrame() {
+		let frame = this.frames.shift();
+		this.saveFrameShortcuts();
+		return frame;
+	}
+
+	saveFrameShortcuts() {
+		let prev = this.yieldPower;
+		if ( this.frames.length == 0 ) {
+			this.topFrame = undefined;
+			this.yieldPower = this.defaultYieldPower;
+		} else {
+			this.topFrame = this.frames[0];
+			this.yieldPower = this.topFrame.yieldPower;
+		}
+	}
+
+	fromNative(native) {
+		return this.realm.valueFromNative(native);
+	}
+
+	generator() {
+		return {next: this.next.bind(this), throw: (e) =&gt; { throw e; }};
+	}
+
+	breakFrames() {
+
+	}
+
+
+	*resolveRef(n, s, create) {
+		let oldAST = this.topFrame.ast;
+		this.topFrame.ast = n;
+		switch (n.type) {
+			case &apos;Identifier&apos;:
+				let iref = s.ref(n.name, s.realm);
+				if ( !iref ) {
+					iref = {
+						getValue: function*() {
+							let err = CompletionRecord.makeReferenceError(s.realm, `${n.name} is not defined`);
+							yield * err.addExtra({code: &apos;UndefinedVariable&apos;, when: &apos;read&apos;, ident: n.name, strict: s.strict});
+							return yield err;
+						},
+						del: function() {
+							return true;
+						}
+					};
+					if ( !create || s.strict ) {
+						iref.setValue = function *() {
+							let err = CompletionRecord.makeReferenceError(s.realm, `${n.name} is not defined`);
+							yield * err.addExtra({code: &apos;UndefinedVariable&apos;, when: &apos;write&apos;, ident: n.name, strict: s.strict});
+							return yield err;
+						};
+					} else {
+						iref.setValue = function *(value) {
+							s.global.set(n.name, value, s);
+							let aref = s.global.ref(n.name, s.realm);
+							this.setValue = aref.setValue;
+							this.getValue = aref.getValue;
+							this.del = aref.delete;
+						};
+					}
+				}
+				this.topFrame.ast = oldAST;
+				return iref;
+			case &apos;MemberExpression&apos;:
+				let idx;
+				let ref = yield * this.branch(n.object, s);
+				if ( n.computed ) {
+					idx = (yield * this.branch(n.property, s)).toNative();
+				} else {
+					idx = n.property.name;
+				}
+
+				if ( !ref ) {
+					return yield CompletionRecord.makeTypeError(s.realm, `Can&apos;t write property of undefined: ${idx}`);
+				}
+
+				if ( !ref.ref ) {
+					return yield CompletionRecord.makeTypeError(s.realm, `Can&apos;t write property of non-object type: ${idx}`);
+				}
+
+				this.topFrame.ast = oldAST;
+				return ref.ref(idx, s.realm);
+
+			default:
+				return yield CompletionRecord.makeTypeError(s.realm, `Couldnt resolve ref component: ${n.type}`);
+		}
+	}
+
+	*partialMemberExpression(left, n, s) {
+		if ( n.computed ) {
+			let right = yield * this.branch(n.property,s);
+			return yield * left.get(right.toNative(), s.realm);
+		} else if ( n.property.type == &apos;Identifier&apos;) {
+			if ( !left ) throw `Cant index ${n.property.name} of undefined`;
+			return yield * left.get(n.property.name, s.realm);
+		} else {
+			if ( !left ) throw `Cant index ${n.property.value.toString()} of undefined`;
+			return yield * left.get(n.property.value.toString(), s.realm);
+		}
+	}
+
+	//NOTE: Returns generator, fast return yield *;
+	doBinaryEvaluation(operator, left, right, realm) {
+		switch ( operator ) {
+			case &apos;==&apos;: return left.doubleEquals(right, realm);
+			case &apos;!=&apos;: return left.notEquals(right, realm);
+			case &apos;===&apos;: return left.tripleEquals(right, realm);
+			case &apos;!==&apos;: return left.doubleNotEquals(right, realm);
+			case &apos;+&apos;: return left.add(right, realm);
+			case &apos;-&apos;: return left.subtract(right, realm);
+			case &apos;*&apos;: return left.multiply(right, realm);
+			case &apos;/&apos;: return left.divide(right, realm);
+			case &apos;%&apos;: return left.mod(right, realm);
+			case &apos;|&apos;: return left.bitOr(right, realm);
+			case &apos;^&apos;: return left.bitXor(right, realm);
+			case &apos;&amp;&apos;: return left.bitAnd(right, realm);
+			case &apos;in&apos;: return right.inOperator(left, realm);
+			case &apos;instanceof&apos;: return left.instanceOf(right, realm);
+			case &apos;&gt;&apos;: return left.gt(right, realm);
+			case &apos;&lt;&apos;: return left.lt(right, realm);
+			case &apos;&gt;=&apos;: return left.gte(right, realm);
+			case &apos;&lt;=&apos;: return left.lte(right, realm);
+			case &apos;&lt;&lt;&apos;: return left.shiftLeft(right, realm);
+			case &apos;&gt;&gt;&apos;: return left.shiftRight(right, realm);
+			case &apos;&gt;&gt;&gt;&apos;: return left.shiftRightZF(right, realm);
+			default:
+				throw new Error(&apos;Unknown binary operator: &apos; + operator);
+		}
+	}
+
+	branchFrame(type, n, s, extra) {
+		let frame = {generator: this.branch(n,s), type: type, scope: s, ast: n};
+
+		if ( extra ) {
+			for ( var k in extra ) {
+				frame[k] = extra[k];
+			}
+			if ( extra.profileName ) {
+				frame.entered = Date.now();
+			}
+		}
+		this.pushFrame(frame);
+		return EvaluatorInstruction.framePushed;
+	}
+
+	beforeNode(n) {
+		let tf = this.topFrame;
+		let state = {top: tf, ast: tf.ast, node: n};
+		this.lastASTNodeProcessed = n;
+		if ( this.debug ) this.incrCtr(&apos;astInvocationCount&apos;, n.type);
+		tf.ast = n;
+		return state;
+	}
+
+	afterNode(state, r) {
+		let tf = this.topFrame;
+		tf.value = r;
+		tf.ast = state.ast;
+	}
+
+	/**
+	 * @private
+	 * @param {object} n - AST Node to dispatch
+	 * @param {Scope} s - Current evaluation scope
+	 */
+	branch(n, s) {
+		if ( !n.dispatch ) {
+			let nextStep = this.findNextStep(n.type);
+
+			n.dispatch = function*(that, n, s) {
+				let state = that.beforeNode(n);
+
+				let result = yield * nextStep(that, n,s);
+				if ( result instanceof CompletionRecord ) result = yield result;
+				if ( result &amp;&amp; result.then ) result = yield result;
+
+				that.afterNode(state, result);
+
+				return result;
+			};
+		}
+		return n.dispatch(this, n, s);
+	}
+
+	incrCtr(n, c, v) {
+		if ( v === undefined ) v = 1;
+		if ( !this.profile ) this.profile = {};
+		let o = this.profile[n];
+		if ( !o ) {
+			o = {};
+			this.profile[n] = o;
+		}
+		c = c || &apos;???&apos;;
+		if ( c in o ) o[c] += v
+		else o[c] = v;
+	}
+
+
+	dumpProfilingInformation() {
+		function lpad(s, l) { return s + new Array(Math.max(l - s.length,1)).join(&apos; &apos;); }
+
+		if ( !this.profile ) {
+			console.log(&quot;===== Profile: None collected =====&quot;);
+			return;
+		}
+
+		console.log(&apos;===== Profile =====&apos;);
+		for ( let  sec in this.profile ) {
+			console.log(sec + &apos; Stats:&apos;);
+			let o = this.profile[sec];
+			let okeys = Object.keys(o).sort((a,b) =&gt; o[b] - o[a]);
+			for ( let name of okeys ) {
+				console.log(`  ${lpad(name, 20)}: ${o[name]}`);
+			}
+		}
+		console.log(&apos;=================&apos;);
+	}
+
+	get insterment() { return this.instrument; }
+	set insterment(v) { this.instrument = v; }
+}
+
+Evaluator.prototype.findNextStep = require(&apos;./EvaluatorHandlers&apos;).findNextStep;
+
+module.exports = Evaluator;
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/Realm.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ASTPreprocessor.js~ASTPreprocessor.html">ASTPreprocessor</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CompletionRecord.js~CompletionRecord.html">CompletionRecord</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html">Evaluator</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/EvaluatorInstruction.js~EvaluatorInstruction.html">EvaluatorInstruction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/GenDash.js~GenDash.html">GenDash</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Realm.js~Realm.html">Realm</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Scope.js~Scope.html">Scope</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Value.js~Value.html">Value</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">stdlib</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Array.js~ArrayObject.html">ArrayObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ArrayPrototype.js~ArrayPrototype.html">ArrayPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Assert.js~AssertFunction.html">AssertFunction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Boolean.js~Boolean.html">Boolean</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/BooleanPrototype.js~BooleanPrototype.html">BooleanPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Console.js~Console.html">Console</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Error.js~ErrorObject.html">ErrorObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ErrorPrototype.js~ErrorPrototype.html">ErrorPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Esper.js~EsperObject.html">EsperObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Function.js~FunctionObject.html">FunctionObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/FunctionPrototype.js~FunctionPrototype.html">FunctionPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/JSON.js~JSONObject.html">JSONObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Math.js~MathObject.html">MathObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Number.js~NumberObject.html">NumberObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/NumberPrototype.js~NumberPrototype.html">NumberPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Object.js~ObjectObject.html">ObjectObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ObjectPrototype.js~ObjectPrototype.html">ObjectPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExp.js~RegExpObject.html">RegExpObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExpPrototype.js~RegExpProtoype.html">RegExpProtoype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/String.js~StringObject.html">StringObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/StringPrototype.js~StringPrototype.html">StringPrototype</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">values</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ArrayValue.js~ArrayValue.html">ArrayValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/BridgeValue.js~BridgeValue.html">BridgeValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ClosureValue.js~ClosureValue.html">ClosureValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/EasyNativeFunction.js~EasyNativeFunction.html">EasyNativeFunction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/EasyObjectValue.js~EasyObjectValue.html">EasyObjectValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/EmptyValue.js~EmptyValue.html">EmptyValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ErrorValue.js~ErrorInstance.html">ErrorInstance</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/FutureValue.js~FutureValue.html">FutureValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/LinkValue.js~LinkValue.html">LinkValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/NullValue.js~NullValue.html">NullValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/NumberValue.js~NumberValue.html">NumberValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ObjectValue.js~ObjectValue.html">ObjectValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/PrimitiveValue.js~PrimitiveValue.html">PrimitiveValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/PropertyDescriptor.js~PropertyDescriptor.html">PropertyDescriptor</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/RegExpValue.js~RegExpValue.html">RegExpValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/SmartLinkValue.js~SmartLinkValue.html">SmartLinkValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/StringValue.js~StringValue.html">StringValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/UndefinedValue.js~UndefinedValue.html">UndefinedValue</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/Realm.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
+
+const Scope = require(&apos;./Scope&apos;);
+const Value = require(&apos;./Value&apos;);
+const CompletionRecord = require(&apos;./CompletionRecord&apos;);
+const ObjectValue = require(&apos;./values/ObjectValue&apos;);
+const PrimitiveValue = require(&apos;./values/PrimitiveValue.js&apos;);
+const StringValue = require(&apos;./values/StringValue&apos;);
+const LinkValue = require(&apos;./values/LinkValue&apos;);
+const SmartLinkValue = require(&apos;./values/SmartLinkValue&apos;);
+const BridgeValue = require(&apos;./values/BridgeValue&apos;);
+const ASTPreprocessor = require(&apos;./ASTPreprocessor&apos;);
+const EasyNativeFunction = require(&apos;./values/EasyNativeFunction&apos;);
+const PropertyDescriptor = require(&apos;./values/PropertyDescriptor&apos;);
+const EvaluatorInstruction = require(&apos;./EvaluatorInstruction&apos;);
+
+const ObjectPrototype = require(&apos;./stdlib/ObjectPrototype&apos;);
+const FunctionPrototype = require(&apos;./stdlib/FunctionPrototype&apos;);
+const ObjectClass = require(&apos;./stdlib/Object&apos;);
+const FunctionClass = require(&apos;./stdlib/Function&apos;);
+const NumberPrototype = require(&apos;./stdlib/NumberPrototype&apos;);
+
+const StringPrototype = require(&apos;./stdlib/StringPrototype&apos;);
+
+const ArrayPrototype = require(&apos;./stdlib/ArrayPrototype&apos;);
+const ArrayClass = require(&apos;./stdlib/Array&apos;);
+const StringClass = require(&apos;./stdlib/String&apos;);
+const NumberClass = require(&apos;./stdlib/Number&apos;);
+
+
+const BooleanPrototype = require(&apos;./stdlib/BooleanPrototype&apos;);
+const BooleanClass = require(&apos;./stdlib/Boolean&apos;);
+const RegExpPrototype = require(&apos;./stdlib/RegExpPrototype&apos;);
+const RegExpClass = require(&apos;./stdlib/RegExp&apos;);
+const EsperClass = require(&apos;./stdlib/Esper&apos;);
+const ErrorPrototype = require(&apos;./stdlib/ErrorPrototype&apos;);
+const ErrorClass = require(&apos;./stdlib/Error&apos;);
+
+const AssertClass = require(&apos;./stdlib/Assert&apos;);
+const MathClass = require(&apos;./stdlib/Math.js&apos;);
+const ConsoleClass = require(&apos;./stdlib/Console&apos;);
+const JSONClass = require(&apos;./stdlib/JSON&apos;);
+const esper = require(&apos;./index.js&apos;);
+
+class EvalFunction extends ObjectValue {
+
+	constructor(realm) {
+		super(realm);
+		this.setPrototype(realm.FunctionPrototype);
+	}
+
+	*call(thiz, args, scope) {
+		let cv = Value.undef;
+		if ( args.length &gt; 0 ) cv = args[0];
+		if ( !(cv instanceof StringValue) ) return cv;
+		let code = yield * cv.toStringNative();
+		let ast;
+		try {
+			let oast = scope.realm.parser(code, {loc: true});
+			ast = ASTPreprocessor.process(oast);
+		} catch ( e ) {
+			var eo;
+
+			if ( e.description == &apos;Invalid left-hand side in assignment&apos; ) eo = new ReferenceError(e.description, e.fileName, e.lineNumber);
+			else eo = new SyntaxError(e.description, e.fileName, e.lineNumber);
+
+			if ( e.stack ) eo.stack = e.stack;
+			return new CompletionRecord(CompletionRecord.THROW, Value.fromNative(eo, scope.realm));
+		}
+
+		//TODO: Dont run in the parent scope if we are called indirectly
+		let bak = yield EvaluatorInstruction.branch(&apos;eval&apos;, ast, scope.parent ? scope.parent : scope);
+		//console.log(&quot;EVALED: &quot;, bak);
+		return bak;
+	}
+}
+
+
+/**
+ * Represents a javascript execution environment including
+ * it&apos;s scopes and standard libraries.
+ */
+class Realm {
+	print() {
+		console.log.apply(console, arguments);
+	}
+
+	parser(code, options) {
+		if ( !esper.languages[this.language] ) {
+			throw new Error(`Unknown language ${this.language}. Load the lang-${this.language} plugin?`);
+		}
+		return esper.languages[this.language].parser(code, options);
+	}
+
+	constructor(options) {
+		this.options = options || {};
+		this.language = options.language || &apos;javascript&apos;;
+		/** @type {Value} */
+		this.ObjectPrototype =  new ObjectPrototype(this);
+		this.FunctionPrototype = new FunctionPrototype(this);
+		this.Object = new ObjectClass(this);
+		this.ObjectPrototype._init(this);
+		this.FunctionPrototype._init(this);
+		this.Object.setPrototype(this.ObjectPrototype);
+		this.FunctionPrototype.setPrototype(this.ObjectPrototype);
+
+		//TODO: Do this when we can make the property non enumerable.
+		this.ObjectPrototype.rawSetProperty(&apos;constructor&apos;, new PropertyDescriptor(this.Object, false));
+
+		this.Function = new FunctionClass(this);
+
+		/** @type {Math} */
+		this.Math = new MathClass(this);
+
+		/** @type {NumberPrototype} */
+		this.NumberPrototype = new NumberPrototype(this);
+
+		/** @type {StringPrototype} */
+		this.StringPrototype = new StringPrototype(this);
+
+		this.ArrayPrototype = new ArrayPrototype(this);
+		this.Array = new ArrayClass(this);
+		this.String = new StringClass(this);
+		this.Number = new NumberClass(this);
+
+
+		this.BooleanPrototype = new BooleanPrototype(this);
+		this.Boolean = new BooleanClass(this);
+
+		this.RegExpPrototype = new RegExpPrototype(this);
+		this.RegExp = new RegExpClass(this);
+
+		this.Esper = new EsperClass(this);
+		this.ErrorPrototype = new ErrorPrototype(this);
+		this.Error = new ErrorClass(this);
+		this.ErrorPrototype.rawSetProperty(&apos;constructor&apos;, new PropertyDescriptor(this.Error, false));
+
+		/** @type {Value} */
+		this.console = new ConsoleClass(this);
+
+		let scope = new Scope(this);
+		scope.object.clazz = &apos;global&apos;;
+		scope.strict = options.strict || false;
+		let that = this;
+		var printer = EasyNativeFunction.makeForNative(this, function() {
+			that.print.apply(that, arguments);
+		});
+		scope.set(&apos;print&apos;, printer);
+		scope.set(&apos;log&apos;, printer);
+
+		scope.addConst(&apos;NaN&apos;, this.fromNative(NaN));
+		scope.addConst(&apos;Infinity&apos;, this.fromNative(Infinity));
+
+		scope.set(&apos;console&apos;, this.console);
+		scope.set(&apos;JSON&apos;, new JSONClass(this));
+
+		if ( options.exposeEsperGlobal ) {
+			scope.set(&apos;Esper&apos;, this.Esper);
+		}
+
+		scope.set(&apos;Math&apos;, this.Math);
+
+		scope.set(&apos;Number&apos;, this.Number);
+		scope.set(&apos;Boolean&apos;, this.Boolean);
+		scope.set(&apos;Object&apos;, this.Object);
+		scope.set(&apos;Function&apos;, this.Function);
+		scope.set(&apos;Array&apos;, this.Array);
+		scope.set(&apos;String&apos;, this.String);
+		scope.set(&apos;RegExp&apos;, this.RegExp);
+
+		scope.set(&apos;Error&apos;, this.Error);
+		scope.set(&apos;TypeError&apos;, this.TypeError = this.Error.makeErrorType(TypeError));
+		scope.set(&apos;SyntaxError&apos;, this.SyntaxError = this.Error.makeErrorType(SyntaxError));
+		scope.set(&apos;ReferenceError&apos;, this.ReferenceError = this.Error.makeErrorType(ReferenceError));
+		scope.set(&apos;RangeError&apos;, this.RangeError = this.Error.makeErrorType(RangeError));
+		scope.set(&apos;EvalError&apos;, this.EvalError = this.Error.makeErrorType(EvalError));
+		scope.set(&apos;URIError&apos;, this.URIError = this.Error.makeErrorType(URIError));
+
+
+		scope.set(&apos;parseInt&apos;, EasyNativeFunction.makeForNative(this, parseInt));
+		scope.set(&apos;parseFloat&apos;, EasyNativeFunction.makeForNative(this, parseFloat));
+		scope.set(&apos;isNaN&apos;, EasyNativeFunction.makeForNative(this, isNaN));
+		scope.set(&apos;isFinite&apos;, EasyNativeFunction.makeForNative(this, isFinite));
+
+		//scope.set(&apos;Date&apos;, this.fromNative(Date));
+		scope.set(&apos;eval&apos;, new EvalFunction(this));
+		scope.set(&apos;assert&apos;, new AssertClass(this));
+
+		scope.thiz = scope.object;
+		this.importCache = new WeakMap();
+		/** @type {Scope} */
+		this.globalScope = scope;
+	}
+
+	lookupWellKnown(v) {
+		if ( v === Object ) return this.Object;
+		if ( v === Object.prototype ) return this.ObjectPrototype;
+		if ( v === Function ) return this.Function;
+		if ( v === Function.prototype ) return this.FunctionPrototype;
+		if ( v === Math ) return this.Math;
+		if ( v === Number ) return this.Number;
+		if ( v === Number.prototype ) return this.NumberPrototype;
+		if ( v === String ) return this.String;
+		if ( v === String.prototype ) return this.StringPrototype;
+		if ( v === Array ) return this.Array;
+		if ( v === Array.prototype ) return this.ArrayPrototype;
+		if ( v === RegExp ) return this.RegExp;
+		if ( v === RegExp.prototype ) return this.RegExpPrototype;
+		if ( typeof console !== &apos;undefined&apos; &amp;&amp; v === console ) return this.console;
+
+	}
+
+	lookupWellKnownByName(v) {
+		switch ( v ) {
+			case &apos;%Object%&apos;:  return this.Object;
+			case &apos;%ObjectPrototype%&apos;:  return this.ObjectPrototype;
+			case &apos;%Function%&apos;:  return this.Function;
+			case &apos;%FunctionPrototype%&apos;:  return this.FunctionPrototype;
+			case &apos;%Math%&apos;:  return this.Math;
+			case &apos;%Number%&apos;:  return this.Number;
+			case &apos;%NumberPrototype%&apos;:  return this.NumberPrototype;
+			case &apos;%Array%&apos;:  return this.Array;
+			case &apos;%ArrayPrototype%&apos;:  return this.ArrayPrototype;
+			case &apos;%RegExp%&apos;:  return this.RegExp;
+			case &apos;%RegExpPrototype%&apos;:  return this.RegExpPrototype;
+		}
+	}
+
+	valueFromNative(native) {
+		return Value.fromNative(native, this);
+	}
+
+	fromNative(native) {
+		return Value.fromNative(native, this);
+	}
+
+	import(native, modeHint) {
+		if ( native instanceof Value ) return native;
+		if ( native === undefined ) return Value.undef;
+
+		let prim = Value.fromPrimativeNative(native);
+		if ( prim ) return prim;
+
+		//if ( this.importCache.has(native) ) {
+		//	return this.importCache.get(native);
+		//}
+
+		if ( Value.hasBookmark(native) ) {
+			return Value.getBookmark(native);
+		}
+
+		let result;
+		switch ( modeHint || this.options.foreignObjectMode ) {
+			case &apos;bridge&apos;:
+				result = BridgeValue.make(native, this);
+				break;
+			case &apos;smart&apos;:
+				result = SmartLinkValue.make(native, this);
+				break;
+			case &apos;link&apos;:
+			default:
+				result = LinkValue.make(native, this);
+				break;
+		}
+
+		//this.importCache.set(native, result);
+		return result;
+	}
+}
+
+Realm.prototype.makeForForeignObject = Realm.prototype.import;
+
+module.exports = Realm;
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

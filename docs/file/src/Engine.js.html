@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/Engine.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ASTPreprocessor.js~ASTPreprocessor.html">ASTPreprocessor</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CompletionRecord.js~CompletionRecord.html">CompletionRecord</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html">Evaluator</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/EvaluatorInstruction.js~EvaluatorInstruction.html">EvaluatorInstruction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/GenDash.js~GenDash.html">GenDash</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Realm.js~Realm.html">Realm</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Scope.js~Scope.html">Scope</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Value.js~Value.html">Value</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">stdlib</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Array.js~ArrayObject.html">ArrayObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ArrayPrototype.js~ArrayPrototype.html">ArrayPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Assert.js~AssertFunction.html">AssertFunction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Boolean.js~Boolean.html">Boolean</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/BooleanPrototype.js~BooleanPrototype.html">BooleanPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Console.js~Console.html">Console</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Error.js~ErrorObject.html">ErrorObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ErrorPrototype.js~ErrorPrototype.html">ErrorPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Esper.js~EsperObject.html">EsperObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Function.js~FunctionObject.html">FunctionObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/FunctionPrototype.js~FunctionPrototype.html">FunctionPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/JSON.js~JSONObject.html">JSONObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Math.js~MathObject.html">MathObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Number.js~NumberObject.html">NumberObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/NumberPrototype.js~NumberPrototype.html">NumberPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Object.js~ObjectObject.html">ObjectObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ObjectPrototype.js~ObjectPrototype.html">ObjectPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExp.js~RegExpObject.html">RegExpObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExpPrototype.js~RegExpProtoype.html">RegExpProtoype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/String.js~StringObject.html">StringObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/StringPrototype.js~StringPrototype.html">StringPrototype</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">values</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ArrayValue.js~ArrayValue.html">ArrayValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/BridgeValue.js~BridgeValue.html">BridgeValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ClosureValue.js~ClosureValue.html">ClosureValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/EasyNativeFunction.js~EasyNativeFunction.html">EasyNativeFunction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/EasyObjectValue.js~EasyObjectValue.html">EasyObjectValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/EmptyValue.js~EmptyValue.html">EmptyValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ErrorValue.js~ErrorInstance.html">ErrorInstance</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/FutureValue.js~FutureValue.html">FutureValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/LinkValue.js~LinkValue.html">LinkValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/NullValue.js~NullValue.html">NullValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/NumberValue.js~NumberValue.html">NumberValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ObjectValue.js~ObjectValue.html">ObjectValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/PrimitiveValue.js~PrimitiveValue.html">PrimitiveValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/PropertyDescriptor.js~PropertyDescriptor.html">PropertyDescriptor</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/RegExpValue.js~RegExpValue.html">RegExpValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/SmartLinkValue.js~SmartLinkValue.html">SmartLinkValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/StringValue.js~StringValue.html">StringValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/UndefinedValue.js~UndefinedValue.html">UndefinedValue</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/Engine.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
+
+const esper = require(&apos;./index.js&apos;);
+const Evaluator = require(&apos;./Evaluator&apos;);
+const Realm = require(&apos;./Realm&apos;);
+const Scope = require(&apos;./Scope&apos;);
+const Value = require(&apos;./Value&apos;);
+const BridgeValue = require(&apos;./values/BridgeValue&apos;);
+const ASTPreprocessor = require(&apos;./ASTPreprocessor&apos;);
+const FutureValue = require(&apos;./values/FutureValue&apos;);
+const EasyNativeFunction = require(&apos;./values/EasyNativeFunction&apos;);
+const ClosureValue = require(&apos;./values/ClosureValue&apos;);
+const SmartLinkValue = require(&apos;./values/SmartLinkValue&apos;);
+
+let defaultOptions = {
+	strict: false,
+	foreignObjectMode: &apos;link&apos;,
+	addInternalStack: false,
+	executionLimit: Infinity,
+	exposeEsperGlobal: true,
+	extraErrorInfo: false,
+	addExtraErrorInfoToStacks: false,
+	bookmarkInvocationMode: &apos;error&apos;,
+	yieldPower: 5,
+	debug: false,
+	compile: &apos;pre&apos;,
+	language: &apos;javascript&apos;
+};
+
+/**
+ * Container class for all of esper.
+ */
+class Engine {
+
+	constructor(options) {
+		options = options || {};
+		this.options = {};
+		for ( var k in defaultOptions ) {
+			if ( k in options ) this.options[k] = options[k];
+			else this.options[k] = defaultOptions[k];
+		}
+		this.realm = new Realm(this.options);
+		this.evaluator = new Evaluator(this.realm, null, this.globalScope);
+		if ( this.options.debug ) {
+			this.evaluator.debug = true;
+		}
+
+		this.evaluator.defaultYieldPower = this.options.yieldPower;
+		this.evaluator.yieldPower = this.options.yieldPower;
+
+		if ( this.language.startupCode ) {
+			this.loadLangaugeStartupCode();
+		}
+	}
+
+	loadLangaugeStartupCode() {
+		let past = this.preprocessAST(this.language.startupCode(),{});
+		let stdlib_eval = new Evaluator(this.realm, null, this.globalScope);
+		stdlib_eval.frames = [];
+		stdlib_eval.pushAST(past, this.globalScope);
+		stdlib_eval.ast = past;
+
+		let gen = stdlib_eval.generator();
+		let val = gen.next();
+		while ( !val.done ) val = gen.next();
+	}
+
+	get language() {
+		if ( !(this.options.language in esper.languages) ) {
+			throw new Error(`Unknown language ${this.options.language}. Load the lang-${this.options.language} plugin?`);
+		}
+		return esper.languages[this.options.language];
+	}
+
+	/**
+	 * Evalute `code` and return a promise for the result.
+	 *
+	 * @access public
+	 * @param {string} code - String of code to evaluate
+	 * @return {Promise&lt;Value&gt;} - The result of execution, as a promise.
+	 */
+	eval(code) {
+		let ast = this.realm.parser(code);
+		return this.evalAST(ast, {source: code});
+	}
+
+	/**
+	 * Evalute `code` and return a the result.
+	 *
+	 * @access public
+	 * @param {string} code - String of code to evaluate
+	 * @return {Value} - The result of execution
+	 */
+	evalSync(code) {
+		let ast = this.realm.parser(code);
+		return this.evalASTSync(ast, {source: code});
+	}
+
+	/**
+	 * Evalute `ast` and return a promise for the result.
+	 *
+	 * @access public
+	 * @param {Node} ast - ESTree AST representing the code to run.
+	 * @param {string} codeRef - The code that was used to generate the AST.
+	 * @return {Value} - The result of execution, as a promise.
+	 */
+	evalAST(ast, opts) {
+		//console.log(escodegen.generate(ast));
+		this.loadAST(ast, opts);
+		let p = this.run();
+		p.then(() =&gt; delete this.generator);
+		return p;
+	}
+
+	evalASTSync(ast, opts) {
+		this.loadAST(ast, opts);
+		let value = this.runSync();
+		delete this.generator;
+		return value;
+	}
+
+	preprocessAST(ast, opts) {
+		opts = opts || {};
+		opts.compile = this.options.compile;
+		let past = ASTPreprocessor.process(ast, opts);
+		return past;
+	}
+
+	loadAST(ast, opts) {
+		let past = this.preprocessAST(ast, opts);
+		this.evaluator.frames = [];
+		this.evaluator.pushAST(past, this.globalScope);
+		this.evaluator.ast = past;
+		this.generator = this.evaluator.generator();
+	}
+
+	load(code) {
+		let ast = this.realm.parser(code);
+		this.loadAST(ast, {source: code});
+	}
+
+	step() {
+		if ( !this.generator ) throw new Error(&apos;No code loaded to step&apos;);
+		let value = this.generator.next();
+		return value.done;
+	}
+
+	run() {
+		let that = this;
+		let steps = 0;
+		function handler(value) {
+			while ( !value.done ) {
+				value = that.generator.next();
+				if ( value.value &amp;&amp; value.value.then ) {
+					return value.value.then((v) =&gt; {
+						return {done: false, value: v};
+					});
+				}
+				if ( ++steps &gt; that.options.executionLimit ) throw new Error(&apos;Execution Limit Reached&apos;);
+			}
+			that.generator = undefined;
+			return value;
+		}
+		return new Promise(function(resolve, reject) {
+			try {
+				let value = that.generator.next();
+				resolve(value);
+			} catch ( e ) {
+				reject(e);
+			}
+		}).then(handler).then((v) =&gt; v.value);
+	}
+
+	runSync() {
+		let steps = 0;
+		let value = this.generator.next();
+		while ( !value.done ) {
+			value = this.generator.next();
+			if ( value.value &amp;&amp; value.value.then ) throw new Error(&apos;Can\&apos;t deal with futures when running in sync mode&apos;);
+			if ( ++steps &gt; this.options.executionLimit ) throw new Error(&apos;Execution Limit Reached&apos;);
+		}
+		return value.value;
+	}
+
+
+
+	/**
+	 * Refrence to the global scope.
+	 * @return {Scope}
+	 */
+	get globalScope() {
+		return this.realm.globalScope;
+	}
+
+	addGlobal(name, what, opts) {
+		opts = opts || {};
+		if ( !(what instanceof Value) ) what = this.realm.makeForForeignObject(what);
+		if ( !opts.const ) this.globalScope.add(name, what);
+		else this.globalScope.addConst(name, what);
+	}
+
+	addGlobalFx(name, what, opts) {
+		var x  = EasyNativeFunction.makeForNative(this.realm, what);
+		x.makeThisForNew = function*(realm) {
+			return Value.null;
+		};
+		this.addGlobal(name, x, opts);
+	}
+
+	addGlobalValue(name, what, opts) {
+		this.addGlobal(name, Value.fromNative(what, this.realm), opts);
+	}
+
+	addGlobalBridge(name, what, opts) {
+		this.addGlobal(name, new BridgeValue(what, this.realm), opts);
+	}
+
+	fetchFunctionSync(name, shouldYield) {
+		var genfx = this.fetchFunction(name, shouldYield);
+		return function() {
+			let gen = genfx.apply(this, arguments);
+			let val = gen.next();
+			//TODO: Make sure we dont await as it will loop FOREVER.
+			while (!val.done) val = gen.next();
+			return val.value;
+		};
+	}
+
+	fetchFunction(name, shouldYield) {
+		var val = this.globalScope.get(name);
+		return this.makeFunctionFromClosure(val, shouldYield);
+	}
+
+	functionFromSource(source, shouldYield) {
+		let code = source;
+		let ast = this.realm.parser(code, {inFunctionBody: true});
+		return this.functionFromAST(ast, shouldYield, source);
+	}
+
+	functionFromAST(ast, shouldYield, source) {
+		if ( ast.type === &apos;Program&apos; ) ast = ast.body;
+		if ( Array.isArray(ast) ) ast = {type: &apos;BlockStatement&apos;, body: ast};
+		if ( ast.type !== &apos;BlockStatement&apos; ) ast = {type: &apos;BlockStatement&apos;, body: [ast]};
+
+		let past = {
+			type: &apos;FunctionExpression&apos;,
+			body: ast,
+			params: []
+		};
+		past = ASTPreprocessor.process(past, {source: source});
+		let fx = new ClosureValue(past, this.globalScope);
+		return this.makeFunctionFromClosure(fx, shouldYield, this.evaluator);
+	}
+
+	functionFromSourceSync(source, shouldYield) {
+		let genfx = this.functionFromSource(source, shouldYield);
+		return function() {
+			let gen = genfx.apply(this, arguments);
+			let val = gen.next();
+			//TODO: Make sure we dont await as it will loop FOREVER.
+			while (!val.done) val = gen.next();
+			return val.value;
+		};
+	}
+
+	functionFromASTSync(ast, shouldYield, source) {
+		let genfx = this.functionFromAST(ast, shouldYield, source);
+		return function() {
+			let gen = genfx.apply(this, arguments);
+			let val = gen.next();
+			//TODO: Make sure we dont await as it will loop FOREVER.
+			while (!val.done) val = gen.next();
+			return val.value;
+		};
+	}
+
+	makeFunctionFromClosure(val, shouldYield, evalu) {
+
+		var realm = this.realm;
+		var scope = this.globalScope;
+		var that = this;
+		let evaluator = evalu || this.evaluator;
+		if ( !evaluator ) throw new Error(&quot;Evaluator is falsey&quot;);
+		if ( !val ) return;
+
+		return function*() {
+			var realThis = realm.makeForForeignObject(this);
+			var realArgs = new Array(arguments.length);
+			for ( let i = 0; i &lt; arguments.length; ++i ) {
+				realArgs[i] = realm.makeForForeignObject(arguments[i]);
+			}
+
+			if ( !val.isCallable ) {
+				throw new TypeError(val.debugStr + &apos; is not a function.&apos;);
+			}
+			let c = val.call(realThis, realArgs, scope);
+			evaluator.pushFrame({type: &apos;program&apos;, generator: c, scope: scope});
+			let gen = evaluator.generator();
+
+			let last = yield * that.filterGenerator(gen, shouldYield, evaluator);
+			if ( last ) return last.toNative();
+		};
+	}
+
+	/**
+	 * Returns a new engine that executes in the same Realm.  Useful
+	 * for creating threads / coroutines
+	 * @return {Engine}
+	 */
+	fork() {
+		let engine = new Engine(this.options);
+		var scope = this.globalScope;
+
+		engine.realm = this.realm;
+
+		engine.evaluator = this.makeEvaluatorClone();
+		return engine;
+	}
+
+	makeEvaluatorClone() {
+		let evaluator = new Evaluator(this.realm, this.evaluator.ast, this.globalScope);
+		evaluator.frames = [];
+		if ( this.evaluator.insturment ) {
+			evaluator.insturment = this.evaluator.insturment;
+		}
+		if ( this.evaluator.debug ) {
+			evaluator.debug = true;
+		}
+
+		if ( SmartLinkValue.isThreadPrivileged(this.evaluator) ) {
+			SmartLinkValue.makeThreadPrivileged(evaluator);
+		}
+
+		return evaluator;
+	}
+
+	*filterGenerator(gen, shouldYield, evaluator) {
+		let value = gen.next();
+		let steps = 0;
+		if ( !evaluator ) throw new Error(&quot;Evaluator is falsey&quot;);
+		while ( !value.done ) {
+			if ( !shouldYield ) yield;
+			else if ( evaluator.topFrame.type == &apos;await&apos; ) {
+				if ( !value.value.resolved ) yield;
+			} else {
+				var yieldValue = shouldYield(this, evaluator, value.value);
+				if ( yieldValue !== false ) yield yieldValue;
+			}
+			value = gen.next(value.value);
+			if ( ++steps &gt; this.options.executionLimit ) throw new Error(&apos;Execution Limit Reached&apos;);
+		}
+		return value.value;
+	}
+}
+
+module.exports = Engine;
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

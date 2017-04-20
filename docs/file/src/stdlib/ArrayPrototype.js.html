@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/stdlib/ArrayPrototype.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ASTPreprocessor.js~ASTPreprocessor.html">ASTPreprocessor</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CompletionRecord.js~CompletionRecord.html">CompletionRecord</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html">Evaluator</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/EvaluatorInstruction.js~EvaluatorInstruction.html">EvaluatorInstruction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/GenDash.js~GenDash.html">GenDash</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Realm.js~Realm.html">Realm</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Scope.js~Scope.html">Scope</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Value.js~Value.html">Value</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">stdlib</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Array.js~ArrayObject.html">ArrayObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ArrayPrototype.js~ArrayPrototype.html">ArrayPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Assert.js~AssertFunction.html">AssertFunction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Boolean.js~Boolean.html">Boolean</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/BooleanPrototype.js~BooleanPrototype.html">BooleanPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Console.js~Console.html">Console</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Error.js~ErrorObject.html">ErrorObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ErrorPrototype.js~ErrorPrototype.html">ErrorPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Esper.js~EsperObject.html">EsperObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Function.js~FunctionObject.html">FunctionObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/FunctionPrototype.js~FunctionPrototype.html">FunctionPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/JSON.js~JSONObject.html">JSONObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Math.js~MathObject.html">MathObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Number.js~NumberObject.html">NumberObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/NumberPrototype.js~NumberPrototype.html">NumberPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Object.js~ObjectObject.html">ObjectObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ObjectPrototype.js~ObjectPrototype.html">ObjectPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExp.js~RegExpObject.html">RegExpObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExpPrototype.js~RegExpProtoype.html">RegExpProtoype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/String.js~StringObject.html">StringObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/StringPrototype.js~StringPrototype.html">StringPrototype</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">values</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ArrayValue.js~ArrayValue.html">ArrayValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/BridgeValue.js~BridgeValue.html">BridgeValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ClosureValue.js~ClosureValue.html">ClosureValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/EasyNativeFunction.js~EasyNativeFunction.html">EasyNativeFunction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/EasyObjectValue.js~EasyObjectValue.html">EasyObjectValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/EmptyValue.js~EmptyValue.html">EmptyValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ErrorValue.js~ErrorInstance.html">ErrorInstance</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/FutureValue.js~FutureValue.html">FutureValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/LinkValue.js~LinkValue.html">LinkValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/NullValue.js~NullValue.html">NullValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/NumberValue.js~NumberValue.html">NumberValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ObjectValue.js~ObjectValue.html">ObjectValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/PrimitiveValue.js~PrimitiveValue.html">PrimitiveValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/PropertyDescriptor.js~PropertyDescriptor.html">PropertyDescriptor</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/RegExpValue.js~RegExpValue.html">RegExpValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/SmartLinkValue.js~SmartLinkValue.html">SmartLinkValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/StringValue.js~StringValue.html">StringValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/UndefinedValue.js~UndefinedValue.html">UndefinedValue</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/stdlib/ArrayPrototype.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
+
+const EasyObjectValue = require(&apos;../values/EasyObjectValue&apos;);
+const ObjectValue = require(&apos;../values/ObjectValue&apos;);
+const ArrayValue = require(&apos;../values/ArrayValue&apos;);
+const PrimitiveValue = require(&apos;../values/PrimitiveValue&apos;);
+const CompletionRecord = require(&apos;../CompletionRecord&apos;);
+const Value = require(&apos;../Value&apos;);
+const _g = require(&apos;../GenDash&apos;);
+
+function *forceArrayness(v) {
+	if ( !v.has(&apos;length&apos;) ) {
+		yield * v.set(&apos;length&apos;, Value.zero);
+	}
+}
+
+function *getLength(v) {
+	let m = yield * v.get(&apos;length&apos;);
+	return yield * m.toUIntNative();
+}
+
+var defaultSeperator = Value.fromNative(&apos;,&apos;);
+
+function *shiftRight(arr, start, amt) {
+	amt = amt || 1;
+	let len = yield * getLength(arr);
+	for ( let i = len - 1; i &gt;= start; --i ) {
+		let cur = yield * arr.get(i);
+		yield * arr.set(i + amt, cur);
+	}
+	yield * arr.set(start, Value.undef);
+}
+
+function *shiftLeft(arr, start, amt) {
+	let len = yield * getLength(arr);
+	for ( let i = start; i &lt; len; ++i ) {
+		let cur = yield * arr.get(i);
+		yield * arr.set(i - amt, cur);
+	}
+	for ( let i = len - amt; i &lt; len; ++i ) {
+		delete arr.properties[i];
+	}
+	yield * arr.set(&apos;length&apos;, Value.fromNative(len - amt));
+}
+
+
+class ArrayPrototype extends EasyObjectValue {
+
+	static *concat$e(thiz, args, s) {
+		let fx = Value.undef;
+		let targ = Value.undef;
+		if ( args.length &gt; 0 ) fx = args[0];
+		if ( args.length &gt; 1 ) targ = args[1];
+
+		var out = [];
+		var toCopy = [thiz].concat(args);
+
+		let idx = 0;
+		for ( let arr of toCopy ) {
+			if ( arr instanceof PrimitiveValue ) {
+				out[idx++] = arr;
+			} else if ( !arr.has(&apos;length&apos;) ) {
+				out[idx++] = arr;
+			} else {
+				let l = yield * getLength(arr);
+				for ( let i = 0; i &lt; l; ++i ) {
+					let tv = yield * arr.get(i, s.realm);
+					out[idx++] = tv;
+				}
+			}
+		}
+
+		return ArrayValue.make(out, s.realm);
+	}
+
+	static *filter$e(thiz, args, s) {
+		let fx = Value.undef;
+		let targ = Value.undef;
+		if ( args.length &gt; 0 ) fx = args[0];
+		if ( args.length &gt; 1 ) targ = args[1];
+
+		let test = function *(v, i) {
+			let res = yield * fx.call(targ, [v, Value.fromNative(i), thiz], s);
+			return res.truthy;
+		};
+
+		var out = [];
+
+		let l = yield * getLength(thiz);
+		for ( let i = 0; i &lt; l; ++i ) {
+			let tv = yield * thiz.get(i);
+			let tru = yield * test(tv, i);
+			if ( tru ) out.push(tv);
+		}
+
+		return ArrayValue.make(out, s.realm);
+	}
+
+	static *every$e(thiz, args, s) {
+		let fx = Value.undef;
+		let targ = Value.undef;
+		if ( args.length &gt; 0 ) fx = args[0];
+		if ( args.length &gt; 1 ) targ = args[1];
+
+		let test = function *(v, i) {
+			let res = yield * fx.call(targ, [v, Value.fromNative(i), thiz], s);
+			return res.truthy;
+		};
+
+		let l = yield * getLength(thiz);
+		for ( let i = 0; i &lt; l; ++i ) {
+			let tv = yield * thiz.get(i);
+			let tru = yield * test(tv, i);
+			if ( !tru ) return Value.false;
+		}
+
+		return Value.true;
+	}
+
+	static *some$e(thiz, args, s) {
+		let fx = Value.undef;
+		let targ = Value.undef;
+		if ( args.length &gt; 0 ) fx = args[0];
+		if ( args.length &gt; 1 ) targ = args[1];
+
+		let test = function *(v, i) {
+			let res = yield * fx.call(targ, [v, Value.fromNative(i), thiz], s);
+			return res.truthy;
+		};
+
+		let l = yield * getLength(thiz);
+		for ( let i = 0; i &lt; l; ++i ) {
+			let tv = yield * thiz.get(i);
+			let tru = yield * test(tv, i);
+			if ( tru ) return Value.true;
+		}
+
+		return Value.false;
+	}
+
+	static *map$e(thiz, args, s) {
+		let fx = Value.undef;
+		let targ = Value.undef;
+		if ( args.length &gt; 0 ) fx = args[0];
+		if ( !fx.isCallable ) return yield CompletionRecord.makeTypeError(s.realm, &apos;Arg2 not calalble.&apos;);
+
+		if ( args.length &gt; 1 ) targ = args[1];
+
+		let l = yield * getLength(thiz);
+		let out = new Array(l);
+		for ( let i = 0; i &lt; l; ++i ) {
+			if ( !thiz.has(i) ) continue;
+			let tv = yield * thiz.get(i);
+			let v = yield yield * fx.call(targ, [tv, Value.fromNative(i), thiz], s);
+			out[i] = v;
+		}
+
+		return ArrayValue.make(out, s.realm);
+	}
+
+	static *forEach$e(thiz, args, s) {
+		let fx = Value.undef;
+		let targ = Value.undef;
+		if ( args.length &gt; 0 ) fx = args[0];
+		if ( args.length &gt; 1 ) targ = args[1];
+
+		let l = yield * getLength(thiz);
+		for ( let i = 0; i &lt; l; ++i ) {
+			if ( !thiz.has(i) ) continue;
+			let v = yield * thiz.get(i);
+			let res = yield * fx.call(targ, [v, Value.fromNative(i), thiz], s);
+		}
+
+		return Value.undef;
+	}
+
+	static *indexOf$e(thiz, args) {
+		//TODO: Call ToObject() on thisz;
+		let l = yield * getLength(thiz);
+		let match = args[0] || Value.undef;
+		let start = args[1] || Value.zero;
+		let startn = (yield * start.toNumberValue()).native;
+
+		if ( isNaN(startn) ) startn = 0;
+		else if ( startn &lt; 0 ) startn = 0;
+
+		if ( l &gt; startn ) {
+			for ( let i = startn; i &lt; l; ++i ) {
+				let v = yield * thiz.get(i);
+				if ( !v ) v = Value.undef;
+				if ( (yield * v.tripleEquals(match)).truthy ) return Value.fromNative(i);
+
+			}
+		}
+		return Value.fromNative(-1);
+	}
+
+	static *lastIndexOf$e(thiz, args) {
+		//TODO: Call ToObject() on thisz;
+		let l = yield * getLength(thiz);
+		let match = args[0] || Value.undef;
+		let startn = l - 1;
+
+		if ( args.length &gt; 1 ) startn = yield * args[1].toIntNative();
+		if ( isNaN(startn) ) startn = 0;
+		if ( startn &lt; 0 ) startn += l;
+		if ( startn &gt; l ) startn = l;
+		if ( startn &lt; 0 ) return Value.fromNative(-1);
+
+
+		//if ( isNaN(startn) ) startn = l - 1;
+
+		for ( let i = startn; i &gt;= 0; --i ) {
+			if ( !thiz.has(i) ) continue;
+			let v = yield * thiz.get(i);
+			if ( !v ) v = Value.undef;
+			if ( (yield * v.tripleEquals(match)).truthy ) return Value.fromNative(i);
+
+		}
+
+		return Value.fromNative(-1);
+	}
+
+	static *join$e(thiz, args) {
+		//TODO: Call ToObject() on thisz;
+		let l = yield * getLength(thiz);
+		let seperator = args[0] || defaultSeperator;
+		let sepstr = (yield * seperator.toStringValue()).native;
+		let strings = new Array(l);
+		for ( let i = 0; i &lt; l; ++i ) {
+			if ( !thiz.has(i) ) continue;
+			let v = yield * thiz.get(i);
+			if ( !v ) strings[i] = &apos;&apos;;
+			else {
+				if ( v.specTypeName == &apos;undefined&apos; || v.specTypeName == &apos;null&apos; ) {
+					continue;
+				}
+				let sv = (yield * v.toStringValue());
+				if ( sv ) strings[i] = sv.native;
+				else strings[i] = undefined; //TODO: THROW HERE?
+			}
+		}
+		return Value.fromNative(strings.join(sepstr));
+	}
+
+	static *push$e(thiz, args) {
+		let l = yield * getLength(thiz);
+
+		for ( let i = 0; i &lt; args.length; ++i ) {
+			yield * thiz.set(l + i, args[i]);
+		}
+
+		let nl = Value.fromNative(l + args.length);
+		yield * thiz.set(&apos;length&apos;, nl);
+		return Value.fromNative(l + args.length);
+	}
+
+	static *pop$e(thiz, args) {
+		yield * forceArrayness(thiz);
+		let l = yield * getLength(thiz);
+		if ( l &lt; 1 ) return Value.undef;
+		let val = yield * thiz.get(l - 1);
+		yield * thiz.set(&apos;length&apos;, Value.fromNative(l - 1));
+		return val;
+	}
+
+	static *reverse$e(thiz, args, s) {
+		let l = yield * getLength(thiz);
+		for ( let i = 0; i &lt; Math.floor(l / 2); ++i ) {
+			let lv = yield * thiz.get(i);
+			let rv = yield * thiz.get(l - i - 1);
+			yield * thiz.set(l - i - 1, lv, s);
+			yield * thiz.set(i, rv, s);
+		}
+
+		return thiz;
+	}
+
+	static *reduce$e(thiz, args, s) {
+		let l = yield * getLength(thiz);
+		let acc;
+		let fx = args[0];
+
+		if ( args.length &lt; 1 || !fx.isCallable ) {
+			return yield CompletionRecord.makeTypeError(s.realm, &apos;First argument to reduce must be a function.&apos;);
+		}
+
+		if ( args.length &gt; 1 ) {
+			acc = args[1];
+		}
+
+		for ( let i = 0; i &lt; l; ++i ) {
+			if ( !thiz.has(i) ) continue;
+			let lv = yield * thiz.get(i);
+			if ( !acc ) {
+				acc = lv;
+				continue;
+			}
+			acc = yield * fx.call(thiz, [acc, lv], s);
+		}
+		if ( !acc ) return yield CompletionRecord.makeTypeError(s.realm, &apos;Reduce an empty array with no initial value.&apos;);
+		return acc;
+	}
+
+	//TODO: Factor some stuff out of reduce and reduce right into a common function.
+	static *reduceRight$e(thiz, args, s) {
+		let l = yield * getLength(thiz);
+		let acc;
+		let fx = args[0];
+
+		if ( args.length &lt; 1 || !fx.isCallable ) {
+			return yield CompletionRecord.makeTypeError(s.realm, &apos;First argument to reduceRight must be a function.&apos;);
+		}
+
+		if ( args.length &gt; 1 ) {
+			acc = args[1];
+		}
+
+		for ( let i = l - 1; i &gt;= 0; --i ) {
+			if ( !thiz.has(i) ) continue;
+			let lv = yield * thiz.get(i);
+			if ( !acc ) {
+				acc = lv;
+				continue;
+			}
+			acc = yield * fx.call(thiz, [acc, lv], s);
+		}
+
+		if ( !acc ) return yield CompletionRecord.makeTypeError(s.realm, &apos;Reduce an empty array with no initial value.&apos;);
+		return acc;
+	}
+
+	static *shift$e(thiz, args) {
+		yield * forceArrayness(thiz);
+		let l = yield * getLength(thiz);
+		if ( l &lt; 1 ) return Value.undef;
+
+		let val = yield * thiz.get(0);
+		yield * shiftLeft(thiz, 1, 1);
+		return val;
+	}
+
+	static *slice$e(thiz, args, s) {
+		//TODO: Call ToObject() on thisz;
+		let length = yield * getLength(thiz);
+		let result = [];
+
+		let start = 0;
+		let end = length;
+
+
+		if ( args.length &gt; 0 ) start = ( yield * args[0].toIntNative() );
+		if ( args.length &gt; 1 ) end = ( yield * args[1].toIntNative() );
+
+		if ( start &lt; 0 ) start = length + start;
+		if ( end &lt; 0 ) end = length + end;
+
+		if ( end &gt; length ) end = length;
+		if ( start &lt; 0 ) start = 0;
+
+
+		for ( let i = start; i &lt; end; ++i ) {
+			result.push(yield * thiz.get(&apos;&apos; + i ));
+		}
+
+
+		return ArrayValue.make(result, s.realm);
+	}
+
+	static *splice$e(thiz, args, s) {
+		//TODO: Call ToObject() on thisz;
+
+
+		let result = [];
+
+
+		let deleteCount;
+		let len = yield * getLength(thiz);
+		let start = len;
+
+		if ( isNaN(len) ) return thiz;
+
+		if ( args.length &gt; 0 ) start = yield * args[0].toIntNative();
+
+		if ( start &gt; len ) start = len;
+		else if ( start &lt; 0 ) start = len - start;
+
+		if ( args.length &gt; 1 ) deleteCount = yield * args[1].toIntNative();
+		else deleteCount = len - start;
+
+		if ( deleteCount &gt; (len - start) ) deleteCount = len - start;
+		if ( deleteCount &lt; 0 ) deleteCount = 0;
+
+		let deleted = [];
+		let toAdd = args.slice(2);
+		let delta = toAdd.length - deleteCount;
+
+		for ( let i = start; i &lt; start + deleteCount; ++i ) {
+			deleted.push(yield * thiz.get(i));
+		}
+
+		if ( delta &gt; 0 ) yield * shiftRight(thiz, start, delta);
+		if ( delta &lt; 0 ) yield * shiftLeft(thiz, start - delta, -delta);
+
+		for ( let i = 0; i &lt; toAdd.length; ++i ) {
+			yield * thiz.set(start + i, toAdd[i]);
+		}
+
+		yield * thiz.set(&apos;length&apos;, Value.fromNative(len + delta));
+
+
+		return ArrayValue.make(deleted, s.realm);
+	}
+
+	static *sort$e(thiz, args, s) {
+		let length = yield * getLength(thiz);
+		let vals = new Array(length);
+		for ( let i = 0; i &lt; length; ++i ) {
+			vals[i] = yield * thiz.get(i);
+		}
+
+		let comp = function *(left, right) {
+			let l = yield * left.toStringValue();
+			if ( !l ) return false;
+			let r = yield * right.toStringValue();
+			if ( !r ) return true;
+			return (yield * l.lt(r)).truthy;
+		};
+
+		if ( args.length &gt; 0 ) {
+			let fx = args[0];
+			if ( !fx.isCallable ) return yield CompletionRecord.makeTypeError(s.realm, &apos;Arg2 not calalble.&apos;);
+			comp = function *(left, right) {
+				let res = yield * fx.call(Value.undef, [left, right], s);
+				return ( yield * res.lt(Value.fromNative(0)) ).truthy;
+			};
+		}
+
+		let nue = yield * _g.sort(vals, comp);
+
+		for ( let i = 0; i &lt; length; ++i ) {
+			yield * thiz.set(i, nue[i]);
+		}
+		return thiz;
+	}
+
+	static *toString$e(thiz, args, s) {
+		let joinfn = yield * thiz.get(&apos;join&apos;);
+		if ( !joinfn || !joinfn.isCallable ) {
+			let ots = yield * s.realm.ObjectPrototype.get(&apos;toString&apos;);
+			return yield * ots.call(thiz, []);
+		} else {
+			return yield * joinfn.call(thiz, [defaultSeperator]);
+		}
+
+	}
+
+	static *unshift$e(thiz, args, s) {
+		let amt = args.length;
+		let len = yield * getLength(thiz);
+		if ( isNaN(len) ) len = 0;
+		yield * shiftRight(thiz, 0, amt);
+		for ( let i = 0; i &lt; amt; ++i ) {
+			yield * thiz.set(i, args[i]);
+		}
+
+		let nl = Value.fromNative(len + amt);
+		yield * thiz.set(&apos;length&apos;, nl, s);
+		return nl;
+	}
+
+}
+
+ArrayPrototype.prototype.wellKnownName = &apos;%ArrayPrototype%&apos;;
+
+module.exports = ArrayPrototype;
+
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

@@ -1,0 +1,865 @@
+{
+  "coverage": "9.37%",
+  "expectCount": 629,
+  "actualCount": 59,
+  "files": {
+    "src/ASTPreprocessor.js": {
+      "expectCount": 6,
+      "actualCount": 0,
+      "undocumentLines": [
+        59,
+        166,
+        165,
+        61,
+        169,
+        80
+      ]
+    },
+    "src/Realm.js": {
+      "expectCount": 32,
+      "actualCount": 7,
+      "undocumentLines": [
+        122,
+        121,
+        128,
+        127,
+        135,
+        134,
+        133,
+        110,
+        100,
+        124,
+        101,
+        131,
+        130,
+        123,
+        95,
+        233,
+        237,
+        190,
+        97,
+        195,
+        213,
+        96,
+        88,
+        84,
+        229
+      ]
+    },
+    "src/stdlib/Array.js": {
+      "expectCount": 4,
+      "actualCount": 0,
+      "undocumentLines": [
+        7,
+        8,
+        17,
+        22
+      ]
+    },
+    "src/stdlib/ArrayPrototype.js": {
+      "expectCount": 21,
+      "actualCount": 0,
+      "undocumentLines": [
+        47,
+        49,
+        99,
+        76,
+        161,
+        177,
+        224,
+        198,
+        141,
+        258,
+        246,
+        279,
+        306,
+        267,
+        333,
+        343,
+        120,
+        415,
+        370,
+        447,
+        458
+      ]
+    },
+    "src/values/ArrayValue.js": {
+      "expectCount": 10,
+      "actualCount": 0,
+      "undocumentLines": [
+        10,
+        20,
+        12,
+        80,
+        16,
+        29,
+        65,
+        33,
+        38,
+        44
+      ]
+    },
+    "src/stdlib/Assert.js": {
+      "expectCount": 3,
+      "actualCount": 0,
+      "undocumentLines": [
+        8,
+        38,
+        10
+      ]
+    },
+    "src/stdlib/Boolean.js": {
+      "expectCount": 4,
+      "actualCount": 0,
+      "undocumentLines": [
+        7,
+        8,
+        22,
+        23
+      ]
+    },
+    "src/stdlib/BooleanPrototype.js": {
+      "expectCount": 3,
+      "actualCount": 0,
+      "undocumentLines": [
+        7,
+        8,
+        18
+      ]
+    },
+    "src/values/BridgeValue.js": {
+      "expectCount": 38,
+      "actualCount": 2,
+      "undocumentLines": [
+        53,
+        46,
+        63,
+        64,
+        65,
+        11,
+        120,
+        56,
+        50,
+        81,
+        67,
+        69,
+        72,
+        73,
+        128,
+        68,
+        70,
+        20,
+        16,
+        116,
+        57,
+        55,
+        13,
+        77,
+        89,
+        32,
+        85,
+        59,
+        60,
+        61,
+        54,
+        42,
+        51,
+        124,
+        76,
+        75
+      ]
+    },
+    "src/values/ClosureValue.js": {
+      "expectCount": 13,
+      "actualCount": 3,
+      "undocumentLines": [
+        36,
+        45,
+        22,
+        146,
+        21,
+        24,
+        23,
+        147,
+        32,
+        41
+      ]
+    },
+    "src/CompletionRecord.js": {
+      "expectCount": 11,
+      "actualCount": 1,
+      "undocumentLines": [
+        5,
+        17,
+        6,
+        40,
+        26,
+        33,
+        19,
+        14,
+        12,
+        13
+      ]
+    },
+    "src/stdlib/Console.js": {
+      "expectCount": 6,
+      "actualCount": 0,
+      "undocumentLines": [
+        20,
+        24,
+        22,
+        21,
+        25,
+        23
+      ]
+    },
+    "src/stdlib/Math.js": {
+      "expectCount": 9,
+      "actualCount": 0,
+      "undocumentLines": [
+        29,
+        30,
+        31,
+        32,
+        33,
+        26,
+        34,
+        35,
+        36
+      ]
+    },
+    "src/values/EasyNativeFunction.js": {
+      "expectCount": 7,
+      "actualCount": 0,
+      "undocumentLines": [
+        8,
+        34,
+        9,
+        60,
+        13,
+        20,
+        56
+      ]
+    },
+    "src/values/EasyObjectValue.js": {
+      "expectCount": 4,
+      "actualCount": 0,
+      "undocumentLines": [
+        10,
+        20,
+        11,
+        103
+      ]
+    },
+    "src/values/EmptyValue.js": {
+      "expectCount": 8,
+      "actualCount": 1,
+      "undocumentLines": [
+        7,
+        8,
+        16,
+        26,
+        14,
+        22,
+        12
+      ]
+    },
+    "src/Engine.js": {
+      "expectCount": 33,
+      "actualCount": 6,
+      "undocumentLines": [
+        195,
+        214,
+        202,
+        210,
+        35,
+        115,
+        43,
+        229,
+        218,
+        337,
+        240,
+        266,
+        234,
+        255,
+        134,
+        68,
+        137,
+        129,
+        56,
+        320,
+        277,
+        37,
+        122,
+        42,
+        148,
+        174,
+        142
+      ]
+    },
+    "src/values/ErrorValue.js": {
+      "expectCount": 6,
+      "actualCount": 0,
+      "undocumentLines": [
+        9,
+        50,
+        10,
+        99,
+        14,
+        38
+      ]
+    },
+    "src/stdlib/Error.js": {
+      "expectCount": 10,
+      "actualCount": 0,
+      "undocumentLines": [
+        15,
+        56,
+        86,
+        16,
+        27,
+        69,
+        44,
+        20,
+        52,
+        18
+      ]
+    },
+    "src/stdlib/ErrorPrototype.js": {
+      "expectCount": 4,
+      "actualCount": 0,
+      "undocumentLines": [
+        13,
+        15,
+        16,
+        18
+      ]
+    },
+    "src/stdlib/Esper.js": {
+      "expectCount": 6,
+      "actualCount": 0,
+      "undocumentLines": [
+        8,
+        9,
+        25,
+        29,
+        21,
+        15
+      ]
+    },
+    "src/Evaluator.js": {
+      "expectCount": 38,
+      "actualCount": 1,
+      "undocumentLines": [
+        21,
+        432,
+        26,
+        423,
+        408,
+        301,
+        257,
+        22,
+        29,
+        27,
+        335,
+        380,
+        476,
+        293,
+        297,
+        334,
+        462,
+        497,
+        496,
+        497,
+        31,
+        25,
+        88,
+        366,
+        276,
+        177,
+        49,
+        30,
+        42,
+        269,
+        23,
+        306,
+        282,
+        333,
+        285,
+        56,
+        28
+      ]
+    },
+    "src/EvaluatorInstruction.js": {
+      "expectCount": 7,
+      "actualCount": 0,
+      "undocumentLines": [
+        4,
+        23,
+        5,
+        18,
+        14,
+        22,
+        19
+      ]
+    },
+    "src/stdlib/Function.js": {
+      "expectCount": 4,
+      "actualCount": 0,
+      "undocumentLines": [
+        9,
+        10,
+        38,
+        37
+      ]
+    },
+    "src/stdlib/FunctionPrototype.js": {
+      "expectCount": 9,
+      "actualCount": 0,
+      "undocumentLines": [
+        42,
+        47,
+        61,
+        77,
+        96,
+        43,
+        44,
+        45,
+        82
+      ]
+    },
+    "src/values/FutureValue.js": {
+      "expectCount": 12,
+      "actualCount": 1,
+      "undocumentLines": [
+        18,
+        20,
+        62,
+        25,
+        61,
+        49,
+        42,
+        22,
+        23,
+        56,
+        24
+      ]
+    },
+    "src/GenDash.js": {
+      "expectCount": 10,
+      "actualCount": 0,
+      "undocumentLines": [
+        23,
+        38,
+        24,
+        71,
+        62,
+        29,
+        46,
+        48,
+        75,
+        53
+      ]
+    },
+    "src/stdlib/JSON.js": {
+      "expectCount": 3,
+      "actualCount": 0,
+      "undocumentLines": [
+        69,
+        70,
+        98
+      ]
+    },
+    "src/values/LinkValue.js": {
+      "expectCount": 46,
+      "actualCount": 2,
+      "undocumentLines": [
+        69,
+        58,
+        79,
+        80,
+        81,
+        17,
+        162,
+        72,
+        66,
+        97,
+        142,
+        154,
+        83,
+        85,
+        88,
+        89,
+        138,
+        170,
+        183,
+        84,
+        86,
+        23,
+        62,
+        158,
+        73,
+        71,
+        19,
+        93,
+        106,
+        20,
+        38,
+        50,
+        75,
+        76,
+        77,
+        70,
+        54,
+        151,
+        174,
+        152,
+        67,
+        166,
+        92,
+        91
+      ]
+    },
+    "src/stdlib/Number.js": {
+      "expectCount": 9,
+      "actualCount": 0,
+      "undocumentLines": [
+        22,
+        23,
+        25,
+        26,
+        7,
+        24,
+        8,
+        19,
+        20
+      ]
+    },
+    "src/values/NullValue.js": {
+      "expectCount": 10,
+      "actualCount": 0,
+      "undocumentLines": [
+        6,
+        16,
+        24,
+        9,
+        10,
+        7,
+        21,
+        20,
+        22,
+        12
+      ]
+    },
+    "src/stdlib/NumberPrototype.js": {
+      "expectCount": 6,
+      "actualCount": 0,
+      "undocumentLines": [
+        6,
+        18,
+        27,
+        36,
+        45,
+        8
+      ]
+    },
+    "src/values/NumberValue.js": {
+      "expectCount": 3,
+      "actualCount": 0,
+      "undocumentLines": [
+        7,
+        23,
+        10
+      ]
+    },
+    "src/stdlib/Object.js": {
+      "expectCount": 17,
+      "actualCount": 0,
+      "undocumentLines": [
+        99,
+        100,
+        107,
+        110,
+        142,
+        134,
+        177,
+        225,
+        220,
+        231,
+        205,
+        188,
+        167,
+        210,
+        199,
+        157,
+        240
+      ]
+    },
+    "src/stdlib/ObjectPrototype.js": {
+      "expectCount": 8,
+      "actualCount": 0,
+      "undocumentLines": [
+        9,
+        10,
+        15,
+        23,
+        38,
+        43,
+        45,
+        51
+      ]
+    },
+    "src/values/ObjectValue.js": {
+      "expectCount": 34,
+      "actualCount": 1,
+      "undocumentLines": [
+        143,
+        30,
+        176,
+        238,
+        107,
+        144,
+        224,
+        32,
+        158,
+        165,
+        198,
+        234,
+        103,
+        209,
+        153,
+        172,
+        299,
+        190,
+        37,
+        34,
+        80,
+        33,
+        40,
+        61,
+        84,
+        213,
+        304,
+        116,
+        282,
+        287,
+        260,
+        289,
+        295
+      ]
+    },
+    "src/values/PrimitiveValue.js": {
+      "expectCount": 26,
+      "actualCount": 1,
+      "undocumentLines": [
+        84,
+        59,
+        13,
+        51,
+        39,
+        63,
+        30,
+        101,
+        86,
+        87,
+        109,
+        97,
+        15,
+        91,
+        93,
+        22,
+        34,
+        47,
+        119,
+        113,
+        114,
+        82,
+        105,
+        90,
+        89
+      ]
+    },
+    "src/values/PropertyDescriptor.js": {
+      "expectCount": 12,
+      "actualCount": 0,
+      "undocumentLines": [
+        11,
+        15,
+        12,
+        22,
+        16,
+        26,
+        18,
+        14,
+        34,
+        19,
+        13,
+        17
+      ]
+    },
+    "src/stdlib/RegExp.js": {
+      "expectCount": 4,
+      "actualCount": 0,
+      "undocumentLines": [
+        10,
+        12,
+        35,
+        34
+      ]
+    },
+    "src/stdlib/RegExpPrototype.js": {
+      "expectCount": 12,
+      "actualCount": 0,
+      "undocumentLines": [
+        18,
+        51,
+        19,
+        30,
+        65,
+        66,
+        75,
+        67,
+        21,
+        64,
+        23,
+        69
+      ]
+    },
+    "src/values/RegExpValue.js": {
+      "expectCount": 5,
+      "actualCount": 0,
+      "undocumentLines": [
+        9,
+        11,
+        32,
+        15,
+        30
+      ]
+    },
+    "src/Scope.js": {
+      "expectCount": 18,
+      "actualCount": 3,
+      "undocumentLines": [
+        8,
+        42,
+        46,
+        9,
+        82,
+        92,
+        96,
+        14,
+        62,
+        11,
+        10,
+        13,
+        30,
+        12,
+        15
+      ]
+    },
+    "src/values/SmartLinkValue.js": {
+      "expectCount": 12,
+      "actualCount": 0,
+      "undocumentLines": [
+        15,
+        21,
+        32,
+        116,
+        17,
+        147,
+        100,
+        44,
+        55,
+        70,
+        75,
+        83
+      ]
+    },
+    "src/stdlib/String.js": {
+      "expectCount": 5,
+      "actualCount": 0,
+      "undocumentLines": [
+        7,
+        8,
+        31,
+        32,
+        34
+      ]
+    },
+    "src/stdlib/StringPrototype.js": {
+      "expectCount": 5,
+      "actualCount": 0,
+      "undocumentLines": [
+        38,
+        50,
+        39,
+        57,
+        41
+      ]
+    },
+    "src/values/StringValue.js": {
+      "expectCount": 8,
+      "actualCount": 0,
+      "undocumentLines": [
+        8,
+        35,
+        18,
+        9,
+        31,
+        33,
+        32,
+        34
+      ]
+    },
+    "src/values/UndefinedValue.js": {
+      "expectCount": 10,
+      "actualCount": 0,
+      "undocumentLines": [
+        5,
+        12,
+        14,
+        22,
+        7,
+        6,
+        19,
+        18,
+        20,
+        8
+      ]
+    },
+    "src/Value.js": {
+      "expectCount": 58,
+      "actualCount": 30,
+      "undocumentLines": [
+        362,
+        356,
+        363,
+        364,
+        179,
+        144,
+        208,
+        48,
+        225,
+        47,
+        205,
+        384,
+        376,
+        293,
+        180,
+        358,
+        359,
+        360,
+        380,
+        392,
+        399,
+        404,
+        388,
+        410,
+        409,
+        390,
+        389,
+        394
+      ]
+    }
+  }
+}

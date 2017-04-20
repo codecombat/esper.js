@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/EvaluatorHandlers.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ASTPreprocessor.js~ASTPreprocessor.html">ASTPreprocessor</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CompletionRecord.js~CompletionRecord.html">CompletionRecord</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html">Evaluator</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/EvaluatorInstruction.js~EvaluatorInstruction.html">EvaluatorInstruction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/GenDash.js~GenDash.html">GenDash</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Realm.js~Realm.html">Realm</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Scope.js~Scope.html">Scope</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Value.js~Value.html">Value</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">stdlib</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Array.js~ArrayObject.html">ArrayObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ArrayPrototype.js~ArrayPrototype.html">ArrayPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Assert.js~AssertFunction.html">AssertFunction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Boolean.js~Boolean.html">Boolean</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/BooleanPrototype.js~BooleanPrototype.html">BooleanPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Console.js~Console.html">Console</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Error.js~ErrorObject.html">ErrorObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ErrorPrototype.js~ErrorPrototype.html">ErrorPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Esper.js~EsperObject.html">EsperObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Function.js~FunctionObject.html">FunctionObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/FunctionPrototype.js~FunctionPrototype.html">FunctionPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/JSON.js~JSONObject.html">JSONObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Math.js~MathObject.html">MathObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Number.js~NumberObject.html">NumberObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/NumberPrototype.js~NumberPrototype.html">NumberPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Object.js~ObjectObject.html">ObjectObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ObjectPrototype.js~ObjectPrototype.html">ObjectPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExp.js~RegExpObject.html">RegExpObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExpPrototype.js~RegExpProtoype.html">RegExpProtoype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/String.js~StringObject.html">StringObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/StringPrototype.js~StringPrototype.html">StringPrototype</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">values</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ArrayValue.js~ArrayValue.html">ArrayValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/BridgeValue.js~BridgeValue.html">BridgeValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ClosureValue.js~ClosureValue.html">ClosureValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/EasyNativeFunction.js~EasyNativeFunction.html">EasyNativeFunction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/EasyObjectValue.js~EasyObjectValue.html">EasyObjectValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/EmptyValue.js~EmptyValue.html">EmptyValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ErrorValue.js~ErrorInstance.html">ErrorInstance</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/FutureValue.js~FutureValue.html">FutureValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/LinkValue.js~LinkValue.html">LinkValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/NullValue.js~NullValue.html">NullValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/NumberValue.js~NumberValue.html">NumberValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ObjectValue.js~ObjectValue.html">ObjectValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/PrimitiveValue.js~PrimitiveValue.html">PrimitiveValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/PropertyDescriptor.js~PropertyDescriptor.html">PropertyDescriptor</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/RegExpValue.js~RegExpValue.html">RegExpValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/SmartLinkValue.js~SmartLinkValue.html">SmartLinkValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/StringValue.js~StringValue.html">StringValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/UndefinedValue.js~UndefinedValue.html">UndefinedValue</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/EvaluatorHandlers.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
+
+const Value = require(&apos;./Value&apos;);
+const CompletionRecord = require(&apos;./CompletionRecord&apos;);
+const ClosureValue = require(&apos;./values/ClosureValue&apos;);
+const ObjectValue = require(&apos;./values/ObjectValue&apos;);
+const FutureValue = require(&apos;./values/FutureValue&apos;);
+const RegExpValue = require(&apos;./values/RegExpValue&apos;);
+const PropertyDescriptor = require(&apos;./values/PropertyDescriptor&apos;);
+const ErrorValue = require(&apos;./values/ErrorValue&apos;);
+const ArrayValue = require(&apos;./values/ArrayValue&apos;);
+const EvaluatorInstruction = require(&apos;./EvaluatorInstruction&apos;);
+
+
+
+function *evaluateArrayExpression(e, n, s) {
+	//let result = new ObjectValue();
+	let result = new Array(n.elements.length);
+	for ( let i = 0; i &lt; n.elements.length; ++i ) {
+		if ( n.elements[i] ) {
+			result[i] = yield * e.branch(n.elements[i],s);
+		}
+	}
+	if ( e.yieldPower &gt;= 3 ) yield EvaluatorInstruction.stepMinor;
+	return ArrayValue.make(result, e.realm);
+}
+
+function *evaluateAssignmentExpression(e, n, s) {
+	//TODO: Account for not-strict mode
+	var realm = s.realm;
+	let ref = yield * e.resolveRef(n.left, s, n.operator === &apos;=&apos;);
+
+	if ( !ref &amp;&amp; s.strict ) {
+		return CompletionRecord.makeReferenceError(s.realm, `Invalid refrence in assignment.`);
+	}
+
+	let argument = yield * e.branch(n.right, s);
+	let value;
+	let cur;
+	if ( e.yieldPower &gt;= 3 ) yield EvaluatorInstruction.stepMinor;
+	switch ( n.operator ) {
+		case &apos;=&apos;:
+			value = argument;
+			break;
+		case &apos;+=&apos;:
+			cur = yield * ref.getValue();
+			value = yield * cur.add(argument, realm);
+			break;
+		case &apos;-=&apos;:
+			cur = yield * ref.getValue();
+			value = yield * cur.subtract(argument, realm);
+			break;
+		case &apos;*=&apos;:
+			cur = yield * ref.getValue();
+			value = yield * cur.multiply(argument, realm);
+			break;
+		case &apos;/=&apos;:
+			cur = yield * ref.getValue();
+			value = yield * cur.divide(argument, realm);
+			break;
+		case &apos;%=&apos;:
+			cur = yield * ref.getValue();
+			value = yield * cur.mod(argument, realm);
+			break;
+		case &apos;&lt;&lt;=&apos;:
+			cur = yield * ref.getValue();
+			value = yield * cur.shiftLeft(argument, realm);
+			break;
+		case &apos;&gt;&gt;=&apos;:
+			cur = yield * ref.getValue();
+			value = yield * cur.shiftRight(argument, realm);
+			break;
+		case &apos;&gt;&gt;&gt;=&apos;:
+			cur = yield * ref.getValue();
+			value = yield * cur.shiftRightZF(argument, realm);
+			break;
+		case &apos;|=&apos;:
+			cur = yield * ref.getValue();
+			value = yield * cur.bitOr(argument, realm);
+			break;
+		case &apos;&amp;=&apos;:
+			cur = yield * ref.getValue();
+			value = yield * cur.bitAnd(argument, realm);
+			break;
+		case &apos;^=&apos;:
+			cur = yield * ref.getValue();
+			value = yield * cur.bitXor(argument, realm);
+			break;
+		default:
+			throw new Error(&apos;Unknown assignment operator: &apos; + n.operator);
+	}
+
+	if ( ref ) {
+		yield * ref.setValue(value, s);
+	} else {
+		yield * s.put(n.left.name, value, s);
+	}
+
+	return value;
+}
+
+function *evaluateBinaryExpression(e, n, s) {
+	let left = yield * e.branch(n.left,s);
+	let right = yield * e.branch(n.right,s);
+	if ( e.yieldPower &gt;= 4 ) yield EvaluatorInstruction.stepMinor;
+	return yield * e.doBinaryEvaluation(n.operator, left, right, s);
+}
+
+function *evaluateBlockStatement(e, n, s) {
+	let result = Value.undef;
+	for ( let statement of n.body ) {
+		result = yield * e.branch(statement,s);
+	}
+	return result;
+}
+
+
+function *evaluateBreakStatement(e, n, s) {
+	let label = n.label ? n.label.name : undefined;
+	if ( e.yieldPower &gt;= 1 ) yield EvaluatorInstruction.stepMinor;
+	return new CompletionRecord(CompletionRecord.BREAK, Value.undef, label);
+}
+
+
+function *evaluateCallExpression(e, n, s) {
+	let thiz = Value.undef;
+
+	let callee, base;
+
+	if ( n.callee.type === &apos;MemberExpression&apos; ) {
+		thiz = base = yield * e.branch(n.callee.object, s);
+		callee = yield * e.partialMemberExpression(thiz, n.callee, s);
+		if ( callee instanceof CompletionRecord ) {
+			if ( callee.type == CompletionRecord.THROW ) return callee;
+			callee = callee.value;
+		}
+	} else {
+		callee = yield * e.branch(n.callee, s);
+	}
+
+	if ( n.type === &apos;NewExpression&apos; ) {
+		thiz = yield * callee.makeThisForNew(s.realm);
+		if ( thiz instanceof CompletionRecord ) {
+			if ( thiz.type == CompletionRecord.THROW ) return thiz;
+			thiz = thiz.value;
+		}
+	}
+
+	if ( typeof callee.rawCall === &apos;function&apos; ) {
+		return yield * callee.rawCall(n, e, s);
+	}
+
+	//console.log(&quot;Calling&quot;, callee, callee.call);
+
+	let args = new Array(n.arguments.length);
+	for ( let i = 0; i &lt; n.arguments.length; ++i ) {
+		args[i] = yield * e.branch(n.arguments[i],s);
+	}
+
+	let name = n.callee.srcName || callee.jsTypeName;
+
+	if ( e.yieldPower &gt;= 1 ) yield EvaluatorInstruction.stepMajor;
+
+	if ( !callee.isCallable ) {
+		let err = CompletionRecord.makeTypeError(e.realm, &apos;&apos; + name + &apos; is not a function&apos;);
+		yield * err.addExtra({
+			code: &apos;CallNonFunction&apos;,
+			target: callee,
+			targetAst: n.callee,
+			targetName: name,
+			base: base
+		});
+		return err;
+	}
+
+	if ( e.debug ) {
+		e.incrCtr(&apos;fxInvocationCount&apos;, n.callee.srcName);
+	}
+
+	let callResult = callee.call(thiz, args, s, {
+		asConstructor: n.type === &apos;NewExpression&apos;,
+		callNode: n,
+		evaluator: e
+	});
+
+	if ( callResult instanceof CompletionRecord ) return callResult;
+
+	if ( typeof callResult.next !== &apos;function&apos; ) {
+		console.log(&apos;Generator Failure&apos;, callResult);
+		return CompletionRecord.makeTypeError(e.realm, &apos;&apos; + name + &apos; didnt make a generator&apos;);
+	}
+
+	let result = yield * callResult;
+	if ( n.type === &apos;NewExpression&apos; ) {
+		//TODO: If a constructor returns, you actually use that value
+		if ( result instanceof Value ) {
+			if ( result.specTypeName === &apos;undefined&apos; ) return thiz;
+			return result;
+		}
+		return thiz;
+	} else {
+		return result;
+	}
+}
+
+function *evaluateClassExpression(e, n, s) {
+	let clazz = new ObjectValue(e.realm);
+	clazz.call = function*() { return Value.undef; };
+
+	let proto = new ObjectValue(e.realm);
+	yield * clazz.set(&apos;prototype&apos;, proto);
+	yield * proto.set(&apos;constructor&apos;, clazz);
+
+	if ( e.yieldPower &gt;= 3 ) yield EvaluatorInstruction.stepMinor;
+	for ( let m of n.body.body ) {
+		let fx = yield * e.branch(m.value, s);
+
+		//TODO: Support getters and setters
+		if ( m.kind == &apos;constructor&apos; ) {
+			clazz.call = function*(thiz, args, s) { return yield * fx.call(thiz,args,s); };
+
+		} else {
+			let ks;
+			if ( m.computed ) {
+				let k = yield * e.branch(m.key, s);
+				ks = yield * k.toStringNative(e.realm);
+			} else {
+				ks = m.key.name;
+			}
+
+			if ( m.static ) clazz.setImmediate(ks, fx);
+			else proto.setImmediate(ks, fx);
+		}
+	}
+	return clazz;
+}
+
+function *evaluateClassDeclaration(e, n, s) {
+	let clazz = yield * evaluateClassExpression(e, n, s);
+	yield * s.put(n.id.name, clazz);
+	return clazz;
+}
+
+function *evaluateConditionalExpression(e, n, s) {
+	let test = yield * e.branch(n.test, s);
+	if ( e.yieldPower &gt;= 4 ) yield EvaluatorInstruction.stepMinor;
+	if ( test.truthy ) {
+		return yield * e.branch(n.consequent, s);
+	} else {
+		if ( n.alternate ) {
+			return yield * e.branch(n.alternate, s);
+		}
+	}
+	return Value.undef;
+}
+
+
+function *evaluateContinueStatement(e, n, s) {
+	let label = n.label ? n.label.name : undefined;
+	let val = new CompletionRecord(CompletionRecord.CONTINUE, Value.undef, label);
+	if ( e.yieldPower &gt;= 1 ) yield EvaluatorInstruction.stepMinor;
+	return val;
+}
+
+function *evaluateDoWhileStatement(e, n, s) {
+	let last = Value.undef;
+	let that = e;
+	var gen = function*() {
+		do {
+			last = yield that.branchFrame(&apos;continue&apos;, n.body, s, {label: n.label});
+		} while ( (yield * that.branch(n.test,s)).truthy );
+	};
+	if ( e.yieldPower &gt; 0 ) yield EvaluatorInstruction.stepMinor;
+	e.pushFrame({generator: gen(), type: &apos;loop&apos;, label: n.label, ast: n});
+
+
+	let finished = yield EvaluatorInstruction.waitForFramePop;
+	return Value.undef;
+}
+
+function *evaluateEmptyStatement(e, n, s) {
+	if ( e.yieldPower &gt;= 5 ) yield EvaluatorInstruction.stepMinor;
+	return Value.undef;
+}
+
+function *evaluateExpressionStatement(e, n, s) {
+	if ( e.yieldPower &gt; 4 ) yield EvaluatorInstruction.stepMinor;
+	return yield * e.branch(n.expression,s);
+}
+
+function *evaluateIdentifier(e, n, s) {
+	if ( e.yieldPower &gt;= 4 ) yield EvaluatorInstruction.stepMinor;
+	if ( n.name === &apos;undefined&apos; ) return Value.undef;
+	if ( !s.has(n.name) ) {
+		// Allow undeclared varibles to be null?
+		if ( false ) return Value.undef;
+		let err = CompletionRecord.makeReferenceError(e.realm, `${n.name} is not defined`);
+		yield * err.addExtra({code: &apos;UndefinedVariable&apos;, when: &apos;read&apos;, ident: n.name, strict: s.strict});
+		return yield err;
+	}
+	return s.get(n.name);
+}
+
+function *evaluateIfStatement(e, n, s) {
+	if ( e.yieldPower &gt;= 2 ) yield EvaluatorInstruction.stepStatement;
+	let test = yield * e.branch(n.test, s);
+	if ( test.truthy ) {
+		return yield * e.branch(n.consequent, s);
+	} else {
+		if ( n.alternate ) {
+			return yield * e.branch(n.alternate, s);
+		}
+	}
+	return Value.undef;
+}
+
+function* genForLoop(e, n, s) {
+	let test = Value.true;
+	if ( n.test ) test = yield * e.branch(n.test,s);
+	let last = Value.undef;
+	while ( test.truthy ) {
+		e.topFrame.ast = n;
+		if ( e.yieldPower &gt; 0 ) yield EvaluatorInstruction.eventLoopBodyStart;
+		last = yield e.branchFrame(&apos;continue&apos;, n.body, s, {label: n.label});
+		if ( n.update ) yield * e.branch(n.update,s);
+		if ( n.test ) test = yield * e.branch(n.test,s);
+	}
+};
+
+function *evaluateForStatement(e, n, s) {
+	if ( e.yieldPower &gt; 0 ) yield EvaluatorInstruction.stepStatement;
+	if ( n.init ) yield * e.branch(n.init,s);
+
+	e.pushFrame({generator: genForLoop(e, n, s), type: &apos;loop&apos;, label: n.label, ast: n});
+
+
+	let finished = yield EvaluatorInstruction.waitForFramePop;
+	return Value.undef;
+}
+
+function *evaluateForInStatement(e, n, s) {
+	if ( e.yieldPower &gt; 0 ) yield EvaluatorInstruction.stepStatement;
+	let last = Value.undef;
+	let object = yield * e.branch(n.right,s);
+	let names = object.observableProperties(s.realm);
+	let that = e;
+	let ref;
+
+	if ( n.left.type === &apos;VariableDeclaration&apos; ) {
+		s.add(n.left.declarations[0].id.name, Value.undef);
+		ref = s.ref(n.left.declarations[0].id.name, s.realm);
+	} else {
+		ref = s.ref(n.left.name, s.realm);
+	}
+	if ( !ref ) throw new Error(&apos;Couldnt find anything to write to for:&apos; + n.left.name);
+
+	var gen = function*() {
+		for ( let name of names ) {
+			yield * ref.setValue(name);
+			last = yield that.branchFrame(&apos;continue&apos;, n.body, s, {label: n.label});
+		}
+	};
+	e.pushFrame({generator: gen(), type: &apos;loop&apos;, label: n.label, ast: n});
+
+
+	let finished = yield EvaluatorInstruction.waitForFramePop;
+	return Value.undef;
+}
+
+//TODO: For of does more crazy Symbol iterator stuff
+function *evaluateForOfStatement(e, n, s) {
+	if ( e.yieldPower &gt; 0 ) yield EvaluatorInstruction.stepStatement;
+	let last = Value.undef;
+	let object = yield * e.branch(n.right,s);
+	let names = object.observableProperties(s.realm);
+	let that = e;
+	let ref;
+
+	if ( n.left.type === &apos;VariableDeclaration&apos; ) {
+		yield * s.put(n.left.declarations[0].id.name, Value.undef);
+		ref = s.ref(n.left.declarations[0].id.name, s.realm);
+	} else {
+		ref = s.ref(n.left.name, s.realm);
+	}
+
+	var gen = function*() {
+		for ( let name of names ) {
+			yield * ref.setValue(yield * object.get(yield * name.toStringNative()));
+			last = yield that.branchFrame(&apos;continue&apos;, n.body, s, {label: n.label});
+		}
+	};
+	e.pushFrame({generator: gen(), type: &apos;loop&apos;, label: n.label});
+
+
+	let finished = yield EvaluatorInstruction.waitForFramePop;
+	return Value.undef;
+}
+
+function *evaluateFunctionDeclaration(e, n, s) {
+	if ( e.yieldPower &gt; 0 ) yield EvaluatorInstruction.stepMajor;
+	let closure = new ClosureValue(n, s);
+	s.add(n.id.name, closure);
+	return Value.undef;
+}
+
+function *evaluateFunctionExpression(e, n, s) {
+	if ( e.yieldPower &gt; 0 ) yield EvaluatorInstruction.stepMajor;
+	let value = new ClosureValue(n, s);
+	if ( n.type === &apos;ArrowFunctionExpression&apos; ) {
+		value.thiz = s.thiz;
+		if ( n.expression ) value.returnLastValue = true;
+	}
+	return value;
+}
+
+function *evaluateLabeledStatement(e, n, s) {
+	if ( e.yieldPower &gt;= 5 ) yield EvaluatorInstruction.stepMinor;
+	return yield * e.branch(n.body, s);
+}
+
+function *evaluateLiteral(e, n, s) {
+	if ( e.yieldPower &gt;= 5 ) yield EvaluatorInstruction.stepMinor;
+	if ( n.regex ) {
+		return RegExpValue.make(new RegExp(n.regex.pattern, n.regex.flags), s.realm);
+	} else if ( n.value === null ) {
+		if ( e.raw === &apos;null&apos; ) return Value.null;
+
+		//Work around Esprima turning Infinity into null. =\
+		let tryFloat = parseFloat(n.raw);
+		if ( !isNaN(tryFloat) ) return e.fromNative(tryFloat);
+		return e.fromNative(null);
+	} else {
+		return e.fromNative(n.value);
+	}
+}
+
+function *evaluateLogicalExpression(e, n, s) {
+	let left = yield * e.branch(n.left,s);
+	if ( e.yieldPower &gt;= 4 ) yield EvaluatorInstruction.stepMajor;
+	switch ( n.operator ) {
+		case &apos;&amp;&amp;&apos;:
+			if ( left.truthy ) return yield * e.branch(n.right,s);
+			return left;
+		case &apos;||&apos;:
+			if ( left.truthy ) return left;
+			return yield * e.branch(n.right,s);
+		default:
+			throw new Error(&apos;Unknown logical operator: &apos; + n.operator);
+	}
+
+}
+
+function *evaluateMemberExpression(e, n, s) {
+	if ( e.yieldPower &gt;= 4 ) yield EvaluatorInstruction.stepMinor;
+	let left = yield * e.branch(n.object,s);
+	return yield * e.partialMemberExpression(left, n, s);
+}
+
+function *evaluateObjectExpression(e, n, s) {
+	//TODO: Need to wire up native prototype
+	var nat = new ObjectValue(s.realm);
+	for ( let i = 0; i &lt; n.properties.length; ++i ) {
+		let prop = n.properties[i];
+		let key;
+		if ( n.computed ) {
+			key = (yield * e.branch(prop.key, s)).toNative().toString();
+		} else if ( prop.key.type == &apos;Identifier&apos;) {
+			key = prop.key.name;
+		} else if ( prop.key.type == &apos;Literal&apos; ) {
+			key = prop.key.value.toString();
+		}
+
+		let value = yield * e.branch(prop.value, s);
+		let pd;
+
+		if ( Object.prototype.hasOwnProperty.call(nat.properties, key) ) {
+			pd = nat.properties[key];
+		} else {
+			pd = new PropertyDescriptor(Value.undef);
+			nat.rawSetProperty(key, pd);
+		}
+
+		switch ( prop.kind  ) {
+			case &apos;init&apos;:
+			default:
+				pd.value = value;
+				break;
+			case &apos;get&apos;:
+				pd.getter = value;
+				break;
+			case &apos;set&apos;:
+				pd.setter = value;
+				break;
+		}
+
+	}
+	if ( e.yieldPower &gt; 0 ) yield EvaluatorInstruction.stepMajor;
+	return nat;
+}
+
+function *evaluateProgram(e, n, s) {
+	let result = Value.undef;
+	if ( n.vars )
+	for ( var v in n.vars ) {
+		s.add(v, Value.undef);
+	}
+	if ( n.strict === true ) s.strict = true;
+	if ( e.yieldPower &gt;= 4 ) yield EvaluatorInstruction.stepMajor;
+	for ( let statement of n.body ) {
+		result = yield * e.branch(statement, s);
+	}
+	return result;
+}
+
+function *evaluateReturnStatement(e, n, s) {
+	let retVal = Value.undef;
+	if ( n.argument ) retVal = yield * e.branch(n.argument,s);
+	if ( e.yieldPower &gt;= 2 ) yield EvaluatorInstruction.stepMajor;
+	return new CompletionRecord(CompletionRecord.RETURN, retVal);
+}
+
+function *evaluateSequenceExpression(e, n, s) {
+	let last = Value.undef;
+	if ( e.yieldPower &gt;= 4 ) yield EvaluatorInstruction.stepMajor;
+	for ( let expr of n.expressions ) {
+		last = yield * e.branch(expr,s);
+	}
+	return last;
+}
+
+function *evaluateSwitchStatement(e, n, s) {
+	if ( e.yieldPower &gt;= 2 ) yield EvaluatorInstruction.stepMajor;
+	let discriminant = yield * e.branch(n.discriminant, s);
+	let last = Value.undef;
+	let matches = 0;
+	let matchVals = new Array(n.cases.length);
+	let matched = false;
+
+	for ( let i = 0; i &lt; n.cases.length; ++i ) {
+		let cas = n.cases[i];
+		if ( cas.test ) {
+			let testval = yield * e.branch(cas.test, s);
+			let equality = yield * testval.tripleEquals(discriminant);
+			if ( equality.truthy ) ++matches;
+			matchVals[i] = equality.truthy;
+		}
+	}
+
+
+	let genSwitch = function*(e, n) {
+
+		for ( let i = 0; i &lt; n.cases.length; ++i ) {
+			let cas = n.cases[i];
+			if ( !matched ) {
+				if ( cas.test ) {
+					if ( !matchVals[i] ) continue;
+				} else {
+					if ( matches !== 0 ) continue;
+				}
+				matched = true;
+			}
+			for ( let statement of cas.consequent ) {
+				last = yield * e.branch(statement, s);
+			}
+		}
+	};
+
+	e.pushFrame({generator: genSwitch(e, n), type: &apos;loop&apos;, label: n.label});
+	let finished = yield EvaluatorInstruction.waitForFramePop;
+
+	return last;
+}
+
+function *evaluateThisExpression(e, n, s) {
+	if ( e.yieldPower &gt;= 4 ) yield EvaluatorInstruction.stepMajor;
+	if ( s.thiz ) return s.thiz;
+	else return Value.undef;
+}
+
+function *evaluateThrowStatement(e, n, s) {
+	let value = yield * e.branch(n.argument, s);
+	if ( e.yieldPower &gt;= 2 ) yield EvaluatorInstruction.stepMajor;
+	return new CompletionRecord(CompletionRecord.THROW, value);
+}
+
+function *evaluateTryStatement(e, n, s) {
+	if ( e.yieldPower &gt;= 2 ) yield EvaluatorInstruction.stepMajor;
+	if ( n.finalizer ) e.pushFrame({generator: e.branch(n.finalizer,s), type: &apos;finally&apos;, scope: s});
+	let result = yield e.branchFrame(&apos;catch&apos;, n.block, s);
+	if ( result instanceof CompletionRecord &amp;&amp; result.type == CompletionRecord.THROW ) {
+		if ( !n.handler ) {
+			//console.log(&quot;No catch..., throwing&quot;, result.obj);
+			return result;
+		}
+		let handlerScope = s.createChild();
+		handlerScope.add(n.handler.param.name, result.value);
+		return yield * e.branch(n.handler.body, handlerScope);
+	}
+	return result;
+}
+
+function *evaluateUpdateExpression(e, n, s) {
+	//TODO: Need to support something like ++x[1];
+	let nue;
+	if ( e.yieldPower &gt;= 3 ) yield EvaluatorInstruction.stepMajor;
+	let ref = yield * e.resolveRef(n.argument, s, true);
+	let old = Value.nan;
+
+	if ( ref ) old = yield * ref.getValue();
+	if ( old === undefined ) old = Value.nan;
+	switch (n.operator) {
+		case &apos;++&apos;: nue = yield * old.add(e.fromNative(1)); break;
+		case &apos;--&apos;: nue = yield * old.subtract(e.fromNative(1)); break;
+		default: throw new Error(&apos;Unknown update expression type: &apos; + n.operator);
+	}
+	if ( ref ) yield * ref.setValue(nue, s);
+
+	if ( n.prefix ) return nue;
+	return old;
+}
+
+function *evaluateUnaryExpression(e, n, s) {
+	if ( e.yieldPower &gt;= 4 ) yield EvaluatorInstruction.stepMajor;
+	if ( n.operator === &apos;delete&apos; ) {
+		if ( n.argument.type !== &apos;MemberExpression&apos; &amp;&amp; n.argument.type !== &apos;Identifier&apos; ) {
+			//e isnt something you can delete?
+			return Value.true;
+		}
+
+		let ref = yield * e.resolveRef(n.argument, s);
+		if ( !ref ) return Value.false;
+		if ( ref.isVariable ) { return Value.false; }
+		let worked = ref.del(s);
+		if ( worked instanceof CompletionRecord ) return yield worked;
+		return Value.fromNative(worked);
+	}
+
+	if ( n.operator === &apos;typeof&apos; ) {
+		if ( n.argument.type == &apos;Identifier&apos; ) {
+			if ( !s.has(n.argument.name) ) return yield * Value.undef.typeOf();
+		}
+	}
+
+	let left = yield * e.branch(n.argument,s);
+	switch ( n.operator ) {
+		case &apos;-&apos;: return yield * left.unaryMinus();
+		case &apos;+&apos;: return yield * left.unaryPlus();
+		case &apos;!&apos;: return yield * left.not();
+		case &apos;~&apos;: return yield * left.bitNot();
+		case &apos;typeof&apos;: return yield * left.typeOf();
+		case &apos;void&apos;: return Value.undef;
+		default:
+			throw new Error(&apos;Unknown binary operator: &apos; + n.operator);
+	}
+}
+
+function *evaluateVariableDeclaration(e, n, s) {
+	let kind = n.kind;
+	if ( e.yieldPower &gt;= 3 ) yield EvaluatorInstruction.stepMajor;
+	for ( let decl of n.declarations ) {
+		let value = Value.undef;
+		if ( decl.init ) value = yield * e.branch(decl.init,s);
+		else if ( s.has(decl.id.name) ) continue;
+
+		if ( kind === &apos;const&apos; ) {
+			s.addConst(decl.id.name, value);
+		} else {
+			s.add(decl.id.name, value);
+		}
+	}
+	return Value.undef;
+}
+
+function* genWhileLoop(e, n, s) {
+	let last = Value.undef;
+	while ( (yield * e.branch(n.test,s)).truthy ) {
+		e.topFrame.ast = n;
+		if ( e.yieldPower &gt; 0 ) yield EvaluatorInstruction.eventLoopBodyStart;
+		last = yield e.branchFrame(&apos;continue&apos;, n.body, s);
+	}
+}
+
+function *evaluateWhileStatement(e, n, s) {
+	if ( e.yieldPower &gt; 0 ) yield EvaluatorInstruction.stepMajor;
+	e.pushFrame({generator: genWhileLoop(e, n, s), type: &apos;loop&apos;, label: n.label, ast: n});
+	let finished = yield EvaluatorInstruction.waitForFramePop;
+	return Value.undef;
+}
+
+function *evaluateWithStatement(e, n, s) {
+	if ( e.yieldPower &gt; 0 ) yield EvaluatorInstruction.stepMajor;
+	if ( s.strict ) return CompletionRecord.makeSyntaxError(e.realm, &apos;Strict mode code may not include a with statement&apos;);
+	return CompletionRecord.makeSyntaxError(e.realm, &apos;With statement not supported by esper&apos;);
+}
+
+function findNextStep(type) {
+	switch ( type ) {
+		case &apos;ArrayExpression&apos;: return evaluateArrayExpression;
+		case &apos;ArrowFunctionExpression&apos;: return evaluateFunctionExpression;
+		case &apos;AssignmentExpression&apos;: return evaluateAssignmentExpression;
+		case &apos;BinaryExpression&apos;: return evaluateBinaryExpression;
+		case &apos;BreakStatement&apos;: return evaluateBreakStatement;
+		case &apos;BlockStatement&apos;: return evaluateBlockStatement;
+		case &apos;CallExpression&apos;: return evaluateCallExpression;
+		case &apos;ClassDeclaration&apos;: return evaluateClassDeclaration;
+		case &apos;ClassExpression&apos;: return evaluateClassExpression;
+		case &apos;ConditionalExpression&apos;: return evaluateConditionalExpression;
+		case &apos;DebuggerStatement&apos;: return evaluateEmptyStatement;
+		case &apos;DoWhileStatement&apos;: return evaluateDoWhileStatement;
+		case &apos;ContinueStatement&apos;: return evaluateContinueStatement;
+		case &apos;EmptyStatement&apos;: return evaluateEmptyStatement;
+		case &apos;ExpressionStatement&apos;: return evaluateExpressionStatement;
+		case &apos;ForStatement&apos;: return evaluateForStatement;
+		case &apos;ForInStatement&apos;: return evaluateForInStatement;
+		case &apos;ForOfStatement&apos;: return evaluateForOfStatement;
+		case &apos;FunctionDeclaration&apos;: return evaluateFunctionDeclaration;
+		case &apos;FunctionExpression&apos;: return evaluateFunctionExpression;
+		case &apos;Identifier&apos;: return evaluateIdentifier;
+		case &apos;IfStatement&apos;: return evaluateIfStatement;
+		case &apos;LabeledStatement&apos;: return evaluateLabeledStatement;
+		case &apos;Literal&apos;: return evaluateLiteral;
+		case &apos;LogicalExpression&apos;: return evaluateLogicalExpression;
+		case &apos;MemberExpression&apos;: return evaluateMemberExpression;
+		case &apos;NewExpression&apos;: return evaluateCallExpression;
+		case &apos;ObjectExpression&apos;: return evaluateObjectExpression;
+		case &apos;Program&apos;: return evaluateProgram;
+		case &apos;ReturnStatement&apos;: return evaluateReturnStatement;
+		case &apos;SequenceExpression&apos;: return evaluateSequenceExpression;
+		case &apos;SwitchStatement&apos;: return evaluateSwitchStatement;
+		case &apos;ThisExpression&apos;: return evaluateThisExpression;
+		case &apos;ThrowStatement&apos;: return evaluateThrowStatement;
+		case &apos;TryStatement&apos;: return evaluateTryStatement;
+		case &apos;UnaryExpression&apos;: return evaluateUnaryExpression;
+		case &apos;UpdateExpression&apos;: return evaluateUpdateExpression;
+		case &apos;VariableDeclaration&apos;: return evaluateVariableDeclaration;
+		case &apos;WhileStatement&apos;: return evaluateWhileStatement;
+		case &apos;WithStatement&apos;: return evaluateWithStatement;
+		default:
+			throw new Error(&apos;Unknown AST Node Type: &apos; + type);
+	}
+}
+
+module.exports = {
+	evaluateIdentifier,
+	findNextStep
+};
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

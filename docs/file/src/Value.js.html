@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/Value.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ASTPreprocessor.js~ASTPreprocessor.html">ASTPreprocessor</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CompletionRecord.js~CompletionRecord.html">CompletionRecord</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html">Evaluator</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/EvaluatorInstruction.js~EvaluatorInstruction.html">EvaluatorInstruction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/GenDash.js~GenDash.html">GenDash</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Realm.js~Realm.html">Realm</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Scope.js~Scope.html">Scope</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Value.js~Value.html">Value</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">stdlib</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Array.js~ArrayObject.html">ArrayObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ArrayPrototype.js~ArrayPrototype.html">ArrayPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Assert.js~AssertFunction.html">AssertFunction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Boolean.js~Boolean.html">Boolean</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/BooleanPrototype.js~BooleanPrototype.html">BooleanPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Console.js~Console.html">Console</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Error.js~ErrorObject.html">ErrorObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ErrorPrototype.js~ErrorPrototype.html">ErrorPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Esper.js~EsperObject.html">EsperObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Function.js~FunctionObject.html">FunctionObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/FunctionPrototype.js~FunctionPrototype.html">FunctionPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/JSON.js~JSONObject.html">JSONObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Math.js~MathObject.html">MathObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Number.js~NumberObject.html">NumberObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/NumberPrototype.js~NumberPrototype.html">NumberPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Object.js~ObjectObject.html">ObjectObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ObjectPrototype.js~ObjectPrototype.html">ObjectPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExp.js~RegExpObject.html">RegExpObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExpPrototype.js~RegExpProtoype.html">RegExpProtoype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/String.js~StringObject.html">StringObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/StringPrototype.js~StringPrototype.html">StringPrototype</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">values</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ArrayValue.js~ArrayValue.html">ArrayValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/BridgeValue.js~BridgeValue.html">BridgeValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ClosureValue.js~ClosureValue.html">ClosureValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/EasyNativeFunction.js~EasyNativeFunction.html">EasyNativeFunction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/EasyObjectValue.js~EasyObjectValue.html">EasyObjectValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/EmptyValue.js~EmptyValue.html">EmptyValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ErrorValue.js~ErrorInstance.html">ErrorInstance</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/FutureValue.js~FutureValue.html">FutureValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/LinkValue.js~LinkValue.html">LinkValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/NullValue.js~NullValue.html">NullValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/NumberValue.js~NumberValue.html">NumberValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ObjectValue.js~ObjectValue.html">ObjectValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/PrimitiveValue.js~PrimitiveValue.html">PrimitiveValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/PropertyDescriptor.js~PropertyDescriptor.html">PropertyDescriptor</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/RegExpValue.js~RegExpValue.html">RegExpValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/SmartLinkValue.js~SmartLinkValue.html">SmartLinkValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/StringValue.js~StringValue.html">StringValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/UndefinedValue.js~UndefinedValue.html">UndefinedValue</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/Value.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
+/* @flow */
+
+const CompletionRecord = require(&apos;./CompletionRecord&apos;);
+const GenDash = require(&apos;./GenDash&apos;);
+
+let undef, nil, tru, fals, nan, emptyString, zero, one, negone, negzero, smallIntValues;
+let cache = new WeakMap();
+let bookmarks = new WeakMap();
+let ObjectValue, PrimitiveValue, StringValue, NumberValue, BridgeValue, Evaluator;
+
+
+
+let serial = 0;
+/**
+ * Represents a value a variable could take.
+ */
+class Value {
+	/**
+	 * Convert a native javascript primative value to a Value
+	 * @param {any} value - The value to convert
+	 */
+	static fromPrimativeNative(value) {
+		if ( !value )  {
+			if ( value === undefined ) return undef;
+			if ( value === null ) return nil;
+			if ( value === false ) return fals;
+			if ( value === &apos;&apos; ) return emptyString;
+		}
+
+		if ( value === true ) return tru;
+
+		if ( typeof value === &apos;number&apos; ) {
+			if ( value === 0 ) {
+				return 1 / value &gt; 0 ? zero : negzero;
+			}
+			if ( value | 0 === value ) {
+				let snv = smallIntValues[value+1];
+				if ( snv ) return snv;
+			}
+			return new NumberValue(value);
+		}
+		if ( typeof value === &apos;string&apos; ) return new StringValue(value);
+		if ( typeof value === &apos;boolean&apos; ) return new PrimitiveValue(value);
+	}
+
+	static hasBookmark(native) { return bookmarks.has(native); }
+	static getBookmark(native) { return bookmarks.get(native); }
+
+	/**
+	 * Convert a native javascript value to a Value
+	 *
+	 * @param {any} value - The value to convert
+	 * @param {Realm} realm - The realm of the new value.
+	 */
+	static fromNative(value, realm) {
+		if ( value instanceof Value ) return value;
+		let prim = Value.fromPrimativeNative(value);
+		if ( prim ) return prim;
+
+		if ( value instanceof Error ) {
+			if ( !realm ) throw new Error(&apos;We needed a realm, but we didnt have one.  We were sad :(&apos;);
+			if ( value instanceof TypeError ) return realm.TypeError.makeFrom(value);
+			if ( value instanceof ReferenceError ) return realm.ReferenceError.makeFrom(value);
+			if ( value instanceof SyntaxError ) return realm.SyntaxError.makeFrom(value);
+			else return realm.Error.makeFrom(value);
+		}
+
+		if ( Value.hasBookmark(value) ) {
+			return Value.getBookmark(value);
+		}
+
+		throw new TypeError(&apos;Tried to load an unsafe native value into the interperter:&apos; + typeof value + &apos; / &apos; + value);
+		//TODO: Is this cache dangerous?
+		if ( !cache.has(value) ) {
+			let nue = new BridgeValue(realm, value);
+			cache.set(value, nue);
+			return nue;
+		}
+		return cache.get(value);
+	}
+
+	/**
+	 * Holds a value representing `undefined`
+	 *
+	 * @returns {UndefinedValue}
+	 */
+	static get undef() {
+		return undef;
+	}
+
+	/**
+	 * Holds a value representing `null`
+	 *
+	 * @returns {NullValue}
+	 */
+	static get null() {
+		return nil;
+	}
+
+	/**
+	 * Holds a value representing `true`
+	 *
+	 * @returns {BooleanValue} true
+	 */
+	static get true() {
+		return tru;
+	}
+
+	/**
+	 * Holds a value representing `fasle`
+	 *
+	 * @returns {BooleanValue} false
+	 */
+	static get false() {
+		return fals;
+	}
+
+	/**
+	 * Holds a value representing `NaN`
+	 *
+	 * @returns {NumberValue} NaN
+	 */
+	static get nan() {
+		return nan;
+	}
+
+	/**
+	 * Holds a value representing `&apos;&apos;`
+	 *
+	 * @returns {StringValue} &apos;&apos;
+	 */
+	static get emptyString() {
+		return emptyString;
+	}
+
+	/**
+	 * Holds a value representing `0`
+	 *
+	 * @returns {NumberValue} 0
+	 */
+	static get zero() { return zero; }
+
+	static createNativeBookmark(v, realm) {
+		var out;
+		let thiz = this;
+		if ( typeof v.call === &apos;function&apos; ) {
+			switch ( realm.options.bookmarkInvocationMode ) {
+				case &apos;loop&apos;:
+
+				out = function Bookmark() {
+					let Evaluator = require(&apos;./Evaluator&apos;);
+					let cthis = realm.makeForForeignObject(this);
+					let c = v.call(cthis, [], realm.globalScope);
+					let evalu = new Evaluator(realm, null, realm.globalScope);
+					evalu.pushFrame({type: &apos;program&apos;, generator: c, scope: realm.globalScope});
+					let gen = evalu.generator();
+					let result;
+					do {
+						result = gen.next();
+					} while ( !result.done );
+					return result.value.toNative();
+				};
+				break;
+				default:
+				out = function Bookmark() { throw new Error(&apos;Atempted to invoke bookmark for &apos; + v.debugString); };
+			}
+		} else {
+			out = {};
+		}
+		Object.defineProperties(out, {
+			toString: {value: function() { return v.debugString; }, writable: true},
+			inspect: {value: function() { return v.debugString; }, writable: true},
+		});
+		bookmarks.set(out, v);
+		return out;
+	}
+
+	constructor() {
+		this.serial = serial++;
+	}
+
+
+	/**
+	 * Converts this value to a native javascript value.
+	 *
+	 * @abstract
+	 * @returns {*}
+	 */
+	toNative() {
+		throw new Error(&apos;Unimplemented: Value#toNative&apos;);
+	}
+
+	/**
+	 * A string representation of this Value suitable for display when
+	 * debugging.
+	 * @abstract
+	 * @returns {string}
+	 */
+	get debugString() {
+		let native = this.toNative();
+		return native ? native.toString() : &apos;???&apos;;
+	}
+
+	inspect() { return this.debugString; }
+
+	//TODO: Kill this
+	fromNative(other, realm) {
+		return Value.fromNative(other, realm);
+	}
+
+	/**
+	 * Indexes the value to get the value of a property.
+	 * i.e. `value[name]`
+	 * @param {String} name
+	 * @param {Realm} realm
+	 * @abstract
+	 * @returns {Value}
+	 */
+	*get(name, realm) {
+		let err = &quot;Can&apos;t access get &quot; + name + &apos; of that type: &apos; + require(&apos;util&apos;).inspect(this);
+		return CompletionRecord.makeTypeError(realm, err);
+	}
+
+	getImmediate(name) {
+		return GenDash.syncGenHelper(this.get(name));
+	}
+
+	/**
+	 * Computes the javascript expression `!value`
+	 * @returns {Value}
+	 */
+	*not() {
+		return !this.truthy ? Value.true : Value.false;
+	}
+
+	/**
+	 * Computes the javascript expression `+value`
+	 * @returns {Value}
+	 */
+	*unaryPlus() {
+		return Value.fromNative(+(yield * this.toNumberValue()));
+	}
+
+	/**
+	 * Computes the javascript expression `-value`
+	 * @returns {Value}
+	 */
+	*unaryMinus() {
+		return Value.fromNative(-(yield * this.toNumberValue()));
+	}
+
+	/**
+	 * Computes the javascript expression `typeof value`
+	 * @returns {Value}
+	 */
+	*typeOf() {
+		return Value.fromNative(this.jsTypeName);
+	}
+
+	/**
+	 * Computes the javascript expression `!(value == other)`
+	 * @param {Value} other - The other value
+	 * @param {Realm} realm - The realm to use when creating resuls.
+	 * @returns {Value}
+	 */
+	*notEquals(other, realm) {
+		var result = yield * this.doubleEquals(other, realm);
+		return yield * result.not();
+	}
+
+	/**
+	 * Computes the javascript expression `!(value === other)`
+	 * @param {Value} other - The other value
+	 * @param {Realm} realm - The realm to use when creating resuls.
+	 * @returns {Value}
+	 */
+	*doubleNotEquals(other, realm) {
+		var result = yield * this.tripleEquals(other, realm);
+		return yield * result.not();
+	}
+
+	/**
+	 * Computes the javascript expression `value === other`
+	 * @param {Value} other - The other value
+	 * @param {Realm} realm - The realm to use when creating resuls.
+	 * @returns {Value}
+	 */
+	*tripleEquals(other, realm) {
+		return other === this ? Value.true : Value.false;
+	}
+
+	*makeThisForNew(realm) {
+		var nue = new ObjectValue(realm);
+		var p = this.properties[&apos;prototype&apos;];
+		if ( p ) nue.setPrototype(p.value);
+		return nue;
+	}
+
+	/**
+	 * Computes the javascript expression `value &gt; other`
+	 * @param {Value} other - The other value
+	 * @returns {Value}
+	 */
+	*gt(other) { return this.fromNative((yield * this.toNumberNative()) &gt; (yield * other.toNumberNative())); }
+
+	/**
+	 * Computes the javascript expression `value &lt; other`
+	 * @param {Value} other - The other value
+	 * @returns {Value}
+	 */
+	*lt(other) { return this.fromNative((yield * this.toNumberNative()) &lt; (yield * other.toNumberNative())); }
+
+	/**
+	 * Computes the javascript expression `value &gt;= other`
+	 * @param {Value} other - The other value
+	 * @returns {Value}
+	 */
+	*gte(other) { return this.fromNative((yield * this.toNumberNative()) &gt;= (yield * other.toNumberNative())); }
+
+	/**
+	 * Computes the javascript expression `value &lt;= other`
+	 * @param {Value} other - The other value
+	 * @returns {Value}
+	 */
+	*lte(other) { return this.fromNative((yield * this.toNumberNative()) &lt;= (yield * other.toNumberNative())); }
+
+	/**
+	 * Computes the javascript expression `value - other`
+	 * @param {Value} other - The other value
+	 * @returns {Value}
+	 */
+	*subtract(other) { return this.fromNative((yield * this.toNumberNative()) - (yield * other.toNumberNative())); }
+
+	/**
+	 * Computes the javascript expression `value / other`
+	 * @param {Value} other - The other value
+	 * @returns {Value}
+	 */
+	*divide(other) { return this.fromNative((yield * this.toNumberNative()) / (yield * other.toNumberNative())); }
+
+	/**
+	 * Computes the javascript expression `value * other`
+	 * @param {Value} other - The other value
+	 * @returns {Value}
+	 */
+	*multiply(other) { return this.fromNative((yield * this.toNumberNative()) * (yield * other.toNumberNative())); }
+
+	/**
+	 * Computes the javascript expression `value % other`
+	 * @param {Value} other - The other value
+	 * @returns {Value}
+	 */
+	*mod(other) { return this.fromNative((yield * this.toNumberNative()) % (yield * other.toNumberNative())); }
+
+	*bitNot() { return this.fromNative(~(yield * this.toNumberNative())); }
+
+	*shiftLeft(other) { return this.fromNative((yield * this.toNumberNative()) &lt;&lt; (yield * other.toNumberNative())); }
+	*shiftRight(other) { return this.fromNative((yield * this.toNumberNative()) &gt;&gt; (yield * other.toNumberNative())); }
+	*shiftRightZF(other) { return this.fromNative((yield * this.toNumberNative()) &gt;&gt;&gt; (yield * other.toNumberNative())); }
+
+	*bitAnd(other) { return this.fromNative((yield * this.toNumberNative()) &amp; (yield * other.toNumberNative())); }
+	*bitOr(other) { return this.fromNative((yield * this.toNumberNative()) | (yield * other.toNumberNative())); }
+	*bitXor(other) { return this.fromNative((yield * this.toNumberNative()) ^ (yield * other.toNumberNative())); }
+
+	/**
+	 * Is the value is truthy, i.e. `!!value`
+	 *
+	 * @abstract
+	 * @type {boolean}
+	 */
+	get truthy() {
+		throw new Error(&apos;Unimplemented: Value#truthy&apos;);
+	}
+
+	get jsTypeName() {
+		throw new Error(&apos;Unimplemented: Value#jsTypeName&apos;);
+	}
+
+	get specTypeName() {
+		return this.jsTypeName;
+	}
+
+	get isCallable() {
+		return ( typeof this.call === &apos;function&apos; );
+	}
+
+	*toNumberValue() { throw new Error(&apos;Unimplemented: Value#toNumberValue&apos;); }
+	*toStringValue() { throw new Error(&apos;Unimplemented: Value#StringValue&apos;); }
+	*toStringNative() { return (yield * this.toStringValue()).native; }
+
+	*toBooleanValue() { return this.truthy ? tru : fals; }
+
+	*toUIntNative() {
+		let nv = yield * this.toNumberValue();
+		return Math.floor(nv.native);
+	}
+
+	*toIntNative() {
+		let nv = yield * this.toNumberValue();
+		return Math.floor(nv.native);
+	}
+
+	*toNumberNative() {
+		let nv = yield * this.toNumberValue();
+		return nv.native;
+	}
+
+	*toPrimitiveValue(preferedType) { throw new Error(&apos;Unimplemented: Value#toPrimitiveValue&apos;); }
+	*toPrimitiveNative(preferedType) { return (yield * this.toPrimitiveValue(preferedType)).native; }
+
+	/**
+	 * Quickly make a generator for this value
+	 */
+	*fastGen() { return this; }
+
+}
+module.exports = Value;
+
+ObjectValue = require(&apos;./values/ObjectValue&apos;);
+PrimitiveValue = require(&apos;./values/PrimitiveValue&apos;);
+StringValue = require(&apos;./values/StringValue&apos;);
+NumberValue = require(&apos;./values/NumberValue&apos;);
+const UndefinedValue = require(&apos;./values/UndefinedValue&apos;);
+const NullValue = require(&apos;./values/NullValue&apos;);
+
+undef = new UndefinedValue();
+nil = new NullValue();
+tru = new PrimitiveValue(true);
+fals = new PrimitiveValue(false);
+nan = new PrimitiveValue(NaN);
+emptyString = new StringValue(&apos;&apos;);
+
+zero = new NumberValue(0);
+negzero = new NumberValue(-0);
+one = new NumberValue(1);
+negone = new NumberValue(-1);
+smallIntValues = [
+	negone, zero,
+	one, new NumberValue(2), new NumberValue(3), new NumberValue(4), new NumberValue(5),
+	new NumberValue(6), new NumberValue(7), new NumberValue(8), new NumberValue(9)
+	]
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/ASTPreprocessor.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ASTPreprocessor.js~ASTPreprocessor.html">ASTPreprocessor</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CompletionRecord.js~CompletionRecord.html">CompletionRecord</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html">Evaluator</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/EvaluatorInstruction.js~EvaluatorInstruction.html">EvaluatorInstruction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/GenDash.js~GenDash.html">GenDash</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Realm.js~Realm.html">Realm</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Scope.js~Scope.html">Scope</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Value.js~Value.html">Value</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">stdlib</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Array.js~ArrayObject.html">ArrayObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ArrayPrototype.js~ArrayPrototype.html">ArrayPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Assert.js~AssertFunction.html">AssertFunction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Boolean.js~Boolean.html">Boolean</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/BooleanPrototype.js~BooleanPrototype.html">BooleanPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Console.js~Console.html">Console</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Error.js~ErrorObject.html">ErrorObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ErrorPrototype.js~ErrorPrototype.html">ErrorPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Esper.js~EsperObject.html">EsperObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Function.js~FunctionObject.html">FunctionObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/FunctionPrototype.js~FunctionPrototype.html">FunctionPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/JSON.js~JSONObject.html">JSONObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Math.js~MathObject.html">MathObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Number.js~NumberObject.html">NumberObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/NumberPrototype.js~NumberPrototype.html">NumberPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Object.js~ObjectObject.html">ObjectObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ObjectPrototype.js~ObjectPrototype.html">ObjectPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExp.js~RegExpObject.html">RegExpObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExpPrototype.js~RegExpProtoype.html">RegExpProtoype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/String.js~StringObject.html">StringObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/StringPrototype.js~StringPrototype.html">StringPrototype</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">values</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ArrayValue.js~ArrayValue.html">ArrayValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/BridgeValue.js~BridgeValue.html">BridgeValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ClosureValue.js~ClosureValue.html">ClosureValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/EasyNativeFunction.js~EasyNativeFunction.html">EasyNativeFunction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/EasyObjectValue.js~EasyObjectValue.html">EasyObjectValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/EmptyValue.js~EmptyValue.html">EmptyValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ErrorValue.js~ErrorInstance.html">ErrorInstance</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/FutureValue.js~FutureValue.html">FutureValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/LinkValue.js~LinkValue.html">LinkValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/NullValue.js~NullValue.html">NullValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/NumberValue.js~NumberValue.html">NumberValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ObjectValue.js~ObjectValue.html">ObjectValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/PrimitiveValue.js~PrimitiveValue.html">PrimitiveValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/PropertyDescriptor.js~PropertyDescriptor.html">PropertyDescriptor</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/RegExpValue.js~RegExpValue.html">RegExpValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/SmartLinkValue.js~SmartLinkValue.html">SmartLinkValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/StringValue.js~StringValue.html">StringValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/UndefinedValue.js~UndefinedValue.html">UndefinedValue</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/ASTPreprocessor.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
+let esper = require(&apos;./index.js&apos;);
+let compiler;
+
+function invokeCB(o, name) {
+	if ( !(name in o ) ) return;
+	var args = Array.prototype.slice.call(arguments, 2);
+	o[name].apply(o, args);
+}
+
+function detectStrict(body) {
+	if ( !body || body.length &lt; 1 ) return;
+	let first = body[0];
+	if ( first.type === &apos;ExpressionStatement&apos; ) {
+		let exp = first.expression;
+		if ( exp.type === &apos;Literal&apos; &amp;&amp; exp.value === &apos;use strict&apos; ) {
+			return true;
+		}
+	}
+}
+
+
+class ASTNode {
+	constructor(o) {
+		this.visits = 0;
+		this.dispatch = false;
+		if ( typeof o === &apos;object&apos; ) {
+			for ( var k in o ) this[k] = o[k];
+		}
+	}
+
+	addHiddenProperty(name, value) {
+		Object.defineProperty(this, name, {
+			value: value,
+			configurable: true
+		});
+	}
+
+	source() {
+		if ( !this._source ) return;
+		if ( !this.range ) return;
+		return this._source.substring(this.range[0], this.range[1]);
+	}
+
+	toString() {
+		let extra = Object.keys(this).map((k) =&gt; {
+			let v = this[k];
+			if ( v === null || typeof v === &apos;function&apos; ) return;
+			if ( k == &apos;range&apos; || k == &apos;loc&apos; || k == &apos;nodeID&apos;) return;
+			if ( v instanceof ASTNode ) return `${k}: [ASTNode: ${v.type}]`;
+			if ( Array.isArray(v) ) return &apos;[...]&apos;;
+			else return `${k}: ${JSON.stringify(v)}`;
+		}).filter((v) =&gt; !!v).join(&apos;, &apos;);
+		return `[ASTNode: ${this.type} ${extra}]`;
+	}
+
+}
+
+class ASTPreprocessor {
+
+	static process(ast, extra) {
+		if ( typeof ast !== &apos;object&apos; ) throw new TypeError(&apos;Provided AST is invalid (type is &apos; + typeof ast + &apos;)&apos;);
+		let nast = JSON.parse(JSON.stringify(ast), function(n, o) {
+			if ( o === null ) return null;
+			if ( typeof o !== &apos;object&apos; ) return o;
+			if ( o.type ) {
+				let z = new ASTNode(o);
+				if ( extra &amp;&amp; extra.source ) z.addHiddenProperty(&apos;_source&apos;, extra.source);
+				return z;
+			}
+			return o;
+		});
+
+		var options = extra || {};
+		var cbs = new EsperASTInstructions(ast, options);
+		new ASTPreprocessor(nast, extra).start(cbs);
+		return nast;
+	}
+
+	static *walker(ast, cbs, parent) {
+		var me = (a) =&gt; ASTPreprocessor.walker(a, cbs, ast);
+		invokeCB(cbs, &apos;enter&apos;, ast);
+		invokeCB(cbs, &apos;enter&apos; + ast.type, ast);
+		if ( parent &amp;&amp; ast instanceof ASTNode ) ast.addHiddenProperty(&apos;parent&apos;, parent);
+		switch ( ast.type ) {
+			case &apos;Program&apos;:
+				for ( let e of ast.body ) yield * me(e);
+				break;
+			case &apos;BlockStatement&apos;:
+				for ( let e of ast.body ) yield * me(e);
+				break;
+			case &apos;NewExpression&apos;:
+			case &apos;CallExpression&apos;:
+				for ( let e of ast.arguments ) yield * me(e);
+				yield * me(ast.callee);
+				break;
+			case &apos;WhileStatement&apos;:
+			case &apos;DoWhileStatement&apos;:
+				if ( ast.test ) yield * me(ast.test);
+				yield * me(ast.body);
+				break;
+			case &apos;VariableDeclaration&apos;:
+				for ( let e of ast.declarations ) yield * me(e);
+				break;
+			case &apos;VariableDeclarator&apos;:
+				invokeCB(cbs, &apos;decl&apos;, ast);
+				if ( ast.init ) yield * me(ast.init);
+				break;
+			case &apos;FunctionDeclaration&apos;:
+				invokeCB(cbs, &apos;decl&apos;, ast);
+				invokeCB(cbs, &apos;enterFunction&apos;, ast);
+				yield * me(ast.body);
+				invokeCB(cbs, &apos;exitFunction&apos;, ast);
+				break;
+
+			case &apos;ArrowFunctionExpression&apos;:
+			case &apos;FunctionExpression&apos;:
+				invokeCB(cbs, &apos;enterFunction&apos;, ast);
+				yield * me(ast.body);
+				invokeCB(cbs, &apos;exitFunction&apos;, ast);
+				break;
+			case &apos;Identifier&apos;:
+				break;
+			case &apos;ArrayExpression&apos;:
+				if ( ast.elements ) {
+					for ( let e of ast.elements ) {
+						if ( e ) yield * me(e);
+					}
+				}
+				break;
+			case &apos;ObjectExpression&apos;:
+				if ( ast.properties ) {
+					for ( let e of ast.properties ) {
+						if ( e ) yield * me(e);
+					}
+				}
+				break;
+			case &apos;Property&apos;:
+				yield * me(ast.key);
+				yield * me(ast.value);
+				break;
+			default:
+				for (var p in ast) {
+					let n = ast[p];
+					if ( p === &apos;parent&apos; ) continue;
+					if ( p === &apos;loc&apos; ) continue;
+					if ( p === &apos;type&apos; ) continue;
+					if ( p === &apos;nodeID&apos; ) continue;
+					if ( p === &apos;parentFunction&apos; ) continue;
+					if ( p === &apos;funcs&apos; ) continue;
+					if ( n === null ) continue;
+					if ( typeof n.type !== &apos;string&apos; ) {
+						continue;
+					}
+					yield * me(n);
+				}
+		}
+
+
+		invokeCB(cbs, &apos;exit&apos; + ast.type, ast);
+		invokeCB(cbs, &apos;exit&apos;, ast);
+	}
+
+
+	constructor(ast) {
+		this.ast = ast;
+	}
+
+	start(cbs) {
+		var gen = ASTPreprocessor.walker(this.ast, cbs);
+		for ( var x of gen ) {
+
+		}
+	}
+
+
+}
+ASTPreprocessor.ASTNode = ASTNode;
+
+class EsperASTInstructions {
+	constructor(ast, options) {
+
+		if ( !compiler &amp;&amp; esper.plugins[&apos;jit&apos;]) {
+			compiler = new (esper.plugins[&apos;jit&apos;].Compiler)();
+		}
+
+		this.ast = ast;
+		this.options = options;
+		this.counter = 0;
+		this.depth = 0;
+
+		let globalScope = Object.create(null);
+		let globalVars = Object.create(null);
+		let globalFuncs = Object.create(null);
+
+		this.scopeStack = [globalScope];
+		this.varStack = [globalVars];
+		this.funcStack = [globalFuncs];
+	}
+
+	log() {
+		let str = Array.prototype.join.call(arguments, &apos;, &apos;);
+		let indent = new Array(this.depth).join(&apos;  &apos;);
+		//console.log(indent + str);
+	}
+
+	enter(a) {
+		++this.depth;
+		a.nodeID = this.counter++;
+		this.log(&apos;Entering&apos;, a.type);
+	}
+
+	enterIdentifier(a) {
+		let fn = this.funcStack[0];
+		fn.refs[a.name] = true;
+	}
+
+	decl(a) {
+		if ( a.parent.type == &apos;VariableDeclaration&apos; &amp;&amp; a.parent.kind != &apos;var&apos; ) return;
+		let stack = this.varStack[0];
+		stack[a.id.name] = a;
+	}
+
+	enterProgram(a) {
+		let scope = Object.create(null);
+
+		a.addHiddenProperty(&apos;refs&apos;, Object.create(null));
+		a.addHiddenProperty(&apos;vars&apos;, Object.create(null));
+		a.addHiddenProperty(&apos;funcs&apos;, Object.create(null));
+
+		this.funcStack.unshift(a);
+		this.scopeStack.unshift(scope);
+		this.varStack.unshift(a.vars);
+
+		this.mangleBody(a);
+
+		let strict = detectStrict(a.body);
+		if ( strict !== undefined ) a.strict = strict;
+	}
+
+	enterThisExpression(a) {
+		a.srcName = &apos;this&apos;;
+	}
+
+	enterLabeledStatement(a) {
+		a.body.label = a.label.name;
+	}
+
+	exitArrayExpression(a) {
+		a.srcName = &apos;[&apos; + a.elements.map((e) =&gt; e ? e.srcName : &apos;&apos;).join() + &apos;]&apos;;
+	}
+
+	mangleBody(a) {
+		function prehoist(s) {
+			if ( s.type === &apos;VariableDeclaration&apos; &amp;&amp; s.kind == &apos;var&apos; ) {
+				for ( var decl of s.declarations ) {
+					a.vars[decl.id.name] = decl;
+				}
+
+			} else if ( s.type === &apos;FunctionDeclaration&apos; ) {
+				a.vars[s.id.name] = s;
+			}
+		}
+
+		if ( a.body.type === &apos;BlockStatement&apos; ) {
+			for ( let stmt of a.body.body ) prehoist(stmt);
+		} else if ( Array.isArray(a.body) ) {
+			for ( let stmt of a.body ) prehoist(stmt);
+		} else {
+			prehoist(a.body);
+		}
+
+	}
+
+	enterFunction(a) {
+		this.funcStack.unshift(a);
+		let scope = Object.create(this.scopeStack[0]);
+		this.scopeStack.unshift(scope);
+
+		a.addHiddenProperty(&apos;refs&apos;, Object.create(null));
+		a.addHiddenProperty(&apos;vars&apos;, Object.create(null));
+		a.addHiddenProperty(&apos;funcs&apos;, Object.create(null));
+
+		if ( this.options.nonUserCode ) {
+			a.addHiddenProperty(&apos;nonUserCode&apos;, true);
+		}
+
+		for ( let o of a.params ) {
+			a.vars[o.name] = a;
+		}
+
+		this.mangleBody(a);
+
+		let strict = detectStrict(a.body.body);
+		if ( strict !== undefined ) a.strict = strict;
+
+		this.varStack.unshift(a.vars);
+	}
+
+	enterFunctionDeclaration(a) {
+		let parent = this.funcStack[0];
+		//a.parentFunction = parent.nodeID;
+		a.srcName = &apos;function &apos; + a.id.name + &apos; {&apos;;
+		parent.funcs[a.id.name] = a;
+	}
+
+	exitIdentifier(a) {
+		a.srcName = a.name;
+	}
+
+	exitLiteral(a) {
+		if ( a.regex ) {
+			a.srcName = &apos;/&apos; + a.regex.pattern + &apos;/&apos; + a.regex.flags;
+		} else if ( typeof a.value === &apos;string&apos; ) {
+			a.srcName = a.raw;
+		} else if ( typeof a.value === &apos;undefined&apos; ) {
+			a.srcName = &apos;undefiend&apos;;
+		} else {
+			a.srcName = a.raw;
+		}
+	}
+
+
+	exitBinaryExpression(a) {
+		a.srcName = a.left.srcName + &apos; &apos; + a.operator + &apos; &apos; + a.right.srcName;
+	}
+
+	exitMemberExpression(a) {
+		let left = a.object.srcName || &apos;??&apos;;
+		let right = a.property.srcName || &apos;(intermediate value)&apos;;
+		if (!a.computed) a.srcName = left + &apos;.&apos; + right;
+		else a.srcName = a.srcName = left + &apos;[&apos; + right + &apos;]&apos;;
+	}
+
+	exitCallExpression(a) {
+		a.srcName = a.callee.srcName + &apos;(...)&apos;;
+	}
+
+
+	exitFunction(a) {
+		var vars = this.varStack.shift();
+		var free = {};
+		var upvars = {};
+		for ( var r in a.refs ) {
+			if ( r in vars ) {
+				//Local refrence
+			} else if ( r in this.varStack[0] ) {
+				upvars[r] = true;
+			} else {
+				free[r] = true;
+			}
+		}
+		a.upvars = upvars;
+		a.freevars = free;
+
+		this.scopeStack.shift();
+		this.funcStack.shift();
+		delete a.refs;
+
+		if ( compiler &amp;&amp; this.options.compile === &apos;pre&apos; &amp;&amp; compiler.canCompile(a.body) ) {
+			a.body.dispatch = compiler.compileNode(a.body);
+		}
+		//this.log(&quot;VARS:&quot;, Object.getOwnPropertyNames(a.vars).join(&apos;, &apos;));
+	}
+
+	exitProgram(a) {
+		this.scopeStack.shift();
+		var vars = this.varStack.shift();
+		//this.log(&quot;VARS:&quot;, Object.getOwnPropertyNames(a.vars).join(&apos;, &apos;));
+	}
+
+	exit(a) {
+		this.log(&apos;Exiting&apos;, a.type);
+		--this.depth;
+	}
+
+}
+ASTPreprocessor.ASTNode = ASTNode;
+
+module.exports = ASTPreprocessor;
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

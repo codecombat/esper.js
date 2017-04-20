@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/values/ObjectValue.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ASTPreprocessor.js~ASTPreprocessor.html">ASTPreprocessor</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CompletionRecord.js~CompletionRecord.html">CompletionRecord</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html">Evaluator</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/EvaluatorInstruction.js~EvaluatorInstruction.html">EvaluatorInstruction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/GenDash.js~GenDash.html">GenDash</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Realm.js~Realm.html">Realm</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Scope.js~Scope.html">Scope</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Value.js~Value.html">Value</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">stdlib</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Array.js~ArrayObject.html">ArrayObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ArrayPrototype.js~ArrayPrototype.html">ArrayPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Assert.js~AssertFunction.html">AssertFunction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Boolean.js~Boolean.html">Boolean</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/BooleanPrototype.js~BooleanPrototype.html">BooleanPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Console.js~Console.html">Console</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Error.js~ErrorObject.html">ErrorObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ErrorPrototype.js~ErrorPrototype.html">ErrorPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Esper.js~EsperObject.html">EsperObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Function.js~FunctionObject.html">FunctionObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/FunctionPrototype.js~FunctionPrototype.html">FunctionPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/JSON.js~JSONObject.html">JSONObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Math.js~MathObject.html">MathObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Number.js~NumberObject.html">NumberObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/NumberPrototype.js~NumberPrototype.html">NumberPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Object.js~ObjectObject.html">ObjectObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ObjectPrototype.js~ObjectPrototype.html">ObjectPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExp.js~RegExpObject.html">RegExpObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExpPrototype.js~RegExpProtoype.html">RegExpProtoype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/String.js~StringObject.html">StringObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/StringPrototype.js~StringPrototype.html">StringPrototype</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">values</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ArrayValue.js~ArrayValue.html">ArrayValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/BridgeValue.js~BridgeValue.html">BridgeValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ClosureValue.js~ClosureValue.html">ClosureValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/EasyNativeFunction.js~EasyNativeFunction.html">EasyNativeFunction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/EasyObjectValue.js~EasyObjectValue.html">EasyObjectValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/EmptyValue.js~EmptyValue.html">EmptyValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ErrorValue.js~ErrorInstance.html">ErrorInstance</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/FutureValue.js~FutureValue.html">FutureValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/LinkValue.js~LinkValue.html">LinkValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/NullValue.js~NullValue.html">NullValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/NumberValue.js~NumberValue.html">NumberValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ObjectValue.js~ObjectValue.html">ObjectValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/PrimitiveValue.js~PrimitiveValue.html">PrimitiveValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/PropertyDescriptor.js~PropertyDescriptor.html">PropertyDescriptor</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/RegExpValue.js~RegExpValue.html">RegExpValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/SmartLinkValue.js~SmartLinkValue.html">SmartLinkValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/StringValue.js~StringValue.html">StringValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/UndefinedValue.js~UndefinedValue.html">UndefinedValue</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/values/ObjectValue.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
+/* @flow */
+
+const Value = require(&apos;../Value&apos;);
+const PropertyDescriptor = require(&apos;./PropertyDescriptor&apos;);
+const CompletionRecord = require(&apos;../CompletionRecord&apos;);
+const PrimitiveValue = require(&apos;./PrimitiveValue&apos;);
+const NullValue = require(&apos;./NullValue&apos;);
+const GenDash = require(&apos;../GenDash&apos;);
+
+let alwaysFalse = () =&gt; false;
+let undefinedReturningGenerator = function*() { return Value.undef; }
+
+class ObjRefrence {
+	constructor(object, name, ctxthis) {
+		this.object = object;
+		this.name = name;
+		this.ctxthis = ctxthis;
+	}
+	del(s) { return this.object.delete(this.name, s); }
+	getValue(s) { return this.object.get(this.name, this.ctxthis || this.object, s) }
+	setValue(value, s) { return this.object.set(this.name, value, s); }
+}
+
+/**
+ * Represents an Object.
+ */
+class ObjectValue extends Value {
+
+	constructor(realm, proto) {
+		super();
+		this.extensable = true;
+		this.realm = realm;
+		this.proto = null;
+		if ( proto ) this.eraseAndSetPrototype(proto);
+		else if ( realm ) this.eraseAndSetPrototype(realm.ObjectPrototype);
+		else this.properties = Object.create(null);
+	}
+
+	ref(name, ctxthis) {
+		var existing = this.properties[name];
+		let thiz = this;
+
+		let get;
+		if ( existing ) {
+			return new ObjRefrence(this, name, ctxthis);
+		} else {
+			return {
+				name: name,
+				object: thiz,
+				isVariable: false,
+				del: alwaysFalse,
+				getValue:  undefinedReturningGenerator,
+				setValue: function (to, s) { return this.object.set(this.name, to, s); }
+			};
+
+		}
+	}
+
+	//Note: Returns generator by tailcall.
+	set(name, value, s, extra) {
+		let thiz = this;
+		extra = extra || {};
+		if ( !Object.prototype.hasOwnProperty.call(this.properties, name) ) {
+			if ( !this.extensable ) {
+				//TODO: Should we throw here in strict mode?
+				return Value.undef.fastGen();
+			}
+			let v = new PropertyDescriptor(value);
+			v.enumerable = &apos;enumerable&apos; in extra ? extra.enumerable : true;
+			this.properties[name] = v;
+
+			return v.setValue(this, value, s);
+		}
+
+		return this.properties[name].setValue(this, value, s);
+
+	}
+
+	rawSetProperty(name, value) {
+		this.properties[name] = value;
+	}
+
+	setImmediate(name, value) {
+		if ( name in this.properties ) {
+			if ( Object.prototype.hasOwnProperty.call(this.properties, name) ) {
+				if ( this.properties[name].direct ) {
+					this.properties[name].value = value;
+					return;
+				}
+			}
+		} else if ( this.extensable ) {
+			let v = new PropertyDescriptor(value);
+			v.del = this.delete.bind(this, name);
+			this.properties[name] = v;
+			return;
+		}
+		return GenDash.syncGenHelper(this.set(name, value, this.realm));
+	}
+
+
+
+	has(name) {
+		return name in this.properties;
+	}
+
+	delete(name, s) {
+		let po = this.properties[name];
+		if ( !po.configurable ) {
+			if ( s.strict ) return CompletionRecord.makeTypeError(s.realm, &quot;Can&apos;t delete nonconfigurable object&quot;);
+			else return false;
+		}
+		return delete this.properties[name];
+	}
+
+	toNative() {
+
+		//TODO: This is really a mess and should maybe be somewhere else.
+		var bk = Value.createNativeBookmark(this, this.realm);
+		if ( this.jsTypeName === &apos;function&apos; ) return bk;
+
+		for ( let p in this.properties ) {
+			let name = p; //work around bug in FF where the scope of p is incorrect
+			let po = this.properties[name];
+			if ( Object.prototype.hasOwnProperty.call(bk, name) ) continue;
+			if ( bk[p] !== undefined ) continue;
+
+			Object.defineProperty(bk, p, {
+				get: () =&gt; {
+					var c = this.properties[name].value;
+					return c === undefined ? undefined : c.toNative();
+				},
+				set: (v) =&gt; { this.properties[name].value = Value.fromNative(v, this.realm); },
+				enumerable: po.enumerable,
+				configurable: po.configurable
+			});
+		}
+		return bk;
+
+	}
+
+
+	*add(other) { return yield * (yield * this.toPrimitiveValue()).add(other); }
+	*doubleEquals(other) {
+		if ( other instanceof PrimitiveValue ) {
+			let hint = ( other.jsTypeName == &apos;string&apos; ? &apos;string&apos; : &apos;number&apos; );
+			let pv = yield * this.toPrimitiveValue(hint);
+			return yield * pv.doubleEquals(other);
+		}
+		let pthis = yield * this.toPrimitiveValue(&apos;string&apos;);
+		return yield * pthis.doubleEquals(other);
+	}
+	*inOperator(str) {
+		let svalue = yield * str.toStringValue();
+		return this.has(svalue.toNative()) ? Value.true : Value.false;
+	}
+
+	*get(name, realm, ctxthis) {
+		var existing = this.properties[name];
+		if ( !existing ) return Value.undef;
+		if ( existing.direct ) return existing.value;
+		return yield * existing.getValue(ctxthis || this);
+	}
+
+	getImmediate(name, realm, ctxthis) {
+		var existing = this.properties[name];
+		if ( !existing ) return Value.undef;
+		if ( existing.direct ) return existing.value;
+		return GenDash.syncGenHelper(existing.getValue(ctxthis || this));
+	}
+
+	*instanceOf(other, realm) {
+		return yield * other.constructorOf(this, realm);
+	}
+
+	*constructorOf(what, realm) {
+		let target = yield * this.get(&apos;prototype&apos;);
+		let pt = what.getPrototype(realm);
+		let checked = [];
+
+		while ( pt ) {
+			if ( pt === target ) return Value.true;
+			checked.push(pt);
+			pt = pt.getPrototype(realm);
+			if ( checked.indexOf(pt) !== -1 ) return Value.false;
+		}
+		return Value.false;
+	}
+
+	*observableProperties(realm) {
+		for ( let p in this.properties ) {
+			if ( !this.properties[p].enumerable ) continue;
+			yield this.fromNative(p);
+		}
+		return;
+	}
+
+	getPropertyValueMap() {
+		let list  = {};
+		for ( let p in this.properties ) {
+			let v = this.properties[p];
+			if ( v.value ) {
+				list[p] = v.value;
+			}
+		}
+		return list;
+	}
+
+	hasOwnProperty(name) {
+		return Object.prototype.hasOwnProperty.call(this.properties, name);
+	}
+
+	setPrototype(val) {
+		if ( !this.properties ) return this.eraseAndSetPrototype(val);
+		if ( val === null || val === undefined || val instanceof NullValue ) {
+			Object.setPrototypeOf(this.properties, null);
+			this.proto = null;
+			return;
+		}
+		this.proto = val;
+		Object.setPrototypeOf(this.properties, val.properties);
+	}
+
+	eraseAndSetPrototype(val) {
+		if ( val === null || val === undefined || val instanceof NullValue ) {
+			this.proto = null;
+			this.properties = Object.create(null);
+		} else {
+			this.proto = val;
+			this.properties = Object.create(val.properties);
+		}
+	}
+
+	getPrototype() {
+		return this.proto;
+	}
+
+	get debugString() {
+		let strProps = [&apos;{&apos;,&apos;[&apos;, this.clazz,&apos;]&apos;];
+		let delim = [];
+		if ( this.wellKnownName ) {
+			strProps.push(&apos;(&apos;, this.wellKnownName , &apos;)&apos;);
+		}
+		if ( this.proto ) {
+			delim.push(&apos;[[Prototype]]: &apos; + (this.proto.wellKnownName || this.proto.clazz || this.proto.jsTypeName) );
+		}
+		for ( let n in this.properties ) {
+			if ( !Object.prototype.hasOwnProperty.call(this.properties, n) ) continue;
+			let  val = this.properties[n].value;
+			if ( this.properties[n].getter || this.properties[n].setter ) delim.push(n + &apos;: [Getter/Setter]&apos;);
+			else if ( val.specTypeName === &apos;object&apos; ) delim.push(n + &apos;: [Object]&apos;);
+			else if ( val.specTypeName === &apos;function&apos; ) delim.push(n + &apos;: [Function]&apos;);
+			else delim.push(n + &apos;: &apos; + val.debugString);
+		}
+		strProps.push(delim.join(&apos;, &apos;));
+		strProps.push(&apos;} ]&apos;);
+		return strProps.join(&apos; &apos;);
+	}
+
+	*toPrimitiveValue(preferedType) {
+		let methodNames;
+		if ( preferedType == &apos;string&apos;) {
+			methodNames = [&apos;toString&apos;, &apos;valueOf&apos;];
+		} else {
+			methodNames = [&apos;valueOf&apos;, &apos;toString&apos;];
+		}
+
+		for ( let name of methodNames ) {
+			let method = yield * this.get(name);
+			if ( method &amp;&amp; method.call ) {
+				let rescr = yield (yield * method.call(this, [], this.realm.globalScope)); //TODO: There should be more aruments here
+				let res = Value.undef;
+				if ( !(rescr instanceof CompletionRecord) ) res = rescr;
+				else if ( rescr.type == CompletionRecord.RETURN ) res = rescr.value;
+				else if ( rescr.type != CompletionRecord.NORMAL ) continue;
+				if ( res.specTypeName !== &apos;object&apos; ) return res;
+			}
+		}
+		return yield CompletionRecord.makeTypeError(this.realm, &apos;Cannot convert object to primitive value&apos;);
+	}
+
+	*toNumberValue() {
+		let prim = yield * this.toPrimitiveValue(&apos;number&apos;);
+		return yield * prim.toNumberValue();
+	}
+
+	*toObjectValue(realm) { return this; }
+
+	*toStringValue() {
+		let prim = yield * this.toPrimitiveValue(&apos;string&apos;);
+		let gen = prim.toStringValue();
+		return yield * gen;
+	}
+
+	get truthy() {
+		return true;
+	}
+
+	get jsTypeName() {
+		if ( typeof this.call !== &apos;function&apos; ) return &apos;object&apos;;
+		return &apos;function&apos;;
+	}
+
+	get specTypeName() {
+		return &apos;object&apos;;
+	}
+}
+
+ObjectValue.prototype.clazz = &apos;Object&apos;;
+
+module.exports = ObjectValue;
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

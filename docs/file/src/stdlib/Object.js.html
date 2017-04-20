@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/stdlib/Object.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ASTPreprocessor.js~ASTPreprocessor.html">ASTPreprocessor</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CompletionRecord.js~CompletionRecord.html">CompletionRecord</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html">Evaluator</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/EvaluatorInstruction.js~EvaluatorInstruction.html">EvaluatorInstruction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/GenDash.js~GenDash.html">GenDash</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Realm.js~Realm.html">Realm</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Scope.js~Scope.html">Scope</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Value.js~Value.html">Value</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">stdlib</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Array.js~ArrayObject.html">ArrayObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ArrayPrototype.js~ArrayPrototype.html">ArrayPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Assert.js~AssertFunction.html">AssertFunction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Boolean.js~Boolean.html">Boolean</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/BooleanPrototype.js~BooleanPrototype.html">BooleanPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Console.js~Console.html">Console</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Error.js~ErrorObject.html">ErrorObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ErrorPrototype.js~ErrorPrototype.html">ErrorPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Esper.js~EsperObject.html">EsperObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Function.js~FunctionObject.html">FunctionObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/FunctionPrototype.js~FunctionPrototype.html">FunctionPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/JSON.js~JSONObject.html">JSONObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Math.js~MathObject.html">MathObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Number.js~NumberObject.html">NumberObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/NumberPrototype.js~NumberPrototype.html">NumberPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Object.js~ObjectObject.html">ObjectObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ObjectPrototype.js~ObjectPrototype.html">ObjectPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExp.js~RegExpObject.html">RegExpObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExpPrototype.js~RegExpProtoype.html">RegExpProtoype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/String.js~StringObject.html">StringObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/StringPrototype.js~StringPrototype.html">StringPrototype</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">values</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ArrayValue.js~ArrayValue.html">ArrayValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/BridgeValue.js~BridgeValue.html">BridgeValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ClosureValue.js~ClosureValue.html">ClosureValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/EasyNativeFunction.js~EasyNativeFunction.html">EasyNativeFunction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/EasyObjectValue.js~EasyObjectValue.html">EasyObjectValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/EmptyValue.js~EmptyValue.html">EmptyValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ErrorValue.js~ErrorInstance.html">ErrorInstance</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/FutureValue.js~FutureValue.html">FutureValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/LinkValue.js~LinkValue.html">LinkValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/NullValue.js~NullValue.html">NullValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/NumberValue.js~NumberValue.html">NumberValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/ObjectValue.js~ObjectValue.html">ObjectValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/PrimitiveValue.js~PrimitiveValue.html">PrimitiveValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/PropertyDescriptor.js~PropertyDescriptor.html">PropertyDescriptor</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/RegExpValue.js~RegExpValue.html">RegExpValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/SmartLinkValue.js~SmartLinkValue.html">SmartLinkValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/StringValue.js~StringValue.html">StringValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/values/UndefinedValue.js~UndefinedValue.html">UndefinedValue</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/stdlib/Object.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
+
+const EasyObjectValue = require(&apos;../values/EasyObjectValue&apos;);
+const ObjectValue = require(&apos;../values/ObjectValue&apos;);
+const ArrayValue = require(&apos;../values/ArrayValue&apos;);
+const CompletionRecord = require(&apos;../CompletionRecord&apos;);
+const Value = require(&apos;../Value&apos;);
+const PropertyDescriptor = require(&apos;../values/PropertyDescriptor&apos;);
+const EmptyValue = require(&apos;../values/EmptyValue&apos;);
+
+function *defObjectProperty(obj, name, desc, realm) {
+	if ( name instanceof Value ) {
+		name = (yield * name.toStringNative());
+	}
+
+	let value = yield * desc.get(&apos;value&apos;, realm);
+
+
+	let v = new PropertyDescriptor(value);
+
+
+	if ( desc.has(&apos;enumerable&apos;) ) {
+		let enu = yield * desc.get(&apos;enumerable&apos;, realm);
+		if ( !(enu instanceof EmptyValue) ) {
+			v.enumerable = enu.truthy;
+		}
+	} else {
+		v.enumerable = false;
+	}
+
+	if ( desc.has(&apos;writable&apos;) ) {
+		let wri = yield * desc.get(&apos;writable&apos;, realm);
+		if ( !(wri instanceof EmptyValue) ) {
+			v.writable = wri.truthy;
+		}
+	} else {
+		v.writable = false;
+	}
+
+	if ( desc.has(&apos;configurable&apos;) ) {
+		let conf = yield * desc.get(&apos;configurable&apos;, realm);
+		if ( !(conf instanceof EmptyValue) ) {
+			v.writable = conf.truthy;
+		}
+	} else {
+		v.writable = false;
+	}
+
+
+	if ( desc.has(&apos;get&apos;) ) {
+		let get = yield * desc.get(&apos;get&apos;, realm);
+		if ( !(get instanceof EmptyValue) ) {
+			v.getter = get;
+		}
+	}
+
+	if ( desc.has(&apos;set&apos;) ) {
+		let set = yield * desc.get(&apos;set&apos;, realm);
+		if ( !(set instanceof EmptyValue) ) {
+			v.setter = set;
+		}
+	}
+
+	obj.rawSetProperty(name, v);
+	return true;
+}
+
+function *getDescriptor(target, name, realm) {
+	if ( !Object.hasOwnProperty.call(target.properties, name) ) {
+		return Value.undef;
+	}
+
+	let pdesc = target.properties[name];
+	let out = new ObjectValue(realm);
+
+	if ( pdesc.value  ) yield * out.set(&apos;value&apos;, pdesc.value);
+	if ( pdesc.getter ) yield * out.set(&apos;get&apos;, pdesc.getter);
+	if ( pdesc.setter ) yield * out.set(&apos;set&apos;, pdesc.setter);
+
+	yield * out.set(&apos;writable&apos;, Value.fromNative(pdesc.writable));
+	yield * out.set(&apos;enumerable&apos;, Value.fromNative(pdesc.enumerable));
+	yield * out.set(&apos;configurable&apos;, Value.fromNative(pdesc.configurable));
+	return out;
+}
+
+function *objOrThrow(i, realm) {
+	let val = i ? i : Value.undef;
+
+	if ( val instanceof EmptyValue ) {
+		return yield CompletionRecord.makeTypeError(realm, &apos;Cannot convert undefined or null to object&apos;);
+	}
+
+	if ( !(val instanceof ObjectValue) ) {
+		return yield CompletionRecord.makeTypeError(realm, &apos;Need an object&apos;);
+	}
+	return val;
+}
+
+class ObjectObject extends EasyObjectValue {
+	*call(thiz, args, s, ext) {
+		let asConstructor = ext &amp;&amp; ext.asConstructor;
+		if ( asConstructor ) {
+			return new ObjectValue(s.realm);
+		}
+	}
+
+	callPrototype(realm) { return realm.ObjectPrototype; }
+	//objPrototype(realm) { return realm.Function; }
+
+	static *create$e(thiz, args, s) {
+		let v = new ObjectValue(s.realm);
+		let p = Value.undef;
+		if ( args.length &gt; 0 ) {
+			p = args[0];
+		}
+
+		if ( p.jsTypeName !== &apos;object&apos; &amp;&amp; p.jsTypeName !== &apos;function&apos; ) {
+			return yield CompletionRecord.makeTypeError(s.realm, &apos;Object prototype may only be an Object or null&apos;);
+		}
+
+		v.setPrototype(p);
+
+		if ( args.length &gt; 1 ) {
+			let propsobj = args[1];
+			for ( let p of propsobj.observableProperties(s.realm) ) {
+				let strval = p.native;
+				let podesc = yield * propsobj.get(strval, s.realm);
+				yield * defObjectProperty(v, p, podesc, s.realm);
+			}
+		}
+		return v;
+	}
+
+	static *defineProperty(thiz, args, s) {
+		let target = yield * objOrThrow(args[0], s.realm);
+		let name = yield * args[1].toStringNative();
+		let desc = args[2];
+		yield * defObjectProperty(target, name, desc, s.realm);
+		return Value.true;
+	}
+
+	static *defineProperties(thiz, args, s) {
+
+		let target = yield * objOrThrow(args[0], s.realm);
+		//let props = yield * objOrThrow(args[1], s.realm);
+
+		let propsobj = yield * objOrThrow(args[1], s.realm);
+
+		for ( let p of propsobj.observableProperties(s.realm) ) {
+			let strval = p.native;
+			let podesc = yield * propsobj.get(strval, s.realm);
+			yield * defObjectProperty(target, p, podesc, s.realm);
+		}
+		return Value.true;
+	}
+
+	static *seal$e(thiz, args, s) {
+		let target = yield * objOrThrow(args[0], s.realm);
+
+		target.extensable = false;
+		for ( let p of Object.keys(target.properties) ) {
+			target.properties[p].configurable = false;
+		}
+		return target;
+	}
+
+	static *isSealed(thiz, args, s) {
+		let target = yield * objOrThrow(args[0], s.realm);
+		if ( target.extensable ) return Value.false;
+		for ( let p of Object.keys(target.properties) ) {
+			let ps = target.properties[p];
+			if ( ps.configurable ) return Value.false;
+		}
+		return Value.true;
+	}
+
+	static *freeze$e(thiz, args, s) {
+		let target = yield * objOrThrow(args[0], s.realm);
+		target.extensable = false;
+		for ( let p in target.properties ) {
+			if ( !Object.prototype.hasOwnProperty.call(target.properties, p) ) continue;
+			target.properties[p].configurable = false;
+			target.properties[p].writable = false;
+		}
+		return target;
+	}
+
+	static *isFrozen(thiz, args, s) {
+		let target = yield * objOrThrow(args[0], s.realm);
+		if ( target.extensable ) return Value.false;
+		for ( let p of Object.keys(target.properties) ) {
+			let ps = target.properties[p];
+			if ( ps.configurable ) return Value.false;
+			if ( ps.writable ) return Value.false;
+		}
+		return Value.true;
+	}
+
+	static *preventExtensions$e(thiz, args, s) {
+		let target = yield * objOrThrow(args[0], s.realm);
+		target.extensable = false;
+		return target;
+	}
+
+	static *isExtensible$e(thiz, args, s) {
+		let target = yield * objOrThrow(args[0], s.realm);
+		return this.fromNative(target.extensable);
+	}
+
+	static *keys$e(thiz, args, s) {
+		let target = yield * objOrThrow(args[0], s.realm);
+		let result = [];
+		for ( let p of Object.keys(target.properties) ) {
+			if ( !target.properties[p].enumerable ) continue;
+			result.push(p);
+		}
+		return ArrayValue.make(result, s.realm);
+	}
+
+	static *getOwnPropertyNames$e(thiz, args, s) {
+		let target = yield * objOrThrow(args[0], s.realm);
+		return ArrayValue.make(Object.getOwnPropertyNames(target.properties), s.realm);
+	}
+
+	static *getOwnPropertyDescriptor(thiz, args, s) {
+		let target = yield * objOrThrow(args[0], s.realm);
+		let name = yield * args[1].toStringNative();
+		return yield * getDescriptor(target, name, s.realm);
+	}
+
+	static *getPrototypeOf(thiz, args, s) {
+		let target = EasyObjectValue.undef;
+		if ( args.length &gt; 0 ) target = args[0];
+		if ( !target.getPrototype ) return yield CompletionRecord.makeTypeError(s.realm, &apos;No prototype.&apos;);
+		let proto = target.getPrototype(s.realm);
+		if ( proto ) return proto;
+		return EasyObjectValue.null;
+	}
+
+	toNativeCounterpart() { return Object; }
+}
+
+ObjectObject.prototype.wellKnownName = &apos;%Object%&apos;;
+
+module.exports = ObjectObject;
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>
