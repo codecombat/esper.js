@@ -329,7 +329,7 @@ class Evaluator {
 					} else {
 						iref.setValue = function *(value) {
 							s.global.set(n.name, value, s);
-							let aref = s.global.ref(n.name, s.realm);
+							let aref = s.global.ref(n.name, s);
 							this.setValue = aref.setValue;
 							this.getValue = aref.getValue;
 							this.del = aref.delete;
@@ -356,7 +356,7 @@ class Evaluator {
 				}
 
 				this.topFrame.ast = oldAST;
-				return ref.ref(idx, s.realm);
+				return ref.ref(idx, s);
 
 			default:
 				return yield CompletionRecord.makeTypeError(s.realm, `Couldnt resolve ref component: ${n.type}`);

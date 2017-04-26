@@ -35,13 +35,13 @@ class LinkValue extends Value {
 		return new LinkValue(native, realm);
 	}
 
-	ref(name, realm) {
+	ref(name, s) {
 
 		let that = this;
 		let out = Object.create(null);
 
-		out.getValue = function *() { return yield * that.get(name, realm); };
-		out.setValue = function *(to) { return yield * that.set(name, to); };
+		out.getValue = function *() { return yield * that.get(name, s); };
+		out.setValue = function *(to, s) { return yield * that.set(name, to, s); };
 		out.del = function() { return false; };
 
 		return out;

@@ -29,7 +29,7 @@ class BridgeValue extends Value {
 		return new BridgeValue(native);
 	}
 
-	ref(name) {
+	ref(name, s) {
 		let that = this;
 		let out = Object.create(null);
 		let str = (value) => that.native[name] = value.toNative();

@@ -72,12 +72,12 @@ class SmartLinkValue extends LinkValue {
 	}
 
 
-	ref(name, realm) {
+	ref(name, s) {
 		let native = this.native;
 		let owner = this;
 		if ( ('esper_' + name) in native ) name = 'esper_' + name;
 
-		return super.ref(name, realm);
+		return super.ref(name, s);
 	}
 
 	*set(name, value, s) {

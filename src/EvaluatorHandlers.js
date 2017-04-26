@@ -348,9 +348,9 @@ function *evaluateForInStatement(e, n, s) {
 
 	if ( n.left.type === 'VariableDeclaration' ) {
 		s.add(n.left.declarations[0].id.name, Value.undef);
-		ref = s.ref(n.left.declarations[0].id.name, s.realm);
+		ref = s.ref(n.left.declarations[0].id.name, s);
 	} else {
-		ref = s.ref(n.left.name, s.realm);
+		ref = s.ref(n.left.name, s);
 	}
 	if ( !ref ) throw new Error('Couldnt find anything to write to for:' + n.left.name);
 

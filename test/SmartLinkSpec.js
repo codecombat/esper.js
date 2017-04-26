@@ -133,6 +133,14 @@ describe('Smart Link', () => {
 
 	});
 
+	describe('Writing properties', () => {
+		var obj =  {x: 10};
+		it('shouldnt allow writes by default', () => {
+			expect(() => a('arg.x = 1', obj)).to.throw('Can\'t write to protected property: x');
+		});
+
+	});
+
 	it('Privlaged Threads', () => {
 		var e = new Engine({
 			foreignObjectMode: 'smart',
