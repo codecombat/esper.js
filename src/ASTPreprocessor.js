@@ -286,7 +286,11 @@ class EsperASTInstructions {
 		}
 
 		for ( let o of a.params ) {
-			a.vars[o.name] = a;
+			if ( o.type == 'Identifier' ) {
+				a.vars[o.name] = a;
+			} else if ( o.type == 'RestElement' ) {
+				a.vars[o.argument.name] = a;
+			}
 		}
 
 		this.mangleBody(a);

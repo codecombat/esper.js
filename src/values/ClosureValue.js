@@ -4,6 +4,7 @@
 const Value = require('../Value');
 const PropertyDescriptor = require('./PropertyDescriptor');
 const ObjectValue = require('./ObjectValue');
+const ArrayValue = require('./ArrayValue');
 const EvaluatorInstruction = require('../EvaluatorInstruction');
 
 /**
@@ -94,6 +95,7 @@ class ClosureValue extends ObjectValue {
 		let argn = Math.max(args.length, this.func.params.length);
 		let argvars = new Array(argn);
 		let argsObj = new ObjectValue(scope.realm);
+		argsObj.clazz = 'Arguments';
 
 		for ( let i = 0; i < argn; ++i ) {
 			let vv = Value.undef;
@@ -123,13 +125,19 @@ class ClosureValue extends ObjectValue {
 		invokeScope.add('arguments', argsObj);
 
 		for ( let i = 0; i < this.func.params.length; ++i ) {
-			let name = this.func.params[i].name;
-			if ( scope.strict ) {
-				//Scope is strict, so we make a copy for the args variable
-				invokeScope.add(name, i < args.length ? args[i] : Value.undef);
+			if ( this.func.params[i].type == 'RestElement' ) {
+				let name = this.func.params[i].argument.name;
+				let rest = args.slice(i);
+				invokeScope.add(name, ArrayValue.make(rest, scope.realm));
 			} else {
-				//Scope isnt strict, magic happens.
-				invokeScope.object.rawSetProperty(name, argvars[i]);
+				let name = this.func.params[i].name;
+				if ( scope.strict ) {
+					//Scope is strict, so we make a copy for the args variable
+					invokeScope.add(name, i < args.length ? args[i] : Value.undef);
+				} else {
+					//Scope isnt strict, magic happens.
+					invokeScope.object.rawSetProperty(name, argvars[i]);
+				}
 			}
 		}
 		let opts = {returnLastValue: this.returnLastValue};
