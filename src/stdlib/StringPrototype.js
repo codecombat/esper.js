@@ -54,11 +54,34 @@ class StringPrototype extends EasyObjectValue {
 		return realm.fromNative(out);
 	}
 
+	static *padEnd$e(thiz, args, realm) {
+		let base = yield * thiz.toStringNative();
+		if ( args.length < 1 ) return thiz;
+		let length = yield * args[0].toIntNative();
+		let pad = args.length > 1 ? yield * args[1].toStringNative() : " ";
+		return realm.fromNative(strPad(base, length, pad, false));
+	}
+
+	static *padStart$e(thiz, args, realm) {
+		let base = yield * thiz.toStringNative();
+		if ( args.length < 1 ) return thiz;
+		let length = yield * args[0].toIntNative();
+		let pad = args.length > 1 ? yield * args[1].toStringNative() : " ";
+		return realm.fromNative(strPad(base, length, pad, true));
+	}
+
 	static *toString$e(thiz) {
 		return yield * StringPrototype.valueOf$e(thiz);
 	}
 }
 
+function strPad(base, length, pad, left) {
+	if ( length <= base.length ) return base;
+	let extra = length - base.length;
+	let padding = new Array(1+Math.ceil(extra / pad.length)).join(pad).substr(0, extra);
+	return left ? padding+base : base+padding;
+
+}
 
 StringPrototype.prototype.wellKnownName = '%StringProtoype%';
 StringPrototype.prototype.clazz = 'String';

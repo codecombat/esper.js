@@ -138,6 +138,27 @@ class ArrayPrototype extends EasyObjectValue {
 		return Value.false;
 	}
 
+	static *find$e(thiz, args, s) {
+		let fx = Value.undef;
+		let targ = Value.undef;
+		if ( args.length > 0 ) fx = args[0];
+		if ( args.length > 1 ) targ = args[1];
+
+		let test = function *(v, i) {
+			let res = yield * fx.call(targ, [v, Value.fromNative(i), thiz], s);
+			return res.truthy;
+		};
+
+		let l = yield * getLength(thiz);
+		for ( let i = 0; i < l; ++i ) {
+			let tv = yield * thiz.get(i);
+			let tru = yield * test(tv, i);
+			if ( tru ) return tv;
+		}
+
+		return Value.undef;
+	}
+
 	static *map$e(thiz, args, s) {
 		let fx = Value.undef;
 		let targ = Value.undef;
@@ -194,6 +215,7 @@ class ArrayPrototype extends EasyObjectValue {
 		}
 		return Value.fromNative(-1);
 	}
+
 
 	static *lastIndexOf$e(thiz, args) {
 		//TODO: Call ToObject() on thisz;

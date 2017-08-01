@@ -24,3 +24,16 @@ console.log(typeof Clazz.something, Clazz.something());
 
 for ( let y of [8,6,7,5,3,0,9] )
 	console.log(y);
+
+
+//Array Find
+
+console.log([1,2,3,4,5].find(function(t) {
+	console.log(JSON.stringify(arguments));
+	return t == 4;
+
+}));
+
+console.log([1,2,3,4,5].find(function(t) {
+	return t == 0;
+}));
