@@ -85,7 +85,6 @@
     "mocha": "^3.2.0",
     "mocha-loader": "^1.1.1",
     "raw-loader": "^0.5.1",
-    "v8-profiler": "^5.7.0",
     "webpack": "^2.3.3",
     "webpack-dev-server": "^2.4.2"
   },
