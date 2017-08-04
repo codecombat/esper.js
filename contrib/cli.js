@@ -41,6 +41,8 @@ program
 	.parse(process.argv);
 
 
+if ( program.language ) esper.plugin('lang-' + program.language);
+
 let engine = new Engine({
 	strict: !!program.strict,
 	debug: !!program.debug,

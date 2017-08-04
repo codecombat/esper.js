@@ -314,6 +314,10 @@ function *evaluateIfStatement(e, n, s) {
 	return Value.undef;
 }
 
+function *evaluateImportDeclaration(e, n,s ) {
+	return Value.undef;
+}
+
 function* genForLoop(e, n, s) {
 	let test = Value.true;
 	if ( n.test ) test = yield * e.branch(n.test,s);
@@ -717,6 +721,7 @@ function findNextStep(type) {
 		case 'FunctionExpression': return evaluateFunctionExpression;
 		case 'Identifier': return evaluateIdentifier;
 		case 'IfStatement': return evaluateIfStatement;
+		case 'ImportDeclaration': return evaluateImportDeclaration;
 		case 'LabeledStatement': return evaluateLabeledStatement;
 		case 'Literal': return evaluateLiteral;
 		case 'LogicalExpression': return evaluateLogicalExpression;
