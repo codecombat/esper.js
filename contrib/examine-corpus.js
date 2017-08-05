@@ -12,7 +12,8 @@ files.forEach(function(file, idx) {
 	var lines = [];
 	console.log(file);
 	function stub() {
-		let str = Array.prototype.join.call(arguments, '\t');
+		let args = Array.prototype.slice.call(arguments, 0);
+		let str = Array.prototype.join.call(args.map((x) => String(x)), '\t');
 		lines.push(str);
 	}
 	vm.runInNewContext(source, {

@@ -8,6 +8,8 @@ function testStringPad(str, len, pad) {
 
 testStringPad("cow", 20);
 testStringPad("cow", 20, ' ');
+testStringPad("cow", 20, null);
+testStringPad("cow", 20, 12);
 testStringPad("cow", 20, 'cat ');
 testStringPad("cow", 1);
 testStringPad("cow", 1, 'cat ');

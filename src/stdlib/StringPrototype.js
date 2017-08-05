@@ -58,7 +58,8 @@ class StringPrototype extends EasyObjectValue {
 		let base = yield * thiz.toStringNative();
 		if ( args.length < 1 ) return thiz;
 		let length = yield * args[0].toIntNative();
-		let pad = args.length > 1 ? yield * args[1].toStringNative() : " ";
+		let hasPad = args.length > 1 && args[1].jsTypeName != 'undefined';
+		let pad = hasPad ? yield * args[1].toStringNative() : " ";
 		return realm.fromNative(strPad(base, length, pad, false));
 	}
 
@@ -66,7 +67,8 @@ class StringPrototype extends EasyObjectValue {
 		let base = yield * thiz.toStringNative();
 		if ( args.length < 1 ) return thiz;
 		let length = yield * args[0].toIntNative();
-		let pad = args.length > 1 ? yield * args[1].toStringNative() : " ";
+		let hasPad = args.length > 1 && args[1].jsTypeName != 'undefined';
+		let pad = hasPad ? yield * args[1].toStringNative() : " ";
 		return realm.fromNative(strPad(base, length, pad, true));
 	}
 
