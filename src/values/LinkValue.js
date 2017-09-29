@@ -10,8 +10,12 @@ function invoke(target, thiz, args) {
 }
 
 function invokeAsNew(target, args) {
-	if ( target.bind ) return new (target.bind.apply(target, null, args))();
-	else invoke(target, null, args);
+	if ( target.bind ) {
+		let bindArgs = [null].concat(args);
+		return new (target.bind.apply(target, bindArgs))();
+	} else {
+		return invoke(target, null, args);
+	}
 }
 
 
