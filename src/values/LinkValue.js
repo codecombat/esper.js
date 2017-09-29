@@ -9,6 +9,12 @@ function invoke(target, thiz, args) {
 	return Function.prototype.apply.call(target, thiz, args);
 }
 
+function invokeAsNew(target, args) {
+	if ( target.bind ) return new (target.bind.apply(target, null, args))();
+	else invoke(target, null, args);
+}
+
+
 /**
  * Represents a value that maps directly to an untrusted local value.
  */
@@ -116,13 +122,16 @@ class LinkValue extends Value {
 	 * @param {Value[]} args
 	 * @param {Scope} s
 	 */
-	*call(thiz, args, s) {
+	*call(thiz, args, s, ext) {
 		let realArgs = new Array(args.length);
 		for ( let i = 0; i < args.length; ++i ) {
 			realArgs[i] = args[i].toNative();
 		}
 		try {
-			let result = invoke(this.native, thiz ? thiz.toNative() : undefined, realArgs);
+			let asConstructor = ext && ext.asConstructor;
+			let result;
+			if ( asConstructor ) result = invokeAsNew(this.native, realArgs);
+			else result = invoke(this.native, thiz ? thiz.toNative() : undefined, realArgs);
 			let val = this.makeLink(result, s.realm);
 			if ( typeof s.realm.options.linkValueCallReturnValueWrapper === 'function' ) {
 				val = s.realm.options.linkValueCallReturnValueWrapper(val);
