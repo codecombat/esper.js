@@ -4,6 +4,7 @@
 const PrimitiveValue = require('./PrimitiveValue');
 const ObjectValue = require('./ObjectValue');
 const Value = require('../Value');
+const GenDash = require('../GenDash');
 let NumberValue;
 
 
@@ -17,7 +18,18 @@ class ArrayValue extends ObjectValue {
 		return yield * super.get(name, realm);
 	}
 
-	adjustLength(name) {
+	adjustLength(name, value) {
+		if ( name == "length" && this.properties.length ) {
+			//TODO: 15.4.5.2 specifies more complex behavior here.
+			let target = GenDash.syncGenHelper(value.toIntNative());
+			let length = this.getLengthSync();
+			if ( target < length ) {
+				for ( let i = length-1; i >= target; --i ) {
+					delete this.properties[i];
+				}
+			}
+		}
+
 		if ( !isNaN(parseInt(name)) ) {
 			let length = this.getLengthSync();
 			if ( name >= length ) {
@@ -31,12 +43,12 @@ class ArrayValue extends ObjectValue {
 	}
 
 	set(name, v) {
-		this.adjustLength(name);
+		this.adjustLength(name, v);
 		return super.set(name, v);
 	}
 
 	setImmediate(name, v) {
-		this.adjustLength(name);
+		this.adjustLength(name, v);
 		return super.setImmediate(name, v);
 	}
 
