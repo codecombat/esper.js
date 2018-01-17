@@ -329,7 +329,7 @@ function compileRTL(opts) {
 				return false;
 			}
 		}
-		debug('OK!', canidates.map(function(s) { return s.n.type + '#' + s.n.loc.start.line; }));
+		debug('OK!', canidates.map(function(s) { return s.n.type + '#' + (s.n.loc ? s.n.loc.start.line : '?'); }));
 		return canidates.map(function(s) { return s.n; });
 	};
 }
