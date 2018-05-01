@@ -40,6 +40,16 @@ class StringObject extends EasyObjectValue {
 		return this.fromNative(String.fromCharCode.apply(String, argz));
 	}
 
+	static *raw(thiz, args) {
+		let raw = yield * args[0].get('raw');
+		let result = yield * raw.get(0);
+		for ( let i = 1; i < args.length; ++i ) {
+			result = yield * result.add(args[i]);
+			result = yield * result.add(yield * raw.get(i));
+		}
+		return result;
+	}
+
 }
 
 module.exports = StringObject;

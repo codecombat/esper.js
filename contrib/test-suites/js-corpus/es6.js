@@ -37,3 +37,12 @@ console.log([1,2,3,4,5].find(function(t) {
 console.log([1,2,3,4,5].find(function(t) {
 	return t == 0;
 }));
+
+console.log(`1 ${2} 3 ${4} ${typeof(Math)}`)
+console.log `1 ${2} 3 ${4} ${typeof(Math)}`
+
+function raw(s) { return s.raw.join('|') + Object.keys(s).join("%") }
+
+console.log(raw `Two\nLines ${x}\nThree\nLines`)
+console.log(String.raw `Two\nLines ${x}\nThree\nLines`)
+console.log(String.raw({ raw: 'test' }, 0, 1, 2));

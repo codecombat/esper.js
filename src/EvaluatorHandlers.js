@@ -123,19 +123,29 @@ function *evaluateBreakStatement(e, n, s) {
 
 
 function *evaluateCallExpression(e, n, s) {
+	return yield * doCall(e, n, n.callee, s, function*() {
+		let args = new Array(n.arguments.length);
+		for ( let i = 0; i < n.arguments.length; ++i ) {
+			args[i] = yield * e.branch(n.arguments[i], s);
+		}
+		return args;
+	});
+}
+
+function *doCall(e, n, c, s, argProvider) {
 	let thiz = Value.undef;
 
 	let callee, base;
 
-	if ( n.callee.type === 'MemberExpression' ) {
-		thiz = base = yield * e.branch(n.callee.object, s);
-		callee = yield * e.partialMemberExpression(thiz, n.callee, s);
+	if ( c.type === 'MemberExpression' ) {
+		thiz = base = yield * e.branch(c.object, s);
+		callee = yield * e.partialMemberExpression(thiz, c, s);
 		if ( callee instanceof CompletionRecord ) {
 			if ( callee.type == CompletionRecord.THROW ) return callee;
 			callee = callee.value;
 		}
 	} else {
-		callee = yield * e.branch(n.callee, s);
+		callee = yield * e.branch(c, s);
 	}
 
 	if ( n.type === 'NewExpression' ) {
@@ -152,12 +162,9 @@ function *evaluateCallExpression(e, n, s) {
 
 	//console.log("Calling", callee, callee.call);
 
-	let args = new Array(n.arguments.length);
-	for ( let i = 0; i < n.arguments.length; ++i ) {
-		args[i] = yield * e.branch(n.arguments[i], s);
-	}
+	let args = yield * argProvider();
 
-	let name = n.callee.srcName || callee.jsTypeName;
+	let name = c.srcName || callee.jsTypeName;
 
 	if ( e.yieldPower >= 1 ) yield EvaluatorInstruction.stepMajor;
 
@@ -166,7 +173,7 @@ function *evaluateCallExpression(e, n, s) {
 		yield * err.addExtra({
 			code: 'CallNonFunction',
 			target: callee,
-			targetAst: n.callee,
+			targetAst: c,
 			targetName: name,
 			base: base
 		});
@@ -174,7 +181,7 @@ function *evaluateCallExpression(e, n, s) {
 	}
 
 	if ( e.debug ) {
-		e.incrCtr('fxInvocationCount', n.callee.srcName);
+		e.incrCtr('fxInvocationCount', c.srcName);
 	}
 
 	let callResult = callee.call(thiz, args, s, {
@@ -203,6 +210,25 @@ function *evaluateCallExpression(e, n, s) {
 	}
 }
 
+let classFeatures = {};
+classFeatures.MethodDefinition = function*(clazz, proto, e, m, s) {
+	let fx = yield * e.branch(m.value, s);
+	if ( m.kind == 'constructor' ) {
+		clazz.call = function*(thiz, args, s) { return yield * fx.call(thiz, args, s); };
+	} else {
+		let ks;
+		if ( m.computed ) {
+			let k = yield * e.branch(m.key, s);
+			ks = yield * k.toStringNative(e.realm);
+		} else {
+			ks = m.key.name;
+		}
+
+		if ( m.static ) clazz.setImmediate(ks, fx);
+		else proto.setImmediate(ks, fx);
+	}
+};
+
 function *evaluateClassExpression(e, n, s) {
 	let clazz = new ObjectValue(e.realm);
 	clazz.call = function*() { return Value.undef; };
@@ -213,27 +239,12 @@ function *evaluateClassExpression(e, n, s) {
 
 	if ( e.yieldPower >= 3 ) yield EvaluatorInstruction.stepMinor;
 	for ( let m of n.body.body ) {
-		let fx = yield * e.branch(m.value, s);
-
+		yield * module.exports.classFeatures[m.type](clazz, proto, e, m, s);
 		//TODO: Support getters and setters
-		if ( m.kind == 'constructor' ) {
-			clazz.call = function*(thiz, args, s) { return yield * fx.call(thiz, args, s); };
-
-		} else {
-			let ks;
-			if ( m.computed ) {
-				let k = yield * e.branch(m.key, s);
-				ks = yield * k.toStringNative(e.realm);
-			} else {
-				ks = m.key.name;
-			}
-
-			if ( m.static ) clazz.setImmediate(ks, fx);
-			else proto.setImmediate(ks, fx);
-		}
 	}
 	return clazz;
 }
+
 
 function *evaluateClassDeclaration(e, n, s) {
 	let clazz = yield * evaluateClassExpression(e, n, s);
@@ -575,6 +586,40 @@ function *evaluateSwitchStatement(e, n, s) {
 	return last;
 }
 
+function *evaluateTaggedTemplateExpression(e, n, s) {
+	let quasis = n.quasi.quasis;
+	let expressions = n.quasi.expressions;
+	let value = Value.fromNative(quasis[0].value.cooked);
+	let fn = yield * e.branch(n.tag, s);
+
+	let strings = [];
+	let rawStrings = [];
+	for ( let i = 0; i < quasis.length; ++i ) {
+		strings.push(e.realm.fromNative(quasis[i].value.cooked));
+		rawStrings.push(e.realm.fromNative(quasis[i].value.raw));
+	}
+	let sv = ArrayValue.make(strings, e.realm);
+	let rv = ArrayValue.make(rawStrings, e.realm);
+	sv.rawSetProperty('raw', new PropertyDescriptor(rv, false));
+
+	let args = [sv];
+
+	for ( let i = 0; i < expressions.length; ++i ) {
+		args.push(yield * e.branch(expressions[i], s));
+	}
+
+	return yield * doCall(e, n, n.tag, s, function*() { return args; });
+}
+
+function *evaluateTemplateLiteral(e, n, s) {
+	let value = Value.fromNative(n.quasis[0].value.cooked);
+	for ( let i = 0; i < n.expressions.length; ++i ) {
+		value = yield * value.add(yield * e.branch(n.expressions[i], s));
+		value = yield * value.add(Value.fromNative(n.quasis[i + 1].value.cooked));
+	}
+	return value;
+}
+
 function *evaluateThisExpression(e, n, s) {
 	if ( e.yieldPower >= 4 ) yield EvaluatorInstruction.stepMajor;
 	if ( s.thiz ) return s.thiz;
@@ -732,6 +777,8 @@ function findNextStep(type) {
 		case 'ReturnStatement': return evaluateReturnStatement;
 		case 'SequenceExpression': return evaluateSequenceExpression;
 		case 'SwitchStatement': return evaluateSwitchStatement;
+		case 'TaggedTemplateExpression': return evaluateTaggedTemplateExpression;
+		case 'TemplateLiteral': return evaluateTemplateLiteral;
 		case 'ThisExpression': return evaluateThisExpression;
 		case 'ThrowStatement': return evaluateThrowStatement;
 		case 'TryStatement': return evaluateTryStatement;
@@ -747,5 +794,6 @@ function findNextStep(type) {
 
 module.exports = {
 	evaluateIdentifier,
-	findNextStep
+	findNextStep,
+	classFeatures
 };
