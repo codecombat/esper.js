@@ -28,9 +28,8 @@ describe('Plugin: lang-python', function() {
 				for (var i in lines) lines[i] = "  " + lines[i];
 
 				code = 'def foo():\n' + lines.join("\n") + "\n\nfoo()";
-				var ast = utils.parse(code);
 				var engine = new esper.Engine({language: 'python'});
-				engine.loadAST(ast);
+				engine.load(code);
 				var result = engine.runSync();
 				return result.toNative();
 			}
