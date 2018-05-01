@@ -25,11 +25,11 @@ function parser(code, options) {
 			{
 				'type': 'VariableDeclarator',
 				'id': {
-				  'type': 'Identifier',
-				  'name': 'self'
-			},
+					'type': 'Identifier',
+					'name': 'self'
+				},
 				'init': {
-				  'type': 'ThisExpression'
+					'type': 'ThisExpression'
 				}
 			}
 		],
@@ -57,7 +57,7 @@ function parser(code, options) {
 		});
 	} else {
 		let newBody = [fixThis];
-		Array.prototype.push.apply(newBody, final.body)
+		Array.prototype.push.apply(newBody, final.body);
 		final = wrap({
 			type: 'Program',
 			body: newBody

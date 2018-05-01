@@ -41,7 +41,7 @@ class Evaluator {
 
 	pushAST(n, s) {
 		let that = this;
-		let gen = n ? this.branch(n,s) : (function*() {
+		let gen = n ? this.branch(n, s) : (function*() {
 			return yield EvaluatorInstruction.stepMinor;
 		})();
 		this.pushFrame({generator: gen, type: 'program', scope: s, ast: n});
@@ -66,7 +66,7 @@ class Evaluator {
 				let j = i + 1;
 				for (; j < this.frames.length; ++j ) if ( this.frames[j].type != 'finally' ) break;
 				let fr = this.frames[j];
-				this.processLostFrames(this.frames.splice(0,i + 1));
+				this.processLostFrames(this.frames.splice(0, i + 1));
 				this.saveFrameShortcuts();
 				Array.prototype.unshift.apply(this.frames, finallyFrames);
 				return fr;
@@ -136,14 +136,17 @@ class Evaluator {
 
 			if ( val && val.then ) {
 				if ( top && top.type !== 'await' ) {
-					this.pushFrame({generator: (function *(f) {
-						while ( !f.resolved ) yield f;
-						if ( f.successful ) {
-							return f.value;
-						} else {
-							return new CompletionRecord(CompletionRecord.THROW, f.value);
-						}
-					})(val), type: 'await'});
+					this.pushFrame({
+						generator: (function *(f) {
+							while ( !f.resolved ) yield f;
+							if ( f.successful ) {
+								return f.value;
+							} else {
+								return new CompletionRecord(CompletionRecord.THROW, f.value);
+							}
+						})(val),
+						type: 'await'
+					});
 				}
 				return {done: false, value: val};
 			}
@@ -200,7 +203,7 @@ class Evaluator {
 				//val.value.native = e;
 
 				let smallStack;
-				if ( e && e.stack ) smallStack = e.stack.split(/\n/).slice(0,4).join('\n');
+				if ( e && e.stack ) smallStack = e.stack.split(/\n/).slice(0, 4).join('\n');
 				let stk = this.buildStacktrace(e).join('\n    ');
 				let bestFrame;
 				for ( let i = 0; i < this.frames.length; ++i ) {
@@ -215,8 +218,10 @@ class Evaluator {
 						stk += '\n-------------';
 						for ( let key in val.value.extra ) {
 							let vv = val.value.extra[key];
-							if ( vv instanceof Value ) stk += `\n${key} => ${vv.debugString}`;
-							else stk += `\n${key} => ${vv}`;
+							if ( vv instanceof Value ) stk += `
+${key} => ${vv.debugString}`;
+							else stk += `
+${key} => ${vv}`;
 						}
 					}
 				}
@@ -365,7 +370,7 @@ class Evaluator {
 
 	*partialMemberExpression(left, n, s) {
 		if ( n.computed ) {
-			let right = yield * this.branch(n.property,s);
+			let right = yield * this.branch(n.property, s);
 			return yield * left.get(right.toNative(), s.realm);
 		} else if ( n.property.type == 'Identifier') {
 			if ( !left ) throw `Cant index ${n.property.name} of undefined`;
@@ -406,7 +411,7 @@ class Evaluator {
 	}
 
 	branchFrame(type, n, s, extra) {
-		let frame = {generator: this.branch(n,s), type: type, scope: s, ast: n};
+		let frame = {generator: this.branch(n, s), type: type, scope: s, ast: n};
 
 		if ( extra ) {
 			for ( var k in extra ) {
@@ -447,7 +452,7 @@ class Evaluator {
 			n.dispatch = function*(that, n, s) {
 				let state = that.beforeNode(n);
 
-				let result = yield * nextStep(that, n,s);
+				let result = yield * nextStep(that, n, s);
 				if ( result instanceof CompletionRecord ) result = yield result;
 				if ( result && result.then ) result = yield result;
 
@@ -468,16 +473,16 @@ class Evaluator {
 			this.profile[n] = o;
 		}
 		c = c || '???';
-		if ( c in o ) o[c] += v
+		if ( c in o ) o[c] += v;
 		else o[c] = v;
 	}
 
 
 	dumpProfilingInformation() {
-		function lpad(s, l) { return s + new Array(Math.max(l - s.length,1)).join(' '); }
+		function lpad(s, l) { return s + new Array(Math.max(l - s.length, 1)).join(' '); }
 
 		if ( !this.profile ) {
-			console.log("===== Profile: None collected =====");
+			console.log('===== Profile: None collected =====');
 			return;
 		}
 

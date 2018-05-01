@@ -54,7 +54,7 @@ class Engine {
 	}
 
 	loadLangaugeStartupCode() {
-		let past = this.preprocessAST(this.language.startupCode(),{});
+		let past = this.preprocessAST(this.language.startupCode(), {});
 		let stdlib_eval = new Evaluator(this.realm, null, this.globalScope);
 		stdlib_eval.frames = [];
 		stdlib_eval.pushAST(past, this.globalScope);
@@ -280,7 +280,7 @@ class Engine {
 		var scope = this.globalScope;
 		var that = this;
 		let evaluator = evalu || this.evaluator;
-		if ( !evaluator ) throw new Error("Evaluator is falsey");
+		if ( !evaluator ) throw new Error('Evaluator is falsey');
 		if ( !val ) return;
 
 		return function*() {
@@ -337,7 +337,7 @@ class Engine {
 	*filterGenerator(gen, shouldYield, evaluator) {
 		let value = gen.next();
 		let steps = 0;
-		if ( !evaluator ) throw new Error("Evaluator is falsey");
+		if ( !evaluator ) throw new Error('Evaluator is falsey');
 		while ( !value.done ) {
 			if ( !shouldYield ) yield;
 			else if ( evaluator.topFrame.type == 'await' ) {

@@ -7,7 +7,7 @@ const escodegen = require('escodegen');
 
 
 module.exports = function(ast, scope) {
-	console.log("----");
+	console.log('----');
 	if ( useRegenerator ) {
 		regenerator.transform(ast);
 		if ( useRegenerator )scope['regeneratorRuntime'] = regeneratorRuntime;

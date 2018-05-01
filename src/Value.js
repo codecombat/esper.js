@@ -35,7 +35,7 @@ class Value {
 				return 1 / value > 0 ? zero : negzero;
 			}
 			if ( value | 0 === value ) {
-				let snv = smallIntValues[value+1];
+				let snv = smallIntValues[value + 1];
 				if ( snv ) return snv;
 			}
 			return new NumberValue(value);
@@ -148,22 +148,22 @@ class Value {
 			switch ( realm.options.bookmarkInvocationMode ) {
 				case 'loop':
 
-				out = function Bookmark() {
-					let Evaluator = require('./Evaluator');
-					let cthis = realm.makeForForeignObject(this);
-					let c = v.call(cthis, [], realm.globalScope);
-					let evalu = new Evaluator(realm, null, realm.globalScope);
-					evalu.pushFrame({type: 'program', generator: c, scope: realm.globalScope});
-					let gen = evalu.generator();
-					let result;
-					do {
-						result = gen.next();
-					} while ( !result.done );
-					return result.value.toNative();
-				};
-				break;
+					out = function Bookmark() {
+						let Evaluator = require('./Evaluator');
+						let cthis = realm.makeForForeignObject(this);
+						let c = v.call(cthis, [], realm.globalScope);
+						let evalu = new Evaluator(realm, null, realm.globalScope);
+						evalu.pushFrame({type: 'program', generator: c, scope: realm.globalScope});
+						let gen = evalu.generator();
+						let result;
+						do {
+							result = gen.next();
+						} while ( !result.done );
+						return result.value.toNative();
+					};
+					break;
 				default:
-				out = function Bookmark() { throw new Error('Atempted to invoke bookmark for ' + v.debugString); };
+					out = function Bookmark() { throw new Error('Atempted to invoke bookmark for ' + v.debugString); };
 			}
 		} else {
 			out = {};
@@ -439,4 +439,4 @@ smallIntValues = [
 	negone, zero,
 	one, new NumberValue(2), new NumberValue(3), new NumberValue(4), new NumberValue(5),
 	new NumberValue(6), new NumberValue(7), new NumberValue(8), new NumberValue(9)
-	]
+	];

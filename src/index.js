@@ -41,8 +41,8 @@ esper.plugin = function(name) {
 };
 
 esper._registerPlugin = function(pl) {
-	if ( typeof pl.init !== "function" ) throw new Error("Tried to add a plugin without an init method.");
-	if ( typeof pl.name !== "string" ) throw new Error("Tried to add a plugin without a name.");
+	if ( typeof pl.init !== 'function' ) throw new Error('Tried to add a plugin without an init method.');
+	if ( typeof pl.name !== 'string' ) throw new Error('Tried to add a plugin without a name.');
 	esper.plugins[pl.name] = pl;
 	pl.init(esper);
 };
@@ -50,7 +50,7 @@ esper._registerPlugin = function(pl) {
 var list = require('../plugin-list.js');
 esper.pluginList = list;
 for ( let pl in list ) {
-	if ( list[pl] == "bundle" ) esper.plugin(pl);
+	if ( list[pl] == 'bundle' ) esper.plugin(pl);
 }
 
 

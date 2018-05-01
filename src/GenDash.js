@@ -3,7 +3,7 @@
 function *sortValArray(arr, comp) {
 	if ( arr.length < 2 ) return arr;
 	let mid = Math.floor(arr.length / 2);
-	let left = yield * sortValArray(arr.slice(0,mid), comp);
+	let left = yield * sortValArray(arr.slice(0, mid), comp);
 	let right = yield * sortValArray(arr.slice(mid, arr.length), comp);
 	return yield * mergeValArray(left, right, comp);
 }

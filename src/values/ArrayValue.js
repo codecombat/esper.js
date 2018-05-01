@@ -19,12 +19,12 @@ class ArrayValue extends ObjectValue {
 	}
 
 	adjustLength(name, value) {
-		if ( name == "length" && this.properties.length ) {
+		if ( name == 'length' && this.properties.length ) {
 			//TODO: 15.4.5.2 specifies more complex behavior here.
 			let target = GenDash.syncGenHelper(value.toIntNative());
 			let length = this.getLengthSync();
 			if ( target < length ) {
-				for ( let i = length-1; i >= target; --i ) {
+				for ( let i = length - 1; i >= target; --i ) {
 					delete this.properties[i];
 				}
 			}
@@ -56,7 +56,7 @@ class ArrayValue extends ObjectValue {
 	toNative() {
 		let out = new Array(this.getLengthSync());
 		for ( let i of Object.keys(this.properties)) {
-			if ( i === "length" ) continue;
+			if ( i === 'length' ) continue;
 			let po = this.properties[i];
 			if ( po && po.value ) {
 				if ( !po.direct ) {

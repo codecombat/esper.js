@@ -26,14 +26,14 @@ exports.undef = template(function *V($target, _val) {
 	$target = Value.undef;
 });
 
-exports.i = template(function i($i) { $i });
+exports.i = template(function i($i) { $i; });
 
 exports.W = template(function W(body) {
-	return function* fx(e,n,s) {
+	return function* fx(e, n, s) {
 		var result = Value.undef;
 		body;
 		return result;
-	}
+	};
 });
 
 

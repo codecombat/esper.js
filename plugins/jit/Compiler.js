@@ -36,7 +36,7 @@ class Compiler {
 
 	compileNodeBody(n) {
 		let body;
-		switch(n.type) {
+		switch (n.type) {
 			case 'Literal':
 				body = this.compileLiteral(n);
 				break;

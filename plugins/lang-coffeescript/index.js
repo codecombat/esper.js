@@ -13,7 +13,7 @@ function formatParserError(preprocessed, e) {
 function cparse(coffee, opts) {
 	var parsed, preprocessed;
 	try {
-		preprocessed = Preprocessor.process(coffee, { literate: false });
+		preprocessed = Preprocessor.process(coffee, {literate: false});
 		parsed = Parser.parse(preprocessed, {
 			raw: true,
 			inputSource: coffee,

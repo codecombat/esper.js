@@ -9,7 +9,7 @@ const NullValue = require('./NullValue');
 const GenDash = require('../GenDash');
 
 let alwaysFalse = () => false;
-let undefinedReturningGenerator = function*() { return Value.undef; }
+let undefinedReturningGenerator = function*() { return Value.undef; };
 
 class ObjRefrence {
 	constructor(object, name, ctxthis) {
@@ -18,7 +18,7 @@ class ObjRefrence {
 		this.ctxthis = ctxthis;
 	}
 	del(s) { return this.object.delete(this.name, s); }
-	getValue(s) { return this.object.get(this.name, this.ctxthis || this.object, s) }
+	getValue(s) { return this.object.get(this.name, this.ctxthis || this.object, s); }
 	setValue(value, s) { return this.object.set(this.name, value, s); }
 }
 
@@ -51,7 +51,7 @@ class ObjectValue extends Value {
 				isVariable: false,
 				del: alwaysFalse,
 				getValue:  undefinedReturningGenerator,
-				setValue: function (to, s) { return this.object.set(this.name, to, s); }
+				setValue: function(to, s) { return this.object.set(this.name, to, s); }
 			};
 
 		}

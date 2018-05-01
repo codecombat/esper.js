@@ -24,7 +24,7 @@ class ErrorInstance extends ObjectValue {
 
 			let frames = stack ? stack.split(/\n/) : [];
 			if ( stack.length > 1 ) {
-			let header = frames.shift();
+				let header = frames.shift();
 				while ( /at (ErrorInstance.createNativeAnalog|ErrorObject.make|Function.makeTypeError)/.test(frames[0]) ) {
 					frames.shift();
 				}
