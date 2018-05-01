@@ -104,12 +104,13 @@ class LinkValue extends Value {
 
 
 
-	*get(name, realm) {
-		if ( this.native.hasOwnProperty(name) ) {
+	*get(name, realm, origional) {
+		let desc = Object.getOwnPropertyDescriptor(this.native, name);
+		if ( desc ) {
+			if ( desc.get && origional ) return this.makeLink(origional.native[name], realm);
 			return this.makeLink(this.native[name], realm);
 		}
-
-		return yield * this.makeLink(Object.getPrototypeOf(this.native), realm).get(name, realm);
+		return yield * this.makeLink(Object.getPrototypeOf(this.native), realm).get(name, realm, origional || this);
 	}
 
 

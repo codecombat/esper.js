@@ -131,6 +131,38 @@ describe('Smart Link', () => {
 			expect(a('return Esper.str(arg.x)', obj)).to.match(/^\[SmartLink/);
 		});
 
+		it('should send the correct this value', () => {
+			var o1 = {x: 1, getX: function() { return this.x; } };
+			var o2 = Object.create(o1);
+			o2.x = 2;
+			expect(a('return arg.getX()', o2)).to.equal(2);
+		});
+
+		it('should send the correct this value with getter', () => {
+			var o1 = {x: 1};
+			Object.defineProperty(o1, "getX", {
+				get: function() { return this.x; }
+			});
+			var o2 = Object.create(o1);
+			o2.x = 2;
+			expect(a('return arg.getX', o2)).to.equal(2);
+		});
+
+		it('should send the correct this value with setter', () => {
+			var o1 = {x: 1};
+			Object.defineProperty(o1, "esper_getX", {
+				configurable: true,
+				enumerable: true,
+				get: function() { return 6; },
+				set: function() { return this.y = this.x; }
+			});
+			var o2 = Object.create(o1);
+			o2.x = 2;
+			o2.apiUserProperties = ['getX'];
+			expect(a('return arg.getX = 7;', o2)).to.equal(7);
+			expect(o2.y).to.equal(2);
+		});
+
 	});
 
 	describe('Writing properties', () => {

@@ -97,7 +97,7 @@ class SmartLinkValue extends LinkValue {
 
 	}
 
-	*get(name, realm) {
+	*get(name, realm, origional) {
 		let evaluator = yield EvaluatorInstruction.getEvaluator();
 		let native = this.native;
 		if ( ('esper_' + name) in this.native ) name = 'esper_' + name;
@@ -110,7 +110,7 @@ class SmartLinkValue extends LinkValue {
 			return yield CompletionRecord.makeTypeError(realm, "Can't read protected property: " + name);
 		}
 
-		return yield * super.get(name, realm);
+		return yield * super.get(name, realm, origional);
 	}
 
 	get apiProperties() {
