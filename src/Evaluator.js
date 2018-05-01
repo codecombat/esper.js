@@ -405,6 +405,7 @@ ${key} => ${vv}`;
 			case '<<': return left.shiftLeft(right, realm);
 			case '>>': return left.shiftRight(right, realm);
 			case '>>>': return left.shiftRightZF(right, realm);
+			case '**': return left.pow(right, realm);
 			default:
 				throw new Error('Unknown binary operator: ' + operator);
 		}

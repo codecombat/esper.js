@@ -363,6 +363,15 @@ class Value {
 	*bitOr(other) { return this.fromNative((yield * this.toNumberNative()) | (yield * other.toNumberNative())); }
 	*bitXor(other) { return this.fromNative((yield * this.toNumberNative()) ^ (yield * other.toNumberNative())); }
 
+
+	/**
+	 * Computes the `value` raised to the `other` power (`value ** other`)
+	 * @param {Value} other - The other value
+	 * @returns {Value}
+	 */
+	*pow(other) { return this.fromNative(Math.pow(yield * this.toNumberNative(),yield * other.toNumberNative())); }
+
+
 	/**
 	 * Is the value is truthy, i.e. `!!value`
 	 *

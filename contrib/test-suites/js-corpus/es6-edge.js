@@ -6,3 +6,5 @@ function hasRest(a, b, ...c) {
 }
 
 hasRest(1,2,3,4,5,6,7);
+
+console.log("Math.pow(2,10) == ", 2**10);
