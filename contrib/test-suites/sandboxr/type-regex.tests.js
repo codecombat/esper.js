@@ -25,12 +25,11 @@ describe("Type: RegExp", () => {
 			runner.confirmBlock("/a/.exec('xyz')===null;");
 		});
 
-		xit("should have the matches in the array", () => {
+		it("should have the matches in the array", () => {
 			let re = /quick\s(brown).+?(jumps)/ig;
 			let expected = re.exec("The Quick Brown Fox Jumps Over The Lazy Dog");
 
-			let actual = runner.runBlock("(/quick\\s(brown).+?(jumps)/ig).exec('The Quick Brown Fox Jumps Over The Lazy Dog')");
-			console.log("A,", actual, typeof actual, actual[0], actual.input);
+			let actual = runner.runBlock("(/quick\\s(brown).+?(jumps)/ig).exec('The Quick Brown Fox Jumps Over The Lazy Dog')").toNative()
 			for (let i = 0, ln = expected.length; i < ln; i++) {
 				expect(actual[i]).to.equal(expected[i]);
 			}
