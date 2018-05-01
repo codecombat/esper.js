@@ -303,4 +303,27 @@ describe('Smart Link', () => {
 
 	});
 
+	describe('Remote Invocation', () => {
+		it("should invoke String function not as a constructor", () => {
+			expect(a("return typeof arg(7)", String)).to.equal("string");
+		});
+
+		it("should invoke String constructor as a constructor", () => {
+			expect(a("return typeof new arg(7)", String)).to.equal("object");
+		});
+
+		it("should invoke Date function not as a constructor", () => {
+			expect(a("return typeof arg(7)", Date)).to.equal("string");
+		});
+
+		it("should invoke Date constructor as a constructor", () => {
+			expect(a("return typeof new arg(7)", Date)).to.equal("object");
+		});
+
+		it("should pass the issue #9 test code", () => {
+			expect(a("return new arg('December 25, 1995 23:15:30').getMonth();", Date)).to.equal(11);
+		})
+
+	});
+
 });
