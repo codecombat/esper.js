@@ -19,7 +19,7 @@ describe('Sandboxr Tests', function() {
 		if ( !/js$/.test(file) ) continue;
 		(function(file) {
 			describe(file, function() {
-				require('../contrib/test-suites/sandboxr/' + file.replace(/\.js$/,'') + '.js');
+				require('../contrib/test-suites/sandboxr/' + file.replace(/\.js$/, '') + '.js');
 			});
 		})(files[i]);
 	}

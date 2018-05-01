@@ -80,7 +80,7 @@ describe('Extra Error Info', () => {
 
 	it('Change an added global const', () => {
 		var engine = new Engine({extraErrorInfo: true, strict: true});
-		engine.addGlobalValue("pi", 3.14, {const: true});
+		engine.addGlobalValue('pi', 3.14, {const: true});
 		try {
 			engine.evalSync('pi = 3;');
 			expct(false).to.equal(true);
@@ -89,4 +89,4 @@ describe('Extra Error Info', () => {
 		}
 		expect(engine.globalScope.get('pi').toNative()).to.equal(3.14);
 	});
-})
+});

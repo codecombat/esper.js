@@ -28,8 +28,8 @@ describe('Jerry Tests', function() {
 
 			var Engine = require('../src/index.js');
 			var src;
-			if ( fs.readFileSync ) src = fs.readFileSync(path.join(dir,file), 'utf8');
-			else src = require('../contrib/test-suites/jerry/' + file.replace(/\.js$/,'') + '.js');
+			if ( fs.readFileSync ) src = fs.readFileSync(path.join(dir, file), 'utf8');
+			else src = require('../contrib/test-suites/jerry/' + file.replace(/\.js$/, '') + '.js');
 
 			it(file, function() {
 				//console.log("\n");

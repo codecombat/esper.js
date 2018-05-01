@@ -9,7 +9,7 @@ function ensure_not_done(e) {
 	expect(e.done).to.be.false;
 }
 
-function resolves(e,  value) {
+function resolves(e, value) {
 	do {
 		var f = e.next();
 	} while ( !f.done );

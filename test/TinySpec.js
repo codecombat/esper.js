@@ -19,7 +19,7 @@ describe('TinyJS Tests', function() {
 		(function(file) {
 
 			var Engine = require('../src/index.js').Engine;
-			var src = fs.readFileSync(path.join(dir,file), 'utf8');
+			var src = fs.readFileSync(path.join(dir, file), 'utf8');
 
 			it(file, function() {
 				//console.log("\n");

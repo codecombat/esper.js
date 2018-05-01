@@ -14,7 +14,7 @@
     "dev-server": "webpack-dev-server src/index.js --content-base contrib/ui",
     "preinstall": "node contrib/install-plugin-deps.js",
     "prepublish": "node contrib/build.js",
-    "style": "jscs src plugins/*/*.js"
+    "style": "jscs src plugins/*/*.js test/*.js"
   },
   "bin": {
     "esper": "./contrib/cli.js"

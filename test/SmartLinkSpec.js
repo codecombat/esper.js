@@ -30,7 +30,7 @@ function b(code) {
 		bad() { return 'oh no!'; }
 		toString() { return this.name; }
 	}
-	User.prototype.type = "User";
+	User.prototype.type = 'User';
 	User.prototype.code = 1234;
 
 	User.prototype.apiProperties = ['name', 'age', 'type'];
@@ -132,7 +132,7 @@ describe('Smart Link', () => {
 		});
 
 		it('should send the correct this value', () => {
-			var o1 = {x: 1, getX: function() { return this.x; } };
+			var o1 = {x: 1, getX: function() { return this.x; }};
 			var o2 = Object.create(o1);
 			o2.x = 2;
 			expect(a('return arg.getX()', o2)).to.equal(2);
@@ -140,7 +140,7 @@ describe('Smart Link', () => {
 
 		it('should send the correct this value with getter', () => {
 			var o1 = {x: 1};
-			Object.defineProperty(o1, "getX", {
+			Object.defineProperty(o1, 'getX', {
 				get: function() { return this.x; }
 			});
 			var o2 = Object.create(o1);
@@ -150,7 +150,7 @@ describe('Smart Link', () => {
 
 		it('should send the correct this value with setter', () => {
 			var o1 = {x: 1};
-			Object.defineProperty(o1, "esper_getX", {
+			Object.defineProperty(o1, 'esper_getX', {
 				configurable: true,
 				enumerable: true,
 				get: function() { return 6; },
@@ -179,7 +179,7 @@ describe('Smart Link', () => {
 			addExtraErrorInfoToStacks: true
 		});
 		e.realm.globalScope.add('x', esper.Value.undef);
-		let run = function (code) {
+		let run = function(code) {
 			e.evalSync('function a(arg) {\n' + code + '}');
 			var fx = e.fetchFunctionSync('a');
 			var args = Array.prototype.slice.call(arguments, 1);
@@ -207,10 +207,10 @@ describe('Smart Link', () => {
 	describe('Respect API properties', () => {
 		it('read allowed property', () => {
 			expect(b(function(o) { return o.name; })).to.equal('Annoner');
-			expect(b(function(o) { return o.age; })).to.be.undefined; 
+			expect(b(function(o) { return o.age; })).to.be.undefined;
 			expect(b(function(o) { return o.type; })).to.equal('User');
 			expect(b(function(o) { return o.ident(); })).to.equal('Annoner (?)');
-			expect(b(function(o) { return o.somethingThatDoesntExist; })).to.be.undefined; 
+			expect(b(function(o) { return o.somethingThatDoesntExist; })).to.be.undefined;
 		});
 
 		it('methods', () => {
@@ -249,7 +249,7 @@ describe('Smart Link', () => {
 			})).to.equal(2);
 		});
 		it('respects esper_ properties wrt getters', () => {
-			var obj = { one: 5 };
+			var obj = {one: 5};
 			Object.defineProperty(obj, 'esper_one', {
 				get: function() { return this.one * 2; },
 			});
@@ -257,10 +257,10 @@ describe('Smart Link', () => {
 			expect(obj.one).to.equal(5);
 		});
 		it('respects esper_ properties wrt getters and setters', () => {
-			var obj = { one: 5, apiUserProperties: ['one'] };
+			var obj = {one: 5, apiUserProperties: ['one']};
 			Object.defineProperty(obj, 'esper_one', {
 				get: function() { return this.one * 2; },
-				set: function(v) { this.one = v+1; },
+				set: function(v) { this.one = v + 1; },
 				enumerable: true
 			});
 			expect(a('return arg.one;', obj)).to.equal(10);
@@ -269,10 +269,10 @@ describe('Smart Link', () => {
 		});
 
 		it('respects esper_ properties wrt getters and setters w/ Privlaged Threads', () => {
-			var obj = { one: 5, apiUserProperties: ['x'] };
+			var obj = {one: 5, apiUserProperties: ['x']};
 			Object.defineProperty(obj, 'esper_one', {
 				get: function() { return this.one * 2; },
-				set: function(v) { this.one = v+1; },
+				set: function(v) { this.one = v + 1; },
 				enumerable: true
 			});
 
@@ -282,14 +282,14 @@ describe('Smart Link', () => {
 				addInternalStack: true
 			});
 			e.realm.globalScope.add('x', esper.Value.undef);
-			let run = function (code) {
+			let run = function(code) {
 				e.evalSync('function a(arg) {\n' + code + '}');
 				var fx = e.fetchFunctionSync('a');
 				var args = Array.prototype.slice.call(arguments, 1);
 				try {
 					var out = fx.apply(null, args);
 				} catch ( e ) {
-					console.log("EE", e.stack);
+					console.log('EE', e.stack);
 					throw e;
 				}
 
@@ -304,25 +304,25 @@ describe('Smart Link', () => {
 	});
 
 	describe('Remote Invocation', () => {
-		it("should invoke String function not as a constructor", () => {
-			expect(a("return typeof arg(7)", String)).to.equal("string");
+		it('should invoke String function not as a constructor', () => {
+			expect(a('return typeof arg(7)', String)).to.equal('string');
 		});
 
-		it("should invoke String constructor as a constructor", () => {
-			expect(a("return typeof new arg(7)", String)).to.equal("object");
+		it('should invoke String constructor as a constructor', () => {
+			expect(a('return typeof new arg(7)', String)).to.equal('object');
 		});
 
-		it("should invoke Date function not as a constructor", () => {
-			expect(a("return typeof arg(7)", Date)).to.equal("string");
+		it('should invoke Date function not as a constructor', () => {
+			expect(a('return typeof arg(7)', Date)).to.equal('string');
 		});
 
-		it("should invoke Date constructor as a constructor", () => {
-			expect(a("return typeof new arg(7)", Date)).to.equal("object");
+		it('should invoke Date constructor as a constructor', () => {
+			expect(a('return typeof new arg(7)', Date)).to.equal('object');
 		});
 
-		it("should pass the issue #9 test code", () => {
+		it('should pass the issue #9 test code', () => {
 			expect(a("return new arg('December 25, 1995 23:15:30').getMonth();", Date)).to.equal(11);
-		})
+		});
 
 	});
 
