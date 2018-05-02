@@ -40,6 +40,7 @@ const AssertClass = require('./stdlib/Assert');
 const MathClass = require('./stdlib/Math.js');
 const ConsoleClass = require('./stdlib/Console');
 const JSONClass = require('./stdlib/JSON');
+const ProxyClass = require('./stdlib/Proxy')
 const esper = require('./index.js');
 
 class EvalFunction extends ObjectValue {
@@ -129,6 +130,7 @@ class Realm {
 
 		this.RegExpPrototype = new RegExpPrototype(this);
 		this.RegExp = new RegExpClass(this);
+		this.Proxy = new ProxyClass(this);
 
 		this.Esper = new EsperClass(this);
 		this.ErrorPrototype = new ErrorPrototype(this);
@@ -167,6 +169,7 @@ class Realm {
 		scope.set('Array', this.Array);
 		scope.set('String', this.String);
 		scope.set('RegExp', this.RegExp);
+		scope.set('Proxy', this.Proxy);
 
 		scope.set('Error', this.Error);
 		scope.set('TypeError', this.TypeError = this.Error.makeErrorType(TypeError));
