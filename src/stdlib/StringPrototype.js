@@ -54,6 +54,14 @@ class StringPrototype extends EasyObjectValue {
 		return realm.fromNative(out);
 	}
 
+	//TODO: Replacement arg can be a regex.
+	static *replace$e(thiz, args, realm) {
+		let base = yield * thiz.toStringNative();
+		let realArgs = yield * _g.map(args, function*(v) { return yield * v.toStringNative(); });
+		let out = String.prototype.replace.apply(base, realArgs);
+		return realm.fromNative(out);
+	}
+
 	static *padEnd$e(thiz, args, realm) {
 		let base = yield * thiz.toStringNative();
 		if ( args.length < 1 ) return thiz;

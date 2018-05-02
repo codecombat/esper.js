@@ -65,6 +65,7 @@ class ASTPreprocessor {
 			if ( typeof o !== 'object' ) return o;
 			if ( o.type ) {
 				let z = new ASTNode(o);
+				if ( !o.range && o.start && o.end ) z.range = [o.start, o.end];
 				if ( extra && extra.source ) z.addHiddenProperty('_source', extra.source);
 				return z;
 			}

@@ -9,6 +9,7 @@ class StringObject extends EasyObjectValue {
 		let asConstructor = ext && ext.asConstructor;
 		if ( !asConstructor ) {
 			//Called as a function...
+			if ( args.length == 0 ) return scope.realm.fromNative('');
 			return yield * args[0].toStringValue();
 		}
 		let len = 0;

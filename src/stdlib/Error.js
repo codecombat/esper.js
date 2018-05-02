@@ -53,9 +53,9 @@ class ErrorObject extends EasyObjectValue {
 		return this.makeOne();
 	}
 
-	*call(thiz, args, s, e) {
-
-		if ( thiz instanceof EmptyValue ) {
+	*call(thiz, args, s, ext) {
+		let asConstructor = ext && ext.asConstructor;
+		if ( !asConstructor ) {
 			thiz = this.makeOne();
 		}
 

@@ -371,6 +371,13 @@ class Value {
 	 */
 	*pow(other) { return this.fromNative(Math.pow(yield * this.toNumberNative(),yield * other.toNumberNative())); }
 
+	*inOperator(other) {
+		let err = "Cannot use 'in' operator to search for 'thing' in 'thing'";
+		return new CompletionRecord(CompletionRecord.THROW, {
+			type: "TypeError",
+			message: err
+		});
+	}
 
 	/**
 	 * Is the value is truthy, i.e. `!!value`

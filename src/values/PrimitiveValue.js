@@ -83,7 +83,6 @@ class PrimitiveValue extends Value {
 
 	*add(other) { return this.fromNative(this.native + (yield * other.toPrimitiveNative())); }
 
-	*inOperator(other) { return this.fromNative(this.native in other.toNative()); }
 	*instanceOf(other) { return Value.false; }
 
 	*unaryPlus() { return this.fromNative(+this.native); }
@@ -95,7 +94,7 @@ class PrimitiveValue extends Value {
 	}
 
 	*makeThisForNew() {
-		throw new Error('Naw');
+		throw new Error('primative value is not a constructor');
 	}
 
 	getPrototype(realm) {

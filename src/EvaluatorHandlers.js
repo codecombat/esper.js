@@ -390,8 +390,12 @@ function *evaluateForInStatement(e, n, s) {
 	} else {
 		ref = s.ref(n.left.name, s);
 	}
-	if ( !ref ) throw new Error('Couldnt find anything to write to for:' + n.left.name);
-
+	if ( !ref ) {
+		if ( s.strict ) return CompletionRecord.makeReferenceError(s.realm, `${n.left.name} is not defined`);
+		//Create an var in global scope if varialbe doesnt exist and not in strict mode.
+		s.global.add(n.left.name, Value.undef)
+		ref = s.ref(n.left.name);
+	}
 	var gen = function*() {
 		for ( let name of names ) {
 			yield * ref.setValue(name);

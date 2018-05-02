@@ -69,7 +69,7 @@ class BridgeValue extends Value {
 	*gte(other) { return this.makeBridge(this.native >= other.toNative()); }
 	*lte(other) { return this.makeBridge(this.native <= other.toNative()); }
 
-	*inOperator(other) { return this.makeBridge(this.native in other.toNative()); }
+	*inOperator(other) { return this.makeBridge(other.toNative() in this.native); }
 	*instanceOf(other) { return this.makeBridge(this.native instanceof other.toNative()); }
 
 	*unaryPlus() { return this.makeBridge(+this.native); }

@@ -181,8 +181,13 @@ class Evaluator {
 		if ( !(val.value instanceof Value) ) {
 			if ( val.value instanceof Error ) {
 				throw new Error('Value was an error: ' + val.value.stack);
+			} else if ( val.value.type ) {
+				switch ( val.value.type ) {
+					case "TypeError": val.value = CompletionRecord.makeTypeError(this.realm, val.value.message).value;
+				}
+			} else {
+				throw new Error('Value isnt of type Value, its: ' + val.value.toString());
 			}
-			throw new Error('Value isnt of type Value, its' + val.value.toString());
 		}
 
 		switch ( val.type ) {
