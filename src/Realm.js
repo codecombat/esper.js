@@ -12,6 +12,7 @@ const BridgeValue = require('./values/BridgeValue');
 const ASTPreprocessor = require('./ASTPreprocessor');
 const EasyNativeFunction = require('./values/EasyNativeFunction');
 const PropertyDescriptor = require('./values/PropertyDescriptor');
+const Evaluator = require('./Evaluator');
 const EvaluatorInstruction = require('./EvaluatorInstruction');
 
 const ObjectPrototype = require('./stdlib/ObjectPrototype');
@@ -77,6 +78,36 @@ class EvalFunction extends ObjectValue {
 }
 
 
+class SetTimeoutFunction extends ObjectValue {
+
+	constructor(realm, runtime) {
+		super(realm);
+		this.setPrototype(realm.FunctionPrototype);
+		this.runtime = runtime;
+	}
+
+	*call(thiz, args, scope) {
+		let engine = scope.realm.engine;
+		let ev = args[0];
+		let evaluator = new Evaluator(scope.realm, null, scope.global);
+		let time = args.length > 1 ? 0 + args[1].toNative() : 0;
+		evaluator.pushFrame({generator: (function*() {
+			yield esper.FutureValue.make(engine.runtime.wait(time));
+			if ( ev.jsTypeName == "function" ) {
+				let tv = scope.strict ? esper.undef : scope.global.thiz;
+				yield * ev.call(tv, args.slice(2), scope.global);
+			} else {
+				let oast = scope.realm.parser(yield * ev.toStringNative(), {loc: true});
+				let ast = ASTPreprocessor.process(oast);
+				return yield EvaluatorInstruction.branch('eval', ast, scope.global);
+			}
+		})(), type: 'invoke'});
+		engine.threads.push(evaluator.generator());
+		return Value.undef;
+	}
+}
+
+
 /**
  * Represents a javascript execution environment including
  * it's scopes and standard libraries.
@@ -93,7 +124,8 @@ class Realm {
 		return esper.languages[this.language].parser(code, options);
 	}
 
-	constructor(options) {
+	constructor(options, engine) {
+		this.engine = engine;
 		this.options = options || {};
 		this.language = options.language || 'javascript';
 		/** @type {Value} */
@@ -188,6 +220,10 @@ class Realm {
 		//scope.set('Date', this.fromNative(Date));
 		scope.set('eval', new EvalFunction(this));
 		scope.set('assert', new AssertClass(this));
+
+		if ( options.runtime ) {
+			scope.set("setTimeout", new SetTimeoutFunction(this, options.runtime));
+		}
 
 		scope.thiz = scope.object;
 		this.importCache = new WeakMap();

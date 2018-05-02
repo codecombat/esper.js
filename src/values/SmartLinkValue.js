@@ -81,7 +81,7 @@ class SmartLinkValue extends LinkValue {
 	}
 
 	*set(name, value, s) {
-		let evaluator = yield EvaluatorInstruction.getEvaluator();
+		let evaluator = yield EvaluatorInstruction.getEvaluator;
 		let native = this.native;
 		if ( name in this.native ) {
 			if ( !this.allowWrite(name, evaluator) ) return yield CompletionRecord.makeTypeError(s.realm, "Can't write to protected property: " + name);
@@ -98,7 +98,7 @@ class SmartLinkValue extends LinkValue {
 	}
 
 	*get(name, realm, origional) {
-		let evaluator = yield EvaluatorInstruction.getEvaluator();
+		let evaluator = yield EvaluatorInstruction.getEvaluator;
 		let native = this.native;
 		if ( ('esper_' + name) in this.native ) name = 'esper_' + name;
 

@@ -11,6 +11,7 @@ const FutureValue = require('./values/FutureValue');
 const EasyNativeFunction = require('./values/EasyNativeFunction');
 const ClosureValue = require('./values/ClosureValue');
 const SmartLinkValue = require('./values/SmartLinkValue');
+const DefaultRuntime = require('./DefaultRuntime')
 
 let defaultOptions = {
 	strict: false,
@@ -24,7 +25,8 @@ let defaultOptions = {
 	yieldPower: 5,
 	debug: false,
 	compile: 'pre',
-	language: 'javascript'
+	language: 'javascript',
+	runtime: false
 };
 
 /**
@@ -39,7 +41,7 @@ class Engine {
 			if ( k in options ) this.options[k] = options[k];
 			else this.options[k] = defaultOptions[k];
 		}
-		this.realm = new Realm(this.options);
+		this.realm = new Realm(this.options, this);
 		this.evaluator = new Evaluator(this.realm, null, this.globalScope);
 		if ( this.options.debug ) {
 			this.evaluator.debug = true;
@@ -51,7 +53,41 @@ class Engine {
 		if ( this.language.startupCode ) {
 			this.loadLangaugeStartupCode();
 		}
+
+		//options.runtime = true;
+		if ( options.runtime ) {
+			if ( "boolean" == typeof(options.runtime) ) {
+				this.runtime = new DefaultRuntime();
+			} else {
+				this.runtime = options.runtime;
+			}
+		}
+
+		this.threads = [];
+		let that = this;
+		if ( options.runtime ) {
+			let last = Value.undef;
+			this.evloop = {next: function() {
+				let promises = [];
+				for ( let i = 0; i < that.threads.length; ++i ) {
+					if ( that.threads[i] ) {
+						let val = that.threads[i].next();
+						if ( val.done ) { last = val; that.threads.splice(i, 1); }
+						if ( !val.value || !val.value.then ) return {done: false, value: val.value};
+						else promises.push(val.value);
+					}
+				}
+				if ( promises.length > 0 ) return {done: false, value: Promise.race(promises)};
+				else return last;
+
+			}};
+		} else {
+			Object.defineProperty(this, "evloop", {get: () => this.threads[0]});
+		}
 	}
+
+	//get evloop() { return this.generator; }
+	get generator() { return this.evloop; }
 
 	loadLangaugeStartupCode() {
 		let past = this.preprocessAST(this.language.startupCode(), {});
@@ -96,6 +132,17 @@ class Engine {
 		return this.evalASTSync(ast, {source: code});
 	}
 
+	evalDetatched(code) {
+		let ast = this.realm.parser(code);
+		this.loadAST(ast, {source: code});
+		let p = new Promise((res, rej) => {
+			this.evaluator.onCompletion = res;
+			this.evaluator.onError = rej;
+		});
+		setTimeout(() => this.run().catch((e) => { }), 0);
+		return p
+	}
+
 	/**
 	 * Evalute `ast` and return a promise for the result.
 	 *
@@ -108,14 +155,17 @@ class Engine {
 		//console.log(escodegen.generate(ast));
 		this.loadAST(ast, opts);
 		let p = this.run();
-		p.then(() => delete this.generator);
-		return p;
+		p.then(
+			() => this.threads = [],
+			() => this.threads = []
+		);
+		return p
 	}
 
 	evalASTSync(ast, opts) {
 		this.loadAST(ast, opts);
 		let value = this.runSync();
-		delete this.generator;
+		this.threads[0] = [];
 		return value;
 	}
 
@@ -131,7 +181,7 @@ class Engine {
 		this.evaluator.frames = [];
 		this.evaluator.pushAST(past, this.globalScope);
 		this.evaluator.ast = past;
-		this.generator = this.evaluator.generator();
+		this.threads[0] = this.evaluator.generator();
 	}
 
 	load(code) {
@@ -140,8 +190,8 @@ class Engine {
 	}
 
 	step() {
-		if ( !this.generator ) throw new Error('No code loaded to step');
-		let value = this.generator.next();
+		if ( this.threads.length < 1 ) throw new Error('No code loaded to step');
+		let value = this.evloop.next();
 		return value.done;
 	}
 
@@ -150,20 +200,20 @@ class Engine {
 		let steps = 0;
 		function handler(value) {
 			while ( !value.done ) {
-				value = that.generator.next();
+				value = that.evloop.next();
 				if ( value.value && value.value.then ) {
 					return value.value.then((v) => {
-						return {done: false, value: v};
+						return handler({done: false, value: v});
 					});
 				}
 				if ( ++steps > that.options.executionLimit ) throw new Error('Execution Limit Reached');
 			}
-			that.generator = undefined;
+			if ( !that.options.runtime ) that.threads = [];
 			return value;
 		}
 		return new Promise(function(resolve, reject) {
 			try {
-				let value = that.generator.next();
+				let value = that.evloop.next();
 				resolve(value);
 			} catch ( e ) {
 				reject(e);
@@ -173,9 +223,9 @@ class Engine {
 
 	runSync() {
 		let steps = 0;
-		let value = this.generator.next();
+		let value = this.evloop.next();
 		while ( !value.done ) {
-			value = this.generator.next();
+			value = this.evloop.next();
 			if ( value.value && value.value.then ) throw new Error('Can\'t deal with futures when running in sync mode');
 			if ( ++steps > this.options.executionLimit ) throw new Error('Execution Limit Reached');
 		}

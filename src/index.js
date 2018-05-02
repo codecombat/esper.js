@@ -11,6 +11,7 @@ module.exports = esper;
 Engine = require('./Engine');
 esper.plugins = {'lang-javascript': require('./lang-javascript.js')};
 esper.Engine = Engine;
+esper.Evaluator = require('./Evaluator');
 esper.Value = require('./Value');
 esper.ASTPreprocessor = require('./ASTPreprocessor');
 esper.FutureValue = require('./values/FutureValue');

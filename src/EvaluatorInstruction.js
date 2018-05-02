@@ -11,10 +11,6 @@ class EvaluatorInstruction {
 		return ei;
 	}
 
-	static getEvaluator() {
-		return new EvaluatorInstruction('getEvaluator');
-	}
-
 	constructor(type) {
 		this.type = type;
 	}
@@ -30,6 +26,6 @@ EvaluatorInstruction.stepMajor = new EvaluatorInstruction('step');
 EvaluatorInstruction.stepStatement = new EvaluatorInstruction('step');
 EvaluatorInstruction.waitForFramePop = new EvaluatorInstruction('waitForFramePop');
 EvaluatorInstruction.framePushed = new EvaluatorInstruction('framePushed');
-
+EvaluatorInstruction.getEvaluator = new EvaluatorInstruction('getEvaluator');
 EvaluatorInstruction.eventLoopBodyStart = new EvaluatorInstruction('event').mark({event: 'loopBodyStart'});
 module.exports = EvaluatorInstruction;

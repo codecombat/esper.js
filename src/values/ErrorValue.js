@@ -49,7 +49,7 @@ class ErrorInstance extends ObjectValue {
 
 	*addExtra(extra) {
 		if ( !this.realm.options.extraErrorInfo ) return;
-		let evaluator = yield EvaluatorInstruction.getEvaluator();
+		let evaluator = yield EvaluatorInstruction.getEvaluator;
 		if ( evaluator ) {
 			let scope = evaluator.topFrame.scope;
 			let ast = extra.ast = evaluator.topFrame.ast;

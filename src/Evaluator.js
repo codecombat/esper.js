@@ -136,17 +136,7 @@ class Evaluator {
 
 			if ( val && val.then ) {
 				if ( top && top.type !== 'await' ) {
-					this.pushFrame({
-						generator: (function *(f) {
-							while ( !f.resolved ) yield f;
-							if ( f.successful ) {
-								return f.value;
-							} else {
-								return new CompletionRecord(CompletionRecord.THROW, f.value);
-							}
-						})(val),
-						type: 'await'
-					});
+					this.pushAwaitFrame(val);
 				}
 				return {done: false, value: val};
 			}
@@ -169,6 +159,7 @@ class Evaluator {
 					if ( this.debug ) {
 						this.dumpProfilingInformation();
 					}
+					if ( this.onCompletion ) this.onCompletion(result.value);
 					return {done: true, value: result.value};
 				} else continue;
 			}
@@ -258,7 +249,9 @@ ${key} => ${vv}`;
 					line = this.topFrame.ast.attr.pos.start_line;
 				}
 				//console.log(this.buildStacktrace(val.value.toNative()));
-				throw val.value.toNative();
+				let v = val.value.toNative();
+				if ( this.onError ) this.onError(v);
+				throw v;
 			case CompletionRecord.NORMAL:
 				return false;
 		}
@@ -281,6 +274,20 @@ ${key} => ${vv}`;
 		if ( frame.yieldPower === undefined ) frame.yieldPower = this.defaultYieldPower;
 		this.frames.unshift(new Frame(frame.type, frame));
 		this.saveFrameShortcuts();
+	}
+
+	pushAwaitFrame(val) {
+		this.pushFrame({
+			generator: (function *(f) {
+				while ( !f.resolved ) yield f;
+				if ( f.successful ) {
+					return f.value;
+				} else {
+					return new CompletionRecord(CompletionRecord.THROW, f.value);
+				}
+			})(val),
+			type: 'await'
+		});
 	}
 
 	popFrame() {
