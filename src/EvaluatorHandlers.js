@@ -133,11 +133,15 @@ function *evaluateCallExpression(e, n, s) {
 }
 
 function *doCall(e, n, c, s, argProvider) {
-	let thiz = Value.undef;
+	let thiz = s.strict ? Value.undef : s.global.thiz;
 
 	let callee, base;
 
-	if ( c.type === 'MemberExpression' ) {
+	if ( c.type == 'Super') {
+		let fr = e.topFrame;
+		callee = fr.creator.parentClassInstance;
+		thiz = s.thiz;
+	} else if ( c.type === 'MemberExpression' ) {
 		thiz = base = yield * e.branch(c.object, s);
 		callee = yield * e.partialMemberExpression(thiz, c, s);
 		if ( callee instanceof CompletionRecord ) {
@@ -212,11 +216,13 @@ function *doCall(e, n, c, s, argProvider) {
 
 let classFeatures = {};
 classFeatures.MethodDefinition = function*(clazz, proto, e, m, s) {
-	let fx = yield * e.branch(m.value, s);
+	
 	if ( m.kind == 'constructor' ) {
-		clazz.call = function*(thiz, args, s) { return yield * fx.call(thiz, args, s); };
+		//Special handling for this below.
 	} else {
 		let ks;
+		let fx = yield * e.branch(m.value, s);
+		fx.funcSourceAST = m;
 		if ( m.computed ) {
 			let k = yield * e.branch(m.key, s);
 			ks = yield * k.toStringNative(e.realm);
@@ -230,12 +236,29 @@ classFeatures.MethodDefinition = function*(clazz, proto, e, m, s) {
 };
 
 function *evaluateClassExpression(e, n, s) {
-	let clazz = new ObjectValue(e.realm);
-	clazz.call = function*() { return Value.undef; };
+	let clazz = undefined;
+	for ( let m of n.body.body ) {
+		if ( m.type == "MethodDefinition" && m.kind == "constructor") {
+			clazz = yield * e.branch(m.value, s);
+			clazz.funcSourceAST = n;
+			break;
+		}
+	}
+	if ( !clazz ) {
+		clazz = new ObjectValue(e.realm);
+		clazz.call = function*() { return Value.undef; };
+	}
+	
 
 	let proto = new ObjectValue(e.realm);
 	yield * clazz.set('prototype', proto);
 	yield * proto.set('constructor', clazz);
+
+	if ( n.superClass ) {
+		let sc = yield * e.branch(n.superClass, s);
+		proto.setPrototype(sc.getPrototype(s.realm));
+		clazz.parentClassInstance = sc;
+	}
 
 	if ( e.yieldPower >= 3 ) yield EvaluatorInstruction.stepMinor;
 	for ( let m of n.body.body ) {
@@ -543,6 +566,11 @@ function *evaluateSequenceExpression(e, n, s) {
 	return last;
 }
 
+function *evaluateSuperExpression(e, n, s) {
+	let fr = e.topFrame;
+	return yield * fr.creator.parentClassInstance.get('prototype');
+}
+
 function *evaluateSwitchStatement(e, n, s) {
 	if ( e.yieldPower >= 2 ) yield EvaluatorInstruction.stepMajor;
 	let discriminant = yield * e.branch(n.discriminant, s);
@@ -776,6 +804,7 @@ function findNextStep(type) {
 		case 'Program': return evaluateProgram;
 		case 'ReturnStatement': return evaluateReturnStatement;
 		case 'SequenceExpression': return evaluateSequenceExpression;
+		case 'Super': return evaluateSuperExpression;
 		case 'SwitchStatement': return evaluateSwitchStatement;
 		case 'TaggedTemplateExpression': return evaluateTaggedTemplateExpression;
 		case 'TemplateLiteral': return evaluateTemplateLiteral;

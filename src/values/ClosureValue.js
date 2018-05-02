@@ -21,6 +21,7 @@ class ClosureValue extends ObjectValue {
 		super(realm, realm.FunctionPrototype);
 		this.realm = scope.realm;
 		this.func = func;
+		this.funcSourceAST = func;
 		this.scope = scope;
 		this.returnLastValue = false;
 		this.properties['prototype'] = new PropertyDescriptor(new ObjectValue(realm));
