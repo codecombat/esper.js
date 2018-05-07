@@ -141,7 +141,7 @@ class ClosureValue extends ObjectValue {
 				}
 			}
 		}
-		let opts = {returnLastValue: this.returnLastValue};
+		let opts = {returnLastValue: this.returnLastValue, creator: this};
 		if ( extra && extra.evaluator && extra.evaluator.debug ) {
 			opts['profileName'] = extra.callNode.callee.srcName;
 		}

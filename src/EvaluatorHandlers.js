@@ -144,6 +144,7 @@ function *doCall(e, n, c, s, argProvider) {
 	} else if ( c.type === 'MemberExpression' ) {
 		thiz = base = yield * e.branch(c.object, s);
 		callee = yield * e.partialMemberExpression(thiz, c, s);
+		if ( c.object.type == "Super" ) thiz = s.thiz;
 		if ( callee instanceof CompletionRecord ) {
 			if ( callee.type == CompletionRecord.THROW ) return callee;
 			callee = callee.value;
@@ -223,6 +224,7 @@ classFeatures.MethodDefinition = function*(clazz, proto, e, m, s) {
 		let ks;
 		let fx = yield * e.branch(m.value, s);
 		fx.funcSourceAST = m;
+		fx.parentClassInstance = clazz.parentClassInstance;
 		if ( m.computed ) {
 			let k = yield * e.branch(m.key, s);
 			ks = yield * k.toStringNative(e.realm);
@@ -252,11 +254,13 @@ function *evaluateClassExpression(e, n, s) {
 
 	let proto = new ObjectValue(e.realm);
 	yield * clazz.set('prototype', proto);
+	yield * clazz.set('name', Value.fromNative(n.id.name));
 	yield * proto.set('constructor', clazz);
 
 	if ( n.superClass ) {
 		let sc = yield * e.branch(n.superClass, s);
-		proto.setPrototype(sc.getPrototype(s.realm));
+		proto.setPrototype(sc.getPrototypeProperty());
+		clazz.setImmediate("prototype", proto);
 		clazz.parentClassInstance = sc;
 	}
 

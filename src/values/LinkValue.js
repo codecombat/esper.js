@@ -165,6 +165,10 @@ class LinkValue extends Value {
 	*toNumberValue() { return Value.fromNative((Number(this.native))); }
 	*toStringValue() { return Value.fromNative((String(this.native))); }
 
+	getPrototypeProperty() {
+		return this.makeLink(this.native.prototype);
+	}
+
 	getPrototype(realm) {
 		return realm.ObjectPrototype;
 	}

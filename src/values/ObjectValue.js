@@ -157,7 +157,13 @@ class ObjectValue extends Value {
 
 	*get(name, realm, ctxthis) {
 		var existing = this.properties[name];
-		if ( !existing ) return Value.undef;
+		if ( !existing ) {
+			// Fast proto lookup can fail if aLinkValue or Proxy
+			// is in the prototype chain.
+			// TODO: Cache if this is needed for speed.
+			if ( this.proto ) return yield * this.proto.get(name, realm, ctxthis);
+			else return Value.undef;
+		}
 		if ( existing.direct ) return existing.value;
 		return yield * existing.getValue(ctxthis || this);
 	}
@@ -218,7 +224,7 @@ class ObjectValue extends Value {
 			return;
 		}
 		this.proto = val;
-		Object.setPrototypeOf(this.properties, val.properties);
+		if ( val.properties ) Object.setPrototypeOf(this.properties, val.properties);
 	}
 
 	eraseAndSetPrototype(val) {
@@ -253,7 +259,7 @@ class ObjectValue extends Value {
 			else delim.push(n + ': ' + val.debugString);
 		}
 		strProps.push(delim.join(', '));
-		strProps.push('} ]');
+		strProps.push('] }');
 		return strProps.join(' ');
 	}
 

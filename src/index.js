@@ -20,7 +20,7 @@ esper.ObjectValue = require('./values/ObjectValue');
 esper.EasyNativeFunction = require('./values/EasyNativeFunction');
 esper.EasyObjectValue = require('./values/EasyObjectValue');
 esper.Realm = require('./Realm');
-esper.EvaluationHandlers = require('./EvaluationHandlers');
+esper.EvaluatorHandlers = require('./EvaluatorHandlers');
 esper.eval = function(source) {
 	return new Engine().evalSync(source).toNative();
 };

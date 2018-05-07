@@ -290,10 +290,16 @@ class Value {
 		return other === this ? Value.true : Value.false;
 	}
 
+	getPrototypeProperty() {
+		let p = this.properties['prototype'];
+		if ( !p ) return;
+		return p.value;
+	}
+
 	*makeThisForNew(realm) {
 		var nue = new ObjectValue(realm);
-		var p = this.properties['prototype'];
-		if ( p ) nue.setPrototype(p.value);
+		var p = this.getPrototypeProperty();
+		if ( p ) nue.setPrototype(p);
 		return nue;
 	}
 
