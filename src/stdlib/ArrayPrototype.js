@@ -491,6 +491,28 @@ class ArrayPrototype extends EasyObjectValue {
 		return nl;
 	}
 
+	static *fill$e(thiz, args, s) {
+		let l = yield * getLength(thiz);
+		let value = args[0] || Value.undef;
+		let start = args[1] || Value.zero;
+		let startn = (yield * start.toNumberValue()).native;
+		let end = args[2] || Value.fromNative(l);
+		let endn = (yield * end.toNumberValue()).native;
+
+		if ( isNaN(startn) ) startn = 0;
+		else if ( startn < 0 ) startn = l + startn;
+
+		if ( isNaN(endn) ) endn = 0;
+		else if ( endn < 0 ) endn = l + endn;
+
+		if ( l > startn ) {
+			for ( let i = startn; i < endn; ++i ) {
+				yield * thiz.set(i, value, s);
+			}
+		}
+		return thiz;
+	}
+
 }
 
 ArrayPrototype.prototype.wellKnownName = '%ArrayPrototype%';
