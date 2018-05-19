@@ -3,7 +3,7 @@ var expect = require('chai').expect;
 var esper = require('../../../src/index.js');
 var Engine = esper.Engine;
 
-if ( !esper.pluginList['babylon'] ) {
+if ( !esper.pluginList['babylon'] || esper.pluginList['babylon'] == 'opt-in'  ) {
 	return it('Plugin: babylon [disabled]', function() {});
 }
 

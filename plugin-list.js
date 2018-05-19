@@ -3,7 +3,7 @@ module.exports = {
 	'lang-python': 'addon',
 	'lang-coffeescript': 'addon',
 	'lang-lua': 'addon',
-	'babylon': 'addon',
+	'babylon': 'opt-in',
 	//'dehydrate': 'bundle',
 	//'jit': 'bundle',
 	//'blockly': 'bundle',
