@@ -109,6 +109,12 @@ function *evaluateBinaryExpression(e, n, s) {
 function *evaluateBlockStatement(e, n, s) {
 	let result = Value.undef;
 	for ( let statement of n.body ) {
+		if ( statement.type != "FunctionDeclaration" ) continue;
+		result = yield * e.branch(statement, s);
+	}
+
+	for ( let statement of n.body ) {
+		if ( statement.type == "FunctionDeclaration" ) continue;
 		result = yield * e.branch(statement, s);
 	}
 	return result;
@@ -138,8 +144,7 @@ function *doCall(e, n, c, s, argProvider) {
 	let callee, base;
 
 	if ( c.type == 'Super') {
-		let fr = e.topFrame;
-		callee = fr.creator.parentClassInstance;
+		callee = yield * e.branch(c, s);
 		thiz = s.thiz;
 	} else if ( c.type === 'MemberExpression' ) {
 		thiz = base = yield * e.branch(c.object, s);
@@ -169,7 +174,7 @@ function *doCall(e, n, c, s, argProvider) {
 
 	let args = yield * argProvider();
 
-	let name = c.srcName || callee.jsTypeName;
+	let name = c.srcName || c.source() || callee.jsTypeName;
 
 	if ( e.yieldPower >= 1 ) yield EvaluatorInstruction.stepMajor;
 
@@ -224,7 +229,6 @@ classFeatures.MethodDefinition = function*(clazz, proto, e, m, s) {
 		let ks;
 		let fx = yield * e.branch(m.value, s);
 		fx.funcSourceAST = m;
-		fx.parentClassInstance = clazz.parentClassInstance;
 		if ( m.computed ) {
 			let k = yield * e.branch(m.key, s);
 			ks = yield * k.toStringNative(e.realm);
@@ -232,8 +236,13 @@ classFeatures.MethodDefinition = function*(clazz, proto, e, m, s) {
 			ks = m.key.name;
 		}
 
-		if ( m.static ) clazz.setImmediate(ks, fx);
-		else proto.setImmediate(ks, fx);
+		if ( m.static ) {
+			fx.superTarget = clazz.getPrototype();
+			yield * clazz.set(ks, fx);
+		} else {
+			fx.superTarget = proto.getPrototype();
+			yield * proto.set(ks, fx);
+		}
 	}
 };
 
@@ -242,6 +251,7 @@ function *evaluateClassExpression(e, n, s) {
 	for ( let m of n.body.body ) {
 		if ( m.type == "MethodDefinition" && m.kind == "constructor") {
 			clazz = yield * e.branch(m.value, s);
+			clazz.superTarget = clazz;
 			clazz.funcSourceAST = n;
 			break;
 		}
@@ -259,13 +269,17 @@ function *evaluateClassExpression(e, n, s) {
 
 	if ( n.superClass ) {
 		let sc = yield * e.branch(n.superClass, s);
+		clazz.setPrototype(sc);
 		proto.setPrototype(sc.getPrototypeProperty());
-		clazz.setImmediate("prototype", proto);
 		clazz.parentClassInstance = sc;
 	}
+	clazz.superTarget = clazz.getPrototype();
+
+	s.add(n.id.name, clazz);
 
 	if ( e.yieldPower >= 3 ) yield EvaluatorInstruction.stepMinor;
 	for ( let m of n.body.body ) {
+		if ( ! module.exports.classFeatures[m.type] ) throw new Error("Unsuported Class Feature " + m.type)
 		yield * module.exports.classFeatures[m.type](clazz, proto, e, m, s);
 		//TODO: Support getters and setters
 	}
@@ -575,8 +589,13 @@ function *evaluateSequenceExpression(e, n, s) {
 }
 
 function *evaluateSuperExpression(e, n, s) {
-	let fr = e.topFrame;
-	return yield * fr.creator.parentClassInstance.get('prototype');
+	let fr;
+	for ( let i = 0; i < e.frames.length; ++i ) {
+		fr = e.frames[i];
+		if ( fr.creator ) break;
+	}
+	let result = fr.creator.superTarget;
+	return result;
 }
 
 function *evaluateSwitchStatement(e, n, s) {

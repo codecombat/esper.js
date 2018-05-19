@@ -40,6 +40,6 @@ module.exports = {
 	},
 	init: function(esper) {
 		esper.languages.javascript = this;
-		esper.EvaluationHandlers.classFeatures.ClassProperty = evaluateClassProperty;
+		esper.EvaluatorHandlers.classFeatures.ClassProperty = evaluateClassProperty;
 	}
 };

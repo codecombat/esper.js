@@ -85,11 +85,21 @@ class ClosureValue extends ObjectValue {
 			}
 		}
 
+		/*
 		if ( this.func.funcs ) {
 			for ( let fn in this.func.funcs ) {
 				let n = this.func.funcs[fn];
 				let closure = new ClosureValue(n, scope);
 				invokeScope.add(n.id.name, closure);
+			}
+		}
+		*/
+
+		// Just a total guess that this is correct behavior...
+		if ( !invokeScope.strict && this.func.funcs ) {
+			for ( let fn in this.func.funcs ) {
+				let n = this.func.funcs[fn];
+				invokeScope.add(n.id.name, Value.undef);
 			}
 		}
 

@@ -16,7 +16,7 @@ class NumberValue extends PrimitiveValue {
 		} else if ( other.specTypeName == 'object' ) {
 			on = yield * other.toPrimitiveValue();
 		}
-		if ( !on ) return Value.false;
+		if ( !on ) return yield * super.doubleEquals(other);
 		return yield * this.doubleEquals(on);
 	}
 

@@ -113,7 +113,9 @@ class ASTPreprocessor {
 				yield * me(ast.body);
 				invokeCB(cbs, 'exitFunction', ast);
 				break;
-
+			case 'ClassBody':
+				for ( let e of ast.body ) yield * me(e);
+				break;
 			case 'ArrowFunctionExpression':
 			case 'FunctionExpression':
 				invokeCB(cbs, 'enterFunction', ast);
@@ -218,6 +220,7 @@ class EsperASTInstructions {
 
 	decl(a) {
 		if ( a.parent.type == 'VariableDeclaration' && a.parent.kind != 'var' ) return;
+		if ( a.type == 'FunctionDeclaration' ) return;
 		let stack = this.varStack[0];
 		stack[a.id.name] = a;
 	}
@@ -272,6 +275,16 @@ class EsperASTInstructions {
 		}
 
 	}
+
+	enterClassExpression(a) {
+		let scope = Object.create(this.scopeStack[0]);
+		this.scopeStack.unshift(scope);
+		scope[a.id.name] = a;
+		for ( let x of a.body.body ) {
+			scope[x.key.name] = x;
+		}
+	}
+
 
 	enterFunction(a) {
 		this.funcStack.unshift(a);
@@ -344,12 +357,15 @@ class EsperASTInstructions {
 
 	exitFunction(a) {
 		var vars = this.varStack.shift();
+		var scope = this.scopeStack.shift();
 		var free = {};
 		var upvars = {};
 		for ( var r in a.refs ) {
-			if ( r in vars ) {
+			if ( r in vars || r in scope ) {
 				//Local refrence
 			} else if ( r in this.varStack[0] ) {
+				upvars[r] = true;
+			} else if ( r in this.scopeStack[0] ) {
 				upvars[r] = true;
 			} else {
 				free[r] = true;
@@ -357,8 +373,7 @@ class EsperASTInstructions {
 		}
 		a.upvars = upvars;
 		a.freevars = free;
-
-		this.scopeStack.shift();
+		
 		this.funcStack.shift();
 		delete a.refs;
 
@@ -366,6 +381,10 @@ class EsperASTInstructions {
 			a.body.dispatch = compiler.compileNode(a.body);
 		}
 		//this.log("VARS:", Object.getOwnPropertyNames(a.vars).join(', '));
+	}
+
+	exitClassExpression(a) {
+		this.scopeStack.shift();
 	}
 
 	exitProgram(a) {

@@ -16,13 +16,14 @@ function f() {
     return 'foo';
 }
 assert ((function() {
+    'use strict';
     if (1 === 0) {
         function f() {
             return 'bar';
         }
     }
     return f();
-})() === 'bar');
+})() === 'foo');
 
 function check_syntax_error (s) {
   try {
