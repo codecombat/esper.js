@@ -24,7 +24,7 @@ class StringValue extends PrimitiveValue {
 			return yield * rv.doubleEquals(other);
 		}
 
-		return Value.false;
+		return yield * super.doubleEquals(other);
 
 	}
 

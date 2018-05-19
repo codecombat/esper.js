@@ -15,6 +15,7 @@ class ArrayObject extends EasyObjectValue {
 	}
 
 	callPrototype(realm) { return realm.ArrayPrototype; }
+	constructorFor(realm) { return realm.ArrayPrototype; }
 	//objPrototype(realm) { return realm.Function; }
 
 

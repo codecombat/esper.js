@@ -141,6 +141,8 @@ class Realm {
 		this.ObjectPrototype.rawSetProperty('constructor', new PropertyDescriptor(this.Object, false));
 
 		this.Function = new FunctionClass(this);
+		this.FunctionPrototype.rawSetProperty('constructor', new PropertyDescriptor(this.Function, false));
+
 
 		/** @type {Math} */
 		this.Math = new MathClass(this);

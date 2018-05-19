@@ -88,6 +88,8 @@ class FunctionPrototype extends EasyObjectValue {
 			return this.fromNative('function() { [bound function] }');
 		} else if ( thiz instanceof EasyObjectValue.EasyNativeFunction ) {
 			return this.fromNative('function() { [native code] }');
+		} else if ( thiz instanceof EasyObjectValue && thiz.call ) {
+			return this.fromNative('function() { [native code] }');
 		}
 		return CompletionRecord.makeTypeError(s.realm, 'Function.prototype.toString is not generic');
 

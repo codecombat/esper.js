@@ -142,6 +142,7 @@ class ObjectValue extends Value {
 
 	*add(other) { return yield * (yield * this.toPrimitiveValue()).add(other); }
 	*doubleEquals(other) {
+		if ( other === this ) return Value.true;
 		if ( other instanceof PrimitiveValue ) {
 			let hint = ( other.jsTypeName == 'string' ? 'string' : 'number' );
 			let pv = yield * this.toPrimitiveValue(hint);

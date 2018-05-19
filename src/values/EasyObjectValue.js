@@ -91,12 +91,14 @@ class EasyObjectValue extends ObjectValue {
 			}
 		}
 
+		/*
 		if ( realm.Function ) {
 			let cs = new PropertyDescriptor(realm.Function);
 			cs.configurable = false;
 			cs.enumerable = false;
 			this.properties['constructor'] = cs;
 		}
+		*/
 
 	}
 
