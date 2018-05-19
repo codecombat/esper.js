@@ -78,6 +78,7 @@ class EvalFunction extends ObjectValue {
 }
 
 
+let timeoutIds = 0;;
 class SetTimeoutFunction extends ObjectValue {
 
 	constructor(realm, runtime) {
@@ -91,21 +92,55 @@ class SetTimeoutFunction extends ObjectValue {
 		let ev = args[0];
 		let evaluator = new Evaluator(scope.realm, null, scope.global);
 		let time = args.length > 1 ? 0 + args[1].toNative() : 0;
+		let id = timeoutIds++;
+
+		if ( !ev || ev.jsTypeName !== "function" && ev.jsTypeName !== "string" ) {
+			return new CompletionRecord(CompletionRecord.THROW, Value.fromNative(new TypeError('"callback" argument must be a function'), scope.realm));
+		}
+
 		evaluator.pushFrame({generator: (function*() {
-			yield esper.FutureValue.make(engine.runtime.wait(time));
+			yield esper.FutureValue.make(yield * engine.runtime.wait(time));
 			if ( ev.jsTypeName == "function" ) {
 				let tv = scope.strict ? esper.undef : scope.global.thiz;
 				yield * ev.call(tv, args.slice(2), scope.global);
-			} else {
+			} else if ( ev.jsTypeName == "string" ) {
 				let oast = scope.realm.parser(yield * ev.toStringNative(), {loc: true});
 				let ast = ASTPreprocessor.process(oast);
 				return yield EvaluatorInstruction.branch('eval', ast, scope.global);
 			}
 		})(), type: 'invoke'});
-		engine.threads.push(evaluator.generator());
-		return Value.undef;
+		let o = evaluator.generator();
+		evaluator.id = id;
+		engine.threads.push(o);
+		return Value.fromNative(id);
 	}
 }
+
+class ClearTimeoutFunction extends ObjectValue {
+
+	constructor(realm, runtime) {
+		super(realm);
+		this.setPrototype(realm.FunctionPrototype);
+		this.runtime = runtime;
+	}
+
+	*call(thiz, args, scope) {
+		if ( args.length < 1 ) return Value.undef;
+		let target = yield * args[0].toIntNative();
+		let engine = scope.realm.engine;
+		console.log(target, engine.threads);
+					
+		for ( let i = 0; i < engine.threads.length; ++i ) {
+			if ( engine.threads[i].evaluator.id == target ) {
+				let thr = engine.threads.splice(i, 1);
+				thr[0].evaluator.dispose.map((x) => x());
+				return Value.fromNative(true);
+			}
+		}
+		return Value.fromNative(false);
+	}
+}
+
 
 
 /**
@@ -225,6 +260,8 @@ class Realm {
 
 		if ( options.runtime ) {
 			scope.set("setTimeout", new SetTimeoutFunction(this, options.runtime));
+			scope.set("clearTimeout", new ClearTimeoutFunction(this, options.runtime));
+			scope.set("clearInterval", new ClearTimeoutFunction(this, options.runtime));
 		}
 
 		scope.thiz = scope.object;

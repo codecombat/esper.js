@@ -1,10 +1,15 @@
 'use strict';
 
+const EvaluatorInstruction = require('./EvaluatorInstruction');
+
 class DefaultRuntime {
-	time() { return Date(); }
-	wait(time) { 
+	*time() { return Date(); }
+	*wait(time) { 
+		let ev = yield EvaluatorInstruction.getEvaluator;
+		if ( !ev.dispose ) ev.dispose = [];
 		return new Promise(function(res, rej) {
-			setTimeout(() => res(), time);
+			let id = setTimeout(() => res(), time)
+			ev.dispose.push(() => {clearTimeout(id)});
 		});
 	}
 }

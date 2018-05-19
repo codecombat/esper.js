@@ -312,7 +312,11 @@ ${key} => ${vv}`;
 	}
 
 	generator() {
-		return {next: this.next.bind(this), throw: (e) => { throw e; }};
+		return {
+			next: this.next.bind(this), 
+			throw: (e) => { throw e; },
+			evaluator: this
+		};
 	}
 
 	breakFrames() {
