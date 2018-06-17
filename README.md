@@ -7,9 +7,9 @@ A javascript self-interpreter with a focus on sandboxed execution and runtime in
 
 
 <h3 align="center">
-<a href="http://esper.chessgears.com/">Demo</a> |
-<a href="http://esper.chessgears.com/test">Run Tests</a> |
-<a href="http://esper.chessgears.com/docs/">API Docs</a>
+<a href="https://esper.js.org/">Demo</a> |
+<a href="https://esper.js.org/test">Run Tests</a> |
+<a href="https://esper.js.org/docs/">API Docs</a>
 
 </h3>
 
