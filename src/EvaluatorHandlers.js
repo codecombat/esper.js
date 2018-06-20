@@ -264,7 +264,7 @@ function *evaluateClassExpression(e, n, s) {
 
 	if ( !clazz ) {
 		clazz = new ObjectValue(e.realm);
-		if ( n.superClass ) {
+		if ( sc ) {
 			clazz.call = function*(thiz, args, scope, extra) {
 				yield * sc.call(thiz, args, scope, extra);
 				return Value.undef;
@@ -280,8 +280,7 @@ function *evaluateClassExpression(e, n, s) {
 	yield * clazz.set('name', Value.fromNative(n.id.name));
 	yield * proto.set('constructor', clazz);
 
-	if ( n.superClass ) {
-		let sc = yield * e.branch(n.superClass, s);
+	if ( sc ) {
 		clazz.setPrototype(sc);
 		proto.setPrototype(sc.getPrototypeProperty());
 		clazz.parentClassInstance = sc;
