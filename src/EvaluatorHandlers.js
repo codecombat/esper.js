@@ -256,9 +256,22 @@ function *evaluateClassExpression(e, n, s) {
 			break;
 		}
 	}
+
+	let sc;
+	if ( n.superClass ) {
+		sc = yield * e.branch(n.superClass, s);
+	}
+
 	if ( !clazz ) {
 		clazz = new ObjectValue(e.realm);
-		clazz.call = function*() { return Value.undef; };
+		if ( n.superClass ) {
+			clazz.call = function*(thiz, args, scope, extra) {
+				yield * sc.call(thiz, args, scope, extra);
+				return Value.undef;
+			}
+		} else {
+			clazz.call = function*() { return Value.undef; };
+		}
 	}
 	
 
