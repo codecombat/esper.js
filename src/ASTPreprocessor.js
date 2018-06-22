@@ -209,6 +209,9 @@ class EsperASTInstructions {
 
 	enter(a) {
 		++this.depth;
+		if ( this.options.markNonUser ) {
+			a.nonUserCode = true;
+		}
 		a.nodeID = this.counter++;
 		this.log('Entering', a.type);
 	}

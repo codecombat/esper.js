@@ -90,7 +90,7 @@ class Engine {
 	get generator() { return this.evloop; }
 
 	loadLangaugeStartupCode() {
-		let past = this.preprocessAST(this.language.startupCode(), {});
+		let past = this.preprocessAST(this.language.startupCode(), {markNonUser: true});
 		let stdlib_eval = new Evaluator(this.realm, null, this.globalScope);
 		stdlib_eval.frames = [];
 		stdlib_eval.pushAST(past, this.globalScope);

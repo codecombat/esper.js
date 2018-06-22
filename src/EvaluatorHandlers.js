@@ -502,7 +502,7 @@ function *evaluateLiteral(e, n, s) {
 		if ( !isNaN(tryFloat) ) return e.fromNative(tryFloat);
 		return e.fromNative(null);
 	} else {
-		return e.fromNative(n.value);
+		return e.realm.makeLiteralValue(n.value, n);
 	}
 }
 

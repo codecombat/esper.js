@@ -159,6 +159,15 @@ class Realm {
 		return esper.languages[this.language].parser(code, options);
 	}
 
+	makeLiteralValue(v, n) {
+		let lang = esper.languages[this.language];
+		if ( lang && lang.makeLiteralValue ) {
+			let langv = lang.makeLiteralValue(v, this, n);
+			if ( langv ) return langv;
+		}
+		return this.fromNative(v);
+	}
+
 	constructor(options, engine) {
 		this.engine = engine;
 		this.options = options || {};
@@ -268,6 +277,9 @@ class Realm {
 		this.importCache = new WeakMap();
 		/** @type {Scope} */
 		this.globalScope = scope;
+
+		let lang = esper.languages[this.language];
+		if ( lang && lang.setupRealm ) lang.setupRealm(this);
 	}
 
 	lookupWellKnown(v) {

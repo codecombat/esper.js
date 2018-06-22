@@ -13,31 +13,33 @@ function dispatch(what) {
 	})
 }
 
+function run(code) {
+	try {
+		code = code.replace(/\s*$/,'')
+		var lines = code.split(/\r\n|[\n\r\u2028\u2029]/g);
+
+		lines = lines.map((function(line) { return line.replace(/\t/g,'    '); }));
+		let toTrim = lines[0].match(/^[ ]*/)[0].length;
+		lines = lines.map(function (line) { return line.substring(toTrim); });
+		for (var i in lines) lines[i] = "  " + lines[i];
+
+		code = 'def foo():\n' + lines.join("\n") + "\n\nfoo()";
+		var engine = new esper.Engine({language: 'python'});
+		engine.load(code);
+		var result = engine.runSync();
+		return result.toNative();
+	}
+	catch (e) {
+		//console.log(code + "\n" + e.stack);
+		return e;
+	}
+}
+
 describe('Plugin: lang-python', function() {
 	describe('Skulpty tests under esper', function() {
 		var utils = require('skulpty/test/util.js');
 		var orig_run = utils.run;
-		function run(code) {
-			try {
-				code = code.replace(/\s*$/,'')
-				var lines = code.split(/\r\n|[\n\r\u2028\u2029]/g);
-
-				lines = lines.map((function(line) { return line.replace(/\t/g,'    '); }));
-				let toTrim = lines[0].match(/^[ ]*/)[0].length;
-				lines = lines.map(function (line) { return line.substring(toTrim); });
-				for (var i in lines) lines[i] = "  " + lines[i];
-
-				code = 'def foo():\n' + lines.join("\n") + "\n\nfoo()";
-				var engine = new esper.Engine({language: 'python'});
-				engine.load(code);
-				var result = engine.runSync();
-				return result.toNative();
-			}
-			catch (e) {
-				//console.log(code + "\n" + e.stack);
-				return e;
-			}
-		}
+		
 		utils.run = run;
 		utils.runInEnv = function() { throw new Error('Unsupported'); };
 		dispatch('basics');
@@ -54,4 +56,10 @@ describe('Plugin: lang-python', function() {
 		dispatch('strings');
 		dispatch('tuples');
 	});
+
+	describe('Esper stdlib fixes', function() {
+		it('should suport str().join()', function() {
+			expect(run("return '|'.join([1,2,3])")).to.equal('1|2|3');
+		});
+	})
 });
