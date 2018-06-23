@@ -34,14 +34,20 @@ let defaultOptions = {
  */
 class Engine {
 
-	constructor(options) {
+	constructor(options, realm=false) {
 		options = options || {};
 		this.options = {};
 		for ( var k in defaultOptions ) {
 			if ( k in options ) this.options[k] = options[k];
 			else this.options[k] = defaultOptions[k];
 		}
-		this.realm = new Realm(this.options, this);
+
+		if ( realm )  {
+			this.realm = realm;
+		} else {
+			this.realm = new Realm(this.options, this);
+		}
+
 		this.evaluator = new Evaluator(this.realm, null, this.globalScope);
 		if ( this.options.debug ) {
 			this.evaluator.debug = true;
@@ -82,12 +88,16 @@ class Engine {
 
 			}};
 		} else {
-			Object.defineProperty(this, "evloop", {get: () => this.threads[0]});
+			Object.defineProperty(this, "evloop", {
+				get: () => this.threads[0],
+				set: (v) => this.threads[0] = v // Supports CrazyJoshMode
+			});
 		}
 	}
 
 	//get evloop() { return this.generator; }
 	get generator() { return this.evloop; }
+	set generator(v) { return this.evloop = v; } // Supports CrazyJoshMode
 
 	loadLangaugeStartupCode() {
 		let past = this.preprocessAST(this.language.startupCode(), {markNonUser: true});
@@ -358,11 +368,8 @@ class Engine {
 	 * @return {Engine}
 	 */
 	fork() {
-		let engine = new Engine(this.options);
+		let engine = new Engine(this.options, this.realm);
 		var scope = this.globalScope;
-
-		engine.realm = this.realm;
-
 		engine.evaluator = this.makeEvaluatorClone();
 		return engine;
 	}
