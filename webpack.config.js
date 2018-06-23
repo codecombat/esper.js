@@ -4,7 +4,6 @@ var fs = require('fs');
 var path = require('path');
 var webpack = require('webpack');
 var esper_plugins = require('./plugin-list.js');
-var BabiliPlugin = require('babili-webpack-plugin');
 
 module.exports = function configure(opts) {
 	opts = opts || {};
@@ -185,11 +184,7 @@ module.exports = function configure(opts) {
 	};
 
 	if ( opts.min ) {
-		//new webpack.optimize.UglifyJsPlugin({minimize: true, beautify: 'beautify=false,semicolons=false,indent-level:1'})
-		if ( useBabel ) cfg.plugins.push(new webpack.optimize.UglifyJsPlugin({minimize: true}));
-		else {
-			cfg.plugins.push(new BabiliPlugin({}, {}));
-		}
+		cfg.optimization = {minimize: true};
 	}
 
 	if ( profile == 'nashorn' ) {
