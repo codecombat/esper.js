@@ -139,10 +139,12 @@ module.exports = function configure(opts) {
 	fn += ".js";
 
 	cfg = {
+		mode: 'none',
 		entry: entry,
 		output: {
 			library: '[name]',
 			libraryTarget: libraryTarget,
+			globalObject: "typeof self !== 'undefined' ? self : this",
 			path: path.join(__dirname, 'dist'),
 			filename: fn
 		},
@@ -152,16 +154,14 @@ module.exports = function configure(opts) {
 		module: {
 			rules: [
 				{
-					test: /json$/,
-					loader: 'json-loader'
-				},
-				{
 					test: /js$/,
 					include: [path.join(__dirname, 'src'),path.join(__dirname, 'test'),path.join(__dirname, 'plugins')],
 					exclude: /node_modules/,
-					loader: 'babel-loader',
-					query: {
-						plugins: plugins
+					use: {
+						loader: 'babel-loader',
+						options: {
+							plugins: plugins
+						}
 					}
 				},
 				{
