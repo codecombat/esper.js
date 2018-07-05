@@ -22,9 +22,11 @@ console.log(typeof Clazz.whatever);
 console.log(typeof Clazz.prototype.whatever);
 console.log(typeof Clazz.something, Clazz.something());
 
+let y = 0;
 for ( let y of [8,6,7,5,3,0,9] )
 	console.log(y);
 
+console.log(y);
 
 //Array Find
 

@@ -13,6 +13,8 @@ class Scope {
 		this.realm = realm;
 		this.global = this;
 		this.writeTo = this.object;
+		this.writeToBlock = this.object;
+		this.thiz = null;
 	}
 
 	/**
@@ -43,20 +45,23 @@ class Scope {
 		this.writeTo.setImmediate(name, value);
 	}
 
+	addBlock(name, value) {
+		this.writeToBlock.setImmediate(name, value);
+	}
+
 	addConst(name, value) {
 		this.set(name, value);
-		this.writeTo.properties[name].writable = false;
-		this.writeTo.properties[name].configurable = false;
+		this.writeToBlock.properties[name].writable = false;
+		this.writeToBlock.properties[name].configurable = false;
 	}
 
 	/**
-	 * Sets an identifier in the scope to some value.
-	 *
-	 * @param {string} name - Identifier to set
-	 * @param {Value} value - Value to set
+	 * Set the identifier in its nearest scope, or create a global.
+	 * @param {string} name - Identifier to retreive
+	 * @param {Value} value - New vaalue of variable
 	 */
 	set(name, value) {
-		this.writeTo.setImmediate(name, value);
+		return this.put(name, value);
 	}
 
 	has(name) {
@@ -87,6 +92,14 @@ class Scope {
 		child.global = this.global;
 		child.realm = this.realm;
 		return child;
+	}
+
+	createBlockChild() {
+		let c = this.createChild();
+		c.thiz = this.thiz;
+		c.writeTo = this.writeTo;
+		c.parent = this.parent;
+		return c;
 	}
 
 	fromNative(value) {

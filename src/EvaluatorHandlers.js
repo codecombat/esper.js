@@ -108,14 +108,15 @@ function *evaluateBinaryExpression(e, n, s) {
 
 function *evaluateBlockStatement(e, n, s) {
 	let result = Value.undef;
+	let ss = s.createBlockChild();
 	for ( let statement of n.body ) {
 		if ( statement.type != "FunctionDeclaration" ) continue;
-		result = yield * e.branch(statement, s);
+		result = yield * e.branch(statement, ss);
 	}
 
 	for ( let statement of n.body ) {
 		if ( statement.type == "FunctionDeclaration" ) continue;
-		result = yield * e.branch(statement, s);
+		result = yield * e.branch(statement, ss);
 	}
 	return result;
 }
@@ -413,10 +414,13 @@ function *evaluateForInStatement(e, n, s) {
 	let names = object.observableProperties(s.realm);
 	let that = e;
 	let ref;
+	s = s.createBlockChild();
 
 	if ( n.left.type === 'VariableDeclaration' ) {
-		s.add(n.left.declarations[0].id.name, Value.undef);
-		ref = s.ref(n.left.declarations[0].id.name, s);
+		let decl = n.left.declarations[0];
+		if ( decl.kind == 'var') s.add(decl.id.name, Value.undef);
+		else s.addBlock(decl.id.name, Value.undef);
+		ref = s.ref(decl.id.name, s);
 	} else {
 		ref = s.ref(n.left.name, s);
 	}
@@ -447,9 +451,12 @@ function *evaluateForOfStatement(e, n, s) {
 	let names = object.observableProperties(s.realm);
 	let that = e;
 	let ref;
-
+	s = s.createBlockChild();
 	if ( n.left.type === 'VariableDeclaration' ) {
-		yield * s.put(n.left.declarations[0].id.name, Value.undef);
+		let decl = n.left.declarations[0];
+		if ( decl.kind == 'var') s.add(decl.id.name, Value.undef);
+		else s.addBlock(decl.id.name, Value.undef);
+		//yield * s.put(n.left.declarations[0].id.name, Value.undef);
 		ref = s.ref(n.left.declarations[0].id.name, s.realm);
 	} else {
 		ref = s.ref(n.left.name, s.realm);
@@ -780,6 +787,8 @@ function *evaluateVariableDeclaration(e, n, s) {
 
 		if ( kind === 'const' ) {
 			s.addConst(decl.id.name, value);
+		} else if ( kind == 'let') {
+			s.addBlock(decl.id.name, value);
 		} else {
 			s.add(decl.id.name, value);
 		}
