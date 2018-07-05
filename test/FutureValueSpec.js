@@ -73,7 +73,7 @@ describe('FutureValue', function() {
 			var fv = new FutureValue(e.realm);
 			e.addGlobal('fv', fv);
 			e.load('function a(o) { return o; }; a(fv);');
-			setTimeout(function() { fv.resolve(Value.fromNative(22)); }, 1000);
+			setTimeout(function() { fv.resolve(Value.fromNative(22)); }, 10);
 
 			return e.run().then((value) => {
 				expect(value.toNative()).to.equal(22);
