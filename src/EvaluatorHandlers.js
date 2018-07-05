@@ -815,7 +815,15 @@ function *evaluateWhileStatement(e, n, s) {
 function *evaluateWithStatement(e, n, s) {
 	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepMajor;
 	if ( s.strict ) return CompletionRecord.makeSyntaxError(e.realm, 'Strict mode code may not include a with statement');
-	return CompletionRecord.makeSyntaxError(e.realm, 'With statement not supported by esper');
+	let o = yield * e.branch(n.object, s);
+	let ns = s.createBlockChild();
+	if ( o instanceof ObjectValue ) {
+		let pairs = o.getPropertyValueMap();
+		for ( let p in pairs ) {
+			ns.set(p, pairs[p]);
+		}
+	}
+	return yield * e.branch(n.body, ns);
 }
 
 function findNextStep(type) {
