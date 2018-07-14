@@ -80,9 +80,9 @@ class ASTPreprocessor {
 
 	static *walker(ast, cbs, parent) {
 		var me = (a) => ASTPreprocessor.walker(a, cbs, ast);
+		if ( parent && ast instanceof ASTNode ) ast.addHiddenProperty('parent', parent);
 		invokeCB(cbs, 'enter', ast);
 		invokeCB(cbs, 'enter' + ast.type, ast);
-		if ( parent && ast instanceof ASTNode ) ast.addHiddenProperty('parent', parent);
 		switch ( ast.type ) {
 			case 'Program':
 				for ( let e of ast.body ) yield * me(e);
@@ -218,6 +218,10 @@ class EsperASTInstructions {
 
 	enterIdentifier(a) {
 		let fn = this.funcStack[0];
+		let parent = a.parent;
+		if ( parent.type == "MemberExpression" && !parent.computed && parent.property == a ) {
+			return;
+		}
 		fn.refs[a.name] = true;
 	}
 
