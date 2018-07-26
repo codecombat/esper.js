@@ -151,7 +151,7 @@ class Value {
 					out = function Bookmark() {
 						let Evaluator = require('./Evaluator');
 						let cthis = realm.makeForForeignObject(this);
-						let c = v.call(cthis, [], realm.globalScope);
+						let c = v.call(cthis, Array.from(arguments).map((v) => realm.makeForForeignObject(v)), realm.globalScope);
 						let evalu = new Evaluator(realm, null, realm.globalScope);
 						evalu.pushFrame({type: 'program', generator: c, scope: realm.globalScope});
 						let gen = evalu.generator();
@@ -189,6 +189,15 @@ class Value {
 	 */
 	toNative() {
 		throw new Error('Unimplemented: Value#toNative');
+	}
+
+	/**
+	 * Deep copy this value to a native javascript value.
+	 *
+	 * @returns {*}
+	 */
+	toJS() {
+		return this.toNative();
 	}
 
 	/**

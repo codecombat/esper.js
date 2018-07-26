@@ -74,6 +74,16 @@ class ArrayValue extends ObjectValue {
 		return out;
 	}
 
+	toJS() {
+		let out = new Array(this.getLengthSync());
+		for ( let i of Object.keys(this.properties)) {
+			if ( i === 'length' ) continue;
+			let po = this.properties[i];
+			out[i] = po.value.toJS();
+		}
+		return out;
+	}
+
 	static make(vals, realm) {
 
 		let av = new ArrayValue(realm);

@@ -140,6 +140,17 @@ class ObjectValue extends Value {
 	}
 
 
+	toJS() {
+		let out = {};
+		for ( let p in this.properties ) {
+			let name = p; //work around bug in FF where the scope of p is incorrect
+			let po = this.properties[name];
+			if ( !po.enumerable ) continue;
+			out[name] = po.value.toJS();
+		}
+		return out;
+	}
+
 	*add(other) { return yield * (yield * this.toPrimitiveValue()).add(other); }
 	*doubleEquals(other) {
 		if ( other === this ) return Value.true;

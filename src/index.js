@@ -13,6 +13,7 @@ esper.plugins = {'lang-javascript': require('./lang-javascript.js')};
 esper.Engine = Engine;
 esper.Evaluator = require('./Evaluator');
 esper.Value = require('./Value');
+esper.PrimitiveValue = require('./values/PrimitiveValue');
 esper.ASTPreprocessor = require('./ASTPreprocessor');
 esper.FutureValue = require('./values/FutureValue');
 esper.SmartLinkValue = require('./values/SmartLinkValue');
