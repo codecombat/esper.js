@@ -32,9 +32,9 @@ class BridgeValue extends Value {
 	ref(name, s) {
 		let that = this;
 		let out = Object.create(null);
-		let str = (value) => that.native[name] = value.toNative();
-		out.getValue = function *() { return that.native[name]; };
-		out.setValue = function *(to) { return str(to); };
+		let doset = (value) => that.native[name] = value.toNative();
+		out.getValue = function *() { return Value.fromNative(that.native[name]); };
+		out.setValue = function *(to) { doset(to) };
 
 		return out;
 	}
@@ -116,6 +116,8 @@ class BridgeValue extends Value {
 	*makeThisForNew() {
 		return this.makeBridge(Object.create(this.native.prototype));
 	}
+
+	*toStringValue() { return this.fromNative(this.native.toString()); }
 
 	get debugString() {
 		return '[Bridge: ' + this.native + ']';

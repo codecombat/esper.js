@@ -307,8 +307,8 @@ ${key} => ${vv}`;
 		}
 	}
 
-	fromNative(native) {
-		return this.realm.valueFromNative(native);
+	fromNative(native, x) {
+		return this.realm.fromNative(native, x);
 	}
 
 	generator() {

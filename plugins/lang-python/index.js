@@ -38,7 +38,7 @@ let plugin = module.exports = {
 	init: function(e) {
 		esper = e;
 		esper.languages.python = plugin;
-		startupCodeAST = esper.languages.javascript.esprima.parse(startupCode);
+		startupCodeAST = esper.languages.javascript.parser(startupCode);
 	},
 	setupRealm: function(realm) {
 		realm.PythonString = class PythonString extends esper.StringValue {

@@ -75,7 +75,7 @@ let plugin = module.exports = {
 	parser: parser,
 	init: function(esper) {
 		esper.languages.lua = plugin;
-		startupCodeAST = esper.languages.javascript.esprima.parse(startupCode);
+		startupCodeAST = esper.languages.javascript.parser(startupCode);
 	},
 	startupCode: () => startupCodeAST
 };

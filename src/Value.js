@@ -171,6 +171,7 @@ class Value {
 		Object.defineProperties(out, {
 			toString: {value: function() { return v.debugString; }, writable: true},
 			inspect: {value: function() { return v.debugString; }, writable: true},
+			esperValue: {get: function() { return v; } },
 		});
 		bookmarks.set(out, v);
 		return out;
@@ -215,7 +216,9 @@ class Value {
 
 	//TODO: Kill this
 	fromNative(other, realm) {
-		return Value.fromNative(other, realm);
+		realm = realm || this.realm;
+		if ( realm ) return realm.fromNative(other);
+		return Value.fromNative(other);
 	}
 
 	/**

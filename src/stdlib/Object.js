@@ -7,6 +7,7 @@ const CompletionRecord = require('../CompletionRecord');
 const Value = require('../Value');
 const PropertyDescriptor = require('../values/PropertyDescriptor');
 const EmptyValue = require('../values/EmptyValue');
+const BridgeValue = require('../values/BridgeValue');
 
 function *defObjectProperty(obj, name, desc, realm) {
 	if ( name instanceof Value ) {
@@ -208,6 +209,9 @@ class ObjectObject extends EasyObjectValue {
 	}
 
 	static *keys$e(thiz, args, s) {
+		if ( args[0] instanceof BridgeValue ) {
+			return ArrayValue.make(Object.keys(args[0].native), s.realm);
+		}
 		let target = yield * objOrThrow(args[0], s.realm);
 		let result = [];
 		for ( let p of Object.keys(target.properties) ) {

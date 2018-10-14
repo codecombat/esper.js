@@ -141,7 +141,10 @@ class ClosureValue extends ObjectValue {
 				let rest = args.slice(i);
 				invokeScope.add(name, ArrayValue.make(rest, scope.realm));
 			} else {
-				let name = this.func.params[i].name;
+				let p = this.func.params[i];
+				if ( p.type == "Identifier" ) p = {id: p};
+				let name = p.id.name;
+
 				if ( scope.strict ) {
 					//Scope is strict, so we make a copy for the args variable
 					invokeScope.add(name, i < args.length ? args[i] : Value.undef);

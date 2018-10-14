@@ -63,13 +63,19 @@ class ASTPreprocessor {
 		let nast = JSON.parse(JSON.stringify(ast), function(n, o) {
 			if ( o === null ) return null;
 			if ( typeof o !== 'object' ) return o;
-			if ( o.type ) {
+			if ( Array.isArray(o) ) {
+				return o;
+			} else if ( o.type ) {
 				let z = new ASTNode(o);
 				if ( !o.range && o.start && o.end ) z.range = [o.start, o.end];
 				if ( extra && extra.source ) z.addHiddenProperty('_source', extra.source);
 				return z;
+			} else if ( n === "start" || n === "end" || n === "loc" || n == "extra" ) {
+				return o;
+			} else {
+				return o;
+				//throw new TypeError("Tried to process ASTNode with no type:" + n);
 			}
-			return o;
 		});
 
 		var options = extra || {};
@@ -118,6 +124,7 @@ class ASTPreprocessor {
 				break;
 			case 'ArrowFunctionExpression':
 			case 'FunctionExpression':
+			case 'ClassMethod':
 				invokeCB(cbs, 'enterFunction', ast);
 				yield * me(ast.body);
 				invokeCB(cbs, 'exitFunction', ast);
@@ -147,6 +154,7 @@ class ASTPreprocessor {
 					let n = ast[p];
 					if ( p === 'parent' ) continue;
 					if ( p === 'loc' ) continue;
+					if ( p === 'range' ) continue;
 					if ( p === 'type' ) continue;
 					if ( p === 'nodeID' ) continue;
 					if ( p === 'parentFunction' ) continue;
@@ -288,7 +296,9 @@ class EsperASTInstructions {
 		this.scopeStack.unshift(scope);
 		scope[a.id.name] = a;
 		for ( let x of a.body.body ) {
-			scope[x.key.name] = x;
+			if ( !x ) continue;
+			if ( x.key ) scope[x.key.name] = x;
+			if ( x.id ) scope[x.id.name] = x;
 		}
 	}
 

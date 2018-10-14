@@ -1,8 +1,10 @@
 'use strict';
 const babylon = require('babylon');
+let Value;
 
 function *evaluateClassProperty(clazz, proto, e, m, s) {
-	let value = yield * e.branch(m.value);
+	let value = Value.undef;
+	if ( m.value ) value = yield * e.branch(m.value, s);
 
 	let ks;
 	if ( m.computed ) {
@@ -39,6 +41,7 @@ module.exports = {
 		return ast.program;
 	},
 	init: function(esper) {
+		Value = esper.Value;
 		esper.languages.javascript = this;
 		esper.EvaluatorHandlers.classFeatures.ClassProperty = evaluateClassProperty;
 	}

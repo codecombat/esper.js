@@ -21,6 +21,7 @@ class EasyObjectValue extends ObjectValue {
 		this.setPrototype(objProto);
 
 		this._init(realm);
+		this.easyRef = Object.getPrototypeOf(this).constructor;
 	}
 
 	_init(realm) {
@@ -34,8 +35,9 @@ class EasyObjectValue extends ObjectValue {
 			if ( p === 'callee') continue;
 			if ( p === 'arguments' ) continue;
 			let parts = p.split(/\$/);
-			let name = parts[0];
-			let flags = parts[1] || '';
+			let flags = parts.length > 1 ? parts.pop() : '';
+			let name = parts.join('');
+			
 			let d = Object.getOwnPropertyDescriptor(clazz.constructor, p);
 			let v = new PropertyDescriptor();
 			let length = 1;

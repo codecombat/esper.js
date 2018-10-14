@@ -102,8 +102,8 @@ class Scope {
 		return c;
 	}
 
-	fromNative(value) {
-		return this.realm.fromNative(value);
+	fromNative(value, x) {
+		return this.realm.fromNative(value, x);
 	}
 
 	getVariableNames() {

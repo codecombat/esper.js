@@ -62,8 +62,8 @@ class EvalFunction extends ObjectValue {
 			ast = ASTPreprocessor.process(oast);
 		} catch ( e ) {
 			var eo;
-
-			if ( e.description == 'Invalid left-hand side in assignment' ) eo = new ReferenceError(e.description, e.fileName, e.lineNumber);
+			let desc = e.description || e.message;
+			if ( e.name == 'ReferenceError' || /Invalid left-hand side in/.test(desc) ) eo = new ReferenceError(e.description, e.fileName, e.lineNumber);
 			else eo = new SyntaxError(e.description, e.fileName, e.lineNumber);
 
 			if ( e.stack ) eo.stack = e.stack;
@@ -81,10 +81,11 @@ class EvalFunction extends ObjectValue {
 let timeoutIds = 0;;
 class SetTimeoutFunction extends ObjectValue {
 
-	constructor(realm, runtime) {
+	constructor(realm, runtime, isSetInterval) {
 		super(realm);
 		this.setPrototype(realm.FunctionPrototype);
 		this.runtime = runtime;
+		this.isSetInterval = isSetInterval;
 	}
 
 	*call(thiz, args, scope) {
@@ -93,22 +94,28 @@ class SetTimeoutFunction extends ObjectValue {
 		let evaluator = new Evaluator(scope.realm, null, scope.global);
 		let time = args.length > 1 ? 0 + args[1].toNative() : 0;
 		let id = timeoutIds++;
+		let isSetInterval = this.isSetInterval;
 
 		if ( !ev || ev.jsTypeName !== "function" && ev.jsTypeName !== "string" ) {
 			return new CompletionRecord(CompletionRecord.THROW, Value.fromNative(new TypeError('"callback" argument must be a function'), scope.realm));
 		}
 
 		evaluator.pushFrame({generator: (function*() {
-			yield esper.FutureValue.make(yield * engine.runtime.wait(time));
-			if ( ev.jsTypeName == "function" ) {
-				let tv = scope.strict ? esper.undef : scope.global.thiz;
-				yield * ev.call(tv, args.slice(2), scope.global);
-			} else if ( ev.jsTypeName == "string" ) {
-				let oast = scope.realm.parser(yield * ev.toStringNative(), {loc: true});
-				let ast = ASTPreprocessor.process(oast);
-				return yield EvaluatorInstruction.branch('eval', ast, scope.global);
+			while ( true ) {
+				yield esper.FutureValue.make(yield * engine.runtime.wait(time));
+				if ( ev.jsTypeName == "function" ) {
+					let tv = scope.strict ? esper.undef : scope.global.thiz;
+					yield * ev.call(tv, args.slice(2), scope.global);
+				} else if ( ev.jsTypeName == "string" ) {
+					let oast = scope.realm.parser(yield * ev.toStringNative(), {loc: true});
+					let ast = ASTPreprocessor.process(oast);
+					yield EvaluatorInstruction.branch('eval', ast, scope.global);
+				}
+				if ( !isSetInterval ) break;
 			}
+			return Value.undef;
 		})(), type: 'invoke'});
+
 		let o = evaluator.generator();
 		evaluator.id = id;
 		engine.threads.push(o);
@@ -152,6 +159,10 @@ class Realm {
 		console.log.apply(console, arguments);
 	}
 
+	write() {
+		this.print.apply(this, arguments);
+	}
+
 	parser(code, options) {
 		if ( !esper.languages[this.language] ) {
 			throw new Error(`Unknown language ${this.language}. Load the lang-${this.language} plugin?`);
@@ -165,7 +176,7 @@ class Realm {
 			let langv = lang.makeLiteralValue(v, this, n);
 			if ( langv ) return langv;
 		}
-		return this.fromNative(v);
+		return this.fromNative(v, n);
 	}
 
 	constructor(options, engine) {
@@ -268,7 +279,8 @@ class Realm {
 		scope.set('assert', new AssertClass(this));
 
 		if ( options.runtime ) {
-			scope.set("setTimeout", new SetTimeoutFunction(this, options.runtime));
+			scope.set("setTimeout", new SetTimeoutFunction(this, options.runtime, false));
+			scope.set("setInterval", new SetTimeoutFunction(this, options.runtime, true));	
 			scope.set("clearTimeout", new ClearTimeoutFunction(this, options.runtime));
 			scope.set("clearInterval", new ClearTimeoutFunction(this, options.runtime));
 		}
@@ -316,11 +328,7 @@ class Realm {
 		}
 	}
 
-	valueFromNative(native) {
-		return Value.fromNative(native, this);
-	}
-
-	fromNative(native) {
+	fromNative(native, x) {
 		return Value.fromNative(native, this);
 	}
 

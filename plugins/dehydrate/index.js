@@ -46,3 +46,9 @@ EsperValue.pickle = function*(thiz, args, scope, extra) {
 	let dj = JSON.stringify(d, null, '  ');
 	return Value.fromNative(dj);
 };
+
+module.exports = {
+	name: 'dehydrate',
+	dehydrate: dehydrate,
+	init: () => {}
+}

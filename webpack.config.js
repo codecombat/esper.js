@@ -178,7 +178,9 @@ module.exports = function configure(opts) {
 			banner,
 			pluginFilter
 		],
-		resolve: {alias: {}},
+		resolve: {alias: {
+			'esper.js':  path.resolve(__dirname, 'src/index.js')
+		}},
 		target: target,
 		node: {fs: 'empty'}
 	};

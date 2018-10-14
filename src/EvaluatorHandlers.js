@@ -100,6 +100,9 @@ function *evaluateAssignmentExpression(e, n, s) {
 }
 
 function *evaluateBinaryExpression(e, n, s) {
+	if ( n.operator == '&&' || n.operator == '||' ) {
+		return yield* evaluateLogicalExpression(e, n, s);
+	}
 	let left = yield * e.branch(n.left, s);
 	let right = yield * e.branch(n.right, s);
 	if ( e.yieldPower >= 4 ) yield EvaluatorInstruction.stepMinor;
@@ -222,13 +225,11 @@ function *doCall(e, n, c, s, argProvider) {
 }
 
 let classFeatures = {};
-classFeatures.MethodDefinition = function*(clazz, proto, e, m, s) {
-	
+function* addMethodFnToClass(fx, clazz, proto, e, m, s) {
 	if ( m.kind == 'constructor' ) {
 		//Special handling for this below.
 	} else {
 		let ks;
-		let fx = yield * e.branch(m.value, s);
 		fx.funcSourceAST = m;
 		if ( m.computed ) {
 			let k = yield * e.branch(m.key, s);
@@ -245,7 +246,21 @@ classFeatures.MethodDefinition = function*(clazz, proto, e, m, s) {
 			yield * proto.set(ks, fx);
 		}
 	}
+	return Value.undef;
+}
+classFeatures.MethodDefinition = function*(clazz, proto, e, m, s) {
+	yield * addMethodFnToClass(yield * e.branch(m.value, s), clazz, proto, e, m, s);
 };
+classFeatures.ClassMethod = function*(clazz, proto, e, m, s) {
+	let fx = yield * evaluateFunctionExpression(e, m, s);
+	return yield * addMethodFnToClass(fx, clazz, proto, e, {
+		kind: m.kind,
+		static: m.static,
+		key: m.key,
+	}, s);
+
+};
+classFeatures.EmptyStatement = function*() { return Value.undef; }
 
 function *evaluateClassExpression(e, n, s) {
 	let clazz = undefined;
@@ -506,8 +521,8 @@ function *evaluateLiteral(e, n, s) {
 
 		//Work around Esprima turning Infinity into null. =\
 		let tryFloat = parseFloat(n.raw);
-		if ( !isNaN(tryFloat) ) return e.fromNative(tryFloat);
-		return e.fromNative(null);
+		if ( !isNaN(tryFloat) ) return e.fromNative(tryFloat, n);
+		return e.fromNative(null, n);
 	} else {
 		return e.realm.makeLiteralValue(n.value, n);
 	}
@@ -872,6 +887,13 @@ function findNextStep(type) {
 		case 'VariableDeclaration': return evaluateVariableDeclaration;
 		case 'WhileStatement': return evaluateWhileStatement;
 		case 'WithStatement': return evaluateWithStatement;
+
+		case 'BooleanLiteral':
+		case 'StringLiteral':
+		case 'NumericLiteral':
+		case 'NullLiteral':
+			return evaluateLiteral;
+
 		default:
 			throw new Error('Unknown AST Node Type: ' + type);
 	}

@@ -93,6 +93,10 @@ class Engine {
 				set: (v) => this.threads[0] = v // Supports CrazyJoshMode
 			});
 		}
+
+		if ( this.language.setupEngine ) {
+			this.language.setupEngine(esper, this);
+		}
 	}
 
 	//get evloop() { return this.generator; }
