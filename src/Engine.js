@@ -26,7 +26,8 @@ let defaultOptions = {
 	debug: false,
 	compile: 'pre',
 	language: 'javascript',
-	runtime: false
+	runtime: false,
+	rotateThreads: false 
 };
 
 /**
@@ -72,19 +73,21 @@ class Engine {
 		this.threads = [];
 		let that = this;
 		if ( options.runtime ) {
-			let last = Value.undef;
 			this.evloop = {next: function() {
 				let promises = [];
 				for ( let i = 0; i < that.threads.length; ++i ) {
 					if ( that.threads[i] ) {
 						let val = that.threads[i].next();
-						if ( val.done ) { last = val; that.threads.splice(i, 1); }
-						if ( !val.value || !val.value.then ) return {done: false, value: val.value};
+						if ( val.done ) {  that.threads.splice(i, 1); return val }
+						if ( !val.value || !val.value.then ) {
+							if ( options.rotateThreads ) that.threads.push(that.threads.splice(i, 1)[0]);
+							return {done: false, value: val.value};
+						}
 						else promises.push(val.value);
 					}
 				}
 				if ( promises.length > 0 ) return {done: false, value: Promise.race(promises)};
-				else return last;
+				else return {done: true};
 
 			}};
 		} else {
