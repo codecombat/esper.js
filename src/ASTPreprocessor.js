@@ -58,9 +58,8 @@ class ASTNode {
 
 class ASTPreprocessor {
 
-	static process(ast, extra) {
-		if ( typeof ast !== 'object' ) throw new TypeError('Provided AST is invalid (type is ' + typeof ast + ')');
-		let nast = JSON.parse(JSON.stringify(ast), function(n, o) {
+	static clone(ast, extra) {
+		return JSON.parse(JSON.stringify(ast), function(n, o) {
 			if ( o === null ) return null;
 			if ( typeof o !== 'object' ) return o;
 			if ( Array.isArray(o) ) {
@@ -77,6 +76,11 @@ class ASTPreprocessor {
 				//throw new TypeError("Tried to process ASTNode with no type:" + n);
 			}
 		});
+	}
+
+	static process(ast, extra) {
+		if ( typeof ast !== 'object' ) throw new TypeError('Provided AST is invalid (type is ' + typeof ast + ')');
+		let nast = ASTPreprocessor.clone(ast, extra);
 
 		var options = extra || {};
 		var cbs = new EsperASTInstructions(ast, options);
@@ -241,7 +245,7 @@ class EsperASTInstructions {
 	}
 
 	enterProgram(a) {
-		let scope = Object.create(null);
+		let scope = Object.create(this.scopeStack[0]);
 
 		a.addHiddenProperty('refs', Object.create(null));
 		a.addHiddenProperty('vars', Object.create(null));
@@ -378,7 +382,8 @@ class EsperASTInstructions {
 		var free = {};
 		var upvars = {};
 		for ( var r in a.refs ) {
-			if ( r in vars || r in scope ) {
+
+			if ( r in vars  ) {
 				//Local refrence
 			} else if ( r in this.varStack[0] ) {
 				upvars[r] = true;
@@ -417,5 +422,6 @@ class EsperASTInstructions {
 
 }
 ASTPreprocessor.ASTNode = ASTNode;
+ASTPreprocessor.EsperASTInstructions = EsperASTInstructions;
 
 module.exports = ASTPreprocessor;
