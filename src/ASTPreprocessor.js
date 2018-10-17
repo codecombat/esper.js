@@ -234,11 +234,18 @@ class EsperASTInstructions {
 		if ( parent.type == "MemberExpression" && !parent.computed && parent.property == a ) {
 			return;
 		}
+		if ( parent.type == "Property" && parent.key == a) {
+			return;
+		}
 		fn.refs[a.name] = true;
 	}
 
 	decl(a) {
-		if ( a.parent.type == 'VariableDeclaration' && a.parent.kind != 'var' ) return;
+		if ( a.parent.type == 'VariableDeclaration' && a.parent.kind != 'var' ) {
+			let stack = this.scopeStack[0];
+			stack[a.id.name] = a;
+			return;
+		}
 		if ( a.type == 'FunctionDeclaration' ) return;
 		let stack = this.varStack[0];
 		stack[a.id.name] = a;
@@ -381,10 +388,11 @@ class EsperASTInstructions {
 		var scope = this.scopeStack.shift();
 		var free = {};
 		var upvars = {};
+		var locals = {}
 		for ( var r in a.refs ) {
 
-			if ( r in vars  ) {
-				//Local refrence
+			if (Object.hasOwnProperty.call(vars, r) || Object.hasOwnProperty.call(scope, r) ) {
+				locals[r] = true;
 			} else if ( r in this.varStack[0] ) {
 				upvars[r] = true;
 			} else if ( r in this.scopeStack[0] ) {
