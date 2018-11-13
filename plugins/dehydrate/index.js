@@ -2,6 +2,7 @@
 
 const Value = require('../../src/Value');
 const PrimitiveValue = require('../../src/values/PrimitiveValue');
+const LinkValue = require('../../src/values/LinkValue');
 
 function dehydrate(realm, value) {
 	let state = {
@@ -14,6 +15,7 @@ function dehydrate(realm, value) {
 }
 
 function _dehydrate(realm, value, state) {
+	if ( !value ) return {'$hole': true};
 	if ( value instanceof PrimitiveValue ) return {'$v': value.native};
 	if ( value === Value.null ) return {'$t': 'null'};
 	if ( value === Value.undef ) return {'$t': 'undefined'};
@@ -25,15 +27,25 @@ function _dehydrate(realm, value, state) {
 		};
 		state.refrences[value.serial] = ref;
 		ref.proto = _dehydrate(realm, value.getPrototype(realm) || Value.null, state);
-		for ( let k in value.properties ) {
-			if ( !Object.prototype.hasOwnProperty.call(value.properties, k) ) continue;
-			let prop = value.properties[k];
-			ref.prop[k] = {
-				v: _dehydrate(realm, prop.value, state),
-				e: prop.enumerable && undefined,
-				w: prop.writable && undefined,
-				c: prop.configurable && undefined
-			};
+		if ( value instanceof LinkValue ) {
+			ref.$link = true;
+			let map = value.getPropertyValueMap();
+			for ( let k in map ) {
+				ref.prop[k] = {
+					v: _dehydrate(realm, map[k], state)
+				};
+			}
+		} else {
+			for ( let k in value.properties ) {
+				if ( !Object.prototype.hasOwnProperty.call(value.properties, k) ) continue;
+				let prop = value.properties[k];
+				ref.prop[k] = {
+					v: _dehydrate(realm, prop.value, state),
+					e: prop.enumerable && undefined,
+					w: prop.writable && undefined,
+					c: prop.configurable && undefined
+				};
+			}
 		}
 	}
 	return {'$ref': value.serial};
