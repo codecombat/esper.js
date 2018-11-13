@@ -8,6 +8,7 @@ const Value = require('../Value');
 const PropertyDescriptor = require('../values/PropertyDescriptor');
 const EmptyValue = require('../values/EmptyValue');
 const BridgeValue = require('../values/BridgeValue');
+const LinkValue = require('../values/LinkValue');
 
 function *defObjectProperty(obj, name, desc, realm) {
 	if ( name instanceof Value ) {
@@ -211,6 +212,11 @@ class ObjectObject extends EasyObjectValue {
 	static *keys$e(thiz, args, s) {
 		if ( args[0] instanceof BridgeValue ) {
 			return ArrayValue.make(Object.keys(args[0].native), s.realm);
+		}
+		if ( args[0] instanceof LinkValue ) {
+			let keys = [];
+			for ( let o of args[0].observableProperties() ) keys.push(o);
+			return ArrayValue.make(keys, s.realm);
 		}
 		let target = yield * objOrThrow(args[0], s.realm);
 		let result = [];
