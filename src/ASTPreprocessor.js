@@ -66,7 +66,9 @@ class ASTPreprocessor {
 				return o;
 			} else if ( o.type ) {
 				let z = new ASTNode(o);
-				if ( !o.range && o.start && o.end ) z.range = [o.start, o.end];
+				if ( !o.range && typeof o.start != 'undefined' && typeof o.end != 'undefined' ) {
+					z.range = [o.start, o.end];
+				}
 				if ( extra && extra.source ) z.addHiddenProperty('_source', extra.source);
 				return z;
 			} else if ( n === "start" || n === "end" || n === "loc" || n == "extra" ) {
@@ -244,7 +246,6 @@ class EsperASTInstructions {
 		if ( a.parent.type == 'VariableDeclaration' && a.parent.kind != 'var' ) {
 			let stack = this.scopeStack[0];
 			stack[a.id.name] = a;
-			return;
 		}
 		if ( a.type == 'FunctionDeclaration' ) return;
 		let stack = this.varStack[0];
@@ -257,6 +258,7 @@ class EsperASTInstructions {
 		a.addHiddenProperty('refs', Object.create(null));
 		a.addHiddenProperty('vars', Object.create(null));
 		a.addHiddenProperty('funcs', Object.create(null));
+		a.addHiddenProperty('ss', scope);
 
 		this.funcStack.unshift(a);
 		this.scopeStack.unshift(scope);
@@ -285,10 +287,12 @@ class EsperASTInstructions {
 			if ( s.type === 'VariableDeclaration' && s.kind == 'var' ) {
 				for ( var decl of s.declarations ) {
 					a.vars[decl.id.name] = decl;
+					a.ss[decl.id.name] = decl;
 				}
 
 			} else if ( s.type === 'FunctionDeclaration' ) {
 				a.vars[s.id.name] = s;
+				a.ss[s.id.name] = s;
 			}
 		}
 
@@ -322,6 +326,7 @@ class EsperASTInstructions {
 		a.addHiddenProperty('refs', Object.create(null));
 		a.addHiddenProperty('vars', Object.create(null));
 		a.addHiddenProperty('funcs', Object.create(null));
+		a.addHiddenProperty('ss', scope);
 
 		if ( this.options.nonUserCode ) {
 			a.addHiddenProperty('nonUserCode', true);
@@ -329,8 +334,10 @@ class EsperASTInstructions {
 
 		for ( let o of a.params ) {
 			if ( o.type == 'Identifier' ) {
+				scope[o.name] = a;
 				a.vars[o.name] = a;
 			} else if ( o.type == 'RestElement' ) {
+				scope[o.argument.name] = a;
 				a.vars[o.argument.name] = a;
 			}
 		}
@@ -406,6 +413,12 @@ class EsperASTInstructions {
 		
 		this.funcStack.shift();
 		delete a.refs;
+
+		let target = this.funcStack[0];
+		if ( target && target.refs ) {
+			for ( let v in upvars ) target.refs[v] = true;
+			for ( let v in free ) target.refs[v] = true;
+		}
 
 		if ( compiler && this.options.compile === 'pre' && compiler.canCompile(a.body) ) {
 			a.body.dispatch = compiler.compileNode(a.body);
