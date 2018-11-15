@@ -63,7 +63,7 @@ class ClosureValue extends ObjectValue {
 			invokeScope.writeTo = this.boundScope.object;
 			invokeScope.thiz = this.thiz || /* thiz ||*/ this.boundScope.thiz;
 		} else {
-			invokeScope = scope.createChild();
+			invokeScope = scope.global.createChild();
 			invokeScope.thiz = this.thiz || thiz;
 		}
 
