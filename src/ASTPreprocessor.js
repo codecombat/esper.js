@@ -210,6 +210,10 @@ class EsperASTInstructions {
 		let globalVars = Object.create(null);
 		let globalFuncs = Object.create(null);
 
+		if ( options.locals ) {
+			for ( let o of options.locals ) globalScope[o] = true;
+		}
+
 		this.scopeStack = [globalScope];
 		this.varStack = [globalVars];
 		this.funcStack = [globalFuncs];
@@ -396,7 +400,7 @@ class EsperASTInstructions {
 		var free = {};
 		var upvars = {};
 		for ( var r in a.refs ) {
-
+			if ( r == 'arguments' ) continue;
 			if ( r in vars ) {
 				//Local refrence
 			} else if ( r in this.varStack[0] ) {
