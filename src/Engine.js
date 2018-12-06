@@ -78,7 +78,7 @@ class Engine {
 				for ( let i = 0; i < that.threads.length; ++i ) {
 					if ( that.threads[i] ) {
 						let val = that.threads[i].next();
-						if ( val.done ) {  that.threads.splice(i, 1); return val }
+						if ( val.done ) {  that.threads.splice(i, 1); return {done: false, value: val.value}; }
 						if ( !val.value || !val.value.then ) {
 							if ( options.rotateThreads ) that.threads.push(that.threads.splice(i, 1)[0]);
 							return {done: false, value: val.value};

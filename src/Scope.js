@@ -12,6 +12,7 @@ class Scope {
 		this.strict = false;
 		this.realm = realm;
 		this.global = this;
+		this.top = this;
 		this.writeTo = this.object;
 		this.writeToBlock = this.object;
 		this.thiz = null;
@@ -91,6 +92,7 @@ class Scope {
 		child.strict = this.strict;
 		child.global = this.global;
 		child.realm = this.realm;
+		child.top = this.top;
 		return child;
 	}
 

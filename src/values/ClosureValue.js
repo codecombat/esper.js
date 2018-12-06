@@ -24,9 +24,9 @@ class ClosureValue extends ObjectValue {
 		this.funcSourceAST = func;
 		this.scope = scope;
 		this.returnLastValue = false;
-		this.properties['prototype'] = new PropertyDescriptor(new ObjectValue(realm));
-		this.properties['name'] = new PropertyDescriptor(this.fromNative(func.id ? func.id.name : undefined));
-		this.properties['length'] = new PropertyDescriptor(this.fromNative(func.params.length));
+		this.properties['prototype'] = new PropertyDescriptor(new ObjectValue(realm), false);
+		this.properties['name'] = new PropertyDescriptor(this.fromNative(func.id ? func.id.name : undefined), false);
+		this.properties['length'] = new PropertyDescriptor(this.fromNative(func.params.length), false);
 
 
 	}
@@ -63,7 +63,7 @@ class ClosureValue extends ObjectValue {
 			invokeScope.writeTo = this.boundScope.object;
 			invokeScope.thiz = this.thiz || /* thiz ||*/ this.boundScope.thiz;
 		} else {
-			invokeScope = scope.global.createChild();
+			invokeScope = scope.top.createChild();
 			invokeScope.thiz = this.thiz || thiz;
 		}
 
