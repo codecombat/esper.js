@@ -57,7 +57,7 @@ class Engine {
 		this.evaluator.defaultYieldPower = this.options.yieldPower;
 		this.evaluator.yieldPower = this.options.yieldPower;
 
-		if ( this.language.startupCode ) {
+		if ( this.language.startupCode && !realm ) {
 			this.loadLangaugeStartupCode();
 		}
 
