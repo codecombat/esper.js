@@ -1,5 +1,5 @@
 -c
 --no-timeouts
 --require contrib/load-addons-via-require.js
-test/*.js
+test/*Spec.js
 plugins/*/test/*.js

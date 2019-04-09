@@ -3,11 +3,6 @@
 let esper = require('../../../src/index.js');
 let expect = require('chai').expect;
 
-if ( !esper.plugins['lang-coffeescript'] ) {
-	return it('Plugin: lang-coffeescript [disabled]', function() {});
-}
-
-
 class Aether {
 	constructor(config) {
 		this.engine = new esper.Engine({language: "coffeescript"});
@@ -53,21 +48,26 @@ class Aether {
 }
 
 describe("CS test Suite!", function() {
+	if ( !esper.plugins['lang-coffeescript'] ) {
+		it('Plugin: lang-coffeescript [disabled]', function() {});
+		return;
+	}
+
 	describe("CS compilation", function() {
 		let aether = new Aether({language: "coffeescript"});
-		return it("Should compile functions", function() {
+		it("Should compile functions", function() {
 			let code = `\
 			return 1000\
 			`;
 			aether.transpile(code);
 			expect(aether.run()).to.equal(1000);
-			return expect(aether.problems.errors).to.deep.equal([]);
+			expect(aether.problems.errors).to.deep.equal([]);
 		});
 	});
 
 	describe("CS compilation with lang set after contruction", function() {
 		let aether = new Aether();
-		return it("Should compile functions", function() {
+		it("Should compile functions", function() {
 			let code = `\
 			return 2000 if false
 			return 1000\
@@ -75,19 +75,19 @@ describe("CS test Suite!", function() {
 			aether.setLanguage("coffeescript");
 			aether.transpile(code);
 			expect(aether.canTranspile(code)).to.equal(true);
-			return expect(aether.problems.errors).to.deep.equal([]);
+			expect(aether.problems.errors).to.deep.equal([]);
 		});
 	});
 
 	describe("CS Test Spec #1", function() {
 		let aether = new Aether({language: "coffeescript"});
-		return it("mathmetics order", function() {
+		it("mathmetics order", function() {
 			let code = `\
 			return (2*2 + 2/2 - 2*2/2)\
 			`;
 			aether.transpile(code);
 			expect(aether.run()).to.equal(3);
-			return expect(aether.problems.errors).to.deep.equal([]);
+			expect(aether.problems.errors).to.deep.equal([]);
 		});
 	});
 
@@ -103,7 +103,7 @@ describe("CS test Suite!", function() {
 			let fn = aether.createFunction();
 			expect(aether.canTranspile(code)).to.equal(true);
 			expect(aether.run()).to.equal(8); // fail
-			return expect(aether.problems.errors).to.deep.equal([]);
+			expect(aether.problems.errors).to.deep.equal([]);
 		});
 	});
 
@@ -118,7 +118,7 @@ describe("CS test Suite!", function() {
 			aether.transpile(code);
 			expect(aether.canTranspile(code)).to.equal(true);
 			expect(aether.run()).to.equal(10);
-			return expect(aether.problems.errors).to.deep.equal([]);
+			expect(aether.problems.errors).to.deep.equal([]);
 		});
 
 		it("Simple While", function() {
@@ -130,7 +130,7 @@ describe("CS test Suite!", function() {
 			aether.transpile(code);
 			expect(aether.canTranspile(code)).to.equal(true);
 			expect(aether.run()).to.equal(100);
-			return expect(aether.problems.errors).to.deep.equal([]);
+			expect(aether.problems.errors).to.deep.equal([]);
 		});
 
 		it("Should Map", function() {
@@ -139,7 +139,7 @@ describe("CS test Suite!", function() {
 			aether.transpile(code);
 			expect(aether.canTranspile(code)).to.equal(true);
 			expect(aether.run()).to.deep.equal([10, 9, 8, 7, 6, 5, 4, 3, 2, 1]);
-			return expect(aether.problems.errors).to.deep.equal([]);
+			expect(aether.problems.errors).to.deep.equal([]);
 		});
 
 		it("Should Map properties", function() {
@@ -152,7 +152,7 @@ describe("CS test Suite!", function() {
 			aether.transpile(code);
 			expect(aether.canTranspile(code)).to.equal(true);
 			expect(aether.run()).to.deep.equal(["max is 10", "ida is 9", "tim is 11"]);
-			return expect(aether.problems.errors).to.deep.equal([]);
+			expect(aether.problems.errors).to.deep.equal([]);
 		});
 
 		it("Should compile empty function", function() {
@@ -163,7 +163,7 @@ describe("CS test Suite!", function() {
 			aether.transpile(code);
 			expect(aether.canTranspile(code)).to.equal(true);
 			expect(aether.run()).to.equal('function');
-			return expect(aether.problems.errors).to.deep.equal([]);
+			expect(aether.problems.errors).to.deep.equal([]);
 		});
 
 		it("Should compile objects", function() {
@@ -174,7 +174,7 @@ describe("CS test Suite!", function() {
 			aether.transpile(code);
 			expect(aether.canTranspile(code)).to.equal(true);
 			expect(aether.run()).to.deep.equal(({Jagger: 'Rock', Elvis: 'Roll'}));
-			return expect(aether.problems.errors).to.deep.equal([]);
+			expect(aether.problems.errors).to.deep.equal([]);
 		});
 
 		it("Should compile classes", function() {
@@ -188,7 +188,7 @@ describe("CS test Suite!", function() {
 			aether.transpile(code);
 			expect(aether.canTranspile(code)).to.equal(true);
 			expect(aether.run()).to.equal(1000);
-			return expect(aether.problems.errors).to.deep.equal([]);
+			expect(aether.problems.errors).to.deep.equal([]);
 		});
 
 		xit("Should compile super", function() {
@@ -206,7 +206,7 @@ describe("CS test Suite!", function() {
 			`;
 			aether.transpile(code);
 			expect(aether.run()).to.equal("Sammy the Python moved 5m.");
-			return expect(aether.problems.errors).to.deep.equal([]);
+			expect(aether.problems.errors).to.deep.equal([]);
 		});
 
 		it("Should compile string interpolation", function() {
@@ -216,13 +216,13 @@ describe("CS test Suite!", function() {
 			`;
 			aether.transpile(code);
 			expect(aether.run()).to.equal("Sammy the Python moved 5m.");
-			return expect(aether.problems.errors).to.deep.equal([]);
+			expect(aether.problems.errors).to.deep.equal([]);
 		});
 
-		return it("Should implicitly return the last statement", function() {
+		it("Should implicitly return the last statement", function() {
 			aether.transpile('"hi"');
 			expect(aether.run()).to.equal('hi');
-			return expect(aether.problems.errors).to.deep.equal([]);
+			expect(aether.problems.errors).to.deep.equal([]);
 		});
 	});
 
@@ -241,7 +241,7 @@ describe("CS test Suite!", function() {
 			expect(aether.problems.errors.length).to.equal(1);
 			// TODO: No range information for this error
 			// https://github.com/codecombat/aether/issues/114
-			return expect(aether.problems.errors[0].message.indexOf("Syntax error on line 3 column 7: unexpected '+'")).to.equal(0);
+			expect(aether.problems.errors[0].message.indexOf("Syntax error on line 3 column 7: unexpected '+'")).to.equal(0);
 	 	});
 
 		it("Transpile error, missing )", function() {
@@ -255,7 +255,7 @@ describe("CS test Suite!", function() {
 			expect(aether.problems.errors.length).to.equal(1);
 			// TODO: No range information for this error
 			// https://github.com/codecombat/aether/issues/114
-			return expect(aether.problems.errors[0].message.indexOf("Unclosed \"(\" at EOF")).to.equal(0);
+			expect(aether.problems.errors[0].message.indexOf("Unclosed \"(\" at EOF")).to.equal(0);
 		});
 
 		xit("Missing @: x() row 0", function() {
@@ -265,7 +265,7 @@ describe("CS test Suite!", function() {
 			aether.transpile(code);
 			expect(aether.problems.errors.length).to.equal(1);
 			expect(aether.problems.errors[0].message).to.equal("Missing `@` keyword; should be `@x`.");
-			return expect(aether.problems.errors[0].range).to.equal([ { ofs: 0, row: 0, col: 0 }, { ofs: 3, row: 0, col: 3 } ]);
+			expect(aether.problems.errors[0].range).to.equal([ { ofs: 0, row: 0, col: 0 }, { ofs: 3, row: 0, col: 3 } ]);
 		});
 
 		xit("Missing @: x() row 1", function() {
@@ -275,7 +275,7 @@ describe("CS test Suite!", function() {
 			`;
 			aether.transpile(code);
 			expect(aether.problems.errors.length).to.equal(1);
-			return expect(aether.problems.errors[0].message).to.equal("Missing `@` keyword; should be `@x`.");
+			expect(aether.problems.errors[0].message).to.equal("Missing `@` keyword; should be `@x`.");
 		});
 		// https://github.com/codecombat/aether/issues/115
 		// expect(aether.problems.errors[0].range).to.equal([ { ofs: 6, row: 1, col: 0 }, { ofs: 9, row: 1, col: 3 } ])
@@ -289,7 +289,7 @@ describe("CS test Suite!", function() {
 			`;
 			aether.transpile(code);
 			expect(aether.problems.errors.length).to.equal(1);
-			return expect(aether.problems.errors[0].message).to.equal("Missing `@` keyword; should be `@x`.");
+			expect(aether.problems.errors[0].message).to.equal("Missing `@` keyword; should be `@x`.");
 		});
 		// https://github.com/codecombat/aether/issues/115
 		// expect(aether.problems.errors[0].range).to.equal([ { ofs: 42, row: 3, col: 2 }, { ofs: 45, row: 3, col: 5 } ])
@@ -309,7 +309,7 @@ describe("CS test Suite!", function() {
 			expect(aether.problems.errors.length).to.equal(1);
 			expect(aether.problems.errors[0].message).to.equal('@getItems has no effect.');
 			expect(aether.problems.errors[0].hint).to.equal('Is it a method? Those need parentheses: @getItems()');
-			return expect(aether.problems.errors[0].range).to.equal([ { ofs : 0, row : 0, col : 0 }, { ofs : 10, row : 0, col : 10 } ]);
+			expect(aether.problems.errors[0].range).to.equal([ { ofs : 0, row : 0, col : 0 }, { ofs : 10, row : 0, col : 10 } ]);
 		});
 
 		xit("@getItems missing parentheses row 1", function() {
@@ -329,7 +329,7 @@ describe("CS test Suite!", function() {
 		    expect(aether.problems.errors.length).to.equal(1);
 		    expect(aether.problems.errors[0].message).to.equal('@getItems has no effect.');
 		    expect(aether.problems.errors[0].hint).to.equal('Is it a method? Those need parentheses: @getItems()');
-		    return expect(aether.problems.errors[0].range).to.equal([ { ofs : 7, row : 1, col : 0 }, { ofs : 16, row : 1, col : 9 } ]);
+		    expect(aether.problems.errors[0].range).to.equal([ { ofs : 7, row : 1, col : 0 }, { ofs : 16, row : 1, col : 9 } ]);
 		});
 
     	it("Incomplete string", function() {
@@ -339,7 +339,7 @@ describe("CS test Suite!", function() {
     		`;
     		aether.transpile(code);
     		expect(aether.problems.errors.length).to.equal(1);
-    		return expect(aether.problems.errors[0].message).to.equal("Unclosed \"'\" at EOF");
+    		expect(aether.problems.errors[0].message).to.equal("Unclosed \"'\" at EOF");
     	});
     	// https://github.com/codecombat/aether/issues/114
     	// expect(aether.problems.errors[0].range).to.equal([ { ofs : 4, row : 0, col : 4 }, { ofs : 7, row : 0, col : 7 } ])
@@ -355,7 +355,7 @@ describe("CS test Suite!", function() {
     		aether.run();
     		expect(aether.problems.errors.length).to.equal(1);
     		expect(/ReferenceError/.test(aether.problems.errors[0].message)).toBe(true);
-    		return expect(aether.problems.errors[0].range).to.equal([ { ofs : 14, row : 1, col : 8 }, { ofs : 15, row : 1, col : 9 } ]);
+    		expect(aether.problems.errors[0].range).to.equal([ { ofs : 14, row : 1, col : 8 }, { ofs : 15, row : 1, col : 9 } ]);
   		});
 	});
 });
