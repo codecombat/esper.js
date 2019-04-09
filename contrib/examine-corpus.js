@@ -10,7 +10,7 @@ files.forEach(function(file, idx) {
 	if ( /\.js$/.test(file) === false ) return;
 	var source = fs.readFileSync(path.join(dir, file), 'utf8');
 	var lines = [];
-	console.log(file);
+	//console.log(file);
 	function stub() {
 		let args = Array.prototype.slice.call(arguments, 0);
 		let str = Array.prototype.join.call(args.map((x) => String(x)), '\t');

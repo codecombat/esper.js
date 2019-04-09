@@ -3,11 +3,12 @@ var expect = require('chai').expect;
 var esper = require('../../../src/index.js');
 var Engine = esper.Engine;
 
-if ( !esper.pluginList['babylon'] || esper.pluginList['babylon'] == 'opt-in'  ) {
-	return it('Plugin: babylon [disabled]', function() {});
-}
-
 describe('Babylon', () => {
+	if ( !esper.pluginList['babylon'] || esper.pluginList['babylon'] == 'opt-in'  ) {
+		it('Plugin: babylon [disabled]', function() {});
+		return;
+	}
+
 	it('should support class properties', () => {
 		var engine = new Engine({strict: true});
 		engine.evalSync(`

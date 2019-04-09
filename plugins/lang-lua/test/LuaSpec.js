@@ -3,10 +3,6 @@ var expect = require('chai').expect;
 var esper = require('../../../src/index.js');
 var Engine = esper.Engine;
 
-if ( !esper.pluginList['lang-lua'] ) {
-	return it('Plugin: lang-lua [disabled]', function() {});
-}
-
 const tests = [
 	["  return 10"  ,    10],
 	["return 10"     ,   10],
@@ -52,6 +48,11 @@ const tests = [
 ];
 
 describe('Plugin: lang-lua', function() {
+	if ( !esper.plugins['lang-lua'] ) {
+		it('Plugin: lang-lua [disabled]', function() {});
+		return;
+	}
+
 	describe("Simple Tests", function() {
 		var idx = 0;
 		tests.forEach(function(nfo) {

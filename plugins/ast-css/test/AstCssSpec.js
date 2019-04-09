@@ -2,12 +2,14 @@
 var expect = require('chai').expect;
 var esper = require('../../../src/index.js');
 var Engine = esper.Engine;
-
-if ( !esper.plugins['ast-css'] ) {
-	return it('Plugin: ast-css [disabled]', function() {});
-}
+var before = global.before ? global.before : global.beforeEach;
 
 describe('Plugin: ast-css', function() {
+	if ( !esper.plugins['ast-css'] ) {
+		it('Plugin: ast-css [disabled]', function() {});
+		return;
+	}
+
 	let ast;
 	let i = 0;
 	function ensureFind(selector) {
@@ -15,7 +17,6 @@ describe('Plugin: ast-css', function() {
 		it(++i + ' should find "' + selector + '"', () => {
 			var matches = ast.find(selector);
 			expect(matches.length).to.be.gt(0);
-			return matches;
 		});
 	};
 

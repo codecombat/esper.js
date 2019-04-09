@@ -3,10 +3,6 @@ var expect = require('chai').expect;
 var esper = require('../../../src/index.js');
 var Engine = esper.Engine;
 
-if ( !esper.plugins['lang-python'] ) {
-	return it('Plugin: lang-python [disabled]', function() {});
-}
-
 function dispatch(what) {
 	describe(what, function() {
 		require('skulpty/test/' + what + '_spec.js');
@@ -36,6 +32,12 @@ function run(code) {
 }
 
 describe('Plugin: lang-python', function() {
+
+	if ( !esper.plugins['lang-python'] ) {
+		it('Plugin: lang-python [disabled]', function() {});
+		return;
+	}
+
 	describe('Skulpty tests under esper', function() {
 		var utils = require('skulpty/test/util.js');
 		var orig_run = utils.run;

@@ -18,7 +18,6 @@ describe('Duk Tests', function() {
 			return '';
 		});
 
-		console.log(file);
 		it('duk-' + file, function() {
 			var out = '';
 			function print() {
@@ -30,8 +29,10 @@ describe('Duk Tests', function() {
 				}
 				out += list.join(' ') + '\n';
 			}
-			var engine = new Engine();
-			engine.env.print = print;
+			var engine = new Engine({
+				executionLimit: 1e6
+			});
+			engine.realm.print = print;
 			engine.evalSync(src);
 			expect(out).to.equal(expected);
 		});
