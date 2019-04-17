@@ -201,7 +201,8 @@ function *doCall(e, n, c, s, argProvider) {
 	let callResult = callee.call(thiz, args, s, {
 		asConstructor: n.type === 'NewExpression',
 		callNode: n,
-		evaluator: e
+		evaluator: e,
+		callee: callee
 	});
 
 	if ( callResult instanceof CompletionRecord ) return callResult;
@@ -400,14 +401,25 @@ function *evaluateImportDeclaration(e, n, s ) {
 
 function* genForLoop(e, n, s) {
 	let test = Value.true;
+	
+	let createPerIterationEnvironment = (n.init && n.init.kind == 'let') ? (p) => {
+		let is = s.createChild();
+		for ( let dec of n.init.declarations ) {
+			is.addBlock(dec.id.name, p.get(dec.id.name));
+		}
+		return is;
+	} : (p) => p;
+
+	let is = createPerIterationEnvironment(s);
 	if ( n.test ) test = yield * e.branch(n.test, s);
 	let last = Value.undef;
 	while ( test.truthy ) {
 		e.topFrame.ast = n;
 		if ( e.yieldPower > 0 ) yield EvaluatorInstruction.eventLoopBodyStart;
-		last = yield e.branchFrame('continue', n.body, s, {label: n.label});
-		if ( n.update ) yield * e.branch(n.update, s);
-		if ( n.test ) test = yield * e.branch(n.test, s);
+		last = yield e.branchFrame('continue', n.body, is, {label: n.label});
+		is = createPerIterationEnvironment(is);
+		if ( n.update ) yield * e.branch(n.update, is);
+		if ( n.test ) test = yield * e.branch(n.test, is);
 	}
 };
 
@@ -549,6 +561,21 @@ function *evaluateMemberExpression(e, n, s) {
 	let left = yield * e.branch(n.object, s);
 	return yield * e.partialMemberExpression(left, n, s);
 }
+
+function *evaluateMetaProperty(e, n, s) {
+	for ( let i = 0; i < e.frames.length - 1; ++i ) {
+		let t = e.frames[i].type;
+		if ( t === "function" ) {
+			if ( e.frames[i+1].ast.type == "NewExpression" ) {
+				return e.frames[i].callee;
+			} else {
+				return Value.undef;
+			}
+		}
+	}
+	return Value.undef;
+}
+
 
 function *evaluateObjectExpression(e, n, s) {
 	//TODO: Need to wire up native prototype
@@ -869,6 +896,7 @@ function findNextStep(type) {
 		case 'LabeledStatement': return evaluateLabeledStatement;
 		case 'Literal': return evaluateLiteral;
 		case 'LogicalExpression': return evaluateLogicalExpression;
+		case 'MetaProperty': return evaluateMetaProperty;
 		case 'MemberExpression': return evaluateMemberExpression;
 		case 'NewExpression': return evaluateCallExpression;
 		case 'ObjectExpression': return evaluateObjectExpression;

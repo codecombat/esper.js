@@ -158,9 +158,13 @@ class ClosureValue extends ObjectValue {
 		if ( extra && extra.evaluator && extra.evaluator.debug ) {
 			opts['profileName'] = extra.callNode.callee.srcName;
 		}
+		if ( extra && extra.callee ) {
+			opts.callee = extra.callee;
+		}
 		if ( this.func.nonUserCode ) {
 			opts.yieldPower = -1;
 		}
+
 		var result = yield EvaluatorInstruction.branch('function', this.func.body, invokeScope, opts);
 		return result;
 	}

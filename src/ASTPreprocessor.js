@@ -92,7 +92,8 @@ class ASTPreprocessor {
 
 	static *walker(ast, cbs, parent) {
 		var me = (a) => ASTPreprocessor.walker(a, cbs, ast);
-		if ( parent && ast instanceof ASTNode ) ast.addHiddenProperty('parent', parent);
+		if ( ! ast instanceof ASTNode ) throw new TypeError("Walked a non ASTNode");
+		if ( parent ) ast.addHiddenProperty('parent', parent);
 		invokeCB(cbs, 'enter', ast);
 		invokeCB(cbs, 'enter' + ast.type, ast);
 		switch ( ast.type ) {
@@ -247,9 +248,12 @@ class EsperASTInstructions {
 	}
 
 	decl(a) {
-		if ( a.parent.type == 'VariableDeclaration' && a.parent.kind != 'var' ) {
-			let stack = this.scopeStack[0];
-			stack[a.id.name] = a;
+		if ( a.parent.type == 'VariableDeclaration' ) {
+			if ( a.parent.kind != 'var' ) {
+				let stack = this.scopeStack[0];
+				stack[a.id.name] = a;
+				return
+			}
 		}
 		if ( a.type == 'FunctionDeclaration' ) return;
 		let stack = this.varStack[0];
