@@ -7,4 +7,5 @@ module.exports = {
 	//'dehydrate': 'bundle',
 	//'jit': 'bundle',
 	//'blockly': 'bundle',
+	'pointers': 'addon'
 };
