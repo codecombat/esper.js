@@ -19,7 +19,8 @@ function make(profile, opts) {
 var stack = [
 	['web'],
 	['web', {min: true}],
-	['modern']
+	['modern'],
+	['modern', {min: true}],
 ];
 
 if ( false ) {

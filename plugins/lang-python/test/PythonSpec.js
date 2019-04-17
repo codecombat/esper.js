@@ -9,6 +9,7 @@ function dispatch(what) {
 	})
 }
 
+var baseEngine = new esper.Engine({language: 'python'});
 function run(code) {
 	try {
 		code = code.replace(/\s*$/,'')
@@ -20,7 +21,7 @@ function run(code) {
 		for (var i in lines) lines[i] = "  " + lines[i];
 
 		code = 'def foo():\n' + lines.join("\n") + "\n\nfoo()";
-		var engine = new esper.Engine({language: 'python'});
+		let engine = baseEngine.fork();
 		engine.load(code);
 		var result = engine.runSync();
 		return result.toNative();
