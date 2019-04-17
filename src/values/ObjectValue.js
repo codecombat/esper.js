@@ -62,6 +62,9 @@ class ObjectValue extends Value {
 		let thiz = this;
 		extra = extra || {};
 		if ( !Object.prototype.hasOwnProperty.call(this.properties, name) ) {
+			if ( this.properties[name] && this.properties[name].setter ) {
+				return this.properties[name].setValue(this, value, s);
+			}
 			if ( !this.extensable ) {
 				//TODO: Should we throw here in strict mode?
 				return Value.undef.fastGen();

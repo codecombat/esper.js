@@ -243,12 +243,35 @@ function* addMethodFnToClass(fx, clazz, proto, e, m, s) {
 			ks = m.key.name;
 		}
 
+		let pd;
+
 		if ( m.static ) {
 			fx.superTarget = clazz.getPrototype();
-			yield * clazz.set(ks, fx);
+			if ( Object.prototype.hasOwnProperty.call(clazz.properties, ks) ) {
+				pd = clazz.properties[ks];
+			} else {
+				pd = new PropertyDescriptor(Value.undef);
+				clazz.rawSetProperty(ks, pd);
+			}
 		} else {
 			fx.superTarget = proto.getPrototype();
-			yield * proto.set(ks, fx);
+			if ( Object.prototype.hasOwnProperty.call(proto.properties, ks) ) {
+				pd = proto.properties[ks];
+			} else {
+				pd = new PropertyDescriptor(Value.undef);
+				proto.rawSetProperty(ks, pd);
+			}
+		}
+		switch (m.kind) {
+			case 'set':
+				pd.setter = fx;
+				break;
+			case 'get':
+				pd.getter = fx;
+				break;
+			case 'method':
+				pd.value = fx;
+				break;
 		}
 	}
 	return Value.undef;
