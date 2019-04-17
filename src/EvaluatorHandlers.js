@@ -86,6 +86,10 @@ function *evaluateAssignmentExpression(e, n, s) {
 			cur = yield * ref.getValue();
 			value = yield * cur.bitXor(argument, realm);
 			break;
+		case '**=':
+			cur = yield * ref.getValue();
+			value = yield * cur.pow(argument, realm);
+			break;
 		default:
 			throw new Error('Unknown assignment operator: ' + n.operator);
 	}
