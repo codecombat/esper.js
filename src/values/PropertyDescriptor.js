@@ -17,6 +17,7 @@ class PropertyDescriptor {
 		this.writable = true;
 		this.getter = undefined;
 		this.setter = undefined;
+		this.variable = false;
 	}
 
 	get direct() {

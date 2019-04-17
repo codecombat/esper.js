@@ -791,10 +791,9 @@ function *evaluateUnaryExpression(e, n, s) {
 			//e isnt something you can delete?
 			return Value.true;
 		}
-
 		let ref = yield * e.resolveRef(n.argument, s);
 		if ( !ref ) return Value.false;
-		if ( ref.isVariable ) { return Value.false; }
+		if ( ref.isVariable || !ref.del ) { return Value.false; }
 		let worked = ref.del(s);
 		if ( worked instanceof CompletionRecord ) return yield worked;
 		return Value.fromNative(worked);

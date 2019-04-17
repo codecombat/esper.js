@@ -37,17 +37,24 @@ class Scope {
 		var o = {
 			setValue: vhar.setValue.bind(vhar, this),
 			getValue: vhar.getValue.bind(vhar, this),
-			isVariable: true
+			isVariable: !!vhar.variable
 		};
+
+		if ( this.global.object.properties[name] === vhar ) {
+			o.del = (s) => this.global.object.delete(name,s);
+		}
+
 		return o;
 	}
 
 	add(name, value) {
 		this.writeTo.setImmediate(name, value);
+		this.writeToBlock.properties[name].variable = true;
 	}
 
 	addBlock(name, value) {
 		this.writeToBlock.setImmediate(name, value);
+		this.writeToBlock.properties[name].variable = true;
 	}
 
 	addConst(name, value) {

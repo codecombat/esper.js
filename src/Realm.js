@@ -71,7 +71,7 @@ class EvalFunction extends ObjectValue {
 		}
 
 		//TODO: Dont run in the parent scope if we are called indirectly
-		let bak = yield EvaluatorInstruction.branch('eval', ast, scope.parent ? scope.parent : scope);
+		let bak = yield EvaluatorInstruction.branch('eval', ast, scope);
 		//console.log("EVALED: ", bak);
 		return bak;
 	}
@@ -135,7 +135,6 @@ class ClearTimeoutFunction extends ObjectValue {
 		if ( args.length < 1 ) return Value.undef;
 		let target = yield * args[0].toIntNative();
 		let engine = scope.realm.engine;
-		console.log(target, engine.threads);
 					
 		for ( let i = 0; i < engine.threads.length; ++i ) {
 			if ( engine.threads[i].evaluator.id == target ) {
