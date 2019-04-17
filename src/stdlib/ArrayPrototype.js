@@ -405,7 +405,7 @@ class ArrayPrototype extends EasyObjectValue {
 		if ( args.length > 0 ) start = yield * args[0].toIntNative();
 
 		if ( start > len ) start = len;
-		else if ( start < 0 ) start = len - start;
+		else if ( start < 0 ) start = len + start;
 
 		if ( args.length > 1 ) deleteCount = yield * args[1].toIntNative();
 		else deleteCount = len - start;
