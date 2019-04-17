@@ -100,6 +100,11 @@ class Engine {
 		if ( this.language.setupEngine ) {
 			this.language.setupEngine(esper, this);
 		}
+
+		for ( let hook of esper.hooks.setupEngine ) {
+			hook(esper, this);
+		}
+
 	}
 
 	//get evloop() { return this.generator; }

@@ -34,6 +34,10 @@ esper.languages = {
 	javascript: esper.plugins['lang-javascript']
 };
 
+esper.hooks = {
+	setupEngine: []
+}
+
 esper.plugin = function(name) {
 	let pl;
 	if ( !esper.plugins[name] ) {
