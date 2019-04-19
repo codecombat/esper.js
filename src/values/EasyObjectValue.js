@@ -46,7 +46,7 @@ class EasyObjectValue extends ObjectValue {
 				//Its a property
 				let val = d.get();
 				if ( val instanceof Value ) v.value = val;
-				else v.value = this.fromNative(val);
+				else v.value = realm.fromNative(val);
 			} else {
 				if ( d.value.esperLength !== undefined ) length = d.value.esperLength;
 				let rb = EasyNativeFunction.make(realm, d.value, this);

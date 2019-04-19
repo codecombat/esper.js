@@ -24,7 +24,7 @@ class RegExpProtoype extends EasyObjectValue {
 		var rx = yield * toRegexp(thiz, s.realm);
 		var str = undefined;
 		if ( args.length > 0 ) str = yield * args[0].toStringNative();
-		return this.fromNative(rx.test(str));
+		return Value.fromNative(rx.test(str));
 	}
 
 	static *exec(thiz, args, s) {

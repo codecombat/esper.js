@@ -214,13 +214,6 @@ class Value {
 
 	inspect() { return this.debugString; }
 
-	//TODO: Kill this
-	fromNative(other, realm) {
-		realm = realm || this.realm;
-		if ( realm ) return realm.fromNative(other);
-		return Value.fromNative(other);
-	}
-
 	/**
 	 * Indexes the value to get the value of a property.
 	 * i.e. `value[name]`
@@ -320,66 +313,66 @@ class Value {
 	 * @param {Value} other - The other value
 	 * @returns {Value}
 	 */
-	*gt(other) { return this.fromNative((yield * this.toNumberNative()) > (yield * other.toNumberNative())); }
+	*gt(other) { return Value.fromNative((yield * this.toNumberNative()) > (yield * other.toNumberNative())); }
 
 	/**
 	 * Computes the javascript expression `value < other`
 	 * @param {Value} other - The other value
 	 * @returns {Value}
 	 */
-	*lt(other) { return this.fromNative((yield * this.toNumberNative()) < (yield * other.toNumberNative())); }
+	*lt(other) { return Value.fromNative((yield * this.toNumberNative()) < (yield * other.toNumberNative())); }
 
 	/**
 	 * Computes the javascript expression `value >= other`
 	 * @param {Value} other - The other value
 	 * @returns {Value}
 	 */
-	*gte(other) { return this.fromNative((yield * this.toNumberNative()) >= (yield * other.toNumberNative())); }
+	*gte(other) { return Value.fromNative((yield * this.toNumberNative()) >= (yield * other.toNumberNative())); }
 
 	/**
 	 * Computes the javascript expression `value <= other`
 	 * @param {Value} other - The other value
 	 * @returns {Value}
 	 */
-	*lte(other) { return this.fromNative((yield * this.toNumberNative()) <= (yield * other.toNumberNative())); }
+	*lte(other) { return Value.fromNative((yield * this.toNumberNative()) <= (yield * other.toNumberNative())); }
 
 	/**
 	 * Computes the javascript expression `value - other`
 	 * @param {Value} other - The other value
 	 * @returns {Value}
 	 */
-	*subtract(other) { return this.fromNative((yield * this.toNumberNative()) - (yield * other.toNumberNative())); }
+	*subtract(other) { return Value.fromNative((yield * this.toNumberNative()) - (yield * other.toNumberNative())); }
 
 	/**
 	 * Computes the javascript expression `value / other`
 	 * @param {Value} other - The other value
 	 * @returns {Value}
 	 */
-	*divide(other) { return this.fromNative((yield * this.toNumberNative()) / (yield * other.toNumberNative())); }
+	*divide(other) { return Value.fromNative((yield * this.toNumberNative()) / (yield * other.toNumberNative())); }
 
 	/**
 	 * Computes the javascript expression `value * other`
 	 * @param {Value} other - The other value
 	 * @returns {Value}
 	 */
-	*multiply(other) { return this.fromNative((yield * this.toNumberNative()) * (yield * other.toNumberNative())); }
+	*multiply(other) { return Value.fromNative((yield * this.toNumberNative()) * (yield * other.toNumberNative())); }
 
 	/**
 	 * Computes the javascript expression `value % other`
 	 * @param {Value} other - The other value
 	 * @returns {Value}
 	 */
-	*mod(other) { return this.fromNative((yield * this.toNumberNative()) % (yield * other.toNumberNative())); }
+	*mod(other) { return Value.fromNative((yield * this.toNumberNative()) % (yield * other.toNumberNative())); }
 
-	*bitNot() { return this.fromNative(~(yield * this.toNumberNative())); }
+	*bitNot() { return Value.fromNative(~(yield * this.toNumberNative())); }
 
-	*shiftLeft(other) { return this.fromNative((yield * this.toNumberNative()) << (yield * other.toNumberNative())); }
-	*shiftRight(other) { return this.fromNative((yield * this.toNumberNative()) >> (yield * other.toNumberNative())); }
-	*shiftRightZF(other) { return this.fromNative((yield * this.toNumberNative()) >>> (yield * other.toNumberNative())); }
+	*shiftLeft(other) { return Value.fromNative((yield * this.toNumberNative()) << (yield * other.toNumberNative())); }
+	*shiftRight(other) { return Value.fromNative((yield * this.toNumberNative()) >> (yield * other.toNumberNative())); }
+	*shiftRightZF(other) { return Value.fromNative((yield * this.toNumberNative()) >>> (yield * other.toNumberNative())); }
 
-	*bitAnd(other) { return this.fromNative((yield * this.toNumberNative()) & (yield * other.toNumberNative())); }
-	*bitOr(other) { return this.fromNative((yield * this.toNumberNative()) | (yield * other.toNumberNative())); }
-	*bitXor(other) { return this.fromNative((yield * this.toNumberNative()) ^ (yield * other.toNumberNative())); }
+	*bitAnd(other) { return Value.fromNative((yield * this.toNumberNative()) & (yield * other.toNumberNative())); }
+	*bitOr(other) { return Value.fromNative((yield * this.toNumberNative()) | (yield * other.toNumberNative())); }
+	*bitXor(other) { return Value.fromNative((yield * this.toNumberNative()) ^ (yield * other.toNumberNative())); }
 
 
 	/**
@@ -387,7 +380,7 @@ class Value {
 	 * @param {Value} other - The other value
 	 * @returns {Value}
 	 */
-	*pow(other) { return this.fromNative(Math.pow(yield * this.toNumberNative(),yield * other.toNumberNative())); }
+	*pow(other) { return Value.fromNative(Math.pow(yield * this.toNumberNative(),yield * other.toNumberNative())); }
 
 	*inOperator(other) {
 		let err = "Cannot use 'in' operator to search for 'thing' in 'thing'";

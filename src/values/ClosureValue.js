@@ -25,10 +25,8 @@ class ClosureValue extends ObjectValue {
 		this.scope = scope;
 		this.returnLastValue = false;
 		this.properties['prototype'] = new PropertyDescriptor(new ObjectValue(realm), false);
-		this.properties['name'] = new PropertyDescriptor(this.fromNative(func.id ? func.id.name : undefined), false);
-		this.properties['length'] = new PropertyDescriptor(this.fromNative(func.params.length), false);
-
-
+		this.properties['name'] = new PropertyDescriptor(realm.fromNative(func.id ? func.id.name : undefined), false);
+		this.properties['length'] = new PropertyDescriptor(realm.fromNative(func.params.length), false);
 	}
 
 	toNative() {
@@ -123,13 +121,13 @@ class ClosureValue extends ObjectValue {
 		}
 
 		if ( !invokeScope.strict ) {
-			let calleeProp = new PropertyDescriptor(this.fromNative(args.length));
+			let calleeProp = new PropertyDescriptor(scope.realm.fromNative(args.length));
 			calleeProp.enumerable = false;
 			argsObj.rawSetProperty('callee', calleeProp);
 			yield * argsObj.set('callee', this);
 		}
 
-		let lengthProp = new PropertyDescriptor(this.fromNative(args.length));
+		let lengthProp = new PropertyDescriptor(scope.realm.fromNative(args.length));
 		lengthProp.enumerable = false;
 		argsObj.rawSetProperty('length', lengthProp);
 

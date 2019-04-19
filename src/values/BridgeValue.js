@@ -117,7 +117,7 @@ class BridgeValue extends Value {
 		return this.makeBridge(Object.create(this.native.prototype));
 	}
 
-	*toStringValue() { return this.fromNative(this.native.toString()); }
+	*toStringValue() { return Value.fromNative(this.native.toString()); }
 
 	get debugString() {
 		return '[Bridge: ' + this.native + ']';

@@ -15,7 +15,7 @@ class EsperObject extends EasyObjectValue {
 	static *str$cew(thiz, args) {
 		var t = Value.undef;
 		if ( args.length > 0 ) t = args[0];
-		return this.fromNative(t.debugString);
+		return Value.fromNative(t.debugString);
 	}
 
 	static *stack$cew(thiz, args, scope, extra) {

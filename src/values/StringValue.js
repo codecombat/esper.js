@@ -28,11 +28,11 @@ class StringValue extends PrimitiveValue {
 
 	}
 
-	*gt(other) { return this.fromNative(this.native > (yield * other.toStringNative())); }
-	*lt(other) { return this.fromNative(this.native < (yield * other.toStringNative())); }
-	*gte(other) { return this.fromNative(this.native >= (yield * other.toStringNative())); }
-	*lte(other) { return this.fromNative(this.native <= (yield * other.toStringNative())); }
-	*add(other) { return this.fromNative(this.native + (yield * other.toPrimitiveNative('string'))); }
+	*gt(other) { return Value.fromNative(this.native > (yield * other.toStringNative())); }
+	*lt(other) { return Value.fromNative(this.native < (yield * other.toStringNative())); }
+	*gte(other) { return Value.fromNative(this.native >= (yield * other.toStringNative())); }
+	*lte(other) { return Value.fromNative(this.native <= (yield * other.toStringNative())); }
+	*add(other) { return Value.fromNative(this.native + (yield * other.toPrimitiveNative('string'))); }
 
 }
 

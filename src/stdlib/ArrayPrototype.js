@@ -470,7 +470,7 @@ class ArrayPrototype extends EasyObjectValue {
 		let joinfn = yield * thiz.get('join');
 		if ( !joinfn || !joinfn.isCallable ) {
 			let ots = yield * s.realm.ObjectPrototype.get('toString');
-			return yield * ots.call(thiz, []);
+			return yield * ots.call(thiz, [], s);
 		} else {
 			return yield * joinfn.call(thiz, [defaultSeperator]);
 		}

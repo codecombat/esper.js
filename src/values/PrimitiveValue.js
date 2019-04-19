@@ -81,13 +81,13 @@ class PrimitiveValue extends Value {
 	}
 	*tripleEquals(other) { return this.native === other.toNative() ? Value.true : Value.false; }
 
-	*add(other) { return this.fromNative(this.native + (yield * other.toPrimitiveNative())); }
+	*add(other) { return Value.fromNative(this.native + (yield * other.toPrimitiveNative())); }
 
 	*instanceOf(other) { return Value.false; }
 
-	*unaryPlus() { return this.fromNative(+this.native); }
-	*unaryMinus() { return this.fromNative(-this.native); }
-	*not() { return this.fromNative(!this.native); }
+	*unaryPlus() { return Value.fromNative(+this.native); }
+	*unaryMinus() { return Value.fromNative(-this.native); }
+	*not() { return Value.fromNative(!this.native); }
 
 	*observableProperties(realm) {
 		yield * this.derivePrototype(realm).observableProperties(realm);
@@ -112,12 +112,12 @@ class PrimitiveValue extends Value {
 	*toPrimitiveValue(preferedType) { return this; }
 	*toStringValue() {
 		if ( typeof this.native === 'string' ) return this;
-		return this.fromNative(String(this.native));
+		return Value.fromNative(String(this.native));
 	}
 
 	*toNumberValue() {
 		if ( typeof this.native === 'number' ) return this;
-		return this.fromNative(Number(this.native));
+		return Value.fromNative(Number(this.native));
 	}
 
 

@@ -20,7 +20,7 @@ class NumberValue extends PrimitiveValue {
 		return yield * this.doubleEquals(on);
 	}
 
-	*add(other) { return this.fromNative(this.native + (yield * other.toPrimitiveNative())); }
+	*add(other) { return Value.fromNative(this.native + (yield * other.toPrimitiveNative())); }
 }
 
 module.exports = NumberValue;

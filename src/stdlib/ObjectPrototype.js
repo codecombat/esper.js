@@ -35,17 +35,17 @@ class ObjectPrototype extends EasyObjectValue {
 		return Value.false;
 	}
 
-	static *propertyIsEnumerable$e(thiz, args) {
+	static *propertyIsEnumerable$e(thiz, args, s) {
 		let nam = yield * args[0].toStringNative();
 		let pd = thiz.properties[nam];
-		return this.fromNative(pd.enumerable);
+		return s.realm.fromNative(pd.enumerable);
 	}
 	static *toLocaleString$e(thiz, args) { return yield * ObjectPrototype.toString$e(thiz, args); }
 
-	static *toString$e(thiz, args) {
-		if ( thiz instanceof UndefinedValue ) return this.fromNative('[object Undefined]');
-		if ( thiz instanceof NullValue ) return this.fromNative('[object Null]');
-		return this.fromNative('[object ' + thiz.clazz + ']');
+	static *toString$e(thiz, args, s) {
+		if ( thiz instanceof UndefinedValue ) return s.realm.fromNative('[object Undefined]');
+		if ( thiz instanceof NullValue ) return s.realm.fromNative('[object Null]');
+		return s.realm.fromNative('[object ' + thiz.clazz + ']');
 	}
 
 	static *valueOf$e(thiz, args) {

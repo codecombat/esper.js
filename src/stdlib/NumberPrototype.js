@@ -15,40 +15,40 @@ class NumberPrototype extends EasyObjectValue {
 	}
 
 
-	static *toExponential$e(thiz, argz) {
+	static *toExponential$e(thiz, argz, s) {
 		let a;
 		if ( argz.length > 0 ) {
 			a = yield * argz[0].toNumberNative();
 		}
 		let num = yield * thiz.toNumberNative(thiz);
-		return this.fromNative(num.toExponential(a));
+		return s.realm.fromNative(num.toExponential(a));
 	}
 
-	static *toFixed$e(thiz, argz) {
+	static *toFixed$e(thiz, argz, s) {
 		let a;
 		if ( argz.length > 0 ) {
 			a = yield * argz[0].toNumberNative();
 		}
 		let num = yield * thiz.toNumberNative(thiz);
-		return this.fromNative(num.toFixed(a));
+		return s.realm.fromNative(num.toFixed(a));
 	}
 
-	static *toPrecision$e(thiz, argz) {
+	static *toPrecision$e(thiz, argz, s) {
 		let a;
 		if ( argz.length > 0 ) {
 			a = yield * argz[0].toNumberNative();
 		}
 		let num = yield * thiz.toNumberNative(thiz);
-		return this.fromNative(num.toPrecision(a));
+		return s.realm.fromNative(num.toPrecision(a));
 	}
 
-	static *toString$e(thiz, argz) {
+	static *toString$e(thiz, argz, s) {
 		let a;
 		if ( argz.length > 0 ) {
 			a = yield * argz[0].toNumberNative();
 		}
 		let num = yield * thiz.toNumberNative(thiz);
-		return this.fromNative(num.toString(a));
+		return s.realm.fromNative(num.toString(a));
 	}
 
 
