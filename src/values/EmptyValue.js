@@ -15,7 +15,7 @@ class EmptyValue extends Value {
 
 	*doubleEquals(other) {
 		if ( other instanceof EmptyValue ) return Value.true;
-		else if ( other instanceof BridgeValue ) return this.fromNative(this.toNative() == other.toNative());
+		else if ( other instanceof BridgeValue ) return Value.fromNative(this.toNative() == other.toNative());
 		else return Value.false;
 	}
 

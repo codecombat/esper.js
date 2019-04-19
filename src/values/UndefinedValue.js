@@ -9,7 +9,7 @@ class UndefinedValue extends EmptyValue {
 		return other instanceof UndefinedValue ? Value.true : Value.false;
 	}
 
-	*add(other) { return this.fromNative(undefined + other.toNative()); }
+	*add(other) { return Value.fromNative(undefined + other.toNative()); }
 
 	*asString() {
 		return 'undefined';

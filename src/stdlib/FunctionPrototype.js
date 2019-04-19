@@ -59,17 +59,18 @@ class FunctionPrototype extends EasyObjectValue {
 	}
 
 	static *bind(thiz, args, s) {
-		let bthis = s.realm.globalScope.object; //TODO: is this actually null in scrict mode?
+		let realm = s.realm;
+		let bthis = realm.globalScope.object; //TODO: is this actually null in scrict mode?
 		if ( args.length > 0 ) {
 			if ( args[0].jsTypeName !== 'undefined') bthis = args[0];
 		}
-		var out = new BoundFunction(thiz, s.realm);
+		var out = new BoundFunction(thiz, realm);
 		if ( args.length > 1 ) out.boundArgs = args.slice(1);
 		out.boundThis = bthis;
 
 		if ( thiz.properties['length'] ) {
 			let newlen = thiz.properties['length'].value.toNative() - out.boundArgs.length;
-			out.properties['length'] = new PropertyDescriptor(this.fromNative(newlen));
+			out.properties['length'] = new PropertyDescriptor(realm.fromNative(newlen));
 		}
 		return out;
 	}
@@ -80,16 +81,17 @@ class FunctionPrototype extends EasyObjectValue {
 		return yield * thiz.call(vthis, args, s);
 	}
 	static *toString(thiz, args, s) {
+		let realm = s.realm;
 		if ( thiz instanceof ClosureValue ) {
 			let astsrc = thiz.funcSourceAST.source();
-			if ( astsrc ) return this.fromNative(astsrc);
-			return this.fromNative('function() { [AST] }');
+			if ( astsrc ) return realm.fromNative(astsrc);
+			return realm.fromNative('function() { [AST] }');
 		} else if ( thiz instanceof BoundFunction ) {
-			return this.fromNative('function() { [bound function] }');
+			return realm.fromNative('function() { [bound function] }');
 		} else if ( thiz instanceof EasyObjectValue.EasyNativeFunction ) {
-			return this.fromNative('function() { [native code] }');
+			return realm.fromNative('function() { [native code] }');
 		} else if ( thiz instanceof EasyObjectValue && thiz.call ) {
-			return this.fromNative('function() { [native code] }');
+			return realm.fromNative('function() { [native code] }');
 		}
 		return CompletionRecord.makeTypeError(s.realm, 'Function.prototype.toString is not generic');
 

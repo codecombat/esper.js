@@ -32,13 +32,13 @@ class StringObject extends EasyObjectValue {
 	callPrototype(realm) { return realm.StringPrototype; }
 	constructorFor(realm) { return realm.StringPrototype; }
 
-	static *fromCharCode(thiz, args) {
+	static *fromCharCode(thiz, args, s) {
 		let argz = new Array(args.length);
 		for ( let i = 0; i < args.length; ++i ) {
 			argz[i] = (yield * args[i].toNumberValue()).toNative();
 		}
 
-		return this.fromNative(String.fromCharCode.apply(String, argz));
+		return s.realm.fromNative(String.fromCharCode.apply(String, argz));
 	}
 
 	static *raw(thiz, args) {

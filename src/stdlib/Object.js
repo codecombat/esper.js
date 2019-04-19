@@ -206,7 +206,7 @@ class ObjectObject extends EasyObjectValue {
 
 	static *isExtensible$e(thiz, args, s) {
 		let target = yield * objOrThrow(args[0], s.realm);
-		return this.fromNative(target.extensable);
+		return s.realm.fromNative(target.extensable);
 	}
 
 	static *keys$e(thiz, args, s) {

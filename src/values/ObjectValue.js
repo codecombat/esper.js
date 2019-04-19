@@ -211,7 +211,7 @@ class ObjectValue extends Value {
 	*observableProperties(realm) {
 		for ( let p in this.properties ) {
 			if ( !this.properties[p].enumerable ) continue;
-			yield this.fromNative(p);
+			yield realm.fromNative(p);
 		}
 		return;
 	}
