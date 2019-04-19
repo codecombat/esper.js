@@ -34,6 +34,13 @@ class StringValue extends PrimitiveValue {
 	*lte(other) { return Value.fromNative(this.native <= (yield * other.toStringNative())); }
 	*add(other) { return Value.fromNative(this.native + (yield * other.toPrimitiveNative('string'))); }
 
+	*observableProperties(realm) {
+		for ( let p in this.native ) {
+			yield Value.fromNative(p);
+		}
+		return;
+	}
+
 }
 
 module.exports = StringValue;
