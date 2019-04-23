@@ -74,7 +74,6 @@ function next() {
 	var fn = toEval.shift();
 	var code;
 	if ( fn.type === 'file' ) {
-		console.log(fn.value);
 		code = fs.readFileSync(fn.value, 'utf8');
 	} else {
 		code = fn.value;
@@ -83,7 +82,11 @@ function next() {
 		if ( fn.print ) console.log(val.debugString);
 		return next();
 	}).catch(function(e) {
-		console.log(e.stack);
+		if ( e.stack ) {
+			process.stderr.write(e.stack + "\n");
+		} else {
+			process.stderr.write(`${e.name}: ${e.message}\n`);
+		}
 	});
 }
 
