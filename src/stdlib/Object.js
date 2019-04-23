@@ -85,15 +85,15 @@ function *getDescriptor(target, name, realm) {
 	return out;
 }
 
-function *objOrThrow(i, realm) {
+function *objOrThrow(i) {
 	let val = i ? i : Value.undef;
 
 	if ( val instanceof EmptyValue ) {
-		return yield CompletionRecord.makeTypeError(realm, 'Cannot convert undefined or null to object');
+		return yield CompletionRecord.typeError('Cannot convert undefined or null to object');
 	}
 
 	if ( !(val instanceof ObjectValue) ) {
-		return yield CompletionRecord.makeTypeError(realm, 'Need an object');
+		return yield CompletionRecord.typeError('Need an object');
 	}
 	return val;
 }
@@ -134,7 +134,7 @@ class ObjectObject extends EasyObjectValue {
 	}
 
 	static *defineProperty(thiz, args, s) {
-		let target = yield * objOrThrow(args[0], s.realm);
+		let target = yield * objOrThrow(args[0]);
 		let name = yield * args[1].toStringNative();
 		let desc = args[2];
 		yield * defObjectProperty(target, name, desc, s.realm);
@@ -143,10 +143,10 @@ class ObjectObject extends EasyObjectValue {
 
 	static *defineProperties(thiz, args, s) {
 
-		let target = yield * objOrThrow(args[0], s.realm);
+		let target = yield * objOrThrow(args[0]);
 		//let props = yield * objOrThrow(args[1], s.realm);
 
-		let propsobj = yield * objOrThrow(args[1], s.realm);
+		let propsobj = yield * objOrThrow(args[1]);
 
 		for ( let p of propsobj.observableProperties(s.realm) ) {
 			let strval = p.native;
@@ -157,7 +157,7 @@ class ObjectObject extends EasyObjectValue {
 	}
 
 	static *seal$e(thiz, args, s) {
-		let target = yield * objOrThrow(args[0], s.realm);
+		let target = yield * objOrThrow(args[0]);
 
 		target.extensable = false;
 		for ( let p of Object.keys(target.properties) ) {
@@ -167,7 +167,7 @@ class ObjectObject extends EasyObjectValue {
 	}
 
 	static *isSealed(thiz, args, s) {
-		let target = yield * objOrThrow(args[0], s.realm);
+		let target = yield * objOrThrow(args[0]);
 		if ( target.extensable ) return Value.false;
 		for ( let p of Object.keys(target.properties) ) {
 			let ps = target.properties[p];
@@ -177,7 +177,7 @@ class ObjectObject extends EasyObjectValue {
 	}
 
 	static *freeze$e(thiz, args, s) {
-		let target = yield * objOrThrow(args[0], s.realm);
+		let target = yield * objOrThrow(args[0]);
 		target.extensable = false;
 		for ( let p in target.properties ) {
 			if ( !Object.prototype.hasOwnProperty.call(target.properties, p) ) continue;
@@ -188,7 +188,7 @@ class ObjectObject extends EasyObjectValue {
 	}
 
 	static *isFrozen(thiz, args, s) {
-		let target = yield * objOrThrow(args[0], s.realm);
+		let target = yield * objOrThrow(args[0]);
 		if ( target.extensable ) return Value.false;
 		for ( let p of Object.keys(target.properties) ) {
 			let ps = target.properties[p];
@@ -199,13 +199,13 @@ class ObjectObject extends EasyObjectValue {
 	}
 
 	static *preventExtensions$e(thiz, args, s) {
-		let target = yield * objOrThrow(args[0], s.realm);
+		let target = yield * objOrThrow(args[0]);
 		target.extensable = false;
 		return target;
 	}
 
 	static *isExtensible$e(thiz, args, s) {
-		let target = yield * objOrThrow(args[0], s.realm);
+		let target = yield * objOrThrow(args[0]);
 		return s.realm.fromNative(target.extensable);
 	}
 
@@ -218,7 +218,7 @@ class ObjectObject extends EasyObjectValue {
 			for ( let o of args[0].observableProperties() ) keys.push(o);
 			return ArrayValue.make(keys, s.realm);
 		}
-		let target = yield * objOrThrow(args[0], s.realm);
+		let target = yield * objOrThrow(args[0]);
 		let result = [];
 		for ( let p of Object.keys(target.properties) ) {
 			if ( !target.properties[p].enumerable ) continue;
@@ -233,9 +233,9 @@ class ObjectObject extends EasyObjectValue {
 	}
 
 	static *getOwnPropertyDescriptor(thiz, args, s) {
-		let target = yield * objOrThrow(args[0], s.realm);
+		let target = yield * objOrThrow(args[0]);
 		let name = yield * args[1].toStringNative();
-		return yield * getDescriptor(target, name, s.realm);
+		return yield * getDescriptor(target, name);
 	}
 
 	static *getPrototypeOf(thiz, args, s) {

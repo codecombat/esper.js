@@ -44,6 +44,22 @@ class CompletionRecord {
 		return new CompletionRecord(CompletionRecord.THROW, err);
 	}
 
+	static typeError(msg) {
+		return new CompletionRecord(CompletionRecord.THROW_STD, ['TypeError',msg]);
+	}
+
+	static referenceError(msg) {
+		return new CompletionRecord(CompletionRecord.THROW_STD, ['ReferenceError',msg]);
+	}
+
+	static syntaxError(msg) {
+		return new CompletionRecord(CompletionRecord.THROW_STD, ['SyntaxError',msg]);
+	}
+
+	static rangeError(msg) {
+		return new CompletionRecord(CompletionRecord.THROW_STD, ['RangeError',msg]);
+	}
+
 	/**
 	 * Easy access to value.addExtra.
 	 * Note: Returns a generator.
@@ -63,5 +79,5 @@ CompletionRecord.BREAK = 1;
 CompletionRecord.CONTINUE = 2;
 CompletionRecord.RETURN = 3;
 CompletionRecord.THROW = 4;
-
+CompletionRecord.THROW_STD = 5;
 

@@ -169,6 +169,23 @@ class Evaluator {
 	}
 
 	processCompletionValueMeaning(val) {
+		if ( val.type === CompletionRecord.THROW_STD ) {
+			let msg = val.value[1];
+			switch ( val.value[0] ) {
+				case "TypeError":
+					val = CompletionRecord.makeTypeError(this.realm, msg);
+					break;
+				case "RefrenceError":
+					val = CompletionRecord.makeReferenceError(this.realm, msg);
+					break;
+				case "RangeError":
+					val = CompletionRecord.makeReferenceError(this.realm, msg);
+					break;
+				case "SyntaxError":
+					val = CompletionRecord.makeSyntaxError(this.realm, msg);
+					break;
+			}
+		}
 		if ( !(val.value instanceof Value) ) {
 			if ( val.value instanceof Error ) {
 				throw new Error('Value was an error: ' + val.value.stack);
@@ -369,18 +386,18 @@ ${key} => ${vv}`;
 				}
 
 				if ( !ref ) {
-					return yield CompletionRecord.makeTypeError(s.realm, `Can't write property of undefined: ${idx}`);
+					return yield CompletionRecord.typeError(`Can't write property of undefined: ${idx}`);
 				}
 
 				if ( !ref.ref ) {
-					return yield CompletionRecord.makeTypeError(s.realm, `Can't write property of non-object type: ${idx}`);
+					return yield CompletionRecord.typeError(`Can't write property of non-object type: ${idx}`);
 				}
 
 				this.topFrame.ast = oldAST;
 				return ref.ref(idx, s);
 
 			default:
-				return yield CompletionRecord.makeTypeError(s.realm, `Couldnt resolve ref component: ${n.type}`);
+				return yield CompletionRecord.typeError(`Couldnt resolve ref component: ${n.type}`);
 		}
 	}
 

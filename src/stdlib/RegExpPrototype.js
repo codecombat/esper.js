@@ -8,9 +8,9 @@ const CompletionRecord = require('../CompletionRecord');
 const EasyObjectValue = require('../values/EasyObjectValue');
 const _g = require('../GenDash');
 
-function *toRegexp(x, realm) {
+function *toRegexp(x) {
 	if ( !x.regexp ) {
-		return yield CompletionRecord.makeTypeError(realm, 'Calling regex method on non regex.');
+		return yield CompletionRecord.typeError('Calling regex method on non regex.');
 	}
 	return x.regexp;
 }

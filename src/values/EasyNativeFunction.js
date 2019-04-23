@@ -54,7 +54,7 @@ class EasyNativeFunction extends ObjectValue {
 	}
 
 	*makeThisForNew(realm) {
-		return yield CompletionRecord.makeTypeError(realm, 'function is not a constructor');
+		return yield CompletionRecord.typeError('function is not a constructor');
 	}
 
 	get debugString() {
