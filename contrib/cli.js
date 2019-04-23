@@ -31,6 +31,7 @@ function enterRepl() {
 program
 	.version(esper.version)
 	.usage('[options] [script...]')
+	.option('-v, --version', 'print esper version')
 	.option('-i, --interactive', 'enter REPL')
 	.option('-s, --strict', 'force strict mode')
 	.option('-d, --debug', 'turn on performance debugging')
@@ -43,13 +44,19 @@ program
 
 if ( program.language ) esper.plugin('lang-' + program.language);
 
+if ( program.v ) {
+	console.log("v" + esper.version);
+	process.exit();
+}
+
 let engine = new Engine({
 	strict: !!program.strict,
 	debug: !!program.debug,
 	runtime: true,
 	addInternalStack: !!program.debug,
 	compile: program.compile || 'pre',
-	language: program.language || 'javascript'
+	language: program.language || 'javascript',
+	esposeESHostGlobal: true,
 });
 
 
