@@ -10,11 +10,16 @@ function invokeCB(o, name) {
 
 function detectStrict(body) {
 	if ( !body || body.length < 1 ) return;
-	let first = body[0];
-	if ( first.type === 'ExpressionStatement' ) {
-		let exp = first.expression;
-		if ( exp.type === 'Literal' && exp.value === 'use strict' ) {
-			return true;
+	for ( let decl of body ) {
+		if ( decl.type === 'ExpressionStatement' ) {
+			let exp = decl.expression;
+			if ( exp.type === 'Literal' ) {
+				if ( exp.value === 'use strict' ) {
+					return true;
+				}
+				continue;
+			}
+			break;
 		}
 	}
 }
