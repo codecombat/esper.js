@@ -297,7 +297,7 @@ class ObjectValue extends Value {
 				if ( res.specTypeName !== 'object' ) return res;
 			}
 		}
-		return yield CompletionRecord.makeTypeError(this.realm, 'Cannot convert object to primitive value');
+		return yield CompletionRecord.typeError('Cannot convert object to primitive value');
 	}
 
 	*toNumberValue() {

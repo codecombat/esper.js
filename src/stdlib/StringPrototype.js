@@ -10,7 +10,7 @@ function wrapStringPrototype(name) {
 	let fx = String.prototype[name];
 	let genfx = function *(thiz, args, s) {
 		if ( thiz instanceof EmptyValue ) {
-			return yield CompletionRecord.makeTypeError(s.realm, 'called String function on null or undefined?');
+			return yield CompletionRecord.typeError('called String function on null or undefined?');
 		}
 		let sv = yield * thiz.toStringValue(s.realm);
 		var argz = new Array(args.length);

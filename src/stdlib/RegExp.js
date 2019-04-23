@@ -14,7 +14,7 @@ class RegExpObject extends EasyObjectValue {
 		let flags = '';
 
 		if ( (args.length > 0) && (args[0] instanceof RegExpValue) ) {
-			if ( args.length > 1 && args[1].truthy ) return yield CompletionRecord.makeTypeError(s.realm, 'Cannot supply flags when constructing one RegExp from another');
+			if ( args.length > 1 && args[1].truthy ) return yield CompletionRecord.typeError('Cannot supply flags when constructing one RegExp from another');
 			return RegExpValue.make(new RegExp(args[0].regexp), s.realm);
 		}
 
