@@ -223,8 +223,8 @@ class Value {
 	 * @returns {Value}
 	 */
 	*get(name, realm) {
-		let err = "Can't access get " + name + ' of that type: ' + require('util').inspect(this);
-		return CompletionRecord.makeTypeError(realm, err);
+		let err = "Can't access get " + name + ' of that type.';
+		return yield CompletionRecord.typeError(err);
 	}
 
 	getImmediate(name) {
