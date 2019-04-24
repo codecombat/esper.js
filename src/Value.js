@@ -41,7 +41,7 @@ class Value {
 			return new NumberValue(value);
 		}
 		if ( typeof value === 'string' ) return new StringValue(value);
-		if ( typeof value === 'boolean' ) return new PrimitiveValue(value);
+		if ( typeof value === 'boolean' ) return tru;
 	}
 
 	static hasBookmark(native) { return bookmarks.has(native); }
@@ -251,7 +251,7 @@ class Value {
 	 * @returns {Value}
 	 */
 	*unaryPlus() {
-		return Value.fromNative(+(yield * this.toNumberValue()));
+		return Value.fromNative(+(yield * this.toNumberValue()).toNative());
 	}
 
 	/**
@@ -259,7 +259,7 @@ class Value {
 	 * @returns {Value}
 	 */
 	*unaryMinus() {
-		return Value.fromNative(-(yield * this.toNumberValue()));
+		return Value.fromNative(-(yield * this.toNumberValue()).toNative());
 	}
 
 	/**

@@ -24,6 +24,13 @@ class StringValue extends PrimitiveValue {
 			return yield * rv.doubleEquals(other);
 		}
 
+		if ( other.jsTypeName == "object") {
+			let os = yield * other.toStringValue();
+			if ( os.jsTypeName == "string" ) {
+				return Value.fromNative(this.native == os.native);
+			}
+		}
+
 		return yield * super.doubleEquals(other);
 
 	}
