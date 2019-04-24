@@ -461,8 +461,7 @@ function *evaluateForInStatement(e, n, s) {
 
 	if ( n.left.type === 'VariableDeclaration' ) {
 		let decl = n.left.declarations[0];
-		if ( decl.kind == 'var') s.add(decl.id.name, Value.undef);
-		else s.addBlock(decl.id.name, Value.undef);
+		if ( n.left.kind != 'var' ) s.addBlock(decl.id.name, Value.undef);
 		ref = s.ref(decl.id.name, s);
 	} else {
 		ref = s.ref(n.left.name, s);
