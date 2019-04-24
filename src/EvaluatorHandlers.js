@@ -375,11 +375,11 @@ function *evaluateDoWhileStatement(e, n, s) {
 	let that = e;
 	var gen = function*() {
 		do {
-			last = yield that.branchFrame('continue', n.body, s, {label: n.label});
+			last = yield that.branchFrame('continue', n.body, s, {labels: n.labels});
 		} while ( (yield * that.branch(n.test, s)).truthy );
 	};
 	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepMinor;
-	e.pushFrame({generator: gen(), type: 'loop', label: n.label, ast: n});
+	e.pushFrame({generator: gen(), type: 'loop', labels: n.labels, ast: n});
 
 
 	let finished = yield EvaluatorInstruction.waitForFramePop;
@@ -443,7 +443,7 @@ function* genForLoop(e, n, s) {
 	while ( test.truthy ) {
 		e.topFrame.ast = n;
 		if ( e.yieldPower > 0 ) yield EvaluatorInstruction.eventLoopBodyStart;
-		last = yield e.branchFrame('continue', n.body, is, {label: n.label});
+		last = yield e.branchFrame('continue', n.body, is, {labels: n.labels});
 		is = createPerIterationEnvironment(is);
 		if ( n.update ) yield * e.branch(n.update, is);
 		if ( n.test ) test = yield * e.branch(n.test, is);
@@ -454,7 +454,7 @@ function *evaluateForStatement(e, n, s) {
 	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepStatement;
 	if ( n.init ) yield * e.branch(n.init, s);
 
-	e.pushFrame({generator: genForLoop(e, n, s), type: 'loop', label: n.label, ast: n});
+	e.pushFrame({generator: genForLoop(e, n, s), type: 'loop', labels: n.labels, ast: n});
 
 
 	let finished = yield EvaluatorInstruction.waitForFramePop;
@@ -487,10 +487,10 @@ function *evaluateForInStatement(e, n, s) {
 	var gen = function*() {
 		for ( let name of names ) {
 			yield * ref.setValue(name);
-			last = yield that.branchFrame('continue', n.body, s, {label: n.label});
+			last = yield that.branchFrame('continue', n.body, s, {labels: n.labels});
 		}
 	};
-	e.pushFrame({generator: gen(), type: 'loop', label: n.label, ast: n});
+	e.pushFrame({generator: gen(), type: 'loop', labels: n.labels, ast: n});
 
 
 	let finished = yield EvaluatorInstruction.waitForFramePop;
@@ -519,10 +519,10 @@ function *evaluateForOfStatement(e, n, s) {
 	var gen = function*() {
 		for ( let name of names ) {
 			yield * ref.setValue(yield * object.get(yield * name.toStringNative()));
-			last = yield that.branchFrame('continue', n.body, s, {label: n.label});
+			last = yield that.branchFrame('continue', n.body, s, {labels: n.labels});
 		}
 	};
-	e.pushFrame({generator: gen(), type: 'loop', label: n.label});
+	e.pushFrame({generator: gen(), type: 'loop', labels: n.labels});
 
 
 	let finished = yield EvaluatorInstruction.waitForFramePop;
@@ -723,7 +723,7 @@ function *evaluateSwitchStatement(e, n, s) {
 		}
 	};
 
-	e.pushFrame({generator: genSwitch(e, n), type: 'loop', label: n.label});
+	e.pushFrame({generator: genSwitch(e, n), type: 'loop', labels: n.labels});
 	let finished = yield EvaluatorInstruction.waitForFramePop;
 
 	return last;
@@ -875,7 +875,7 @@ function* genWhileLoop(e, n, s) {
 
 function *evaluateWhileStatement(e, n, s) {
 	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepMajor;
-	e.pushFrame({generator: genWhileLoop(e, n, s), type: 'loop', label: n.label, ast: n});
+	e.pushFrame({generator: genWhileLoop(e, n, s), type: 'loop', labels: n.labels, ast: n});
 	let finished = yield EvaluatorInstruction.waitForFramePop;
 	return Value.undef;
 }
