@@ -140,7 +140,7 @@ assert (str === 'AB');
 
 
 /* 6 */
-/*
+
 str = '';
 
 a: for (j = 0; j < 5; j++)
@@ -163,7 +163,7 @@ a: for (j = 0; j < 5; j++)
 }
 
 assert (str === 'ABDABDABDABDABD');
-*/
+
 
 /* 7 */
 /*
@@ -190,9 +190,10 @@ a: for (j = 0; j < 5; j++)
     str += 'D';
   }
 }
-*/
+
 
 assert (str === 'ABABABABAB');
+*/
 
 /* 8 */
 

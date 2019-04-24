@@ -59,7 +59,7 @@ class Evaluator {
 			let t = this.frames[i].type;
 			let match = t == target || (target == 'return' && t == 'function' );
 			if ( match && label ) {
-				match = label == this.frames[i].label;
+				match = this.frames[i].labels && this.frames[i].labels.indexOf(label) !== -1;
 			}
 
 			if ( match ) {

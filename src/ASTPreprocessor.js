@@ -288,7 +288,8 @@ class EsperASTInstructions {
 	}
 
 	enterLabeledStatement(a) {
-		a.body.label = a.label.name;
+		if ( !a.body.labels ) a.body.labels = [];
+		a.body.labels.push(a.label.name);
 	}
 
 	exitArrayExpression(a) {
