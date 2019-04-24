@@ -21,14 +21,14 @@ class RegExpProtoype extends EasyObjectValue {
 		this.regexp = new RegExp();
 	}
 	static *test(thiz, args, s) {
-		var rx = yield * toRegexp(thiz, s.realm);
+		var rx = yield * toRegexp(thiz);
 		var str = undefined;
 		if ( args.length > 0 ) str = yield * args[0].toStringNative();
 		return Value.fromNative(rx.test(str));
 	}
 
 	static *exec(thiz, args, s) {
-		var rx = yield * toRegexp(thiz, s.realm);
+		var rx = yield * toRegexp(thiz);
 		let li = yield * thiz.get('lastIndex');
 		li = yield * li.toIntNative();
 		if ( li < 0 ) li = 0; //Work around incorrect V8 behavior.
@@ -49,7 +49,7 @@ class RegExpProtoype extends EasyObjectValue {
 	}
 
 	static *compile(thiz, args, s) {
-		yield * toRegexp(thiz, s.realm);
+		yield * toRegexp(thiz);
 		let rv = yield * s.realm.RegExp.call(Value.null, args, s);
 		let regexp = rv.regexp;
 		thiz.regexp = regexp;
@@ -67,7 +67,7 @@ class RegExpProtoype extends EasyObjectValue {
 	static get multiline$cw() { return Value.fromNative(false); }
 
 	static *toString(thiz, args, s) {
-		var rx = yield * toRegexp(thiz, s.realm);
+		var rx = yield * toRegexp(thiz);
 		return Value.fromNative(rx.toString());
 	}
 

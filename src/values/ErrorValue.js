@@ -7,6 +7,10 @@ const Value = require('../Value');
 const EvaluatorInstruction = require('../EvaluatorInstruction');
 
 class ErrorInstance extends ObjectValue {
+	constructor(realm, proto) {
+		super(realm, proto);
+		this.realm = realm;
+	}
 	createNativeAnalog() {
 		if ( !this.native ) {
 			let stack;

@@ -115,6 +115,8 @@ class Evaluator {
 						//lastValueOveride = this;
 						//continue;
 						return this.next(this);
+					case 'getRealm':
+						return this.next(this.realm);
 					case 'waitForFramePop':
 						continue;
 					case 'framePushed':

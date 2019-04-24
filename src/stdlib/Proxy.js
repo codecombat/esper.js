@@ -78,7 +78,7 @@ class ProxyValue extends Value {
 		if ( yield * this.handlerImplemented(key) ) {
 			return yield * this.invokeHandler(key, args);
 		}
-		if ( !this.target.call ) return CompletionRecord.makeTypeError(scope.realm, "Base object not invokeable.");
+		if ( !this.target.call ) return yield CompletionRecord.typeError("Base object not invokeable.");
 		else return yield * this.target.call(thiz, args, scope, ext);			
 	}
 
