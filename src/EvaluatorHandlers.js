@@ -34,60 +34,49 @@ function *evaluateAssignmentExpression(e, n, s) {
 		return CompletionRecord.makeReferenceError(s.realm, `Invalid refrence in assignment.`);
 	}
 
+	let cur = n.operator == '=' ? Value.undef : yield * ref.getValue();
 	let argument = yield * e.branch(n.right, s);
 	let value;
-	let cur;
+
 	if ( e.yieldPower >= 3 ) yield EvaluatorInstruction.stepMinor;
 	switch ( n.operator ) {
 		case '=':
 			value = argument;
 			break;
 		case '+=':
-			cur = yield * ref.getValue();
 			value = yield * cur.add(argument, realm);
 			break;
 		case '-=':
-			cur = yield * ref.getValue();
 			value = yield * cur.subtract(argument, realm);
 			break;
 		case '*=':
-			cur = yield * ref.getValue();
 			value = yield * cur.multiply(argument, realm);
 			break;
 		case '/=':
-			cur = yield * ref.getValue();
 			value = yield * cur.divide(argument, realm);
 			break;
 		case '%=':
-			cur = yield * ref.getValue();
 			value = yield * cur.mod(argument, realm);
 			break;
 		case '<<=':
-			cur = yield * ref.getValue();
 			value = yield * cur.shiftLeft(argument, realm);
 			break;
 		case '>>=':
-			cur = yield * ref.getValue();
 			value = yield * cur.shiftRight(argument, realm);
 			break;
 		case '>>>=':
-			cur = yield * ref.getValue();
 			value = yield * cur.shiftRightZF(argument, realm);
 			break;
 		case '|=':
-			cur = yield * ref.getValue();
 			value = yield * cur.bitOr(argument, realm);
 			break;
 		case '&=':
-			cur = yield * ref.getValue();
 			value = yield * cur.bitAnd(argument, realm);
 			break;
 		case '^=':
-			cur = yield * ref.getValue();
 			value = yield * cur.bitXor(argument, realm);
 			break;
 		case '**=':
-			cur = yield * ref.getValue();
 			value = yield * cur.pow(argument, realm);
 			break;
 		default:
