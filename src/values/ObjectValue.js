@@ -7,6 +7,7 @@ const CompletionRecord = require('../CompletionRecord');
 const PrimitiveValue = require('./PrimitiveValue');
 const NullValue = require('./NullValue');
 const GenDash = require('../GenDash');
+const EvaluatorInstruction = require('../EvaluatorInstruction');
 
 let alwaysFalse = () => false;
 let undefinedReturningGenerator = function*() { return Value.undef; };
@@ -30,7 +31,6 @@ class ObjectValue extends Value {
 	constructor(realm, proto) {
 		super();
 		this.extensable = true;
-		this.realm = realm;
 		this.proto = null;
 		if ( proto ) this.eraseAndSetPrototype(proto);
 		else if ( realm ) this.eraseAndSetPrototype(realm.ObjectPrototype);
@@ -98,7 +98,7 @@ class ObjectValue extends Value {
 			this.properties[name] = v;
 			return;
 		}
-		return GenDash.syncGenHelper(this.set(name, value, this.realm));
+		return GenDash.syncGenHelper(this.set(name, value));
 	}
 
 
@@ -110,16 +110,16 @@ class ObjectValue extends Value {
 	delete(name, s) {
 		let po = this.properties[name];
 		if ( !po.configurable ) {
-			if ( s.strict ) return CompletionRecord.makeTypeError(s.realm, "Can't delete nonconfigurable object");
+			if ( s.strict ) return CompletionRecord.typeError("Can't delete nonconfigurable object");
 			else return false;
 		}
 		return delete this.properties[name];
 	}
 
-	toNative() {
+	toNative(realm) {
 
 		//TODO: This is really a mess and should maybe be somewhere else.
-		var bk = Value.createNativeBookmark(this, this.realm);
+		var bk = Value.createNativeBookmark(this, realm);
 		if ( this.jsTypeName === 'function' ) return bk;
 
 		for ( let p in this.properties ) {
@@ -133,7 +133,7 @@ class ObjectValue extends Value {
 					var c = this.properties[name].value;
 					return c === undefined ? undefined : c.toNative();
 				},
-				set: (v) => { this.properties[name].value = Value.fromNative(v, this.realm); },
+				set: (v) => { this.properties[name].value = Value.fromNative(v, realm); },
 				enumerable: po.enumerable,
 				configurable: po.configurable
 			});
@@ -280,6 +280,7 @@ class ObjectValue extends Value {
 
 	*toPrimitiveValue(preferedType) {
 		let methodNames;
+		let realm;
 		if ( preferedType == 'string') {
 			methodNames = ['toString', 'valueOf'];
 		} else {
@@ -289,7 +290,8 @@ class ObjectValue extends Value {
 		for ( let name of methodNames ) {
 			let method = yield * this.get(name);
 			if ( method && method.call ) {
-				let rescr = yield (yield * method.call(this, [], this.realm.globalScope)); //TODO: There should be more aruments here
+				if ( !realm ) realm = yield EvaluatorInstruction.getRealm;
+				let rescr = yield (yield * method.call(this, [], realm.globalScope)); //TODO: There should be more aruments here
 				let res = Value.undef;
 				if ( !(rescr instanceof CompletionRecord) ) res = rescr;
 				else if ( rescr.type == CompletionRecord.RETURN ) res = rescr.value;

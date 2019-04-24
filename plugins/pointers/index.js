@@ -11,6 +11,7 @@ const debug = () => {};
 class PointerValue extends esper.ObjectValue {
 	constructor(base, offset, realm) {
 		super(realm);
+		this.realm = realm;
 		this.setPrototype(realm.PointerPrototype);
 		this.base = base;
 		this.offset = offset;
@@ -91,7 +92,7 @@ class RefrenceFunction extends esper.ObjectValue {
 
 	*call(thiz, args, scope, ext) {
 		let val = Value.undef;
-		if ( args.length < 1 ) return CompletionRecord.makeTypeError(realm, "No argument to refrence.");
+		if ( args.length < 1 ) return CompletionRecord.makeTypeError(scope.realm, "No argument to refrence.");
 		return CompletionRecord.makeTypeError(scope.realm, "Can't call refrence like that.");
 	}
 }

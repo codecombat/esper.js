@@ -19,7 +19,6 @@ class ClosureValue extends ObjectValue {
 	constructor(func, scope) {
 		let realm = scope.realm;
 		super(realm, realm.FunctionPrototype);
-		this.realm = scope.realm;
 		this.func = func;
 		this.funcSourceAST = func;
 		this.scope = scope;
@@ -30,7 +29,7 @@ class ClosureValue extends ObjectValue {
 	}
 
 	toNative() {
-		return Value.createNativeBookmark(this, this.realm);
+		return Value.createNativeBookmark(this, this.scope.realm);
 	}
 
 	get debugString() {

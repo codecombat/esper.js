@@ -141,11 +141,18 @@ class Value {
 	 */
 	static get zero() { return zero; }
 
+	/**
+	 * Holds a value representing `1`
+	 *
+	 * @returns {NumberValue} 1
+	 */
+	static get one() { return one; }
+
 	static createNativeBookmark(v, realm) {
 		var out;
 		let thiz = this;
 		if ( typeof v.call === 'function' ) {
-			switch ( realm.options.bookmarkInvocationMode ) {
+			switch ( realm ? realm.options.bookmarkInvocationMode : '' ) {
 				case 'loop':
 
 					out = function Bookmark() {
