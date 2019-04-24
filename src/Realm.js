@@ -228,9 +228,18 @@ class Realm {
 		/** @type {Value} */
 		this.console = new ConsoleClass(this);
 
+		this.intrinsics = {
+			ObjectPrototype: this.ObjectPrototype,
+			ArrayPrototype: this.ArrayPrototype,
+			BooleanPrototype: this.BooleanPrototype,
+			RegExpPrototype: this.RegExpPrototype,
+			FunctionPrototype: this.FunctionPrototype
+		}
+
 		let scope = new Scope(this);
 		scope.object.clazz = 'global';
 		scope.strict = options.strict || false;
+		this.intrinsicScope = scope;
 		let that = this;
 		var printer = EasyNativeFunction.makeForNative(this, function() {
 			that.print.apply(that, arguments);
@@ -241,49 +250,53 @@ class Realm {
 		scope.addConst('NaN', this.fromNative(NaN));
 		scope.addConst('Infinity', this.fromNative(Infinity));
 
-		scope.set('console', this.console);
-		scope.set('JSON', new JSONClass(this));
+		this.addIntrinsic('console', this.console);
+		this.addIntrinsic('JSON', new JSONClass(this));
 
 		if ( options.exposeEsperGlobal ) {
 			scope.set('Esper', this.Esper);
 		}
 
-		scope.set('Math', this.Math);
+		this.addIntrinsic('Math', this.Math);
 
-		scope.set('Number', this.Number);
-		scope.set('Boolean', this.Boolean);
-		scope.set('Object', this.Object);
-		scope.set('Function', this.Function);
-		scope.set('Array', this.Array);
-		scope.set('String', this.String);
-		scope.set('RegExp', this.RegExp);
-		scope.set('Proxy', this.Proxy);
+		this.addIntrinsic('Number', this.Number);
+		this.addIntrinsic('Boolean', this.Boolean);
+		this.addIntrinsic('Object', this.Object);
+		this.addIntrinsic('Function', this.Function);
+		this.addIntrinsic('Array', this.Array);
+		this.addIntrinsic('String', this.String);
+		this.addIntrinsic('RegExp', this.RegExp);
+		this.addIntrinsic('Proxy', this.Proxy);
 
-		scope.set('Error', this.Error);
-		scope.set('TypeError', this.TypeError = this.Error.makeErrorType(TypeError));
-		scope.set('SyntaxError', this.SyntaxError = this.Error.makeErrorType(SyntaxError));
-		scope.set('ReferenceError', this.ReferenceError = this.Error.makeErrorType(ReferenceError));
-		scope.set('RangeError', this.RangeError = this.Error.makeErrorType(RangeError));
-		scope.set('EvalError', this.EvalError = this.Error.makeErrorType(EvalError));
-		scope.set('URIError', this.URIError = this.Error.makeErrorType(URIError));
+		this.addIntrinsic('Error', this.Error);
+		this.addIntrinsic('TypeError', this.TypeError = this.Error.makeErrorType(TypeError));
+		this.addIntrinsic('SyntaxError', this.SyntaxError = this.Error.makeErrorType(SyntaxError));
+		this.addIntrinsic('ReferenceError', this.ReferenceError = this.Error.makeErrorType(ReferenceError));
+		this.addIntrinsic('RangeError', this.RangeError = this.Error.makeErrorType(RangeError));
+		this.addIntrinsic('EvalError', this.EvalError = this.Error.makeErrorType(EvalError));
+		this.addIntrinsic('URIError', this.URIError = this.Error.makeErrorType(URIError));
 
 
-		scope.set('parseInt', EasyNativeFunction.makeForNative(this, parseInt));
-		scope.set('parseFloat', EasyNativeFunction.makeForNative(this, parseFloat));
-		scope.set('isNaN', EasyNativeFunction.makeForNative(this, isNaN));
-		scope.set('isFinite', EasyNativeFunction.makeForNative(this, isFinite));
+		this.addIntrinsic('parseInt', EasyNativeFunction.makeForNative(this, parseInt));
+		this.addIntrinsic('parseFloat', EasyNativeFunction.makeForNative(this, parseFloat));
+		this.addIntrinsic('isNaN', EasyNativeFunction.makeForNative(this, isNaN));
+		this.addIntrinsic('isFinite', EasyNativeFunction.makeForNative(this, isFinite));
 
-		//scope.set('Date', this.fromNative(Date));
-		scope.set('eval', new EvalFunction(this));
-		scope.set('assert', new AssertClass(this));
+		//this.addIntrinsic('Date', this.fromNative(Date));
+		this.eval = new EvalFunction(this);
+		this.addIntrinsic('eval', this.eval);
+		this.addIntrinsic('assert', new AssertClass(this));
 
 		if ( options.runtime ) {
-			scope.set("setTimeout", new SetTimeoutFunction(this, options.runtime, false));
-			scope.set("setInterval", new SetTimeoutFunction(this, options.runtime, true));	
-			scope.set("clearTimeout", new ClearTimeoutFunction(this, options.runtime));
-			scope.set("clearInterval", new ClearTimeoutFunction(this, options.runtime));
+			this.addIntrinsic("setTimeout", new SetTimeoutFunction(this, options.runtime, false));
+			this.addIntrinsic("setInterval", new SetTimeoutFunction(this, options.runtime, true));	
+			this.addIntrinsic("clearTimeout", new ClearTimeoutFunction(this, options.runtime));
+			this.addIntrinsic("clearInterval", new ClearTimeoutFunction(this, options.runtime));
 		}
 
+		if ( options.esposeESHostGlobal ) {
+			this.addIntrinsic("$", new (require('./stdlib/ESHostDollarsign'))(this));
+		}
 		scope.thiz = scope.object;
 		this.importCache = new WeakMap();
 		/** @type {Scope} */
@@ -291,6 +304,11 @@ class Realm {
 
 		let lang = esper.languages[this.language];
 		if ( lang && lang.setupRealm ) lang.setupRealm(this);
+	}
+
+	addIntrinsic(name, instance) {
+		this.intrinsics[name] = instance;
+		this.intrinsicScope.set(name, instance);
 	}
 
 	lookupWellKnown(v) {
