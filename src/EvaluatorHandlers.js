@@ -838,15 +838,22 @@ function *evaluateVariableDeclaration(e, n, s) {
 	if ( e.yieldPower >= 3 ) yield EvaluatorInstruction.stepMajor;
 	for ( let decl of n.declarations ) {
 		let value = Value.undef;
+		let name  = decl.id.name;
 		if ( decl.init ) value = yield * e.branch(decl.init, s);
-		else if ( s.has(decl.id.name) ) continue;
 
 		if ( kind === 'const' ) {
-			s.addConst(decl.id.name, value);
+			if ( s.has(name) ) {
+				return CompletionRecord.makeSyntaxError(e.realm, `Identifier '${name}' has already been declared`);
+			}
+			s.addConst(name, value);
 		} else if ( kind == 'let') {
-			s.addBlock(decl.id.name, value);
+			if ( s.blockHas(name) ) {
+				return CompletionRecord.makeSyntaxError(e.realm, `Identifier '${name}' has already been declared`);
+			}
+			s.addBlock(name, value);
 		} else {
-			s.add(decl.id.name, value);
+			if ( !decl.init && s.has(name) ) continue;
+			s.add(name, value);
 		}
 	}
 	return Value.undef;

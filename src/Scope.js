@@ -76,6 +76,10 @@ class Scope {
 		return this.object.has(name);
 	}
 
+	blockHas(name) {
+		return !!Object.getOwnPropertyDescriptor(this.writeToBlock.properties, name);
+	}
+
 	/**
 	 * Set the identifier in its nearest scope, or create a global.
 	 * @param {string} name - Identifier to retreive
