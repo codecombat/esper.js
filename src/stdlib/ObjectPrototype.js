@@ -45,6 +45,12 @@ class ObjectPrototype extends EasyObjectValue {
 	static *toString$e(thiz, args, s) {
 		if ( thiz instanceof UndefinedValue ) return s.realm.fromNative('[object Undefined]');
 		if ( thiz instanceof NullValue ) return s.realm.fromNative('[object Null]');
+		switch ( thiz.jsTypeName ) {
+			case "number": return Value.fromNative('[object Number]');
+			case "boolean": return Value.fromNative('[object Boolean]');
+			case "string": return Value.fromNative('[object String]');
+		}
+
 		return s.realm.fromNative('[object ' + thiz.clazz + ']');
 	}
 

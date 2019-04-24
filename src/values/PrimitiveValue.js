@@ -81,7 +81,7 @@ class PrimitiveValue extends Value {
 	}
 	*tripleEquals(other) { return this.native === other.toNative() ? Value.true : Value.false; }
 
-	*add(other) { return Value.fromNative(this.native + (yield * other.toPrimitiveNative())); }
+	*add(other) { return Value.fromNative(this.native + (yield * other.toPrimitiveNative('number'))); }
 
 	*instanceOf(other) { return Value.false; }
 

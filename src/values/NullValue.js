@@ -17,7 +17,30 @@ class NullValue extends EmptyValue {
 		return 'null';
 	}
 
-	*toPrimitiveValue(preferedType) { return this; }
+	*add(other) { 
+		switch ( other.specTypeName ) {
+			case "null":
+				return Value.zero;
+			case "boolean":
+				return other.native ? Value.one : Value.zero;
+			case "number":
+				return yield * Value.zero.add(other);
+			case "undefined":
+				return Value.nan;
+			default:
+				return yield * Value.fromNative("null").add(other);
+		}
+		
+	}
+
+	*toPrimitiveValue(preferedType) { 
+		switch ( preferedType ) {
+		case "number":
+			return Value.zero
+		default:
+			return Value.fromNative("null");
+		}
+	}
 	*toNumberValue() { return Value.zero; }
 	*toStringValue() { return Value.fromNative('null'); }
 
