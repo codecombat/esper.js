@@ -12,11 +12,22 @@ describe('Duk Tests', function() {
 		var Engine = require('../src/index.js');
 		var src = fs.readFileSync(path.join(dir, file), 'utf8');
 		var expected = '';
+		var options = {};
 
-		src.replace(/\/\*===\s*\n([^]*?\n)===\*\//mig, function(m, g) {
+		src.replace(/\/\*===\s*\n([^]*?\n?)===\*\//mig, function(m, g) {
 			expected += g;
 			return '';
 		});
+
+		src.replace(/\/\*---\s*\n([^]*?\n)---\*\//mig, function(m, g) {
+			Object.assign(options, JSON.parse(g));
+			return '';
+		});
+
+		if ( options.slow ) {
+			xit('duk-' + file, () => {});
+			return;
+		}
 
 		it('duk-' + file, function() {
 			var out = '';
@@ -33,13 +44,22 @@ describe('Duk Tests', function() {
 				executionLimit: 1e6
 			});
 			engine.realm.print = print;
-			engine.evalSync(src);
+			if ( options.intended_uncaught ) {
+				try {
+					engine.evalSync(src);
+				} catch ( e ) {
+
+				}
+			} else {
+				engine.evalSync(src);
+			}
 			expect(out).to.equal(expected);
 		});
 	}
 
 	for ( var i = 0; i < files.length; ++i ) {
-		if ( !/misc-hello|^test-spec-program|expr/.test(files[i]) ) continue;
+		if ( !/misc-hello|^test-spec-program|^test-stmt|expr/.test(files[i]) ) continue;
+		if ( /refcount|lhs/.test(files[i]) ) continue;
 		test(files[i]);
 	}
 });

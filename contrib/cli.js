@@ -78,8 +78,8 @@ function next() {
 	} else {
 		code = fn.value;
 	}
-	return engine.eval(code).then(function(val) {
-		if ( fn.print ) console.log(val.debugString);
+	return engine.evalDetatched(code).then(function(val) {
+		if ( fn.print && val ) console.log(val.debugString);
 		return next();
 	}).catch(function(e) {
 		if ( e.stack ) {
