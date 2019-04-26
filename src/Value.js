@@ -448,6 +448,16 @@ class Value {
 	 */
 	*fastGen() { return this; }
 
+	/**
+	 * Garentee this value can never change
+	 *
+	 * @abstract
+	 * @returns bool
+	 */
+	makeImmutable() {
+		throw new Error('Unimplemented: Value#makeImmutable');
+	}
+
 }
 module.exports = Value;
 

@@ -60,7 +60,7 @@ describe('Plugin: lang-lua', function() {
 			var result = nfo[1]
 			it("Simple Test " + idx++, function(done) {
 				if ( typeof(code) != "string" ) code = code.join("\n");
-				var engine = new esper.Engine({language: 'lua'});
+				var engine = new esper.Engine({language: 'lua', frozenRealm: true});
 				var a = engine.functionFromSourceSync(code);
 				expect(a()).to.equal(result);
 				done();
