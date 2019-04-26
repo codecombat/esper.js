@@ -48,6 +48,14 @@ class StringValue extends PrimitiveValue {
 		return;
 	}
 
+	has(name) {
+		let idx = Number(name);
+		if ( !isNaN(idx) ) {
+			return idx >= 0 && idx < this.native.length;
+		}
+		return false;
+	}
+
 }
 
 module.exports = StringValue;
