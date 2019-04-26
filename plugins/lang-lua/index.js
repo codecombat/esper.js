@@ -77,5 +77,8 @@ let plugin = module.exports = {
 		esper.languages.lua = plugin;
 		startupCodeAST = esper.languages.javascript.parser(startupCode);
 	},
-	startupCode: () => startupCodeAST
+	startupCode: () => startupCodeAST,
+	setupRealm: function(realm, engine) {
+		realm.loadLangaugeStartupCode(startupCodeAST);
+	}
 };

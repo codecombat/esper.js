@@ -120,6 +120,9 @@ class PrimitiveValue extends Value {
 		return Value.fromNative(Number(this.native));
 	}
 
+	makeImmutable() {
+		return true;
+	}
 
 }
 module.exports = PrimitiveValue;

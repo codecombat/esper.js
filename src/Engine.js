@@ -3,6 +3,7 @@
 const esper = require('./index.js');
 const Evaluator = require('./Evaluator');
 const Realm = require('./Realm');
+const ShallowRealm = require('./ShallowRealm');
 const Scope = require('./Scope');
 const Value = require('./Value');
 const BridgeValue = require('./values/BridgeValue');
@@ -19,6 +20,7 @@ let defaultOptions = {
 	addInternalStack: false,
 	executionLimit: Infinity,
 	exposeEsperGlobal: true,
+	frozenRealm: false,
 	extraErrorInfo: false,
 	addExtraErrorInfoToStacks: false,
 	bookmarkInvocationMode: 'error',
@@ -45,6 +47,8 @@ class Engine {
 
 		if ( realm )  {
 			this.realm = realm;
+		} else if ( this.options.frozenRealm ) {
+			this.realm = new ShallowRealm(this.options, this);
 		} else {
 			this.realm = new Realm(this.options, this);
 		}
@@ -56,10 +60,6 @@ class Engine {
 
 		this.evaluator.defaultYieldPower = this.options.yieldPower;
 		this.evaluator.yieldPower = this.options.yieldPower;
-
-		if ( this.language.startupCode && !realm ) {
-			this.loadLangaugeStartupCode();
-		}
 
 		//options.runtime = true;
 		if ( options.runtime ) {
@@ -112,15 +112,7 @@ class Engine {
 	set generator(v) { return this.evloop = v; } // Supports CrazyJoshMode
 
 	loadLangaugeStartupCode() {
-		let past = this.preprocessAST(this.language.startupCode(), {markNonUser: true});
-		let stdlib_eval = new Evaluator(this.realm, null, this.globalScope);
-		stdlib_eval.frames = [];
-		stdlib_eval.pushAST(past, this.globalScope);
-		stdlib_eval.ast = past;
-
-		let gen = stdlib_eval.generator();
-		let val = gen.next();
-		while ( !val.done ) val = gen.next();
+		this.realm.loadLangaugeStartupCode(this.language.startupCode());
 	}
 
 	get language() {

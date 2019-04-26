@@ -327,6 +327,18 @@ class ObjectValue extends Value {
 	get specTypeName() {
 		return 'object';
 	}
+
+	makeImmutable() {
+		for ( let p of Object.getOwnPropertyNames(this.properties) ) {
+			let o = this.properties[p];
+			if ( o.value ) o.writable = false;
+			o.configurable = false;
+			Object.freeze(o);
+		}
+		this.extensable = false;
+		Object.seal(this.properties);
+		Object.freeze(this);
+	}
 }
 
 ObjectValue.prototype.clazz = 'Object';

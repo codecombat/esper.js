@@ -64,7 +64,7 @@ class EvalFunction extends ObjectValue {
 			var eo;
 			let desc = e.description || e.message;
 			if ( e.name == 'ReferenceError' || /Invalid left-hand side in/.test(desc) ) eo = new ReferenceError(e.description, e.fileName, e.lineNumber);
-			else eo = new SyntaxError(e.description, e.fileName, e.lineNumber);
+			else eo = new SyntaxError(desc, e.fileName, e.lineNumber);
 
 			if ( e.stack ) eo.stack = e.stack;
 			return new CompletionRecord(CompletionRecord.THROW, Value.fromNative(eo, scope.realm));
@@ -240,15 +240,15 @@ class Realm {
 		scope.object.clazz = 'global';
 		scope.strict = options.strict || false;
 		this.intrinsicScope = scope;
-		let that = this;
-		var printer = EasyNativeFunction.makeForNative(this, function() {
-			that.print.apply(that, arguments);
-		});
-		scope.set('print', printer);
-		scope.set('log', printer);
 
-		scope.addConst('NaN', this.fromNative(NaN));
-		scope.addConst('Infinity', this.fromNative(Infinity));
+		var printer = EasyNativeFunction.make(this, function*(thiz, args, s) {
+			s.realm.print.apply(s.realm, args.map(x => x.toNative()));
+		});
+		this.intrinsicScope.set('print', printer);
+		this.intrinsicScope.set('log', printer);
+
+		this.intrinsicScope.addConst('NaN', this.fromNative(NaN));
+		this.intrinsicScope.addConst('Infinity', this.fromNative(Infinity));
 
 		this.addIntrinsic('console', this.console);
 		this.addIntrinsic('JSON', new JSONClass(this));
@@ -380,6 +380,18 @@ class Realm {
 
 		//this.importCache.set(native, result);
 		return result;
+	}
+
+	loadLangaugeStartupCode(ast) {
+		let past = this.engine.preprocessAST(ast, {markNonUser: true});
+		let stdlib_eval = new Evaluator(this, null, this.globalScope);
+		stdlib_eval.frames = [];
+		stdlib_eval.pushAST(past, this.globalScope);
+		stdlib_eval.ast = past;
+
+		let gen = stdlib_eval.generator();
+		let val = gen.next();
+		while ( !val.done ) val = gen.next();
 	}
 }
 

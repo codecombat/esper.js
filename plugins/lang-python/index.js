@@ -74,6 +74,7 @@ let plugin = module.exports = {
 		for ( let k in map ) {
 			realm.pythonStringBaseInstance.properties[k] = realm.StringPrototype.properties[map[k]];
 		}
+		realm.loadLangaugeStartupCode(startupCodeAST);
 	},
 	startupCode: () => startupCodeAST,
 	makeLiteralValue: function(v, realm, n) {
