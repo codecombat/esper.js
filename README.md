@@ -88,6 +88,10 @@ display the test output in real time.
 
 Minify the resulting build using UglifyJS.
 
+## License
+
+[The MIT License](LICENSE.txt)
+
 ## Contributing 
 
 If you'd like to contribute, please [sign the CodeCombat contributor license agreement](http://codecombat.com/cla) so we can accept your pull requests.
@@ -98,10 +102,9 @@ Checklist for contributing:
 - Code coverage increased. `npm run cover`
 - `webpack --test` build passes  test in browser.
 
-## License
+## Big Thanks
 
-[The MIT License](LICENSE.txt)
-
+Cross-browser Testing Platform and Open Source <3 Provided by [Sauce Labs][saucelabs]
 
 
 [license-image]: http://img.shields.io/badge/license-MIT-blue.svg?style=flat
@@ -113,3 +116,5 @@ Checklist for contributing:
 
 [travis-url]: http://travis-ci.org/codecombat/esper.js
 [travis-image]: http://img.shields.io/travis/codecombat/esper.js/test.svg?style=flat
+
+[saucelabs]: https://saucelabs.com
