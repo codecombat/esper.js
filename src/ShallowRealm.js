@@ -8,6 +8,14 @@ const esper = require('./index.js');
 
 let immutableRealmSingeltons = {};
 
+function MakeDeepImmutable(o) {
+	o.makeImmutable();
+	if ( o.easyRef ) {
+		for ( let p in o.properties ) {
+			o.properties[p].value.makeImmutable();
+		}
+	}
+}
 
 class ShallowRealm {
 	print() {
@@ -15,19 +23,22 @@ class ShallowRealm {
 	}
 
 	constructor(options, engine) {
+		this.language = options.language || 'javascript';
+
 		if ( !immutableRealmSingeltons[this.language] ) {
 			immutableRealmSingeltons[this.language] = new Realm({language: options.language}, engine);
 			for ( let p in immutableRealmSingeltons[this.language].intrinsics ) {
-				immutableRealmSingeltons[this.language].intrinsics[p].makeImmutable();
+				let o = immutableRealmSingeltons[this.language].intrinsics[p];
+				MakeDeepImmutable(o);
 			}
 		}
 
 		let immutableRealmSingelton = immutableRealmSingeltons[this.language];
 
+
 		Object.assign(this, immutableRealmSingelton);
 		this.engine = engine;
 		this.options = options || {};
-		this.language = options.language || 'javascript';
 
 
 
@@ -41,7 +52,7 @@ class ShallowRealm {
 		Object.assign(scope.object.properties, immutableRealmSingelton.globalScope.object.properties);
 
 		if ( options.exposeEsperGlobal ) {
-			scope.set('Esper', this.Esper);
+			this.addIntrinsic('Esper', this.Esper);
 		}
 
 		
@@ -50,6 +61,7 @@ class ShallowRealm {
 	addIntrinsic(name, instance) {
 		this.intrinsics[name] = instance;
 		this.intrinsicScope.set(name, instance);
+		MakeDeepImmutable(instance);
 	}
 
 	fromNative(native, x) {

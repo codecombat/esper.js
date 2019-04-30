@@ -39,6 +39,10 @@ class EmptyValue extends Value {
 		return err;
 	}
 
+	makeImmutable() {
+		return true;
+	}
+
 }
 
 module.exports = EmptyValue;

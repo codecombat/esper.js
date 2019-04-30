@@ -331,11 +331,11 @@ class ObjectValue extends Value {
 	makeImmutable() {
 		for ( let p of Object.getOwnPropertyNames(this.properties) ) {
 			let o = this.properties[p];
-			if ( o.value ) o.writable = false;
-			o.configurable = false;
+			if ( o.value && o.writable ) o.writable = false;
+			if ( o.configurable ) o.configurable = false;
 			Object.freeze(o);
 		}
-		this.extensable = false;
+		if ( this.extensable ) this.extensable = false;
 		Object.seal(this.properties);
 		Object.freeze(this);
 	}

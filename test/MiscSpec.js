@@ -4,6 +4,7 @@ var Engine = require('../src/index.js').Engine;
 
 var FutureValue = require('../src/values/FutureValue');
 var Value = require('../src/Value');
+var ObjectValue = require('../src/values/ObjectValue');
 
 function ensure_not_done(e) {
 	expect(e.done).to.be.false;
@@ -65,4 +66,32 @@ describe('Misc', () => {
 			expect(value.rob()).to.equal('Rob is great!');
 		});
 	});
+
+	describe('Frozen Realms', () => {
+		it('has no unfrozen values', () => {
+			let e = new Engine({frozenRealm: true});
+			let checked = new WeakSet(); 
+			function walk(o, path) {
+				if ( o === null ) return;
+				if ( checked.has(o) ) return;
+				checked.add(o);
+				if ( o instanceof ObjectValue ) {
+					expect(o.extensable).to.be.false;
+					for ( let pn in o.properties ) {
+						let p = o.properties[pn];
+						if (typeof p.value === 'undefined') continue;
+						
+						walk(p.value, path + "/" + pn);;
+						expect(p.writable).to.be.false;
+						expect(p.configurable).to.be.false;
+						expect(Object.isFrozen(p)).to.be.true;
+					}
+					walk(o.getPrototype(), path + "%Prototype");
+				}
+			}
+			for ( let g in e.realm.globalScope.object.properties ) {
+				walk(e.realm.globalScope.object.properties[g].value,g);
+			}
+		})
+	})
 });
