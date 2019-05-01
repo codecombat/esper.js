@@ -34,6 +34,7 @@
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ASTPreprocessor.js~ASTPreprocessor.html">ASTPreprocessor</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CompletionRecord.js~CompletionRecord.html">CompletionRecord</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/DefaultRuntime.js~DefaultRuntime.html">DefaultRuntime</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html">Evaluator</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/EvaluatorInstruction.js~EvaluatorInstruction.html">EvaluatorInstruction</a></span></span></li>
@@ -58,6 +59,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/NumberPrototype.js~NumberPrototype.html">NumberPrototype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Object.js~ObjectObject.html">ObjectObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ObjectPrototype.js~ObjectPrototype.html">ObjectPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Proxy.js~ProxyClass.html">ProxyClass</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExp.js~RegExpObject.html">RegExpObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExpPrototype.js~RegExpProtoype.html">RegExpProtoype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/String.js~StringObject.html">StringObject</a></span></span></li>
@@ -90,10 +92,15 @@
 const EasyObjectValue = require(&apos;../values/EasyObjectValue&apos;);
 const ObjectValue = require(&apos;../values/ObjectValue&apos;);
 const ArrayValue = require(&apos;../values/ArrayValue&apos;);
+const CompletionRecord = require(&apos;../CompletionRecord&apos;);
 
 class ArrayObject extends EasyObjectValue {
 	*call(thiz, args, s) {
 		if ( args.length === 1 &amp;&amp; args[0].jsTypeName === &apos;number&apos; ) {
+			let len = args[0].toNative();
+			if ( len != len&gt;&gt;0 ) {
+				return yield CompletionRecord.makeRangeError(this.realm, &quot;Invalid array length&quot;);
+			}
 			let result = ArrayValue.make([], s.realm);
 			yield * result.set(&apos;length&apos;, args[0]);
 			return result;
@@ -102,6 +109,7 @@ class ArrayObject extends EasyObjectValue {
 	}
 
 	callPrototype(realm) { return realm.ArrayPrototype; }
+	constructorFor(realm) { return realm.ArrayPrototype; }
 	//objPrototype(realm) { return realm.Function; }
 
 

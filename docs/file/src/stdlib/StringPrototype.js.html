@@ -34,6 +34,7 @@
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ASTPreprocessor.js~ASTPreprocessor.html">ASTPreprocessor</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CompletionRecord.js~CompletionRecord.html">CompletionRecord</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/DefaultRuntime.js~DefaultRuntime.html">DefaultRuntime</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html">Evaluator</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/EvaluatorInstruction.js~EvaluatorInstruction.html">EvaluatorInstruction</a></span></span></li>
@@ -58,6 +59,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/NumberPrototype.js~NumberPrototype.html">NumberPrototype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Object.js~ObjectObject.html">ObjectObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ObjectPrototype.js~ObjectPrototype.html">ObjectPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Proxy.js~ProxyClass.html">ProxyClass</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExp.js~RegExpObject.html">RegExpObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExpPrototype.js~RegExpProtoype.html">RegExpProtoype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/String.js~StringObject.html">StringObject</a></span></span></li>
@@ -141,11 +143,44 @@ class StringPrototype extends EasyObjectValue {
 		return realm.fromNative(out);
 	}
 
+	//TODO: Replacement arg can be a regex.
+	static *replace$e(thiz, args, realm) {
+		let base = yield * thiz.toStringNative();
+		let realArgs = yield * _g.map(args, function*(v) { return yield * v.toStringNative(); });
+		let out = String.prototype.replace.apply(base, realArgs);
+		return realm.fromNative(out);
+	}
+
+	static *padEnd$e(thiz, args, realm) {
+		let base = yield * thiz.toStringNative();
+		if ( args.length &lt; 1 ) return thiz;
+		let length = yield * args[0].toIntNative();
+		let hasPad = args.length &gt; 1 &amp;&amp; args[1].jsTypeName != &apos;undefined&apos;;
+		let pad = hasPad ? yield * args[1].toStringNative() : &apos; &apos;;
+		return realm.fromNative(strPad(base, length, pad, false));
+	}
+
+	static *padStart$e(thiz, args, realm) {
+		let base = yield * thiz.toStringNative();
+		if ( args.length &lt; 1 ) return thiz;
+		let length = yield * args[0].toIntNative();
+		let hasPad = args.length &gt; 1 &amp;&amp; args[1].jsTypeName != &apos;undefined&apos;;
+		let pad = hasPad ? yield * args[1].toStringNative() : &apos; &apos;;
+		return realm.fromNative(strPad(base, length, pad, true));
+	}
+
 	static *toString$e(thiz) {
 		return yield * StringPrototype.valueOf$e(thiz);
 	}
 }
 
+function strPad(base, length, pad, left) {
+	if ( length &lt;= base.length ) return base;
+	let extra = length - base.length;
+	let padding = new Array(1 + Math.ceil(extra / pad.length)).join(pad).substr(0, extra);
+	return left ? padding + base : base + padding;
+
+}
 
 StringPrototype.prototype.wellKnownName = &apos;%StringProtoype%&apos;;
 StringPrototype.prototype.clazz = &apos;String&apos;;

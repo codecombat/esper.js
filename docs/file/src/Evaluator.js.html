@@ -34,6 +34,7 @@
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ASTPreprocessor.js~ASTPreprocessor.html">ASTPreprocessor</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CompletionRecord.js~CompletionRecord.html">CompletionRecord</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/DefaultRuntime.js~DefaultRuntime.html">DefaultRuntime</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html">Evaluator</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/EvaluatorInstruction.js~EvaluatorInstruction.html">EvaluatorInstruction</a></span></span></li>
@@ -58,6 +59,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/NumberPrototype.js~NumberPrototype.html">NumberPrototype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Object.js~ObjectObject.html">ObjectObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ObjectPrototype.js~ObjectPrototype.html">ObjectPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Proxy.js~ProxyClass.html">ProxyClass</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExp.js~RegExpObject.html">RegExpObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExpPrototype.js~RegExpProtoype.html">RegExpProtoype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/String.js~StringObject.html">StringObject</a></span></span></li>
@@ -128,7 +130,7 @@ class Evaluator {
 
 	pushAST(n, s) {
 		let that = this;
-		let gen = n ? this.branch(n,s) : (function*() {
+		let gen = n ? this.branch(n, s) : (function*() {
 			return yield EvaluatorInstruction.stepMinor;
 		})();
 		this.pushFrame({generator: gen, type: &apos;program&apos;, scope: s, ast: n});
@@ -153,7 +155,7 @@ class Evaluator {
 				let j = i + 1;
 				for (; j &lt; this.frames.length; ++j ) if ( this.frames[j].type != &apos;finally&apos; ) break;
 				let fr = this.frames[j];
-				this.processLostFrames(this.frames.splice(0,i + 1));
+				this.processLostFrames(this.frames.splice(0, i + 1));
 				this.saveFrameShortcuts();
 				Array.prototype.unshift.apply(this.frames, finallyFrames);
 				return fr;
@@ -223,14 +225,7 @@ class Evaluator {
 
 			if ( val &amp;&amp; val.then ) {
 				if ( top &amp;&amp; top.type !== &apos;await&apos; ) {
-					this.pushFrame({generator: (function *(f) {
-						while ( !f.resolved ) yield f;
-						if ( f.successful ) {
-							return f.value;
-						} else {
-							return new CompletionRecord(CompletionRecord.THROW, f.value);
-						}
-					})(val), type: &apos;await&apos;});
+					this.pushAwaitFrame(val);
 				}
 				return {done: false, value: val};
 			}
@@ -253,6 +248,7 @@ class Evaluator {
 					if ( this.debug ) {
 						this.dumpProfilingInformation();
 					}
+					if ( this.onCompletion ) this.onCompletion(result.value);
 					return {done: true, value: result.value};
 				} else continue;
 			}
@@ -265,8 +261,13 @@ class Evaluator {
 		if ( !(val.value instanceof Value) ) {
 			if ( val.value instanceof Error ) {
 				throw new Error(&apos;Value was an error: &apos; + val.value.stack);
+			} else if ( val.value.type ) {
+				switch ( val.value.type ) {
+					case &quot;TypeError&quot;: val.value = CompletionRecord.makeTypeError(this.realm, val.value.message).value;
+				}
+			} else {
+				throw new Error(&apos;Value isnt of type Value, its: &apos; + val.value.toString());
 			}
-			throw new Error(&apos;Value isnt of type Value, its&apos; + val.value.toString());
 		}
 
 		switch ( val.type ) {
@@ -287,7 +288,7 @@ class Evaluator {
 				//val.value.native = e;
 
 				let smallStack;
-				if ( e &amp;&amp; e.stack ) smallStack = e.stack.split(/\n/).slice(0,4).join(&apos;\n&apos;);
+				if ( e &amp;&amp; e.stack ) smallStack = e.stack.split(/\n/).slice(0, 4).join(&apos;\n&apos;);
 				let stk = this.buildStacktrace(e).join(&apos;\n    &apos;);
 				let bestFrame;
 				for ( let i = 0; i &lt; this.frames.length; ++i ) {
@@ -302,8 +303,10 @@ class Evaluator {
 						stk += &apos;\n-------------&apos;;
 						for ( let key in val.value.extra ) {
 							let vv = val.value.extra[key];
-							if ( vv instanceof Value ) stk += `\n${key} =&gt; ${vv.debugString}`;
-							else stk += `\n${key} =&gt; ${vv}`;
+							if ( vv instanceof Value ) stk += `
+${key} =&gt; ${vv.debugString}`;
+							else stk += `
+${key} =&gt; ${vv}`;
 						}
 					}
 				}
@@ -335,7 +338,9 @@ class Evaluator {
 					line = this.topFrame.ast.attr.pos.start_line;
 				}
 				//console.log(this.buildStacktrace(val.value.toNative()));
-				throw val.value.toNative();
+				let v = val.value.toNative();
+				if ( this.onError ) this.onError(v);
+				throw v;
 			case CompletionRecord.NORMAL:
 				return false;
 		}
@@ -360,6 +365,20 @@ class Evaluator {
 		this.saveFrameShortcuts();
 	}
 
+	pushAwaitFrame(val) {
+		this.pushFrame({
+			generator: (function *(f) {
+				while ( !f.resolved ) yield f;
+				if ( f.successful ) {
+					return f.value;
+				} else {
+					return new CompletionRecord(CompletionRecord.THROW, f.value);
+				}
+			})(val),
+			type: &apos;await&apos;
+		});
+	}
+
 	popFrame() {
 		let frame = this.frames.shift();
 		this.saveFrameShortcuts();
@@ -377,12 +396,16 @@ class Evaluator {
 		}
 	}
 
-	fromNative(native) {
-		return this.realm.valueFromNative(native);
+	fromNative(native, x) {
+		return this.realm.fromNative(native, x);
 	}
 
 	generator() {
-		return {next: this.next.bind(this), throw: (e) =&gt; { throw e; }};
+		return {
+			next: this.next.bind(this), 
+			throw: (e) =&gt; { throw e; },
+			evaluator: this
+		};
 	}
 
 	breakFrames() {
@@ -416,7 +439,7 @@ class Evaluator {
 					} else {
 						iref.setValue = function *(value) {
 							s.global.set(n.name, value, s);
-							let aref = s.global.ref(n.name, s.realm);
+							let aref = s.global.ref(n.name, s);
 							this.setValue = aref.setValue;
 							this.getValue = aref.getValue;
 							this.del = aref.delete;
@@ -443,7 +466,7 @@ class Evaluator {
 				}
 
 				this.topFrame.ast = oldAST;
-				return ref.ref(idx, s.realm);
+				return ref.ref(idx, s);
 
 			default:
 				return yield CompletionRecord.makeTypeError(s.realm, `Couldnt resolve ref component: ${n.type}`);
@@ -452,7 +475,7 @@ class Evaluator {
 
 	*partialMemberExpression(left, n, s) {
 		if ( n.computed ) {
-			let right = yield * this.branch(n.property,s);
+			let right = yield * this.branch(n.property, s);
 			return yield * left.get(right.toNative(), s.realm);
 		} else if ( n.property.type == &apos;Identifier&apos;) {
 			if ( !left ) throw `Cant index ${n.property.name} of undefined`;
@@ -487,13 +510,14 @@ class Evaluator {
 			case &apos;&lt;&lt;&apos;: return left.shiftLeft(right, realm);
 			case &apos;&gt;&gt;&apos;: return left.shiftRight(right, realm);
 			case &apos;&gt;&gt;&gt;&apos;: return left.shiftRightZF(right, realm);
+			case &apos;**&apos;: return left.pow(right, realm);
 			default:
 				throw new Error(&apos;Unknown binary operator: &apos; + operator);
 		}
 	}
 
 	branchFrame(type, n, s, extra) {
-		let frame = {generator: this.branch(n,s), type: type, scope: s, ast: n};
+		let frame = {generator: this.branch(n, s), type: type, scope: s, ast: n};
 
 		if ( extra ) {
 			for ( var k in extra ) {
@@ -534,7 +558,7 @@ class Evaluator {
 			n.dispatch = function*(that, n, s) {
 				let state = that.beforeNode(n);
 
-				let result = yield * nextStep(that, n,s);
+				let result = yield * nextStep(that, n, s);
 				if ( result instanceof CompletionRecord ) result = yield result;
 				if ( result &amp;&amp; result.then ) result = yield result;
 
@@ -555,16 +579,16 @@ class Evaluator {
 			this.profile[n] = o;
 		}
 		c = c || &apos;???&apos;;
-		if ( c in o ) o[c] += v
+		if ( c in o ) o[c] += v;
 		else o[c] = v;
 	}
 
 
 	dumpProfilingInformation() {
-		function lpad(s, l) { return s + new Array(Math.max(l - s.length,1)).join(&apos; &apos;); }
+		function lpad(s, l) { return s + new Array(Math.max(l - s.length, 1)).join(&apos; &apos;); }
 
 		if ( !this.profile ) {
-			console.log(&quot;===== Profile: None collected =====&quot;);
+			console.log(&apos;===== Profile: None collected =====&apos;);
 			return;
 		}
 

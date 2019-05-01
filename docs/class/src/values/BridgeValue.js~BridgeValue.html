@@ -34,6 +34,7 @@
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ASTPreprocessor.js~ASTPreprocessor.html">ASTPreprocessor</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CompletionRecord.js~CompletionRecord.html">CompletionRecord</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/DefaultRuntime.js~DefaultRuntime.html">DefaultRuntime</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html">Evaluator</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/EvaluatorInstruction.js~EvaluatorInstruction.html">EvaluatorInstruction</a></span></span></li>
@@ -58,6 +59,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/NumberPrototype.js~NumberPrototype.html">NumberPrototype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Object.js~ObjectObject.html">ObjectObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ObjectPrototype.js~ObjectPrototype.html">ObjectPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Proxy.js~ProxyClass.html">ProxyClass</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExp.js~RegExpObject.html">RegExpObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExpPrototype.js~RegExpProtoype.html">RegExpProtoype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/String.js~StringObject.html">StringObject</a></span></span></li>
@@ -892,7 +894,7 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/values/BridgeValue.js~BridgeValue.html#instance-method-ref">ref</a></span></span><span data-ice="signature">(name: <span>*</span>): <span>*</span></span>
+          <span data-ice="name"><span><a href="class/src/values/BridgeValue.js~BridgeValue.html#instance-method-ref">ref</a></span></span><span data-ice="signature">(name: <span>*</span>, s: <span>*</span>): <span>*</span></span>
         </p>
       </div>
       <div>
@@ -1055,6 +1057,33 @@
           
           
           <span data-ice="name"><span><a href="class/src/values/BridgeValue.js~BridgeValue.html#instance-method-toNative">toNative</a></span></span><span data-ice="signature">(): <span>*</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          <span data-ice="generator">*</span>
+          <span data-ice="name"><span><a href="class/src/values/BridgeValue.js~BridgeValue.html#instance-method-toStringValue">toStringValue</a></span></span><span data-ice="signature">(): <span>*</span></span>
         </p>
       </div>
       <div>
@@ -1941,6 +1970,33 @@ debugging.</p>
       <div>
         <p>
           
+          
+          <span data-ice="name"><span><a href="class/src/Value.js~Value.html#instance-method-getPrototypeProperty">getPrototypeProperty</a></span></span><span data-ice="signature">(): <span>*</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
           <span data-ice="generator">*</span>
           <span data-ice="name"><span><a href="class/src/Value.js~Value.html#instance-method-gt">gt</a></span></span><span data-ice="signature">(other: <span><a href="class/src/Value.js~Value.html">Value</a></span>): <span><a href="class/src/Value.js~Value.html">Value</a></span></span>
         </p>
@@ -1978,6 +2034,33 @@ debugging.</p>
         
         <div data-ice="description"><p>Computes the javascript expression <code>value &gt;= other</code></p>
 </div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          <span data-ice="generator">*</span>
+          <span data-ice="name"><span><a href="class/src/Value.js~Value.html#instance-method-inOperator">inOperator</a></span></span><span data-ice="signature">(other: <span>*</span>): <span>*</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
       </div>
     </td>
     <td>
@@ -2220,6 +2303,34 @@ debugging.</p>
         <p>
           
           <span data-ice="generator">*</span>
+          <span data-ice="name"><span><a href="class/src/Value.js~Value.html#instance-method-pow">pow</a></span></span><span data-ice="signature">(other: <span><a href="class/src/Value.js~Value.html">Value</a></span>): <span><a href="class/src/Value.js~Value.html">Value</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Computes the <code>value</code> raised to the <code>other</code> power (<code>value ** other</code>)</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          <span data-ice="generator">*</span>
           <span data-ice="name"><span><a href="class/src/Value.js~Value.html#instance-method-shiftLeft">shiftLeft</a></span></span><span data-ice="signature">(other: <span>*</span>): <span>*</span></span>
         </p>
       </div>
@@ -2363,6 +2474,34 @@ debugging.</p>
         
         
         
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/src/Value.js~Value.html#instance-method-toJS">toJS</a></span></span><span data-ice="signature">(): <span>*</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Deep copy this value to a native javascript value.</p>
+</div>
       </div>
     </td>
     <td>
@@ -2854,7 +2993,7 @@ debugging.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/values/BridgeValue.js.html#lineNumber120">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/values/BridgeValue.js.html#lineNumber122">source</a></span></span>
     </span>
   </h3>
 
@@ -2899,7 +3038,7 @@ debugging.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/values/BridgeValue.js.html#lineNumber128">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/values/BridgeValue.js.html#lineNumber130">source</a></span></span>
     </span>
   </h3>
 
@@ -2985,7 +3124,7 @@ debugging.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/values/BridgeValue.js.html#lineNumber124">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/values/BridgeValue.js.html#lineNumber126">source</a></span></span>
     </span>
   </h3>
 
@@ -3817,7 +3956,7 @@ i.e. <code>value[name]</code></p>
   
   
 
-  
+  <div data-ice="override"><h4>Override:</h4><span><a href="class/src/Value.js~Value.html#instance-method-inOperator">Value#inOperator</a></span></div>
 
   <div data-ice="properties"><div data-ice="properties">
   <h4 data-ice="title">Params:</h4>
@@ -4475,7 +4614,7 @@ i.e. <code>value[name]</code></p>
     
     
     
-    <span data-ice="name">ref</span><span data-ice="signature">(name: <span>*</span>): <span>*</span></span>
+    <span data-ice="name">ref</span><span data-ice="signature">(name: <span>*</span>, s: <span>*</span>): <span>*</span></span>
     <span class="right-info">
       
       
@@ -4500,6 +4639,12 @@ i.e. <code>value[name]</code></p>
     
     <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">name</td>
+      <td data-ice="type"><span>*</span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"></td>
+    </tr>
+<tr data-ice="property" data-depth="0">
+      <td data-ice="name" data-depth="0">s</td>
       <td data-ice="type"><span>*</span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
@@ -4911,6 +5056,61 @@ i.e. <code>value[name]</code></p>
 </div>
 
   <div data-ice="override"><h4>Override:</h4><span><a href="class/src/Value.js~Value.html#instance-method-toNative">Value#toNative</a></span></div>
+
+  <div data-ice="properties">
+</div>
+
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tbody>
+        <tr>
+          <td class="return-type" data-ice="returnType"><span>*</span></td>
+          
+        </tr>
+      </tbody>
+    </table>
+    <div data-ice="returnProperties">
+</div>
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-toStringValue">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    <span data-ice="generator">*</span>
+    <span data-ice="name">toStringValue</span><span data-ice="signature">(): <span>*</span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/values/BridgeValue.js.html#lineNumber120">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  
+
+  <div data-ice="override"><h4>Override:</h4><span><a href="class/src/Value.js~Value.html#instance-method-toStringValue">Value#toStringValue</a></span></div>
 
   <div data-ice="properties">
 </div>

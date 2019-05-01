@@ -34,6 +34,7 @@
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ASTPreprocessor.js~ASTPreprocessor.html">ASTPreprocessor</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CompletionRecord.js~CompletionRecord.html">CompletionRecord</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/DefaultRuntime.js~DefaultRuntime.html">DefaultRuntime</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html">Evaluator</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/EvaluatorInstruction.js~EvaluatorInstruction.html">EvaluatorInstruction</a></span></span></li>
@@ -58,6 +59,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/NumberPrototype.js~NumberPrototype.html">NumberPrototype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Object.js~ObjectObject.html">ObjectObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ObjectPrototype.js~ObjectPrototype.html">ObjectPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Proxy.js~ProxyClass.html">ProxyClass</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExp.js~RegExpObject.html">RegExpObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExpPrototype.js~RegExpProtoype.html">RegExpProtoype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/String.js~StringObject.html">StringObject</a></span></span></li>
@@ -225,6 +227,27 @@ class ArrayPrototype extends EasyObjectValue {
 		return Value.false;
 	}
 
+	static *find$e(thiz, args, s) {
+		let fx = Value.undef;
+		let targ = Value.undef;
+		if ( args.length &gt; 0 ) fx = args[0];
+		if ( args.length &gt; 1 ) targ = args[1];
+
+		let test = function *(v, i) {
+			let res = yield * fx.call(targ, [v, Value.fromNative(i), thiz], s);
+			return res.truthy;
+		};
+
+		let l = yield * getLength(thiz);
+		for ( let i = 0; i &lt; l; ++i ) {
+			let tv = yield * thiz.get(i);
+			let tru = yield * test(tv, i);
+			if ( tru ) return tv;
+		}
+
+		return Value.undef;
+	}
+
 	static *map$e(thiz, args, s) {
 		let fx = Value.undef;
 		let targ = Value.undef;
@@ -281,6 +304,7 @@ class ArrayPrototype extends EasyObjectValue {
 		}
 		return Value.fromNative(-1);
 	}
+
 
 	static *lastIndexOf$e(thiz, args) {
 		//TODO: Call ToObject() on thisz;
@@ -470,7 +494,7 @@ class ArrayPrototype extends EasyObjectValue {
 		if ( args.length &gt; 0 ) start = yield * args[0].toIntNative();
 
 		if ( start &gt; len ) start = len;
-		else if ( start &lt; 0 ) start = len - start;
+		else if ( start &lt; 0 ) start = len + start;
 
 		if ( args.length &gt; 1 ) deleteCount = yield * args[1].toIntNative();
 		else deleteCount = len - start;
@@ -554,6 +578,28 @@ class ArrayPrototype extends EasyObjectValue {
 		let nl = Value.fromNative(len + amt);
 		yield * thiz.set(&apos;length&apos;, nl, s);
 		return nl;
+	}
+
+	static *fill$e(thiz, args, s) {
+		let l = yield * getLength(thiz);
+		let value = args[0] || Value.undef;
+		let start = args[1] || Value.zero;
+		let startn = (yield * start.toNumberValue()).native;
+		let end = args[2] || Value.fromNative(l);
+		let endn = (yield * end.toNumberValue()).native;
+
+		if ( isNaN(startn) ) startn = 0;
+		else if ( startn &lt; 0 ) startn = l + startn;
+
+		if ( isNaN(endn) ) endn = 0;
+		else if ( endn &lt; 0 ) endn = l + endn;
+
+		if ( l &gt; startn ) {
+			for ( let i = startn; i &lt; endn; ++i ) {
+				yield * thiz.set(i, value, s);
+			}
+		}
+		return thiz;
 	}
 
 }

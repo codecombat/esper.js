@@ -34,6 +34,7 @@
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ASTPreprocessor.js~ASTPreprocessor.html">ASTPreprocessor</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CompletionRecord.js~CompletionRecord.html">CompletionRecord</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/DefaultRuntime.js~DefaultRuntime.html">DefaultRuntime</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html">Evaluator</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/EvaluatorInstruction.js~EvaluatorInstruction.html">EvaluatorInstruction</a></span></span></li>
@@ -58,6 +59,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/NumberPrototype.js~NumberPrototype.html">NumberPrototype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Object.js~ObjectObject.html">ObjectObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ObjectPrototype.js~ObjectPrototype.html">ObjectPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Proxy.js~ProxyClass.html">ProxyClass</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExp.js~RegExpObject.html">RegExpObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExpPrototype.js~RegExpProtoype.html">RegExpProtoype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/String.js~StringObject.html">StringObject</a></span></span></li>
@@ -91,6 +93,7 @@
 const PrimitiveValue = require(&apos;./PrimitiveValue&apos;);
 const ObjectValue = require(&apos;./ObjectValue&apos;);
 const Value = require(&apos;../Value&apos;);
+const GenDash = require(&apos;../GenDash&apos;);
 let NumberValue;
 
 
@@ -104,7 +107,18 @@ class ArrayValue extends ObjectValue {
 		return yield * super.get(name, realm);
 	}
 
-	adjustLength(name) {
+	adjustLength(name, value) {
+		if ( name == &apos;length&apos; &amp;&amp; this.properties.length ) {
+			//TODO: 15.4.5.2 specifies more complex behavior here.
+			let target = GenDash.syncGenHelper(value.toIntNative());
+			let length = this.getLengthSync();
+			if ( target &lt; length ) {
+				for ( let i = length - 1; i &gt;= target; --i ) {
+					delete this.properties[i];
+				}
+			}
+		}
+
 		if ( !isNaN(parseInt(name)) ) {
 			let length = this.getLengthSync();
 			if ( name &gt;= length ) {
@@ -118,12 +132,12 @@ class ArrayValue extends ObjectValue {
 	}
 
 	set(name, v) {
-		this.adjustLength(name);
+		this.adjustLength(name, v);
 		return super.set(name, v);
 	}
 
 	setImmediate(name, v) {
-		this.adjustLength(name);
+		this.adjustLength(name, v);
 		return super.setImmediate(name, v);
 	}
 
@@ -131,7 +145,7 @@ class ArrayValue extends ObjectValue {
 	toNative() {
 		let out = new Array(this.getLengthSync());
 		for ( let i of Object.keys(this.properties)) {
-			if ( i === &quot;length&quot; ) continue;
+			if ( i === &apos;length&apos; ) continue;
 			let po = this.properties[i];
 			if ( po &amp;&amp; po.value ) {
 				if ( !po.direct ) {
@@ -145,6 +159,16 @@ class ArrayValue extends ObjectValue {
 					out[i] = po.value.toNative();
 				}
 			}
+		}
+		return out;
+	}
+
+	toJS() {
+		let out = new Array(this.getLengthSync());
+		for ( let i of Object.keys(this.properties)) {
+			if ( i === &apos;length&apos; ) continue;
+			let po = this.properties[i];
+			out[i] = po.value.toJS();
 		}
 		return out;
 	}

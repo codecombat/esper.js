@@ -14,7 +14,7 @@
     "dev-server": "webpack-dev-server src/index.js --content-base contrib/ui",
     "preinstall": "node contrib/install-plugin-deps.js",
     "prepublish": "node contrib/build.js",
-    "style": "jscs src plugins/*/*.js"
+    "style": "jscs src plugins/*/*.js test/*.js"
   },
   "bin": {
     "esper": "./contrib/cli.js"
@@ -48,7 +48,7 @@
   ],
   "devDependencies": {
     "babel-core": "^6.24.1",
-    "babel-loader": "^6.4.1",
+    "babel-loader": "^7.1.4",
     "babel-plugin-check-es2015-constants": "^6.22.0",
     "babel-plugin-transform-es2015-arrow-functions": "^6.22.0",
     "babel-plugin-transform-es2015-block-scoped-functions": "^6.22.0",
@@ -74,20 +74,19 @@
     "babel-regenerator-runtime": "^6.5.0",
     "babel-register": "^6.24.1",
     "babel-runtime": "^6.23.0",
-    "babili-webpack-plugin": "0.0.11",
     "chai": "^3.5.0",
     "core-js": "^2.4.1",
     "esdoc": "^0.5.2",
     "istanbul": "^1.0.0-alpha.2",
-    "json-loader": "^0.5.4",
+    "jscs": "^3.0.7",
     "lodash": "^4.17.4",
     "lua2js": "^0.0.11",
-    "mocha": "^3.2.0",
-    "mocha-loader": "^1.1.1",
+    "mocha": "^6.1.2",
+    "mocha-loader": "^2.0.1",
     "raw-loader": "^0.5.1",
-    "v8-profiler": "^5.7.0",
-    "webpack": "^2.3.3",
-    "webpack-dev-server": "^2.4.2"
+    "webpack": "^4.12.0",
+    "webpack-cli": "^3.0.8",
+    "webpack-dev-server": "^3.1.4"
   },
   "dependencies": {
     "commander": "^2.9.0",

@@ -34,6 +34,7 @@
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ASTPreprocessor.js~ASTPreprocessor.html">ASTPreprocessor</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CompletionRecord.js~CompletionRecord.html">CompletionRecord</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/DefaultRuntime.js~DefaultRuntime.html">DefaultRuntime</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html">Evaluator</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/EvaluatorInstruction.js~EvaluatorInstruction.html">EvaluatorInstruction</a></span></span></li>
@@ -58,6 +59,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/NumberPrototype.js~NumberPrototype.html">NumberPrototype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Object.js~ObjectObject.html">ObjectObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ObjectPrototype.js~ObjectPrototype.html">ObjectPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Proxy.js~ProxyClass.html">ProxyClass</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExp.js~RegExpObject.html">RegExpObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExpPrototype.js~RegExpProtoype.html">RegExpProtoype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/String.js~StringObject.html">StringObject</a></span></span></li>
@@ -85,13 +87,13 @@
 </nav>
 
 <div class="content" data-ice="content"><div class="header-notice">
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import ArrayObject from &apos;<span><a href="file/src/stdlib/Array.js.html#lineNumber7">esper.js/src/stdlib/Array.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import ArrayObject from &apos;<span><a href="file/src/stdlib/Array.js.html#lineNumber8">esper.js/src/stdlib/Array.js</a></span>&apos;</code></pre></div>
   <span data-ice="access">public</span>
   <span data-ice="kind">class</span>
   
   
   
-  <span data-ice="source">| <span><a href="file/src/stdlib/Array.js.html#lineNumber7">source</a></span></span>
+  <span data-ice="source">| <span><a href="file/src/stdlib/Array.js.html#lineNumber8">source</a></span></span>
 </div>
 
 <div class="self-detail detail">
@@ -205,6 +207,33 @@
           
           
           <span data-ice="name"><span><a href="class/src/stdlib/Array.js~ArrayObject.html#instance-method-callPrototype">callPrototype</a></span></span><span data-ice="signature">(realm: <span>*</span>): <span>*</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/src/stdlib/Array.js~ArrayObject.html#instance-method-constructorFor">constructorFor</a></span></span><span data-ice="signature">(realm: <span>*</span>): <span>*</span></span>
         </p>
       </div>
       <div>
@@ -1010,6 +1039,33 @@ debugging.</p>
       <div>
         <p>
           
+          
+          <span data-ice="name"><span><a href="class/src/Value.js~Value.html#instance-method-getPrototypeProperty">getPrototypeProperty</a></span></span><span data-ice="signature">(): <span>*</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
           <span data-ice="generator">*</span>
           <span data-ice="name"><span><a href="class/src/Value.js~Value.html#instance-method-gt">gt</a></span></span><span data-ice="signature">(other: <span><a href="class/src/Value.js~Value.html">Value</a></span>): <span><a href="class/src/Value.js~Value.html">Value</a></span></span>
         </p>
@@ -1047,6 +1103,33 @@ debugging.</p>
         
         <div data-ice="description"><p>Computes the javascript expression <code>value &gt;= other</code></p>
 </div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          <span data-ice="generator">*</span>
+          <span data-ice="name"><span><a href="class/src/Value.js~Value.html#instance-method-inOperator">inOperator</a></span></span><span data-ice="signature">(other: <span>*</span>): <span>*</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
       </div>
     </td>
     <td>
@@ -1289,6 +1372,34 @@ debugging.</p>
         <p>
           
           <span data-ice="generator">*</span>
+          <span data-ice="name"><span><a href="class/src/Value.js~Value.html#instance-method-pow">pow</a></span></span><span data-ice="signature">(other: <span><a href="class/src/Value.js~Value.html">Value</a></span>): <span><a href="class/src/Value.js~Value.html">Value</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Computes the <code>value</code> raised to the <code>other</code> power (<code>value ** other</code>)</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          <span data-ice="generator">*</span>
           <span data-ice="name"><span><a href="class/src/Value.js~Value.html#instance-method-shiftLeft">shiftLeft</a></span></span><span data-ice="signature">(other: <span>*</span>): <span>*</span></span>
         </p>
       </div>
@@ -1432,6 +1543,34 @@ debugging.</p>
         
         
         
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/src/Value.js~Value.html#instance-method-toJS">toJS</a></span></span><span data-ice="signature">(): <span>*</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Deep copy this value to a native javascript value.</p>
+</div>
       </div>
     </td>
     <td>
@@ -2517,6 +2656,33 @@ debugging.</p>
         <p>
           
           
+          <span data-ice="name"><span><a href="class/src/values/ObjectValue.js~ObjectValue.html#instance-method-toJS">toJS</a></span></span><span data-ice="signature">(): <span>*</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
           <span data-ice="name"><span><a href="class/src/values/ObjectValue.js~ObjectValue.html#instance-method-toNative">toNative</a></span></span><span data-ice="signature">(): <span>*</span></span>
         </p>
       </div>
@@ -2700,6 +2866,33 @@ debugging.</p>
       
     </td>
   </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/src/values/EasyObjectValue.js~EasyObjectValue.html#instance-member-easyRef">easyRef</a></span></span><span data-ice="signature">: <span>*</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
 </tbody>
 </table>
 </div>
@@ -2719,7 +2912,7 @@ debugging.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/stdlib/Array.js.html#lineNumber22">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/stdlib/Array.js.html#lineNumber28">source</a></span></span>
     </span>
   </h3>
 
@@ -2801,7 +2994,7 @@ debugging.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/stdlib/Array.js.html#lineNumber8">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/stdlib/Array.js.html#lineNumber9">source</a></span></span>
     </span>
   </h3>
 
@@ -2884,7 +3077,78 @@ debugging.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/stdlib/Array.js.html#lineNumber17">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/stdlib/Array.js.html#lineNumber22">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  
+
+  
+
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" data-depth="0">realm</td>
+      <td data-ice="type"><span>*</span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"></td>
+    </tr>
+</tbody>
+  </table>
+</div>
+</div>
+
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tbody>
+        <tr>
+          <td class="return-type" data-ice="returnType"><span>*</span></td>
+          
+        </tr>
+      </tbody>
+    </table>
+    <div data-ice="returnProperties">
+</div>
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-constructorFor">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span data-ice="name">constructorFor</span><span data-ice="signature">(realm: <span>*</span>): <span>*</span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/stdlib/Array.js.html#lineNumber23">source</a></span></span>
     </span>
   </h3>
 

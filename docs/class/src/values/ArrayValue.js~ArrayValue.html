@@ -34,6 +34,7 @@
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ASTPreprocessor.js~ASTPreprocessor.html">ASTPreprocessor</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CompletionRecord.js~CompletionRecord.html">CompletionRecord</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/DefaultRuntime.js~DefaultRuntime.html">DefaultRuntime</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html">Evaluator</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/EvaluatorInstruction.js~EvaluatorInstruction.html">EvaluatorInstruction</a></span></span></li>
@@ -58,6 +59,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/NumberPrototype.js~NumberPrototype.html">NumberPrototype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Object.js~ObjectObject.html">ObjectObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ObjectPrototype.js~ObjectPrototype.html">ObjectPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Proxy.js~ProxyClass.html">ProxyClass</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExp.js~RegExpObject.html">RegExpObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExpPrototype.js~RegExpProtoype.html">RegExpProtoype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/String.js~StringObject.html">StringObject</a></span></span></li>
@@ -85,13 +87,13 @@
 </nav>
 
 <div class="content" data-ice="content"><div class="header-notice">
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import ArrayValue from &apos;<span><a href="file/src/values/ArrayValue.js.html#lineNumber10">esper.js/src/values/ArrayValue.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import ArrayValue from &apos;<span><a href="file/src/values/ArrayValue.js.html#lineNumber11">esper.js/src/values/ArrayValue.js</a></span>&apos;</code></pre></div>
   <span data-ice="access">public</span>
   <span data-ice="kind">class</span>
   
   
   
-  <span data-ice="source">| <span><a href="file/src/values/ArrayValue.js.html#lineNumber10">source</a></span></span>
+  <span data-ice="source">| <span><a href="file/src/values/ArrayValue.js.html#lineNumber11">source</a></span></span>
 </div>
 
 <div class="self-detail detail">
@@ -243,7 +245,7 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/values/ArrayValue.js~ArrayValue.html#instance-method-adjustLength">adjustLength</a></span></span><span data-ice="signature">(name: <span>*</span>)</span>
+          <span data-ice="name"><span><a href="class/src/values/ArrayValue.js~ArrayValue.html#instance-method-adjustLength">adjustLength</a></span></span><span data-ice="signature">(name: <span>*</span>, value: <span>*</span>)</span>
         </p>
       </div>
       <div>
@@ -352,6 +354,33 @@
           
           
           <span data-ice="name"><span><a href="class/src/values/ArrayValue.js~ArrayValue.html#instance-method-setImmediate">setImmediate</a></span></span><span data-ice="signature">(name: <span>*</span>, v: <span>*</span>): <span>*</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/src/values/ArrayValue.js~ArrayValue.html#instance-method-toJS">toJS</a></span></span><span data-ice="signature">(): <span>*</span></span>
         </p>
       </div>
       <div>
@@ -1184,6 +1213,33 @@ debugging.</p>
       <div>
         <p>
           
+          
+          <span data-ice="name"><span><a href="class/src/Value.js~Value.html#instance-method-getPrototypeProperty">getPrototypeProperty</a></span></span><span data-ice="signature">(): <span>*</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
           <span data-ice="generator">*</span>
           <span data-ice="name"><span><a href="class/src/Value.js~Value.html#instance-method-gt">gt</a></span></span><span data-ice="signature">(other: <span><a href="class/src/Value.js~Value.html">Value</a></span>): <span><a href="class/src/Value.js~Value.html">Value</a></span></span>
         </p>
@@ -1221,6 +1277,33 @@ debugging.</p>
         
         <div data-ice="description"><p>Computes the javascript expression <code>value &gt;= other</code></p>
 </div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          <span data-ice="generator">*</span>
+          <span data-ice="name"><span><a href="class/src/Value.js~Value.html#instance-method-inOperator">inOperator</a></span></span><span data-ice="signature">(other: <span>*</span>): <span>*</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
       </div>
     </td>
     <td>
@@ -1463,6 +1546,34 @@ debugging.</p>
         <p>
           
           <span data-ice="generator">*</span>
+          <span data-ice="name"><span><a href="class/src/Value.js~Value.html#instance-method-pow">pow</a></span></span><span data-ice="signature">(other: <span><a href="class/src/Value.js~Value.html">Value</a></span>): <span><a href="class/src/Value.js~Value.html">Value</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Computes the <code>value</code> raised to the <code>other</code> power (<code>value ** other</code>)</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          <span data-ice="generator">*</span>
           <span data-ice="name"><span><a href="class/src/Value.js~Value.html#instance-method-shiftLeft">shiftLeft</a></span></span><span data-ice="signature">(other: <span>*</span>): <span>*</span></span>
         </p>
       </div>
@@ -1606,6 +1717,34 @@ debugging.</p>
         
         
         
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/src/Value.js~Value.html#instance-method-toJS">toJS</a></span></span><span data-ice="signature">(): <span>*</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Deep copy this value to a native javascript value.</p>
+</div>
       </div>
     </td>
     <td>
@@ -2691,6 +2830,33 @@ debugging.</p>
         <p>
           
           
+          <span data-ice="name"><span><a href="class/src/values/ObjectValue.js~ObjectValue.html#instance-method-toJS">toJS</a></span></span><span data-ice="signature">(): <span>*</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
           <span data-ice="name"><span><a href="class/src/values/ObjectValue.js~ObjectValue.html#instance-method-toNative">toNative</a></span></span><span data-ice="signature">(): <span>*</span></span>
         </p>
       </div>
@@ -2832,7 +2998,7 @@ debugging.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/values/ArrayValue.js.html#lineNumber65">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/values/ArrayValue.js.html#lineNumber87">source</a></span></span>
     </span>
   </h3>
 
@@ -2912,7 +3078,7 @@ debugging.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/values/ArrayValue.js.html#lineNumber12">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/values/ArrayValue.js.html#lineNumber13">source</a></span></span>
     </span>
   </h3>
 
@@ -2974,7 +3140,7 @@ debugging.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/values/ArrayValue.js.html#lineNumber80">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/values/ArrayValue.js.html#lineNumber102">source</a></span></span>
     </span>
   </h3>
 
@@ -3018,11 +3184,11 @@ debugging.</p>
     
     
     
-    <span data-ice="name">adjustLength</span><span data-ice="signature">(name: <span>*</span>)</span>
+    <span data-ice="name">adjustLength</span><span data-ice="signature">(name: <span>*</span>, value: <span>*</span>)</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/values/ArrayValue.js.html#lineNumber20">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/values/ArrayValue.js.html#lineNumber21">source</a></span></span>
     </span>
   </h3>
 
@@ -3043,6 +3209,12 @@ debugging.</p>
     
     <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">name</td>
+      <td data-ice="type"><span>*</span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"></td>
+    </tr>
+<tr data-ice="property" data-depth="0">
+      <td data-ice="name" data-depth="0">value</td>
       <td data-ice="type"><span>*</span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
@@ -3081,7 +3253,7 @@ debugging.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/values/ArrayValue.js.html#lineNumber16">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/values/ArrayValue.js.html#lineNumber17">source</a></span></span>
     </span>
   </h3>
 
@@ -3160,7 +3332,7 @@ i.e. <code>value[name]</code></p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/values/ArrayValue.js.html#lineNumber29">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/values/ArrayValue.js.html#lineNumber41">source</a></span></span>
     </span>
   </h3>
 
@@ -3215,7 +3387,7 @@ i.e. <code>value[name]</code></p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/values/ArrayValue.js.html#lineNumber33">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/values/ArrayValue.js.html#lineNumber45">source</a></span></span>
     </span>
   </h3>
 
@@ -3292,7 +3464,7 @@ i.e. <code>value[name]</code></p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/values/ArrayValue.js.html#lineNumber38">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/values/ArrayValue.js.html#lineNumber50">source</a></span></span>
     </span>
   </h3>
 
@@ -3358,6 +3530,62 @@ i.e. <code>value[name]</code></p>
   
 </div>
 <div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-toJS">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span data-ice="name">toJS</span><span data-ice="signature">(): <span>*</span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/values/ArrayValue.js.html#lineNumber77">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>Deep copy this value to a native javascript value.</p>
+</div>
+
+  <div data-ice="override"><h4>Override:</h4><span><a href="class/src/values/ObjectValue.js~ObjectValue.html#instance-method-toJS">ObjectValue#toJS</a></span></div>
+
+  <div data-ice="properties">
+</div>
+
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tbody>
+        <tr>
+          <td class="return-type" data-ice="returnType"><span>*</span></td>
+          
+        </tr>
+      </tbody>
+    </table>
+    <div data-ice="returnProperties">
+</div>
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
   <h3 data-ice="anchor" id="instance-method-toNative">
     <span class="access" data-ice="access">public</span>
     
@@ -3369,7 +3597,7 @@ i.e. <code>value[name]</code></p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/values/ArrayValue.js.html#lineNumber44">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/values/ArrayValue.js.html#lineNumber56">source</a></span></span>
     </span>
   </h3>
 

@@ -2,8 +2,8 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <base data-ice="baseUrl" href="../../">
-  <title data-ice="title">src/RuntimeError.js | API Document</title>
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/stdlib/Proxy.js | API Document</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -19,7 +19,7 @@
   <a href="identifiers.html">Reference</a>
   <a href="source.html">Source</a>
   
-  <a data-ice="repoURL" href="git+ssh://git@github.com/codecombat/esper-staging.git">Repository</a>
+  
   <div class="search-box">
   <span>
     <img src="./image/search.png">
@@ -34,11 +34,12 @@
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ASTPreprocessor.js~ASTPreprocessor.html">ASTPreprocessor</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CompletionRecord.js~CompletionRecord.html">CompletionRecord</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/DefaultRuntime.js~DefaultRuntime.html">DefaultRuntime</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html">Evaluator</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/EvaluatorInstruction.js~EvaluatorInstruction.html">EvaluatorInstruction</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/GenDash.js~GenDash.html">GenDash</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Realm.js~Realm.html">Realm</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/RuntimeError.js~RuntimeError.html">RuntimeError</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Scope.js~Scope.html">Scope</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Value.js~Value.html">Value</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">stdlib</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Array.js~ArrayObject.html">ArrayObject</a></span></span></li>
@@ -58,6 +59,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/NumberPrototype.js~NumberPrototype.html">NumberPrototype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Object.js~ObjectObject.html">ObjectObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ObjectPrototype.js~ObjectPrototype.html">ObjectPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Proxy.js~ProxyClass.html">ProxyClass</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExp.js~RegExpObject.html">RegExpObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExpPrototype.js~RegExpProtoype.html">RegExpProtoype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/String.js~StringObject.html">StringObject</a></span></span></li>
@@ -84,28 +86,105 @@
 </div>
 </nav>
 
-<div class="content" data-ice="content"><h1 data-ice="title">src/RuntimeError.js</h1>
+<div class="content" data-ice="content"><h1 data-ice="title">src/stdlib/Proxy.js</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
-/* @flow */
 
-class RuntimeError extends Error {
-	constructor(message) {
-		super();
-		this.message = message;
+const Value = require(&apos;../Value&apos;);
+const ObjectValue = require(&apos;../values/ObjectValue&apos;);
+const EasyObjectValue = require(&apos;../values/EasyObjectValue&apos;);
+const CompletionRecord = require(&apos;../CompletionRecord&apos;);
+
+class ProxyClass extends ObjectValue {
+	*call(thiz, args, scope, ext) {
+		let asConstructor = ext &amp;&amp; ext.asConstructor;
+		if ( !asConstructor ) {
+			return Value.fromNative(0);
+		}
+		thiz.target = args[0];
+		thiz.handler = args[1];
+		thiz.realm = scope.realm;
 	}
 
-	static refrence(variable) {
-		return new RuntimeError(`${variable} is not defined`);
+	*makeThisForNew(realm) {
+		return new ProxyValue(realm);
 	}
 }
 
-module.exports = RuntimeError;
+class ProxyValue extends Value {
+	*handlerImplemented(w) {
+		let en = (yield * this.handler.inOperator(Value.fromNative(w))).toNative();
+		return !!en;
+	}
+
+	ref(name, ctxthis) {
+		return {
+			name: name,
+			object: this,
+			isVariable: false,
+			del: () =&gt; false, //Doesnt support being a generator yet.
+			getValue:  () =&gt; this.get(name, s),
+			setValue: function(to, s) { return this.object.set(this.name, to, s); }
+		};
+	}
+
+	*invokeHandler(w, args) {
+		let fn = yield * this.handler.get(w);
+		return yield * fn.call(Value.under, args.map((x) =&gt; this.realm.fromNative(x)), this.realm.globalScope)
+	}
+
+	*get(name, realm, ctx) {
+		if ( yield * this.handlerImplemented(&apos;get&apos;) ) {
+			return yield * this.invokeHandler(&apos;get&apos;, [name]);
+		}
+		return yield * this.target.get(name, realm, ctx);
+	}
+
+	*set(name, value, realm, ctx) {
+		if ( yield * this.handlerImplemented(&apos;set&apos;) ) {
+			return yield * this.invokeHandler(&apos;set&apos;, [name, value]);
+		}
+		return yield * this.target.set(name, value, realm, ctx);
+	}
+
+	*inOperator(other) {
+		if ( yield * this.handlerImplemented(&apos;has&apos;) ) {
+			return yield * this.invokeHandler(&apos;has&apos;, [other]);
+		}
+		return yield * this.target.inOperator(other, realm, ctx);		
+	}
+
+	*delete(name) {
+		if ( yield * this.handlerImplemented(&apos;delete&apos;) ) {
+			return yield * this.invokeHandler(&apos;delete&apos;, [other]);
+		}
+		return yield * this.target.delete(other, realm, ctx);		
+	}
+
+	*call(thiz, args, scope, ext) {
+		let asConstructor = ext &amp;&amp; ext.asConstructor;
+		let key = &apos;apply&apos;;
+		if ( asConstructor ) key = &apos;construct&apos;;
+		if ( yield * this.handlerImplemented(key) ) {
+			return yield * this.invokeHandler(key, args);
+		}
+		if ( !this.target.call ) return CompletionRecord.makeTypeError(scope.realm, &quot;Base object not invokeable.&quot;);
+		else return yield * this.target.call(thiz, args, scope, ext);			
+	}
+
+	*makeThisForNew(realm) {
+		return this.target.makeThisForNew(realm);
+	}
+
+	toNative() { return &quot;[Proxy]&quot;; }
+}
+
+module.exports = ProxyClass;
 </code></pre>
 
 </div>
 
 <footer class="footer">
-  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.4.5)</span></a>
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
 </footer>
 
 <script src="script/search_index.js"></script>

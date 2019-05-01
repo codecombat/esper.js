@@ -66,6 +66,12 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
+    "esper.js/src/defaultruntime.js~defaultruntime",
+    "class/src/DefaultRuntime.js~DefaultRuntime.html",
+    "<span>DefaultRuntime</span> <span class=\"search-result-import-path\">esper.js/src/DefaultRuntime.js</span>",
+    "class"
+  ],
+  [
     "esper.js/src/values/easynativefunction.js~easynativefunction",
     "class/src/values/EasyNativeFunction.js~EasyNativeFunction.html",
     "<span>EasyNativeFunction</span> <span class=\"search-result-import-path\">esper.js/src/values/EasyNativeFunction.js</span>",
@@ -219,6 +225,12 @@ window.esdocSearchIndex = [
     "esper.js/src/values/propertydescriptor.js~propertydescriptor",
     "class/src/values/PropertyDescriptor.js~PropertyDescriptor.html",
     "<span>PropertyDescriptor</span> <span class=\"search-result-import-path\">esper.js/src/values/PropertyDescriptor.js</span>",
+    "class"
+  ],
+  [
+    "esper.js/src/stdlib/proxy.js~proxyclass",
+    "class/src/stdlib/Proxy.js~ProxyClass.html",
+    "<span>ProxyClass</span> <span class=\"search-result-import-path\">esper.js/src/stdlib/Proxy.js</span>",
     "class"
   ],
   [
@@ -642,6 +654,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/astpreprocessor.js~astpreprocessor.clone",
+    "class/src/ASTPreprocessor.js~ASTPreprocessor.html#static-method-clone",
+    "src/ASTPreprocessor.js~ASTPreprocessor.clone",
+    "method"
+  ],
+  [
     "src/astpreprocessor.js~astpreprocessor.process",
     "class/src/ASTPreprocessor.js~ASTPreprocessor.html#static-method-process",
     "src/ASTPreprocessor.js~ASTPreprocessor.process",
@@ -720,6 +738,24 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/defaultruntime.js",
+    "file/src/DefaultRuntime.js.html",
+    "src/DefaultRuntime.js",
+    "file"
+  ],
+  [
+    "src/defaultruntime.js~defaultruntime#time",
+    "class/src/DefaultRuntime.js~DefaultRuntime.html#instance-method-time",
+    "src/DefaultRuntime.js~DefaultRuntime#time",
+    "method"
+  ],
+  [
+    "src/defaultruntime.js~defaultruntime#wait",
+    "class/src/DefaultRuntime.js~DefaultRuntime.html#instance-method-wait",
+    "src/DefaultRuntime.js~DefaultRuntime#wait",
+    "method"
+  ],
+  [
     "src/engine.js",
     "file/src/Engine.js.html",
     "src/Engine.js",
@@ -774,6 +810,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/engine.js~engine#evaldetatched",
+    "class/src/Engine.js~Engine.html#instance-method-evalDetatched",
+    "src/Engine.js~Engine#evalDetatched",
+    "method"
+  ],
+  [
     "src/engine.js~engine#evalsync",
     "class/src/Engine.js~Engine.html#instance-method-evalSync",
     "src/Engine.js~Engine#evalSync",
@@ -783,6 +825,12 @@ window.esdocSearchIndex = [
     "src/engine.js~engine#evaluator",
     "class/src/Engine.js~Engine.html#instance-member-evaluator",
     "src/Engine.js~Engine#evaluator",
+    "member"
+  ],
+  [
+    "src/engine.js~engine#evloop",
+    "class/src/Engine.js~Engine.html#instance-member-evloop",
+    "src/Engine.js~Engine#evloop",
     "member"
   ],
   [
@@ -835,7 +883,13 @@ window.esdocSearchIndex = [
   ],
   [
     "src/engine.js~engine#generator",
-    "class/src/Engine.js~Engine.html#instance-member-generator",
+    "class/src/Engine.js~Engine.html#instance-get-generator",
+    "src/Engine.js~Engine#generator",
+    "member"
+  ],
+  [
+    "src/engine.js~engine#generator",
+    "class/src/Engine.js~Engine.html#instance-set-generator",
     "src/Engine.js~Engine#generator",
     "member"
   ],
@@ -912,10 +966,22 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/engine.js~engine#runtime",
+    "class/src/Engine.js~Engine.html#instance-member-runtime",
+    "src/Engine.js~Engine#runtime",
+    "member"
+  ],
+  [
     "src/engine.js~engine#step",
     "class/src/Engine.js~Engine.html#instance-method-step",
     "src/Engine.js~Engine#step",
     "method"
+  ],
+  [
+    "src/engine.js~engine#threads",
+    "class/src/Engine.js~Engine.html#instance-member-threads",
+    "src/Engine.js~Engine#threads",
+    "member"
   ],
   [
     "src/evaluator.js",
@@ -1098,6 +1164,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/evaluator.js~evaluator#pushawaitframe",
+    "class/src/Evaluator.js~Evaluator.html#instance-method-pushAwaitFrame",
+    "src/Evaluator.js~Evaluator#pushAwaitFrame",
+    "method"
+  ],
+  [
     "src/evaluator.js~evaluator#pushframe",
     "class/src/Evaluator.js~Evaluator.html#instance-method-pushFrame",
     "src/Evaluator.js~Evaluator#pushFrame",
@@ -1185,12 +1257,6 @@ window.esdocSearchIndex = [
     "src/evaluatorinstruction.js~evaluatorinstruction.branch",
     "class/src/EvaluatorInstruction.js~EvaluatorInstruction.html#static-method-branch",
     "src/EvaluatorInstruction.js~EvaluatorInstruction.branch",
-    "method"
-  ],
-  [
-    "src/evaluatorinstruction.js~evaluatorinstruction.getevaluator",
-    "class/src/EvaluatorInstruction.js~EvaluatorInstruction.html#static-method-getEvaluator",
-    "src/EvaluatorInstruction.js~EvaluatorInstruction.getEvaluator",
     "method"
   ],
   [
@@ -1344,6 +1410,12 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
+    "src/realm.js~realm#proxy",
+    "class/src/Realm.js~Realm.html#instance-member-Proxy",
+    "src/Realm.js~Realm#Proxy",
+    "member"
+  ],
+  [
     "src/realm.js~realm#regexp",
     "class/src/Realm.js~Realm.html#instance-member-RegExp",
     "src/Realm.js~Realm#RegExp",
@@ -1378,6 +1450,12 @@ window.esdocSearchIndex = [
     "class/src/Realm.js~Realm.html#instance-constructor-constructor",
     "src/Realm.js~Realm#constructor",
     "method"
+  ],
+  [
+    "src/realm.js~realm#engine",
+    "class/src/Realm.js~Realm.html#instance-member-engine",
+    "src/Realm.js~Realm#engine",
+    "member"
   ],
   [
     "src/realm.js~realm#fromnative",
@@ -1422,6 +1500,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/realm.js~realm#makeliteralvalue",
+    "class/src/Realm.js~Realm.html#instance-method-makeLiteralValue",
+    "src/Realm.js~Realm#makeLiteralValue",
+    "method"
+  ],
+  [
     "src/realm.js~realm#options",
     "class/src/Realm.js~Realm.html#instance-member-options",
     "src/Realm.js~Realm#options",
@@ -1440,9 +1524,9 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/realm.js~realm#valuefromnative",
-    "class/src/Realm.js~Realm.html#instance-method-valueFromNative",
-    "src/Realm.js~Realm#valueFromNative",
+    "src/realm.js~realm#write",
+    "class/src/Realm.js~Realm.html#instance-method-write",
+    "src/Realm.js~Realm#write",
     "method"
   ],
   [
@@ -1458,6 +1542,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/scope.js~scope#addblock",
+    "class/src/Scope.js~Scope.html#instance-method-addBlock",
+    "src/Scope.js~Scope#addBlock",
+    "method"
+  ],
+  [
     "src/scope.js~scope#addconst",
     "class/src/Scope.js~Scope.html#instance-method-addConst",
     "src/Scope.js~Scope#addConst",
@@ -1467,6 +1557,12 @@ window.esdocSearchIndex = [
     "src/scope.js~scope#constructor",
     "class/src/Scope.js~Scope.html#instance-constructor-constructor",
     "src/Scope.js~Scope#constructor",
+    "method"
+  ],
+  [
+    "src/scope.js~scope#createblockchild",
+    "class/src/Scope.js~Scope.html#instance-method-createBlockChild",
+    "src/Scope.js~Scope#createBlockChild",
     "method"
   ],
   [
@@ -1548,9 +1644,27 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
+    "src/scope.js~scope#thiz",
+    "class/src/Scope.js~Scope.html#instance-member-thiz",
+    "src/Scope.js~Scope#thiz",
+    "member"
+  ],
+  [
+    "src/scope.js~scope#top",
+    "class/src/Scope.js~Scope.html#instance-member-top",
+    "src/Scope.js~Scope#top",
+    "member"
+  ],
+  [
     "src/scope.js~scope#writeto",
     "class/src/Scope.js~Scope.html#instance-member-writeTo",
     "src/Scope.js~Scope#writeTo",
+    "member"
+  ],
+  [
+    "src/scope.js~scope#writetoblock",
+    "class/src/Scope.js~Scope.html#instance-member-writeToBlock",
+    "src/Scope.js~Scope#writeToBlock",
     "member"
   ],
   [
@@ -1632,6 +1746,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/value.js~value#getprototypeproperty",
+    "class/src/Value.js~Value.html#instance-method-getPrototypeProperty",
+    "src/Value.js~Value#getPrototypeProperty",
+    "method"
+  ],
+  [
     "src/value.js~value#gt",
     "class/src/Value.js~Value.html#instance-method-gt",
     "src/Value.js~Value#gt",
@@ -1641,6 +1761,12 @@ window.esdocSearchIndex = [
     "src/value.js~value#gte",
     "class/src/Value.js~Value.html#instance-method-gte",
     "src/Value.js~Value#gte",
+    "method"
+  ],
+  [
+    "src/value.js~value#inoperator",
+    "class/src/Value.js~Value.html#instance-method-inOperator",
+    "src/Value.js~Value#inOperator",
     "method"
   ],
   [
@@ -1704,6 +1830,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/value.js~value#pow",
+    "class/src/Value.js~Value.html#instance-method-pow",
+    "src/Value.js~Value#pow",
+    "method"
+  ],
+  [
     "src/value.js~value#serial",
     "class/src/Value.js~Value.html#instance-member-serial",
     "src/Value.js~Value#serial",
@@ -1749,6 +1881,12 @@ window.esdocSearchIndex = [
     "src/value.js~value#tointnative",
     "class/src/Value.js~Value.html#instance-method-toIntNative",
     "src/Value.js~Value#toIntNative",
+    "method"
+  ],
+  [
+    "src/value.js~value#tojs",
+    "class/src/Value.js~Value.html#instance-method-toJS",
+    "src/Value.js~Value#toJS",
     "method"
   ],
   [
@@ -1932,6 +2070,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/stdlib/array.js~arrayobject#constructorfor",
+    "class/src/stdlib/Array.js~ArrayObject.html#instance-method-constructorFor",
+    "src/stdlib/Array.js~ArrayObject#constructorFor",
+    "method"
+  ],
+  [
     "src/stdlib/array.js~arrayobject.isarray",
     "class/src/stdlib/Array.js~ArrayObject.html#static-method-isArray",
     "src/stdlib/Array.js~ArrayObject.isArray",
@@ -1956,9 +2100,21 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/stdlib/arrayprototype.js~arrayprototype.fill$e",
+    "class/src/stdlib/ArrayPrototype.js~ArrayPrototype.html#static-method-fill$e",
+    "src/stdlib/ArrayPrototype.js~ArrayPrototype.fill$e",
+    "method"
+  ],
+  [
     "src/stdlib/arrayprototype.js~arrayprototype.filter$e",
     "class/src/stdlib/ArrayPrototype.js~ArrayPrototype.html#static-method-filter$e",
     "src/stdlib/ArrayPrototype.js~ArrayPrototype.filter$e",
+    "method"
+  ],
+  [
+    "src/stdlib/arrayprototype.js~arrayprototype.find$e",
+    "class/src/stdlib/ArrayPrototype.js~ArrayPrototype.html#static-method-find$e",
+    "src/stdlib/ArrayPrototype.js~ArrayPrototype.find$e",
     "method"
   ],
   [
@@ -2670,6 +2826,24 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/stdlib/proxy.js",
+    "file/src/stdlib/Proxy.js.html",
+    "src/stdlib/Proxy.js",
+    "file"
+  ],
+  [
+    "src/stdlib/proxy.js~proxyclass#call",
+    "class/src/stdlib/Proxy.js~ProxyClass.html#instance-method-call",
+    "src/stdlib/Proxy.js~ProxyClass#call",
+    "method"
+  ],
+  [
+    "src/stdlib/proxy.js~proxyclass#makethisfornew",
+    "class/src/stdlib/Proxy.js~ProxyClass.html#instance-method-makeThisForNew",
+    "src/stdlib/Proxy.js~ProxyClass#makeThisForNew",
+    "method"
+  ],
+  [
     "src/stdlib/regexp.js",
     "file/src/stdlib/RegExp.js.html",
     "src/stdlib/RegExp.js",
@@ -2796,6 +2970,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/stdlib/string.js~stringobject.raw",
+    "class/src/stdlib/String.js~StringObject.html#static-method-raw",
+    "src/stdlib/String.js~StringObject.raw",
+    "method"
+  ],
+  [
     "src/stdlib/stringprototype.js",
     "file/src/stdlib/StringPrototype.js.html",
     "src/stdlib/StringPrototype.js",
@@ -2812,6 +2992,24 @@ window.esdocSearchIndex = [
     "class/src/stdlib/StringPrototype.js~StringPrototype.html#static-get-length$cew",
     "src/stdlib/StringPrototype.js~StringPrototype.length$cew",
     "member"
+  ],
+  [
+    "src/stdlib/stringprototype.js~stringprototype.padend$e",
+    "class/src/stdlib/StringPrototype.js~StringPrototype.html#static-method-padEnd$e",
+    "src/stdlib/StringPrototype.js~StringPrototype.padEnd$e",
+    "method"
+  ],
+  [
+    "src/stdlib/stringprototype.js~stringprototype.padstart$e",
+    "class/src/stdlib/StringPrototype.js~StringPrototype.html#static-method-padStart$e",
+    "src/stdlib/StringPrototype.js~StringPrototype.padStart$e",
+    "method"
+  ],
+  [
+    "src/stdlib/stringprototype.js~stringprototype.replace$e",
+    "class/src/stdlib/StringPrototype.js~StringPrototype.html#static-method-replace$e",
+    "src/stdlib/StringPrototype.js~StringPrototype.replace$e",
+    "method"
   ],
   [
     "src/stdlib/stringprototype.js~stringprototype.tostring$e",
@@ -2871,6 +3069,12 @@ window.esdocSearchIndex = [
     "src/values/arrayvalue.js~arrayvalue#setimmediate",
     "class/src/values/ArrayValue.js~ArrayValue.html#instance-method-setImmediate",
     "src/values/ArrayValue.js~ArrayValue#setImmediate",
+    "method"
+  ],
+  [
+    "src/values/arrayvalue.js~arrayvalue#tojs",
+    "class/src/values/ArrayValue.js~ArrayValue.html#instance-method-toJS",
+    "src/values/ArrayValue.js~ArrayValue#toJS",
     "method"
   ],
   [
@@ -3084,6 +3288,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/values/bridgevalue.js~bridgevalue#tostringvalue",
+    "class/src/values/BridgeValue.js~BridgeValue.html#instance-method-toStringValue",
+    "src/values/BridgeValue.js~BridgeValue#toStringValue",
+    "method"
+  ],
+  [
     "src/values/bridgevalue.js~bridgevalue#tripleequals",
     "class/src/values/BridgeValue.js~BridgeValue.html#instance-method-tripleEquals",
     "src/values/BridgeValue.js~BridgeValue#tripleEquals",
@@ -3147,6 +3357,12 @@ window.esdocSearchIndex = [
     "src/values/closurevalue.js~closurevalue#func",
     "class/src/values/ClosureValue.js~ClosureValue.html#instance-member-func",
     "src/values/ClosureValue.js~ClosureValue#func",
+    "member"
+  ],
+  [
+    "src/values/closurevalue.js~closurevalue#funcsourceast",
+    "class/src/values/ClosureValue.js~ClosureValue.html#instance-member-funcSourceAST",
+    "src/values/ClosureValue.js~ClosureValue#funcSourceAST",
     "member"
   ],
   [
@@ -3250,6 +3466,12 @@ window.esdocSearchIndex = [
     "class/src/values/EasyObjectValue.js~EasyObjectValue.html#instance-constructor-constructor",
     "src/values/EasyObjectValue.js~EasyObjectValue#constructor",
     "method"
+  ],
+  [
+    "src/values/easyobjectvalue.js~easyobjectvalue#easyref",
+    "class/src/values/EasyObjectValue.js~EasyObjectValue.html#instance-member-easyRef",
+    "src/values/EasyObjectValue.js~EasyObjectValue#easyRef",
+    "member"
   ],
   [
     "src/values/easyobjectvalue.js~easyobjectvalue#jstypename",
@@ -3495,6 +3717,12 @@ window.esdocSearchIndex = [
     "src/values/linkvalue.js~linkvalue#getprototype",
     "class/src/values/LinkValue.js~LinkValue.html#instance-method-getPrototype",
     "src/values/LinkValue.js~LinkValue#getPrototype",
+    "method"
+  ],
+  [
+    "src/values/linkvalue.js~linkvalue#getprototypeproperty",
+    "class/src/values/LinkValue.js~LinkValue.html#instance-method-getPrototypeProperty",
+    "src/values/LinkValue.js~LinkValue#getPrototypeProperty",
     "method"
   ],
   [
@@ -3936,6 +4164,12 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
+    "src/values/objectvalue.js~objectvalue#tojs",
+    "class/src/values/ObjectValue.js~ObjectValue.html#instance-method-toJS",
+    "src/values/ObjectValue.js~ObjectValue#toJS",
+    "method"
+  ],
+  [
     "src/values/objectvalue.js~objectvalue#tonative",
     "class/src/values/ObjectValue.js~ObjectValue.html#instance-method-toNative",
     "src/values/ObjectValue.js~ObjectValue#toNative",
@@ -4023,12 +4257,6 @@ window.esdocSearchIndex = [
     "src/values/primitivevalue.js~primitivevalue#getprototype",
     "class/src/values/PrimitiveValue.js~PrimitiveValue.html#instance-method-getPrototype",
     "src/values/PrimitiveValue.js~PrimitiveValue#getPrototype",
-    "method"
-  ],
-  [
-    "src/values/primitivevalue.js~primitivevalue#inoperator",
-    "class/src/values/PrimitiveValue.js~PrimitiveValue.html#instance-method-inOperator",
-    "src/values/PrimitiveValue.js~PrimitiveValue#inOperator",
     "method"
   ],
   [
@@ -4191,6 +4419,12 @@ window.esdocSearchIndex = [
     "src/values/propertydescriptor.js~propertydescriptor#value",
     "class/src/values/PropertyDescriptor.js~PropertyDescriptor.html#instance-member-value",
     "src/values/PropertyDescriptor.js~PropertyDescriptor#value",
+    "member"
+  ],
+  [
+    "src/values/propertydescriptor.js~propertydescriptor#variable",
+    "class/src/values/PropertyDescriptor.js~PropertyDescriptor.html#instance-member-variable",
+    "src/values/PropertyDescriptor.js~PropertyDescriptor#variable",
     "member"
   ],
   [

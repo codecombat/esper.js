@@ -34,6 +34,7 @@
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ASTPreprocessor.js~ASTPreprocessor.html">ASTPreprocessor</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CompletionRecord.js~CompletionRecord.html">CompletionRecord</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/DefaultRuntime.js~DefaultRuntime.html">DefaultRuntime</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html">Evaluator</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/EvaluatorInstruction.js~EvaluatorInstruction.html">EvaluatorInstruction</a></span></span></li>
@@ -58,6 +59,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/NumberPrototype.js~NumberPrototype.html">NumberPrototype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Object.js~ObjectObject.html">ObjectObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ObjectPrototype.js~ObjectPrototype.html">ObjectPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Proxy.js~ProxyClass.html">ProxyClass</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExp.js~RegExpObject.html">RegExpObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExpPrototype.js~RegExpProtoype.html">RegExpProtoype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/String.js~StringObject.html">StringObject</a></span></span></li>
@@ -804,7 +806,7 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html#instance-method-fromNative">fromNative</a></span></span><span data-ice="signature">(native: <span>*</span>): <span>*</span></span>
+          <span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html#instance-method-fromNative">fromNative</a></span></span><span data-ice="signature">(native: <span>*</span>, x: <span>*</span>): <span>*</span></span>
         </p>
       </div>
       <div>
@@ -831,7 +833,7 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html#instance-method-generator">generator</a></span></span><span data-ice="signature">(): {&quot;next&quot;: <span>*</span>, &quot;throw&quot;: <span>*</span>}</span>
+          <span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html#instance-method-generator">generator</a></span></span><span data-ice="signature">(): {&quot;next&quot;: <span>*</span>, &quot;throw&quot;: <span>*</span>, &quot;evaluator&quot;: <span>*</span>}</span>
         </p>
       </div>
       <div>
@@ -1021,6 +1023,33 @@
           
           
           <span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html#instance-method-pushAST">pushAST</a></span></span><span data-ice="signature">(n: <span>*</span>, s: <span>*</span>)</span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html#instance-method-pushAwaitFrame">pushAwaitFrame</a></span></span><span data-ice="signature">(val: <span>*</span>)</span>
         </p>
       </div>
       <div>
@@ -1367,7 +1396,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber335">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber356">source</a></span></span>
     </span>
   </h3>
 
@@ -1481,7 +1510,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber334">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber355">source</a></span></span>
     </span>
   </h3>
 
@@ -1524,7 +1553,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber497">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber519">source</a></span></span>
     </span>
   </h3>
 
@@ -1567,7 +1596,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber496">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber518">source</a></span></span>
     </span>
   </h3>
 
@@ -1610,7 +1639,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber497">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber519">source</a></span></span>
     </span>
   </h3>
 
@@ -1825,7 +1854,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber333">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber354">source</a></span></span>
     </span>
   </h3>
 
@@ -1868,7 +1897,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber285">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber302">source</a></span></span>
     </span>
   </h3>
 
@@ -1957,7 +1986,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber432">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber454">source</a></span></span>
     </span>
   </h3>
 
@@ -2022,7 +2051,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber423">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber445">source</a></span></span>
     </span>
   </h3>
 
@@ -2093,7 +2122,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber408">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber430">source</a></span></span>
     </span>
   </h3>
 
@@ -2182,7 +2211,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber301">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber322">source</a></span></span>
     </span>
   </h3>
 
@@ -2225,7 +2254,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber257">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber260">source</a></span></span>
     </span>
   </h3>
 
@@ -2296,7 +2325,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber380">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber401">source</a></span></span>
     </span>
   </h3>
 
@@ -2385,7 +2414,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber476">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber498">source</a></span></span>
     </span>
   </h3>
 
@@ -2424,11 +2453,11 @@
     
     
     
-    <span data-ice="name">fromNative</span><span data-ice="signature">(native: <span>*</span>): <span>*</span></span>
+    <span data-ice="name">fromNative</span><span data-ice="signature">(native: <span>*</span>, x: <span>*</span>): <span>*</span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber293">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber310">source</a></span></span>
     </span>
   </h3>
 
@@ -2449,6 +2478,12 @@
     
     <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">native</td>
+      <td data-ice="type"><span>*</span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"></td>
+    </tr>
+<tr data-ice="property" data-depth="0">
+      <td data-ice="name" data-depth="0">x</td>
       <td data-ice="type"><span>*</span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
@@ -2495,11 +2530,11 @@
     
     
     
-    <span data-ice="name">generator</span><span data-ice="signature">(): {&quot;next&quot;: <span>*</span>, &quot;throw&quot;: <span>*</span>}</span>
+    <span data-ice="name">generator</span><span data-ice="signature">(): {&quot;next&quot;: <span>*</span>, &quot;throw&quot;: <span>*</span>, &quot;evaluator&quot;: <span>*</span>}</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber297">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber314">source</a></span></span>
     </span>
   </h3>
 
@@ -2518,7 +2553,7 @@
     <table>
       <tbody>
         <tr>
-          <td class="return-type" data-ice="returnType">{&quot;next&quot;: <span>*</span>, &quot;throw&quot;: <span>*</span>}</td>
+          <td class="return-type" data-ice="returnType">{&quot;next&quot;: <span>*</span>, &quot;throw&quot;: <span>*</span>, &quot;evaluator&quot;: <span>*</span>}</td>
           
         </tr>
       </tbody>
@@ -2554,7 +2589,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber462">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber484">source</a></span></span>
     </span>
   </h3>
 
@@ -2696,7 +2731,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber366">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber387">source</a></span></span>
     </span>
   </h3>
 
@@ -2779,7 +2814,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber276">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber293">source</a></span></span>
     </span>
   </h3>
 
@@ -2834,7 +2869,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber177">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber171">source</a></span></span>
     </span>
   </h3>
 
@@ -3018,6 +3053,65 @@
   
 </div>
 <div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-pushAwaitFrame">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span data-ice="name">pushAwaitFrame</span><span data-ice="signature">(val: <span>*</span>)</span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber279">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  
+
+  
+
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" data-depth="0">val</td>
+      <td data-ice="type"><span>*</span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"></td>
+    </tr>
+</tbody>
+  </table>
+</div>
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
   <h3 data-ice="anchor" id="instance-method-pushFrame">
     <span class="access" data-ice="access">public</span>
     
@@ -3029,7 +3123,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber269">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber272">source</a></span></span>
     </span>
   </h3>
 
@@ -3088,7 +3182,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber306">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber327">source</a></span></span>
     </span>
   </h3>
 
@@ -3171,7 +3265,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber282">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Evaluator.js.html#lineNumber299">source</a></span></span>
     </span>
   </h3>
 

@@ -34,6 +34,7 @@
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ASTPreprocessor.js~ASTPreprocessor.html">ASTPreprocessor</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CompletionRecord.js~CompletionRecord.html">CompletionRecord</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/DefaultRuntime.js~DefaultRuntime.html">DefaultRuntime</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html">Evaluator</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/EvaluatorInstruction.js~EvaluatorInstruction.html">EvaluatorInstruction</a></span></span></li>
@@ -58,6 +59,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/NumberPrototype.js~NumberPrototype.html">NumberPrototype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Object.js~ObjectObject.html">ObjectObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ObjectPrototype.js~ObjectPrototype.html">ObjectPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Proxy.js~ProxyClass.html">ProxyClass</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExp.js~RegExpObject.html">RegExpObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExpPrototype.js~RegExpProtoype.html">RegExpProtoype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/String.js~StringObject.html">StringObject</a></span></span></li>
@@ -105,7 +107,7 @@ function *evaluateArrayExpression(e, n, s) {
 	let result = new Array(n.elements.length);
 	for ( let i = 0; i &lt; n.elements.length; ++i ) {
 		if ( n.elements[i] ) {
-			result[i] = yield * e.branch(n.elements[i],s);
+			result[i] = yield * e.branch(n.elements[i], s);
 		}
 	}
 	if ( e.yieldPower &gt;= 3 ) yield EvaluatorInstruction.stepMinor;
@@ -173,6 +175,10 @@ function *evaluateAssignmentExpression(e, n, s) {
 			cur = yield * ref.getValue();
 			value = yield * cur.bitXor(argument, realm);
 			break;
+		case &apos;**=&apos;:
+			cur = yield * ref.getValue();
+			value = yield * cur.pow(argument, realm);
+			break;
 		default:
 			throw new Error(&apos;Unknown assignment operator: &apos; + n.operator);
 	}
@@ -187,16 +193,26 @@ function *evaluateAssignmentExpression(e, n, s) {
 }
 
 function *evaluateBinaryExpression(e, n, s) {
-	let left = yield * e.branch(n.left,s);
-	let right = yield * e.branch(n.right,s);
+	if ( n.operator == &apos;&amp;&amp;&apos; || n.operator == &apos;||&apos; ) {
+		return yield* evaluateLogicalExpression(e, n, s);
+	}
+	let left = yield * e.branch(n.left, s);
+	let right = yield * e.branch(n.right, s);
 	if ( e.yieldPower &gt;= 4 ) yield EvaluatorInstruction.stepMinor;
 	return yield * e.doBinaryEvaluation(n.operator, left, right, s);
 }
 
 function *evaluateBlockStatement(e, n, s) {
 	let result = Value.undef;
+	let ss = s.createBlockChild();
 	for ( let statement of n.body ) {
-		result = yield * e.branch(statement,s);
+		if ( statement.type != &quot;FunctionDeclaration&quot; ) continue;
+		result = yield * e.branch(statement, ss);
+	}
+
+	for ( let statement of n.body ) {
+		if ( statement.type == &quot;FunctionDeclaration&quot; ) continue;
+		result = yield * e.branch(statement, ss);
 	}
 	return result;
 }
@@ -210,19 +226,33 @@ function *evaluateBreakStatement(e, n, s) {
 
 
 function *evaluateCallExpression(e, n, s) {
-	let thiz = Value.undef;
+	return yield * doCall(e, n, n.callee, s, function*() {
+		let args = new Array(n.arguments.length);
+		for ( let i = 0; i &lt; n.arguments.length; ++i ) {
+			args[i] = yield * e.branch(n.arguments[i], s);
+		}
+		return args;
+	});
+}
+
+function *doCall(e, n, c, s, argProvider) {
+	let thiz = s.strict ? Value.undef : s.global.thiz;
 
 	let callee, base;
 
-	if ( n.callee.type === &apos;MemberExpression&apos; ) {
-		thiz = base = yield * e.branch(n.callee.object, s);
-		callee = yield * e.partialMemberExpression(thiz, n.callee, s);
+	if ( c.type == &apos;Super&apos;) {
+		callee = yield * e.branch(c, s);
+		thiz = s.thiz;
+	} else if ( c.type === &apos;MemberExpression&apos; ) {
+		thiz = base = yield * e.branch(c.object, s);
+		callee = yield * e.partialMemberExpression(thiz, c, s);
+		if ( c.object.type == &quot;Super&quot; ) thiz = s.thiz;
 		if ( callee instanceof CompletionRecord ) {
 			if ( callee.type == CompletionRecord.THROW ) return callee;
 			callee = callee.value;
 		}
 	} else {
-		callee = yield * e.branch(n.callee, s);
+		callee = yield * e.branch(c, s);
 	}
 
 	if ( n.type === &apos;NewExpression&apos; ) {
@@ -239,12 +269,9 @@ function *evaluateCallExpression(e, n, s) {
 
 	//console.log(&quot;Calling&quot;, callee, callee.call);
 
-	let args = new Array(n.arguments.length);
-	for ( let i = 0; i &lt; n.arguments.length; ++i ) {
-		args[i] = yield * e.branch(n.arguments[i],s);
-	}
+	let args = yield * argProvider();
 
-	let name = n.callee.srcName || callee.jsTypeName;
+	let name = c.srcName || c.source() || callee.jsTypeName;
 
 	if ( e.yieldPower &gt;= 1 ) yield EvaluatorInstruction.stepMajor;
 
@@ -253,7 +280,7 @@ function *evaluateCallExpression(e, n, s) {
 		yield * err.addExtra({
 			code: &apos;CallNonFunction&apos;,
 			target: callee,
-			targetAst: n.callee,
+			targetAst: c,
 			targetName: name,
 			base: base
 		});
@@ -261,13 +288,14 @@ function *evaluateCallExpression(e, n, s) {
 	}
 
 	if ( e.debug ) {
-		e.incrCtr(&apos;fxInvocationCount&apos;, n.callee.srcName);
+		e.incrCtr(&apos;fxInvocationCount&apos;, c.srcName);
 	}
 
 	let callResult = callee.call(thiz, args, s, {
 		asConstructor: n.type === &apos;NewExpression&apos;,
 		callNode: n,
-		evaluator: e
+		evaluator: e,
+		callee: callee
 	});
 
 	if ( callResult instanceof CompletionRecord ) return callResult;
@@ -290,37 +318,119 @@ function *evaluateCallExpression(e, n, s) {
 	}
 }
 
+let classFeatures = {};
+function* addMethodFnToClass(fx, clazz, proto, e, m, s) {
+	if ( m.kind == &apos;constructor&apos; ) {
+		//Special handling for this below.
+	} else {
+		let ks;
+		fx.funcSourceAST = m;
+		if ( m.computed ) {
+			let k = yield * e.branch(m.key, s);
+			ks = yield * k.toStringNative(e.realm);
+		} else {
+			ks = m.key.name;
+		}
+
+		let pd;
+
+		if ( m.static ) {
+			fx.superTarget = clazz.getPrototype();
+			if ( Object.prototype.hasOwnProperty.call(clazz.properties, ks) ) {
+				pd = clazz.properties[ks];
+			} else {
+				pd = new PropertyDescriptor(Value.undef);
+				clazz.rawSetProperty(ks, pd);
+			}
+		} else {
+			fx.superTarget = proto.getPrototype();
+			if ( Object.prototype.hasOwnProperty.call(proto.properties, ks) ) {
+				pd = proto.properties[ks];
+			} else {
+				pd = new PropertyDescriptor(Value.undef);
+				proto.rawSetProperty(ks, pd);
+			}
+		}
+		switch (m.kind) {
+			case &apos;set&apos;:
+				pd.setter = fx;
+				break;
+			case &apos;get&apos;:
+				pd.getter = fx;
+				break;
+			case &apos;method&apos;:
+				pd.value = fx;
+				break;
+		}
+	}
+	return Value.undef;
+}
+classFeatures.MethodDefinition = function*(clazz, proto, e, m, s) {
+	yield * addMethodFnToClass(yield * e.branch(m.value, s), clazz, proto, e, m, s);
+};
+classFeatures.ClassMethod = function*(clazz, proto, e, m, s) {
+	let fx = yield * evaluateFunctionExpression(e, m, s);
+	return yield * addMethodFnToClass(fx, clazz, proto, e, {
+		kind: m.kind,
+		static: m.static,
+		key: m.key,
+	}, s);
+
+};
+classFeatures.EmptyStatement = function*() { return Value.undef; }
+
 function *evaluateClassExpression(e, n, s) {
-	let clazz = new ObjectValue(e.realm);
-	clazz.call = function*() { return Value.undef; };
+	let clazz = undefined;
+	for ( let m of n.body.body ) {
+		if ( m.type == &quot;MethodDefinition&quot; &amp;&amp; m.kind == &quot;constructor&quot;) {
+			clazz = yield * e.branch(m.value, s);
+			clazz.superTarget = clazz;
+			clazz.funcSourceAST = n;
+			break;
+		}
+	}
+
+	let sc;
+	if ( n.superClass ) {
+		sc = yield * e.branch(n.superClass, s);
+	}
+
+	if ( !clazz ) {
+		clazz = new ObjectValue(e.realm);
+		if ( sc ) {
+			clazz.call = function*(thiz, args, scope, extra) {
+				yield * sc.call(thiz, args, scope, extra);
+				return Value.undef;
+			}
+		} else {
+			clazz.call = function*() { return Value.undef; };
+		}
+	}
+	
 
 	let proto = new ObjectValue(e.realm);
 	yield * clazz.set(&apos;prototype&apos;, proto);
+	yield * clazz.set(&apos;name&apos;, Value.fromNative(n.id.name));
 	yield * proto.set(&apos;constructor&apos;, clazz);
+
+	if ( sc ) {
+		clazz.setPrototype(sc);
+		proto.setPrototype(sc.getPrototypeProperty());
+		clazz.parentClassInstance = sc;
+	}
+	clazz.superTarget = clazz.getPrototype();
+
+	s.add(n.id.name, clazz);
 
 	if ( e.yieldPower &gt;= 3 ) yield EvaluatorInstruction.stepMinor;
 	for ( let m of n.body.body ) {
-		let fx = yield * e.branch(m.value, s);
-
+		if ( ! module.exports.classFeatures[m.type] ) throw new Error(&quot;Unsuported Class Feature &quot; + m.type)
+		yield * module.exports.classFeatures[m.type](clazz, proto, e, m, s);
 		//TODO: Support getters and setters
-		if ( m.kind == &apos;constructor&apos; ) {
-			clazz.call = function*(thiz, args, s) { return yield * fx.call(thiz,args,s); };
-
-		} else {
-			let ks;
-			if ( m.computed ) {
-				let k = yield * e.branch(m.key, s);
-				ks = yield * k.toStringNative(e.realm);
-			} else {
-				ks = m.key.name;
-			}
-
-			if ( m.static ) clazz.setImmediate(ks, fx);
-			else proto.setImmediate(ks, fx);
-		}
 	}
 	return clazz;
 }
+
 
 function *evaluateClassDeclaration(e, n, s) {
 	let clazz = yield * evaluateClassExpression(e, n, s);
@@ -355,7 +465,7 @@ function *evaluateDoWhileStatement(e, n, s) {
 	var gen = function*() {
 		do {
 			last = yield that.branchFrame(&apos;continue&apos;, n.body, s, {label: n.label});
-		} while ( (yield * that.branch(n.test,s)).truthy );
+		} while ( (yield * that.branch(n.test, s)).truthy );
 	};
 	if ( e.yieldPower &gt; 0 ) yield EvaluatorInstruction.stepMinor;
 	e.pushFrame({generator: gen(), type: &apos;loop&apos;, label: n.label, ast: n});
@@ -372,7 +482,7 @@ function *evaluateEmptyStatement(e, n, s) {
 
 function *evaluateExpressionStatement(e, n, s) {
 	if ( e.yieldPower &gt; 4 ) yield EvaluatorInstruction.stepMinor;
-	return yield * e.branch(n.expression,s);
+	return yield * e.branch(n.expression, s);
 }
 
 function *evaluateIdentifier(e, n, s) {
@@ -401,22 +511,37 @@ function *evaluateIfStatement(e, n, s) {
 	return Value.undef;
 }
 
+function *evaluateImportDeclaration(e, n, s ) {
+	return Value.undef;
+}
+
 function* genForLoop(e, n, s) {
 	let test = Value.true;
-	if ( n.test ) test = yield * e.branch(n.test,s);
+	
+	let createPerIterationEnvironment = (n.init &amp;&amp; n.init.kind == &apos;let&apos;) ? (p) =&gt; {
+		let is = s.createChild();
+		for ( let dec of n.init.declarations ) {
+			is.addBlock(dec.id.name, p.get(dec.id.name));
+		}
+		return is;
+	} : (p) =&gt; p;
+
+	let is = createPerIterationEnvironment(s);
+	if ( n.test ) test = yield * e.branch(n.test, s);
 	let last = Value.undef;
 	while ( test.truthy ) {
 		e.topFrame.ast = n;
 		if ( e.yieldPower &gt; 0 ) yield EvaluatorInstruction.eventLoopBodyStart;
-		last = yield e.branchFrame(&apos;continue&apos;, n.body, s, {label: n.label});
-		if ( n.update ) yield * e.branch(n.update,s);
-		if ( n.test ) test = yield * e.branch(n.test,s);
+		last = yield e.branchFrame(&apos;continue&apos;, n.body, is, {label: n.label});
+		is = createPerIterationEnvironment(is);
+		if ( n.update ) yield * e.branch(n.update, is);
+		if ( n.test ) test = yield * e.branch(n.test, is);
 	}
 };
 
 function *evaluateForStatement(e, n, s) {
 	if ( e.yieldPower &gt; 0 ) yield EvaluatorInstruction.stepStatement;
-	if ( n.init ) yield * e.branch(n.init,s);
+	if ( n.init ) yield * e.branch(n.init, s);
 
 	e.pushFrame({generator: genForLoop(e, n, s), type: &apos;loop&apos;, label: n.label, ast: n});
 
@@ -428,19 +553,26 @@ function *evaluateForStatement(e, n, s) {
 function *evaluateForInStatement(e, n, s) {
 	if ( e.yieldPower &gt; 0 ) yield EvaluatorInstruction.stepStatement;
 	let last = Value.undef;
-	let object = yield * e.branch(n.right,s);
+	let object = yield * e.branch(n.right, s);
 	let names = object.observableProperties(s.realm);
 	let that = e;
 	let ref;
+	s = s.createBlockChild();
 
 	if ( n.left.type === &apos;VariableDeclaration&apos; ) {
-		s.add(n.left.declarations[0].id.name, Value.undef);
-		ref = s.ref(n.left.declarations[0].id.name, s.realm);
+		let decl = n.left.declarations[0];
+		if ( decl.kind == &apos;var&apos;) s.add(decl.id.name, Value.undef);
+		else s.addBlock(decl.id.name, Value.undef);
+		ref = s.ref(decl.id.name, s);
 	} else {
-		ref = s.ref(n.left.name, s.realm);
+		ref = s.ref(n.left.name, s);
 	}
-	if ( !ref ) throw new Error(&apos;Couldnt find anything to write to for:&apos; + n.left.name);
-
+	if ( !ref ) {
+		if ( s.strict ) return CompletionRecord.makeReferenceError(s.realm, `${n.left.name} is not defined`);
+		//Create an var in global scope if varialbe doesnt exist and not in strict mode.
+		s.global.add(n.left.name, Value.undef)
+		ref = s.ref(n.left.name);
+	}
 	var gen = function*() {
 		for ( let name of names ) {
 			yield * ref.setValue(name);
@@ -458,13 +590,16 @@ function *evaluateForInStatement(e, n, s) {
 function *evaluateForOfStatement(e, n, s) {
 	if ( e.yieldPower &gt; 0 ) yield EvaluatorInstruction.stepStatement;
 	let last = Value.undef;
-	let object = yield * e.branch(n.right,s);
+	let object = yield * e.branch(n.right, s);
 	let names = object.observableProperties(s.realm);
 	let that = e;
 	let ref;
-
+	s = s.createBlockChild();
 	if ( n.left.type === &apos;VariableDeclaration&apos; ) {
-		yield * s.put(n.left.declarations[0].id.name, Value.undef);
+		let decl = n.left.declarations[0];
+		if ( decl.kind == &apos;var&apos;) s.add(decl.id.name, Value.undef);
+		else s.addBlock(decl.id.name, Value.undef);
+		//yield * s.put(n.left.declarations[0].id.name, Value.undef);
 		ref = s.ref(n.left.declarations[0].id.name, s.realm);
 	} else {
 		ref = s.ref(n.left.name, s.realm);
@@ -514,23 +649,23 @@ function *evaluateLiteral(e, n, s) {
 
 		//Work around Esprima turning Infinity into null. =\
 		let tryFloat = parseFloat(n.raw);
-		if ( !isNaN(tryFloat) ) return e.fromNative(tryFloat);
-		return e.fromNative(null);
+		if ( !isNaN(tryFloat) ) return e.fromNative(tryFloat, n);
+		return e.fromNative(null, n);
 	} else {
-		return e.fromNative(n.value);
+		return e.realm.makeLiteralValue(n.value, n);
 	}
 }
 
 function *evaluateLogicalExpression(e, n, s) {
-	let left = yield * e.branch(n.left,s);
+	let left = yield * e.branch(n.left, s);
 	if ( e.yieldPower &gt;= 4 ) yield EvaluatorInstruction.stepMajor;
 	switch ( n.operator ) {
 		case &apos;&amp;&amp;&apos;:
-			if ( left.truthy ) return yield * e.branch(n.right,s);
+			if ( left.truthy ) return yield * e.branch(n.right, s);
 			return left;
 		case &apos;||&apos;:
 			if ( left.truthy ) return left;
-			return yield * e.branch(n.right,s);
+			return yield * e.branch(n.right, s);
 		default:
 			throw new Error(&apos;Unknown logical operator: &apos; + n.operator);
 	}
@@ -539,9 +674,24 @@ function *evaluateLogicalExpression(e, n, s) {
 
 function *evaluateMemberExpression(e, n, s) {
 	if ( e.yieldPower &gt;= 4 ) yield EvaluatorInstruction.stepMinor;
-	let left = yield * e.branch(n.object,s);
+	let left = yield * e.branch(n.object, s);
 	return yield * e.partialMemberExpression(left, n, s);
 }
+
+function *evaluateMetaProperty(e, n, s) {
+	for ( let i = 0; i &lt; e.frames.length - 1; ++i ) {
+		let t = e.frames[i].type;
+		if ( t === &quot;function&quot; ) {
+			if ( e.frames[i+1].ast.type == &quot;NewExpression&quot; ) {
+				return e.frames[i].callee;
+			} else {
+				return Value.undef;
+			}
+		}
+	}
+	return Value.undef;
+}
+
 
 function *evaluateObjectExpression(e, n, s) {
 	//TODO: Need to wire up native prototype
@@ -601,7 +751,7 @@ function *evaluateProgram(e, n, s) {
 
 function *evaluateReturnStatement(e, n, s) {
 	let retVal = Value.undef;
-	if ( n.argument ) retVal = yield * e.branch(n.argument,s);
+	if ( n.argument ) retVal = yield * e.branch(n.argument, s);
 	if ( e.yieldPower &gt;= 2 ) yield EvaluatorInstruction.stepMajor;
 	return new CompletionRecord(CompletionRecord.RETURN, retVal);
 }
@@ -610,9 +760,19 @@ function *evaluateSequenceExpression(e, n, s) {
 	let last = Value.undef;
 	if ( e.yieldPower &gt;= 4 ) yield EvaluatorInstruction.stepMajor;
 	for ( let expr of n.expressions ) {
-		last = yield * e.branch(expr,s);
+		last = yield * e.branch(expr, s);
 	}
 	return last;
+}
+
+function *evaluateSuperExpression(e, n, s) {
+	let fr;
+	for ( let i = 0; i &lt; e.frames.length; ++i ) {
+		fr = e.frames[i];
+		if ( fr.creator ) break;
+	}
+	let result = fr.creator.superTarget;
+	return result;
 }
 
 function *evaluateSwitchStatement(e, n, s) {
@@ -658,6 +818,40 @@ function *evaluateSwitchStatement(e, n, s) {
 	return last;
 }
 
+function *evaluateTaggedTemplateExpression(e, n, s) {
+	let quasis = n.quasi.quasis;
+	let expressions = n.quasi.expressions;
+	let value = Value.fromNative(quasis[0].value.cooked);
+	let fn = yield * e.branch(n.tag, s);
+
+	let strings = [];
+	let rawStrings = [];
+	for ( let i = 0; i &lt; quasis.length; ++i ) {
+		strings.push(e.realm.fromNative(quasis[i].value.cooked));
+		rawStrings.push(e.realm.fromNative(quasis[i].value.raw));
+	}
+	let sv = ArrayValue.make(strings, e.realm);
+	let rv = ArrayValue.make(rawStrings, e.realm);
+	sv.rawSetProperty(&apos;raw&apos;, new PropertyDescriptor(rv, false));
+
+	let args = [sv];
+
+	for ( let i = 0; i &lt; expressions.length; ++i ) {
+		args.push(yield * e.branch(expressions[i], s));
+	}
+
+	return yield * doCall(e, n, n.tag, s, function*() { return args; });
+}
+
+function *evaluateTemplateLiteral(e, n, s) {
+	let value = Value.fromNative(n.quasis[0].value.cooked);
+	for ( let i = 0; i &lt; n.expressions.length; ++i ) {
+		value = yield * value.add(yield * e.branch(n.expressions[i], s));
+		value = yield * value.add(Value.fromNative(n.quasis[i + 1].value.cooked));
+	}
+	return value;
+}
+
 function *evaluateThisExpression(e, n, s) {
 	if ( e.yieldPower &gt;= 4 ) yield EvaluatorInstruction.stepMajor;
 	if ( s.thiz ) return s.thiz;
@@ -672,7 +866,7 @@ function *evaluateThrowStatement(e, n, s) {
 
 function *evaluateTryStatement(e, n, s) {
 	if ( e.yieldPower &gt;= 2 ) yield EvaluatorInstruction.stepMajor;
-	if ( n.finalizer ) e.pushFrame({generator: e.branch(n.finalizer,s), type: &apos;finally&apos;, scope: s});
+	if ( n.finalizer ) e.pushFrame({generator: e.branch(n.finalizer, s), type: &apos;finally&apos;, scope: s});
 	let result = yield e.branchFrame(&apos;catch&apos;, n.block, s);
 	if ( result instanceof CompletionRecord &amp;&amp; result.type == CompletionRecord.THROW ) {
 		if ( !n.handler ) {
@@ -713,10 +907,9 @@ function *evaluateUnaryExpression(e, n, s) {
 			//e isnt something you can delete?
 			return Value.true;
 		}
-
 		let ref = yield * e.resolveRef(n.argument, s);
 		if ( !ref ) return Value.false;
-		if ( ref.isVariable ) { return Value.false; }
+		if ( ref.isVariable || !ref.del ) { return Value.false; }
 		let worked = ref.del(s);
 		if ( worked instanceof CompletionRecord ) return yield worked;
 		return Value.fromNative(worked);
@@ -728,7 +921,7 @@ function *evaluateUnaryExpression(e, n, s) {
 		}
 	}
 
-	let left = yield * e.branch(n.argument,s);
+	let left = yield * e.branch(n.argument, s);
 	switch ( n.operator ) {
 		case &apos;-&apos;: return yield * left.unaryMinus();
 		case &apos;+&apos;: return yield * left.unaryPlus();
@@ -746,11 +939,13 @@ function *evaluateVariableDeclaration(e, n, s) {
 	if ( e.yieldPower &gt;= 3 ) yield EvaluatorInstruction.stepMajor;
 	for ( let decl of n.declarations ) {
 		let value = Value.undef;
-		if ( decl.init ) value = yield * e.branch(decl.init,s);
+		if ( decl.init ) value = yield * e.branch(decl.init, s);
 		else if ( s.has(decl.id.name) ) continue;
 
 		if ( kind === &apos;const&apos; ) {
 			s.addConst(decl.id.name, value);
+		} else if ( kind == &apos;let&apos;) {
+			s.addBlock(decl.id.name, value);
 		} else {
 			s.add(decl.id.name, value);
 		}
@@ -760,7 +955,7 @@ function *evaluateVariableDeclaration(e, n, s) {
 
 function* genWhileLoop(e, n, s) {
 	let last = Value.undef;
-	while ( (yield * e.branch(n.test,s)).truthy ) {
+	while ( (yield * e.branch(n.test, s)).truthy ) {
 		e.topFrame.ast = n;
 		if ( e.yieldPower &gt; 0 ) yield EvaluatorInstruction.eventLoopBodyStart;
 		last = yield e.branchFrame(&apos;continue&apos;, n.body, s);
@@ -777,7 +972,15 @@ function *evaluateWhileStatement(e, n, s) {
 function *evaluateWithStatement(e, n, s) {
 	if ( e.yieldPower &gt; 0 ) yield EvaluatorInstruction.stepMajor;
 	if ( s.strict ) return CompletionRecord.makeSyntaxError(e.realm, &apos;Strict mode code may not include a with statement&apos;);
-	return CompletionRecord.makeSyntaxError(e.realm, &apos;With statement not supported by esper&apos;);
+	let o = yield * e.branch(n.object, s);
+	let ns = s.createBlockChild();
+	if ( o instanceof ObjectValue ) {
+		let pairs = o.getPropertyValueMap();
+		for ( let p in pairs ) {
+			ns.set(p, pairs[p]);
+		}
+	}
+	return yield * e.branch(n.body, ns);
 }
 
 function findNextStep(type) {
@@ -804,16 +1007,21 @@ function findNextStep(type) {
 		case &apos;FunctionExpression&apos;: return evaluateFunctionExpression;
 		case &apos;Identifier&apos;: return evaluateIdentifier;
 		case &apos;IfStatement&apos;: return evaluateIfStatement;
+		case &apos;ImportDeclaration&apos;: return evaluateImportDeclaration;
 		case &apos;LabeledStatement&apos;: return evaluateLabeledStatement;
 		case &apos;Literal&apos;: return evaluateLiteral;
 		case &apos;LogicalExpression&apos;: return evaluateLogicalExpression;
+		case &apos;MetaProperty&apos;: return evaluateMetaProperty;
 		case &apos;MemberExpression&apos;: return evaluateMemberExpression;
 		case &apos;NewExpression&apos;: return evaluateCallExpression;
 		case &apos;ObjectExpression&apos;: return evaluateObjectExpression;
 		case &apos;Program&apos;: return evaluateProgram;
 		case &apos;ReturnStatement&apos;: return evaluateReturnStatement;
 		case &apos;SequenceExpression&apos;: return evaluateSequenceExpression;
+		case &apos;Super&apos;: return evaluateSuperExpression;
 		case &apos;SwitchStatement&apos;: return evaluateSwitchStatement;
+		case &apos;TaggedTemplateExpression&apos;: return evaluateTaggedTemplateExpression;
+		case &apos;TemplateLiteral&apos;: return evaluateTemplateLiteral;
 		case &apos;ThisExpression&apos;: return evaluateThisExpression;
 		case &apos;ThrowStatement&apos;: return evaluateThrowStatement;
 		case &apos;TryStatement&apos;: return evaluateTryStatement;
@@ -822,6 +1030,13 @@ function findNextStep(type) {
 		case &apos;VariableDeclaration&apos;: return evaluateVariableDeclaration;
 		case &apos;WhileStatement&apos;: return evaluateWhileStatement;
 		case &apos;WithStatement&apos;: return evaluateWithStatement;
+
+		case &apos;BooleanLiteral&apos;:
+		case &apos;StringLiteral&apos;:
+		case &apos;NumericLiteral&apos;:
+		case &apos;NullLiteral&apos;:
+			return evaluateLiteral;
+
 		default:
 			throw new Error(&apos;Unknown AST Node Type: &apos; + type);
 	}
@@ -829,7 +1044,8 @@ function findNextStep(type) {
 
 module.exports = {
 	evaluateIdentifier,
-	findNextStep
+	findNextStep,
+	classFeatures
 };
 </code></pre>
 

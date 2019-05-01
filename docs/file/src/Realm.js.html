@@ -34,6 +34,7 @@
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ASTPreprocessor.js~ASTPreprocessor.html">ASTPreprocessor</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CompletionRecord.js~CompletionRecord.html">CompletionRecord</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/DefaultRuntime.js~DefaultRuntime.html">DefaultRuntime</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html">Evaluator</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/EvaluatorInstruction.js~EvaluatorInstruction.html">EvaluatorInstruction</a></span></span></li>
@@ -58,6 +59,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/NumberPrototype.js~NumberPrototype.html">NumberPrototype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Object.js~ObjectObject.html">ObjectObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ObjectPrototype.js~ObjectPrototype.html">ObjectPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Proxy.js~ProxyClass.html">ProxyClass</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExp.js~RegExpObject.html">RegExpObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExpPrototype.js~RegExpProtoype.html">RegExpProtoype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/String.js~StringObject.html">StringObject</a></span></span></li>
@@ -99,6 +101,7 @@ const BridgeValue = require(&apos;./values/BridgeValue&apos;);
 const ASTPreprocessor = require(&apos;./ASTPreprocessor&apos;);
 const EasyNativeFunction = require(&apos;./values/EasyNativeFunction&apos;);
 const PropertyDescriptor = require(&apos;./values/PropertyDescriptor&apos;);
+const Evaluator = require(&apos;./Evaluator&apos;);
 const EvaluatorInstruction = require(&apos;./EvaluatorInstruction&apos;);
 
 const ObjectPrototype = require(&apos;./stdlib/ObjectPrototype&apos;);
@@ -127,6 +130,7 @@ const AssertClass = require(&apos;./stdlib/Assert&apos;);
 const MathClass = require(&apos;./stdlib/Math.js&apos;);
 const ConsoleClass = require(&apos;./stdlib/Console&apos;);
 const JSONClass = require(&apos;./stdlib/JSON&apos;);
+const ProxyClass = require(&apos;./stdlib/Proxy&apos;)
 const esper = require(&apos;./index.js&apos;);
 
 class EvalFunction extends ObjectValue {
@@ -147,8 +151,8 @@ class EvalFunction extends ObjectValue {
 			ast = ASTPreprocessor.process(oast);
 		} catch ( e ) {
 			var eo;
-
-			if ( e.description == &apos;Invalid left-hand side in assignment&apos; ) eo = new ReferenceError(e.description, e.fileName, e.lineNumber);
+			let desc = e.description || e.message;
+			if ( e.name == &apos;ReferenceError&apos; || /Invalid left-hand side in/.test(desc) ) eo = new ReferenceError(e.description, e.fileName, e.lineNumber);
 			else eo = new SyntaxError(e.description, e.fileName, e.lineNumber);
 
 			if ( e.stack ) eo.stack = e.stack;
@@ -156,11 +160,82 @@ class EvalFunction extends ObjectValue {
 		}
 
 		//TODO: Dont run in the parent scope if we are called indirectly
-		let bak = yield EvaluatorInstruction.branch(&apos;eval&apos;, ast, scope.parent ? scope.parent : scope);
+		let bak = yield EvaluatorInstruction.branch(&apos;eval&apos;, ast, scope);
 		//console.log(&quot;EVALED: &quot;, bak);
 		return bak;
 	}
 }
+
+
+let timeoutIds = 0;;
+class SetTimeoutFunction extends ObjectValue {
+
+	constructor(realm, runtime, isSetInterval) {
+		super(realm);
+		this.setPrototype(realm.FunctionPrototype);
+		this.runtime = runtime;
+		this.isSetInterval = isSetInterval;
+	}
+
+	*call(thiz, args, scope) {
+		let engine = scope.realm.engine;
+		let ev = args[0];
+		let evaluator = new Evaluator(scope.realm, null, scope.global);
+		let time = args.length &gt; 1 ? 0 + args[1].toNative() : 0;
+		let id = timeoutIds++;
+		let isSetInterval = this.isSetInterval;
+
+		if ( !ev || ev.jsTypeName !== &quot;function&quot; &amp;&amp; ev.jsTypeName !== &quot;string&quot; ) {
+			return new CompletionRecord(CompletionRecord.THROW, Value.fromNative(new TypeError(&apos;&quot;callback&quot; argument must be a function&apos;), scope.realm));
+		}
+
+		evaluator.pushFrame({generator: (function*() {
+			while ( true ) {
+				yield esper.FutureValue.make(yield * engine.runtime.wait(time));
+				if ( ev.jsTypeName == &quot;function&quot; ) {
+					let tv = scope.strict ? esper.undef : scope.global.thiz;
+					yield * ev.call(tv, args.slice(2), scope.global);
+				} else if ( ev.jsTypeName == &quot;string&quot; ) {
+					let oast = scope.realm.parser(yield * ev.toStringNative(), {loc: true});
+					let ast = ASTPreprocessor.process(oast);
+					yield EvaluatorInstruction.branch(&apos;eval&apos;, ast, scope.global);
+				}
+				if ( !isSetInterval ) break;
+			}
+			return Value.undef;
+		})(), type: &apos;invoke&apos;});
+
+		let o = evaluator.generator();
+		evaluator.id = id;
+		engine.threads.push(o);
+		return Value.fromNative(id);
+	}
+}
+
+class ClearTimeoutFunction extends ObjectValue {
+
+	constructor(realm, runtime) {
+		super(realm);
+		this.setPrototype(realm.FunctionPrototype);
+		this.runtime = runtime;
+	}
+
+	*call(thiz, args, scope) {
+		if ( args.length &lt; 1 ) return Value.undef;
+		let target = yield * args[0].toIntNative();
+		let engine = scope.realm.engine;
+					
+		for ( let i = 0; i &lt; engine.threads.length; ++i ) {
+			if ( engine.threads[i].evaluator.id == target ) {
+				let thr = engine.threads.splice(i, 1);
+				thr[0].evaluator.dispose.map((x) =&gt; x());
+				return Value.fromNative(true);
+			}
+		}
+		return Value.fromNative(false);
+	}
+}
+
 
 
 /**
@@ -172,6 +247,10 @@ class Realm {
 		console.log.apply(console, arguments);
 	}
 
+	write() {
+		this.print.apply(this, arguments);
+	}
+
 	parser(code, options) {
 		if ( !esper.languages[this.language] ) {
 			throw new Error(`Unknown language ${this.language}. Load the lang-${this.language} plugin?`);
@@ -179,7 +258,17 @@ class Realm {
 		return esper.languages[this.language].parser(code, options);
 	}
 
-	constructor(options) {
+	makeLiteralValue(v, n) {
+		let lang = esper.languages[this.language];
+		if ( lang &amp;&amp; lang.makeLiteralValue ) {
+			let langv = lang.makeLiteralValue(v, this, n);
+			if ( langv ) return langv;
+		}
+		return this.fromNative(v, n);
+	}
+
+	constructor(options, engine) {
+		this.engine = engine;
 		this.options = options || {};
 		this.language = options.language || &apos;javascript&apos;;
 		/** @type {Value} */
@@ -195,6 +284,8 @@ class Realm {
 		this.ObjectPrototype.rawSetProperty(&apos;constructor&apos;, new PropertyDescriptor(this.Object, false));
 
 		this.Function = new FunctionClass(this);
+		this.FunctionPrototype.rawSetProperty(&apos;constructor&apos;, new PropertyDescriptor(this.Function, false));
+
 
 		/** @type {Math} */
 		this.Math = new MathClass(this);
@@ -216,6 +307,7 @@ class Realm {
 
 		this.RegExpPrototype = new RegExpPrototype(this);
 		this.RegExp = new RegExpClass(this);
+		this.Proxy = new ProxyClass(this);
 
 		this.Esper = new EsperClass(this);
 		this.ErrorPrototype = new ErrorPrototype(this);
@@ -254,6 +346,7 @@ class Realm {
 		scope.set(&apos;Array&apos;, this.Array);
 		scope.set(&apos;String&apos;, this.String);
 		scope.set(&apos;RegExp&apos;, this.RegExp);
+		scope.set(&apos;Proxy&apos;, this.Proxy);
 
 		scope.set(&apos;Error&apos;, this.Error);
 		scope.set(&apos;TypeError&apos;, this.TypeError = this.Error.makeErrorType(TypeError));
@@ -273,10 +366,20 @@ class Realm {
 		scope.set(&apos;eval&apos;, new EvalFunction(this));
 		scope.set(&apos;assert&apos;, new AssertClass(this));
 
+		if ( options.runtime ) {
+			scope.set(&quot;setTimeout&quot;, new SetTimeoutFunction(this, options.runtime, false));
+			scope.set(&quot;setInterval&quot;, new SetTimeoutFunction(this, options.runtime, true));	
+			scope.set(&quot;clearTimeout&quot;, new ClearTimeoutFunction(this, options.runtime));
+			scope.set(&quot;clearInterval&quot;, new ClearTimeoutFunction(this, options.runtime));
+		}
+
 		scope.thiz = scope.object;
 		this.importCache = new WeakMap();
 		/** @type {Scope} */
 		this.globalScope = scope;
+
+		let lang = esper.languages[this.language];
+		if ( lang &amp;&amp; lang.setupRealm ) lang.setupRealm(this);
 	}
 
 	lookupWellKnown(v) {
@@ -313,11 +416,7 @@ class Realm {
 		}
 	}
 
-	valueFromNative(native) {
-		return Value.fromNative(native, this);
-	}
-
-	fromNative(native) {
+	fromNative(native, x) {
 		return Value.fromNative(native, this);
 	}
 

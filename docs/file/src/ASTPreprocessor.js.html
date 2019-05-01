@@ -34,6 +34,7 @@
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ASTPreprocessor.js~ASTPreprocessor.html">ASTPreprocessor</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CompletionRecord.js~CompletionRecord.html">CompletionRecord</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/DefaultRuntime.js~DefaultRuntime.html">DefaultRuntime</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html">Evaluator</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/EvaluatorInstruction.js~EvaluatorInstruction.html">EvaluatorInstruction</a></span></span></li>
@@ -58,6 +59,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/NumberPrototype.js~NumberPrototype.html">NumberPrototype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Object.js~ObjectObject.html">ObjectObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ObjectPrototype.js~ObjectPrototype.html">ObjectPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Proxy.js~ProxyClass.html">ProxyClass</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExp.js~RegExpObject.html">RegExpObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExpPrototype.js~RegExpProtoype.html">RegExpProtoype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/String.js~StringObject.html">StringObject</a></span></span></li>
@@ -145,18 +147,31 @@ class ASTNode {
 
 class ASTPreprocessor {
 
-	static process(ast, extra) {
-		if ( typeof ast !== &apos;object&apos; ) throw new TypeError(&apos;Provided AST is invalid (type is &apos; + typeof ast + &apos;)&apos;);
-		let nast = JSON.parse(JSON.stringify(ast), function(n, o) {
+	static clone(ast, extra) {
+		return JSON.parse(JSON.stringify(ast), function(n, o) {
 			if ( o === null ) return null;
 			if ( typeof o !== &apos;object&apos; ) return o;
-			if ( o.type ) {
+			if ( Array.isArray(o) ) {
+				return o;
+			} else if ( o.type ) {
 				let z = new ASTNode(o);
+				if ( !o.range &amp;&amp; typeof o.start != &apos;undefined&apos; &amp;&amp; typeof o.end != &apos;undefined&apos; ) {
+					z.range = [o.start, o.end];
+				}
 				if ( extra &amp;&amp; extra.source ) z.addHiddenProperty(&apos;_source&apos;, extra.source);
 				return z;
+			} else if ( n === &quot;start&quot; || n === &quot;end&quot; || n === &quot;loc&quot; || n == &quot;extra&quot; ) {
+				return o;
+			} else {
+				return o;
+				//throw new TypeError(&quot;Tried to process ASTNode with no type:&quot; + n);
 			}
-			return o;
 		});
+	}
+
+	static process(ast, extra) {
+		if ( typeof ast !== &apos;object&apos; ) throw new TypeError(&apos;Provided AST is invalid (type is &apos; + typeof ast + &apos;)&apos;);
+		let nast = ASTPreprocessor.clone(ast, extra);
 
 		var options = extra || {};
 		var cbs = new EsperASTInstructions(ast, options);
@@ -166,9 +181,10 @@ class ASTPreprocessor {
 
 	static *walker(ast, cbs, parent) {
 		var me = (a) =&gt; ASTPreprocessor.walker(a, cbs, ast);
+		if ( ! ast instanceof ASTNode ) throw new TypeError(&quot;Walked a non ASTNode&quot;);
+		if ( parent ) ast.addHiddenProperty(&apos;parent&apos;, parent);
 		invokeCB(cbs, &apos;enter&apos;, ast);
 		invokeCB(cbs, &apos;enter&apos; + ast.type, ast);
-		if ( parent &amp;&amp; ast instanceof ASTNode ) ast.addHiddenProperty(&apos;parent&apos;, parent);
 		switch ( ast.type ) {
 			case &apos;Program&apos;:
 				for ( let e of ast.body ) yield * me(e);
@@ -199,9 +215,12 @@ class ASTPreprocessor {
 				yield * me(ast.body);
 				invokeCB(cbs, &apos;exitFunction&apos;, ast);
 				break;
-
+			case &apos;ClassBody&apos;:
+				for ( let e of ast.body ) yield * me(e);
+				break;
 			case &apos;ArrowFunctionExpression&apos;:
 			case &apos;FunctionExpression&apos;:
+			case &apos;ClassMethod&apos;:
 				invokeCB(cbs, &apos;enterFunction&apos;, ast);
 				yield * me(ast.body);
 				invokeCB(cbs, &apos;exitFunction&apos;, ast);
@@ -231,6 +250,7 @@ class ASTPreprocessor {
 					let n = ast[p];
 					if ( p === &apos;parent&apos; ) continue;
 					if ( p === &apos;loc&apos; ) continue;
+					if ( p === &apos;range&apos; ) continue;
 					if ( p === &apos;type&apos; ) continue;
 					if ( p === &apos;nodeID&apos; ) continue;
 					if ( p === &apos;parentFunction&apos; ) continue;
@@ -280,6 +300,10 @@ class EsperASTInstructions {
 		let globalVars = Object.create(null);
 		let globalFuncs = Object.create(null);
 
+		if ( options.locals ) {
+			for ( let o of options.locals ) globalScope[o] = true;
+		}
+
 		this.scopeStack = [globalScope];
 		this.varStack = [globalVars];
 		this.funcStack = [globalFuncs];
@@ -293,27 +317,45 @@ class EsperASTInstructions {
 
 	enter(a) {
 		++this.depth;
+		if ( this.options.markNonUser ) {
+			a.nonUserCode = true;
+		}
 		a.nodeID = this.counter++;
 		this.log(&apos;Entering&apos;, a.type);
 	}
 
 	enterIdentifier(a) {
 		let fn = this.funcStack[0];
+		let parent = a.parent;
+		if ( parent.type == &quot;MemberExpression&quot; &amp;&amp; !parent.computed &amp;&amp; parent.property == a ) {
+			return;
+		}
+		if ( parent.type == &quot;Property&quot; &amp;&amp; parent.key == a) {
+			return;
+		}
 		fn.refs[a.name] = true;
 	}
 
 	decl(a) {
-		if ( a.parent.type == &apos;VariableDeclaration&apos; &amp;&amp; a.parent.kind != &apos;var&apos; ) return;
+		if ( a.parent.type == &apos;VariableDeclaration&apos; ) {
+			if ( a.parent.kind != &apos;var&apos; ) {
+				let stack = this.scopeStack[0];
+				stack[a.id.name] = a;
+				return
+			}
+		}
+		if ( a.type == &apos;FunctionDeclaration&apos; ) return;
 		let stack = this.varStack[0];
 		stack[a.id.name] = a;
 	}
 
 	enterProgram(a) {
-		let scope = Object.create(null);
+		let scope = Object.create(this.scopeStack[0]);
 
 		a.addHiddenProperty(&apos;refs&apos;, Object.create(null));
 		a.addHiddenProperty(&apos;vars&apos;, Object.create(null));
 		a.addHiddenProperty(&apos;funcs&apos;, Object.create(null));
+		a.addHiddenProperty(&apos;ss&apos;, scope);
 
 		this.funcStack.unshift(a);
 		this.scopeStack.unshift(scope);
@@ -342,10 +384,12 @@ class EsperASTInstructions {
 			if ( s.type === &apos;VariableDeclaration&apos; &amp;&amp; s.kind == &apos;var&apos; ) {
 				for ( var decl of s.declarations ) {
 					a.vars[decl.id.name] = decl;
+					a.ss[decl.id.name] = decl;
 				}
 
 			} else if ( s.type === &apos;FunctionDeclaration&apos; ) {
 				a.vars[s.id.name] = s;
+				a.ss[s.id.name] = s;
 			}
 		}
 
@@ -359,6 +403,18 @@ class EsperASTInstructions {
 
 	}
 
+	enterClassExpression(a) {
+		let scope = Object.create(this.scopeStack[0]);
+		this.scopeStack.unshift(scope);
+		scope[a.id.name] = a;
+		for ( let x of a.body.body ) {
+			if ( !x ) continue;
+			if ( x.key ) scope[x.key.name] = x;
+			if ( x.id ) scope[x.id.name] = x;
+		}
+	}
+
+
 	enterFunction(a) {
 		this.funcStack.unshift(a);
 		let scope = Object.create(this.scopeStack[0]);
@@ -367,13 +423,20 @@ class EsperASTInstructions {
 		a.addHiddenProperty(&apos;refs&apos;, Object.create(null));
 		a.addHiddenProperty(&apos;vars&apos;, Object.create(null));
 		a.addHiddenProperty(&apos;funcs&apos;, Object.create(null));
+		a.addHiddenProperty(&apos;ss&apos;, scope);
 
 		if ( this.options.nonUserCode ) {
 			a.addHiddenProperty(&apos;nonUserCode&apos;, true);
 		}
 
 		for ( let o of a.params ) {
-			a.vars[o.name] = a;
+			if ( o.type == &apos;Identifier&apos; ) {
+				scope[o.name] = a;
+				a.vars[o.name] = a;
+			} else if ( o.type == &apos;RestElement&apos; ) {
+				scope[o.argument.name] = a;
+				a.vars[o.argument.name] = a;
+			}
 		}
 
 		this.mangleBody(a);
@@ -426,12 +489,18 @@ class EsperASTInstructions {
 
 	exitFunction(a) {
 		var vars = this.varStack.shift();
+		var scope = this.scopeStack.shift();
 		var free = {};
 		var upvars = {};
+		var locals = {}
 		for ( var r in a.refs ) {
-			if ( r in vars ) {
-				//Local refrence
+
+			if ( r == &apos;arguments&apos; ) continue;
+			if (Object.hasOwnProperty.call(vars, r) || Object.hasOwnProperty.call(scope, r) ) {
+				locals[r] = true;
 			} else if ( r in this.varStack[0] ) {
+				upvars[r] = true;
+			} else if ( r in this.scopeStack[0] ) {
 				upvars[r] = true;
 			} else {
 				free[r] = true;
@@ -439,15 +508,24 @@ class EsperASTInstructions {
 		}
 		a.upvars = upvars;
 		a.freevars = free;
-
-		this.scopeStack.shift();
+		
 		this.funcStack.shift();
 		delete a.refs;
+
+		let target = this.funcStack[0];
+		if ( target &amp;&amp; target.refs ) {
+			for ( let v in upvars ) target.refs[v] = true;
+			for ( let v in free ) target.refs[v] = true;
+		}
 
 		if ( compiler &amp;&amp; this.options.compile === &apos;pre&apos; &amp;&amp; compiler.canCompile(a.body) ) {
 			a.body.dispatch = compiler.compileNode(a.body);
 		}
 		//this.log(&quot;VARS:&quot;, Object.getOwnPropertyNames(a.vars).join(&apos;, &apos;));
+	}
+
+	exitClassExpression(a) {
+		this.scopeStack.shift();
 	}
 
 	exitProgram(a) {
@@ -463,6 +541,7 @@ class EsperASTInstructions {
 
 }
 ASTPreprocessor.ASTNode = ASTNode;
+ASTPreprocessor.EsperASTInstructions = EsperASTInstructions;
 
 module.exports = ASTPreprocessor;
 </code></pre>

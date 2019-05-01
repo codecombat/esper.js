@@ -34,6 +34,7 @@
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ASTPreprocessor.js~ASTPreprocessor.html">ASTPreprocessor</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CompletionRecord.js~CompletionRecord.html">CompletionRecord</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/DefaultRuntime.js~DefaultRuntime.html">DefaultRuntime</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html">Evaluator</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/EvaluatorInstruction.js~EvaluatorInstruction.html">EvaluatorInstruction</a></span></span></li>
@@ -58,6 +59,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/NumberPrototype.js~NumberPrototype.html">NumberPrototype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Object.js~ObjectObject.html">ObjectObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ObjectPrototype.js~ObjectPrototype.html">ObjectPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Proxy.js~ProxyClass.html">ProxyClass</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExp.js~RegExpObject.html">RegExpObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExpPrototype.js~RegExpProtoype.html">RegExpProtoype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/String.js~StringObject.html">StringObject</a></span></span></li>
@@ -91,6 +93,7 @@
 const Value = require(&apos;../Value&apos;);
 const PropertyDescriptor = require(&apos;./PropertyDescriptor&apos;);
 const ObjectValue = require(&apos;./ObjectValue&apos;);
+const ArrayValue = require(&apos;./ArrayValue&apos;);
 const EvaluatorInstruction = require(&apos;../EvaluatorInstruction&apos;);
 
 /**
@@ -107,11 +110,12 @@ class ClosureValue extends ObjectValue {
 		super(realm, realm.FunctionPrototype);
 		this.realm = scope.realm;
 		this.func = func;
+		this.funcSourceAST = func;
 		this.scope = scope;
 		this.returnLastValue = false;
-		this.properties[&apos;prototype&apos;] = new PropertyDescriptor(new ObjectValue(realm));
-		this.properties[&apos;name&apos;] = new PropertyDescriptor(this.fromNative(func.id ? func.id.name : undefined));
-		this.properties[&apos;length&apos;] = new PropertyDescriptor(this.fromNative(func.params.length));
+		this.properties[&apos;prototype&apos;] = new PropertyDescriptor(new ObjectValue(realm), false);
+		this.properties[&apos;name&apos;] = new PropertyDescriptor(this.fromNative(func.id ? func.id.name : undefined), false);
+		this.properties[&apos;length&apos;] = new PropertyDescriptor(this.fromNative(func.params.length), false);
 
 
 	}
@@ -148,7 +152,7 @@ class ClosureValue extends ObjectValue {
 			invokeScope.writeTo = this.boundScope.object;
 			invokeScope.thiz = this.thiz || /* thiz ||*/ this.boundScope.thiz;
 		} else {
-			invokeScope = scope.createChild();
+			invokeScope = scope.top.createChild();
 			invokeScope.thiz = this.thiz || thiz;
 		}
 
@@ -170,6 +174,7 @@ class ClosureValue extends ObjectValue {
 			}
 		}
 
+		/*
 		if ( this.func.funcs ) {
 			for ( let fn in this.func.funcs ) {
 				let n = this.func.funcs[fn];
@@ -177,10 +182,20 @@ class ClosureValue extends ObjectValue {
 				invokeScope.add(n.id.name, closure);
 			}
 		}
+		*/
+
+		// Just a total guess that this is correct behavior...
+		if ( !invokeScope.strict &amp;&amp; this.func.funcs ) {
+			for ( let fn in this.func.funcs ) {
+				let n = this.func.funcs[fn];
+				invokeScope.add(n.id.name, Value.undef);
+			}
+		}
 
 		let argn = Math.max(args.length, this.func.params.length);
 		let argvars = new Array(argn);
 		let argsObj = new ObjectValue(scope.realm);
+		argsObj.clazz = &apos;Arguments&apos;;
 
 		for ( let i = 0; i &lt; argn; ++i ) {
 			let vv = Value.undef;
@@ -210,22 +225,35 @@ class ClosureValue extends ObjectValue {
 		invokeScope.add(&apos;arguments&apos;, argsObj);
 
 		for ( let i = 0; i &lt; this.func.params.length; ++i ) {
-			let name = this.func.params[i].name;
-			if ( scope.strict ) {
-				//Scope is strict, so we make a copy for the args variable
-				invokeScope.add(name, i &lt; args.length ? args[i] : Value.undef);
+			if ( this.func.params[i].type == &apos;RestElement&apos; ) {
+				let name = this.func.params[i].argument.name;
+				let rest = args.slice(i);
+				invokeScope.add(name, ArrayValue.make(rest, scope.realm));
 			} else {
-				//Scope isnt strict, magic happens.
-				invokeScope.object.rawSetProperty(name, argvars[i]);
+				let p = this.func.params[i];
+				if ( p.type == &quot;Identifier&quot; ) p = {id: p};
+				let name = p.id.name;
+
+				if ( scope.strict ) {
+					//Scope is strict, so we make a copy for the args variable
+					invokeScope.add(name, i &lt; args.length ? args[i] : Value.undef);
+				} else {
+					//Scope isnt strict, magic happens.
+					invokeScope.object.rawSetProperty(name, argvars[i]);
+				}
 			}
 		}
-		let opts = {returnLastValue: this.returnLastValue};
+		let opts = {returnLastValue: this.returnLastValue, creator: this};
 		if ( extra &amp;&amp; extra.evaluator &amp;&amp; extra.evaluator.debug ) {
 			opts[&apos;profileName&apos;] = extra.callNode.callee.srcName;
+		}
+		if ( extra &amp;&amp; extra.callee ) {
+			opts.callee = extra.callee;
 		}
 		if ( this.func.nonUserCode ) {
 			opts.yieldPower = -1;
 		}
+
 		var result = yield EvaluatorInstruction.branch(&apos;function&apos;, this.func.body, invokeScope, opts);
 		return result;
 	}

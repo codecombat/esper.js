@@ -34,6 +34,7 @@
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ASTPreprocessor.js~ASTPreprocessor.html">ASTPreprocessor</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CompletionRecord.js~CompletionRecord.html">CompletionRecord</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/DefaultRuntime.js~DefaultRuntime.html">DefaultRuntime</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html">Evaluator</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/EvaluatorInstruction.js~EvaluatorInstruction.html">EvaluatorInstruction</a></span></span></li>
@@ -58,6 +59,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/NumberPrototype.js~NumberPrototype.html">NumberPrototype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Object.js~ObjectObject.html">ObjectObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ObjectPrototype.js~ObjectPrototype.html">ObjectPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Proxy.js~ProxyClass.html">ProxyClass</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExp.js~RegExpObject.html">RegExpObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExpPrototype.js~RegExpProtoype.html">RegExpProtoype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/String.js~StringObject.html">StringObject</a></span></span></li>
@@ -85,13 +87,13 @@
 </nav>
 
 <div class="content" data-ice="content"><div class="header-notice">
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import ObjectObject from &apos;<span><a href="file/src/stdlib/Object.js.html#lineNumber99">esper.js/src/stdlib/Object.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import ObjectObject from &apos;<span><a href="file/src/stdlib/Object.js.html#lineNumber101">esper.js/src/stdlib/Object.js</a></span>&apos;</code></pre></div>
   <span data-ice="access">public</span>
   <span data-ice="kind">class</span>
   
   
   
-  <span data-ice="source">| <span><a href="file/src/stdlib/Object.js.html#lineNumber99">source</a></span></span>
+  <span data-ice="source">| <span><a href="file/src/stdlib/Object.js.html#lineNumber101">source</a></span></span>
 </div>
 
 <div class="self-detail detail">
@@ -1361,6 +1363,33 @@ debugging.</p>
       <div>
         <p>
           
+          
+          <span data-ice="name"><span><a href="class/src/Value.js~Value.html#instance-method-getPrototypeProperty">getPrototypeProperty</a></span></span><span data-ice="signature">(): <span>*</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
           <span data-ice="generator">*</span>
           <span data-ice="name"><span><a href="class/src/Value.js~Value.html#instance-method-gt">gt</a></span></span><span data-ice="signature">(other: <span><a href="class/src/Value.js~Value.html">Value</a></span>): <span><a href="class/src/Value.js~Value.html">Value</a></span></span>
         </p>
@@ -1398,6 +1427,33 @@ debugging.</p>
         
         <div data-ice="description"><p>Computes the javascript expression <code>value &gt;= other</code></p>
 </div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          <span data-ice="generator">*</span>
+          <span data-ice="name"><span><a href="class/src/Value.js~Value.html#instance-method-inOperator">inOperator</a></span></span><span data-ice="signature">(other: <span>*</span>): <span>*</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
       </div>
     </td>
     <td>
@@ -1640,6 +1696,34 @@ debugging.</p>
         <p>
           
           <span data-ice="generator">*</span>
+          <span data-ice="name"><span><a href="class/src/Value.js~Value.html#instance-method-pow">pow</a></span></span><span data-ice="signature">(other: <span><a href="class/src/Value.js~Value.html">Value</a></span>): <span><a href="class/src/Value.js~Value.html">Value</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Computes the <code>value</code> raised to the <code>other</code> power (<code>value ** other</code>)</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          <span data-ice="generator">*</span>
           <span data-ice="name"><span><a href="class/src/Value.js~Value.html#instance-method-shiftLeft">shiftLeft</a></span></span><span data-ice="signature">(other: <span>*</span>): <span>*</span></span>
         </p>
       </div>
@@ -1783,6 +1867,34 @@ debugging.</p>
         
         
         
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/src/Value.js~Value.html#instance-method-toJS">toJS</a></span></span><span data-ice="signature">(): <span>*</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Deep copy this value to a native javascript value.</p>
+</div>
       </div>
     </td>
     <td>
@@ -2868,6 +2980,33 @@ debugging.</p>
         <p>
           
           
+          <span data-ice="name"><span><a href="class/src/values/ObjectValue.js~ObjectValue.html#instance-method-toJS">toJS</a></span></span><span data-ice="signature">(): <span>*</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
           <span data-ice="name"><span><a href="class/src/values/ObjectValue.js~ObjectValue.html#instance-method-toNative">toNative</a></span></span><span data-ice="signature">(): <span>*</span></span>
         </p>
       </div>
@@ -3051,6 +3190,33 @@ debugging.</p>
       
     </td>
   </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/src/values/EasyObjectValue.js~EasyObjectValue.html#instance-member-easyRef">easyRef</a></span></span><span data-ice="signature">: <span>*</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
 </tbody>
 </table>
 </div>
@@ -3070,7 +3236,7 @@ debugging.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/stdlib/Object.js.html#lineNumber110">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/stdlib/Object.js.html#lineNumber112">source</a></span></span>
     </span>
   </h3>
 
@@ -3153,7 +3319,7 @@ debugging.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/stdlib/Object.js.html#lineNumber142">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/stdlib/Object.js.html#lineNumber144">source</a></span></span>
     </span>
   </h3>
 
@@ -3236,7 +3402,7 @@ debugging.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/stdlib/Object.js.html#lineNumber134">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/stdlib/Object.js.html#lineNumber136">source</a></span></span>
     </span>
   </h3>
 
@@ -3319,7 +3485,7 @@ debugging.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/stdlib/Object.js.html#lineNumber177">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/stdlib/Object.js.html#lineNumber179">source</a></span></span>
     </span>
   </h3>
 
@@ -3402,7 +3568,7 @@ debugging.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/stdlib/Object.js.html#lineNumber225">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/stdlib/Object.js.html#lineNumber235">source</a></span></span>
     </span>
   </h3>
 
@@ -3485,7 +3651,7 @@ debugging.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/stdlib/Object.js.html#lineNumber220">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/stdlib/Object.js.html#lineNumber230">source</a></span></span>
     </span>
   </h3>
 
@@ -3568,7 +3734,7 @@ debugging.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/stdlib/Object.js.html#lineNumber231">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/stdlib/Object.js.html#lineNumber241">source</a></span></span>
     </span>
   </h3>
 
@@ -3651,7 +3817,7 @@ debugging.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/stdlib/Object.js.html#lineNumber205">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/stdlib/Object.js.html#lineNumber207">source</a></span></span>
     </span>
   </h3>
 
@@ -3734,7 +3900,7 @@ debugging.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/stdlib/Object.js.html#lineNumber188">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/stdlib/Object.js.html#lineNumber190">source</a></span></span>
     </span>
   </h3>
 
@@ -3817,7 +3983,7 @@ debugging.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/stdlib/Object.js.html#lineNumber167">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/stdlib/Object.js.html#lineNumber169">source</a></span></span>
     </span>
   </h3>
 
@@ -3900,7 +4066,7 @@ debugging.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/stdlib/Object.js.html#lineNumber210">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/stdlib/Object.js.html#lineNumber212">source</a></span></span>
     </span>
   </h3>
 
@@ -3983,7 +4149,7 @@ debugging.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/stdlib/Object.js.html#lineNumber199">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/stdlib/Object.js.html#lineNumber201">source</a></span></span>
     </span>
   </h3>
 
@@ -4066,7 +4232,7 @@ debugging.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/stdlib/Object.js.html#lineNumber157">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/stdlib/Object.js.html#lineNumber159">source</a></span></span>
     </span>
   </h3>
 
@@ -4154,7 +4320,7 @@ debugging.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/stdlib/Object.js.html#lineNumber100">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/stdlib/Object.js.html#lineNumber102">source</a></span></span>
     </span>
   </h3>
 
@@ -4243,7 +4409,7 @@ debugging.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/stdlib/Object.js.html#lineNumber107">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/stdlib/Object.js.html#lineNumber109">source</a></span></span>
     </span>
   </h3>
 
@@ -4314,7 +4480,7 @@ debugging.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/stdlib/Object.js.html#lineNumber240">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/stdlib/Object.js.html#lineNumber250">source</a></span></span>
     </span>
   </h3>
 

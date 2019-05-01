@@ -34,6 +34,7 @@
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ASTPreprocessor.js~ASTPreprocessor.html">ASTPreprocessor</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CompletionRecord.js~CompletionRecord.html">CompletionRecord</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/DefaultRuntime.js~DefaultRuntime.html">DefaultRuntime</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html">Evaluator</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/EvaluatorInstruction.js~EvaluatorInstruction.html">EvaluatorInstruction</a></span></span></li>
@@ -58,6 +59,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/NumberPrototype.js~NumberPrototype.html">NumberPrototype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Object.js~ObjectObject.html">ObjectObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ObjectPrototype.js~ObjectPrototype.html">ObjectPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Proxy.js~ProxyClass.html">ProxyClass</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExp.js~RegExpObject.html">RegExpObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExpPrototype.js~RegExpProtoype.html">RegExpProtoype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/String.js~StringObject.html">StringObject</a></span></span></li>
@@ -96,6 +98,16 @@ function invoke(target, thiz, args) {
 	return Function.prototype.apply.call(target, thiz, args);
 }
 
+function invokeAsNew(target, args) {
+	if ( target.bind ) {
+		let bindArgs = [null].concat(args);
+		return new (target.bind.apply(target, bindArgs))();
+	} else {
+		return invoke(target, null, args);
+	}
+}
+
+
 /**
  * Represents a value that maps directly to an untrusted local value.
  */
@@ -122,13 +134,13 @@ class LinkValue extends Value {
 		return new LinkValue(native, realm);
 	}
 
-	ref(name, realm) {
+	ref(name, s) {
 
 		let that = this;
 		let out = Object.create(null);
 
-		out.getValue = function *() { return yield * that.get(name, realm); };
-		out.setValue = function *(to) { return yield * that.set(name, to); };
+		out.getValue = function *() { return yield * that.get(name, s); };
+		out.setValue = function *(to, s) { return yield * that.set(name, to, s); };
 		out.del = function() { return false; };
 
 		return out;
@@ -181,12 +193,13 @@ class LinkValue extends Value {
 
 
 
-	*get(name, realm) {
-		if ( this.native.hasOwnProperty(name) ) {
+	*get(name, realm, origional) {
+		let desc = Object.getOwnPropertyDescriptor(this.native, name);
+		if ( desc ) {
+			if ( desc.get &amp;&amp; origional ) return this.makeLink(origional.native[name], realm);
 			return this.makeLink(this.native[name], realm);
 		}
-
-		return yield * this.makeLink(Object.getPrototypeOf(this.native), realm).get(name, realm);
+		return yield * this.makeLink(Object.getPrototypeOf(this.native), realm).get(name, realm, origional || this);
 	}
 
 
@@ -203,13 +216,16 @@ class LinkValue extends Value {
 	 * @param {Value[]} args
 	 * @param {Scope} s
 	 */
-	*call(thiz, args, s) {
+	*call(thiz, args, s, ext) {
 		let realArgs = new Array(args.length);
 		for ( let i = 0; i &lt; args.length; ++i ) {
 			realArgs[i] = args[i].toNative();
 		}
 		try {
-			let result = invoke(this.native, thiz ? thiz.toNative() : undefined, realArgs);
+			let asConstructor = ext &amp;&amp; ext.asConstructor;
+			let result;
+			if ( asConstructor ) result = invokeAsNew(this.native, realArgs);
+			else result = invoke(this.native, thiz ? thiz.toNative() : undefined, realArgs);
 			let val = this.makeLink(result, s.realm);
 			if ( typeof s.realm.options.linkValueCallReturnValueWrapper === &apos;function&apos; ) {
 				val = s.realm.options.linkValueCallReturnValueWrapper(val);
@@ -237,6 +253,10 @@ class LinkValue extends Value {
 
 	*toNumberValue() { return Value.fromNative((Number(this.native))); }
 	*toStringValue() { return Value.fromNative((String(this.native))); }
+
+	getPrototypeProperty() {
+		return this.makeLink(this.native.prototype);
+	}
 
 	getPrototype(realm) {
 		return realm.ObjectPrototype;

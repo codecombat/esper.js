@@ -34,6 +34,7 @@
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ASTPreprocessor.js~ASTPreprocessor.html">ASTPreprocessor</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CompletionRecord.js~CompletionRecord.html">CompletionRecord</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/DefaultRuntime.js~DefaultRuntime.html">DefaultRuntime</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html">Evaluator</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/EvaluatorInstruction.js~EvaluatorInstruction.html">EvaluatorInstruction</a></span></span></li>
@@ -58,6 +59,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/NumberPrototype.js~NumberPrototype.html">NumberPrototype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Object.js~ObjectObject.html">ObjectObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ObjectPrototype.js~ObjectPrototype.html">ObjectPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Proxy.js~ProxyClass.html">ProxyClass</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExp.js~RegExpObject.html">RegExpObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExpPrototype.js~RegExpProtoype.html">RegExpProtoype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/String.js~StringObject.html">StringObject</a></span></span></li>
@@ -98,14 +100,19 @@ module.exports = esper;
 Engine = require(&apos;./Engine&apos;);
 esper.plugins = {&apos;lang-javascript&apos;: require(&apos;./lang-javascript.js&apos;)};
 esper.Engine = Engine;
+esper.Evaluator = require(&apos;./Evaluator&apos;);
 esper.Value = require(&apos;./Value&apos;);
+esper.PrimitiveValue = require(&apos;./values/PrimitiveValue&apos;);
 esper.ASTPreprocessor = require(&apos;./ASTPreprocessor&apos;);
 esper.FutureValue = require(&apos;./values/FutureValue&apos;);
 esper.SmartLinkValue = require(&apos;./values/SmartLinkValue&apos;);
 esper.ObjectValue = require(&apos;./values/ObjectValue&apos;);
+esper.StringValue = require(&apos;./values/StringValue&apos;);
 esper.EasyNativeFunction = require(&apos;./values/EasyNativeFunction&apos;);
 esper.EasyObjectValue = require(&apos;./values/EasyObjectValue&apos;);
+esper.CompletionRecord = require(&apos;./CompletionRecord&apos;);
 esper.Realm = require(&apos;./Realm&apos;);
+esper.EvaluatorHandlers = require(&apos;./EvaluatorHandlers&apos;);
 esper.eval = function(source) {
 	return new Engine().evalSync(source).toNative();
 };
@@ -115,6 +122,10 @@ esper.version = require(&apos;../package.json&apos;).version;
 esper.languages = {
 	javascript: esper.plugins[&apos;lang-javascript&apos;]
 };
+
+esper.hooks = {
+	setupEngine: []
+}
 
 esper.plugin = function(name) {
 	let pl;
@@ -128,8 +139,8 @@ esper.plugin = function(name) {
 };
 
 esper._registerPlugin = function(pl) {
-	if ( typeof pl.init !== &quot;function&quot; ) throw new Error(&quot;Tried to add a plugin without an init method.&quot;);
-	if ( typeof pl.name !== &quot;string&quot; ) throw new Error(&quot;Tried to add a plugin without a name.&quot;);
+	if ( typeof pl.init !== &apos;function&apos; ) throw new Error(&apos;Tried to add a plugin without an init method.&apos;);
+	if ( typeof pl.name !== &apos;string&apos; ) throw new Error(&apos;Tried to add a plugin without a name.&apos;);
 	esper.plugins[pl.name] = pl;
 	pl.init(esper);
 };
@@ -137,7 +148,7 @@ esper._registerPlugin = function(pl) {
 var list = require(&apos;../plugin-list.js&apos;);
 esper.pluginList = list;
 for ( let pl in list ) {
-	if ( list[pl] == &quot;bundle&quot; ) esper.plugin(pl);
+	if ( list[pl] == &apos;bundle&apos; ) esper.plugin(pl);
 }
 
 

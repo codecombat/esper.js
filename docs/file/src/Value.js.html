@@ -34,6 +34,7 @@
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ASTPreprocessor.js~ASTPreprocessor.html">ASTPreprocessor</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CompletionRecord.js~CompletionRecord.html">CompletionRecord</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/DefaultRuntime.js~DefaultRuntime.html">DefaultRuntime</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html">Evaluator</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/EvaluatorInstruction.js~EvaluatorInstruction.html">EvaluatorInstruction</a></span></span></li>
@@ -58,6 +59,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/NumberPrototype.js~NumberPrototype.html">NumberPrototype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Object.js~ObjectObject.html">ObjectObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ObjectPrototype.js~ObjectPrototype.html">ObjectPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Proxy.js~ProxyClass.html">ProxyClass</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExp.js~RegExpObject.html">RegExpObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExpPrototype.js~RegExpProtoype.html">RegExpProtoype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/String.js~StringObject.html">StringObject</a></span></span></li>
@@ -122,7 +124,7 @@ class Value {
 				return 1 / value &gt; 0 ? zero : negzero;
 			}
 			if ( value | 0 === value ) {
-				let snv = smallIntValues[value+1];
+				let snv = smallIntValues[value + 1];
 				if ( snv ) return snv;
 			}
 			return new NumberValue(value);
@@ -235,22 +237,22 @@ class Value {
 			switch ( realm.options.bookmarkInvocationMode ) {
 				case &apos;loop&apos;:
 
-				out = function Bookmark() {
-					let Evaluator = require(&apos;./Evaluator&apos;);
-					let cthis = realm.makeForForeignObject(this);
-					let c = v.call(cthis, [], realm.globalScope);
-					let evalu = new Evaluator(realm, null, realm.globalScope);
-					evalu.pushFrame({type: &apos;program&apos;, generator: c, scope: realm.globalScope});
-					let gen = evalu.generator();
-					let result;
-					do {
-						result = gen.next();
-					} while ( !result.done );
-					return result.value.toNative();
-				};
-				break;
+					out = function Bookmark() {
+						let Evaluator = require(&apos;./Evaluator&apos;);
+						let cthis = realm.makeForForeignObject(this);
+						let c = v.call(cthis, Array.from(arguments).map((v) =&gt; realm.makeForForeignObject(v)), realm.globalScope);
+						let evalu = new Evaluator(realm, null, realm.globalScope);
+						evalu.pushFrame({type: &apos;program&apos;, generator: c, scope: realm.globalScope});
+						let gen = evalu.generator();
+						let result;
+						do {
+							result = gen.next();
+						} while ( !result.done );
+						return result.value.toNative();
+					};
+					break;
 				default:
-				out = function Bookmark() { throw new Error(&apos;Atempted to invoke bookmark for &apos; + v.debugString); };
+					out = function Bookmark() { throw new Error(&apos;Atempted to invoke bookmark for &apos; + v.debugString); };
 			}
 		} else {
 			out = {};
@@ -258,6 +260,7 @@ class Value {
 		Object.defineProperties(out, {
 			toString: {value: function() { return v.debugString; }, writable: true},
 			inspect: {value: function() { return v.debugString; }, writable: true},
+			esperValue: {get: function() { return v; } },
 		});
 		bookmarks.set(out, v);
 		return out;
@@ -279,6 +282,15 @@ class Value {
 	}
 
 	/**
+	 * Deep copy this value to a native javascript value.
+	 *
+	 * @returns {*}
+	 */
+	toJS() {
+		return this.toNative();
+	}
+
+	/**
 	 * A string representation of this Value suitable for display when
 	 * debugging.
 	 * @abstract
@@ -293,7 +305,9 @@ class Value {
 
 	//TODO: Kill this
 	fromNative(other, realm) {
-		return Value.fromNative(other, realm);
+		realm = realm || this.realm;
+		if ( realm ) return realm.fromNative(other);
+		return Value.fromNative(other);
 	}
 
 	/**
@@ -377,10 +391,16 @@ class Value {
 		return other === this ? Value.true : Value.false;
 	}
 
+	getPrototypeProperty() {
+		let p = this.properties[&apos;prototype&apos;];
+		if ( !p ) return;
+		return p.value;
+	}
+
 	*makeThisForNew(realm) {
 		var nue = new ObjectValue(realm);
-		var p = this.properties[&apos;prototype&apos;];
-		if ( p ) nue.setPrototype(p.value);
+		var p = this.getPrototypeProperty();
+		if ( p ) nue.setPrototype(p);
 		return nue;
 	}
 
@@ -449,6 +469,22 @@ class Value {
 	*bitAnd(other) { return this.fromNative((yield * this.toNumberNative()) &amp; (yield * other.toNumberNative())); }
 	*bitOr(other) { return this.fromNative((yield * this.toNumberNative()) | (yield * other.toNumberNative())); }
 	*bitXor(other) { return this.fromNative((yield * this.toNumberNative()) ^ (yield * other.toNumberNative())); }
+
+
+	/**
+	 * Computes the `value` raised to the `other` power (`value ** other`)
+	 * @param {Value} other - The other value
+	 * @returns {Value}
+	 */
+	*pow(other) { return this.fromNative(Math.pow(yield * this.toNumberNative(),yield * other.toNumberNative())); }
+
+	*inOperator(other) {
+		let err = &quot;Cannot use &apos;in&apos; operator to search for &apos;thing&apos; in &apos;thing&apos;&quot;;
+		return new CompletionRecord(CompletionRecord.THROW, {
+			type: &quot;TypeError&quot;,
+			message: err
+		});
+	}
 
 	/**
 	 * Is the value is truthy, i.e. `!!value`
@@ -526,7 +562,7 @@ smallIntValues = [
 	negone, zero,
 	one, new NumberValue(2), new NumberValue(3), new NumberValue(4), new NumberValue(5),
 	new NumberValue(6), new NumberValue(7), new NumberValue(8), new NumberValue(9)
-	]
+	];
 </code></pre>
 
 </div>

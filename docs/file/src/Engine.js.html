@@ -34,6 +34,7 @@
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ASTPreprocessor.js~ASTPreprocessor.html">ASTPreprocessor</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CompletionRecord.js~CompletionRecord.html">CompletionRecord</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/DefaultRuntime.js~DefaultRuntime.html">DefaultRuntime</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html">Evaluator</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/EvaluatorInstruction.js~EvaluatorInstruction.html">EvaluatorInstruction</a></span></span></li>
@@ -58,6 +59,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/NumberPrototype.js~NumberPrototype.html">NumberPrototype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Object.js~ObjectObject.html">ObjectObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ObjectPrototype.js~ObjectPrototype.html">ObjectPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Proxy.js~ProxyClass.html">ProxyClass</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExp.js~RegExpObject.html">RegExpObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExpPrototype.js~RegExpProtoype.html">RegExpProtoype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/String.js~StringObject.html">StringObject</a></span></span></li>
@@ -98,6 +100,7 @@ const FutureValue = require(&apos;./values/FutureValue&apos;);
 const EasyNativeFunction = require(&apos;./values/EasyNativeFunction&apos;);
 const ClosureValue = require(&apos;./values/ClosureValue&apos;);
 const SmartLinkValue = require(&apos;./values/SmartLinkValue&apos;);
+const DefaultRuntime = require(&apos;./DefaultRuntime&apos;)
 
 let defaultOptions = {
 	strict: false,
@@ -111,7 +114,9 @@ let defaultOptions = {
 	yieldPower: 5,
 	debug: false,
 	compile: &apos;pre&apos;,
-	language: &apos;javascript&apos;
+	language: &apos;javascript&apos;,
+	runtime: false,
+	rotateThreads: false 
 };
 
 /**
@@ -119,14 +124,20 @@ let defaultOptions = {
  */
 class Engine {
 
-	constructor(options) {
+	constructor(options, realm=false) {
 		options = options || {};
 		this.options = {};
 		for ( var k in defaultOptions ) {
 			if ( k in options ) this.options[k] = options[k];
 			else this.options[k] = defaultOptions[k];
 		}
-		this.realm = new Realm(this.options);
+
+		if ( realm )  {
+			this.realm = realm;
+		} else {
+			this.realm = new Realm(this.options, this);
+		}
+
 		this.evaluator = new Evaluator(this.realm, null, this.globalScope);
 		if ( this.options.debug ) {
 			this.evaluator.debug = true;
@@ -135,13 +146,62 @@ class Engine {
 		this.evaluator.defaultYieldPower = this.options.yieldPower;
 		this.evaluator.yieldPower = this.options.yieldPower;
 
-		if ( this.language.startupCode ) {
+		if ( this.language.startupCode &amp;&amp; !realm ) {
 			this.loadLangaugeStartupCode();
 		}
+
+		//options.runtime = true;
+		if ( options.runtime ) {
+			if ( &quot;boolean&quot; == typeof(options.runtime) ) {
+				this.runtime = new DefaultRuntime();
+			} else {
+				this.runtime = options.runtime;
+			}
+		}
+
+		this.threads = [];
+		let that = this;
+		if ( options.runtime ) {
+			this.evloop = {next: function() {
+				let promises = [];
+				for ( let i = 0; i &lt; that.threads.length; ++i ) {
+					if ( that.threads[i] ) {
+						let val = that.threads[i].next();
+						if ( val.done ) {  that.threads.splice(i, 1); return {done: false, value: val.value}; }
+						if ( !val.value || !val.value.then ) {
+							if ( options.rotateThreads ) that.threads.push(that.threads.splice(i, 1)[0]);
+							return {done: false, value: val.value};
+						}
+						else promises.push(val.value);
+					}
+				}
+				if ( promises.length &gt; 0 ) return {done: false, value: Promise.race(promises)};
+				else return {done: true};
+
+			}};
+		} else {
+			Object.defineProperty(this, &quot;evloop&quot;, {
+				get: () =&gt; this.threads[0],
+				set: (v) =&gt; this.threads[0] = v // Supports CrazyJoshMode
+			});
+		}
+
+		if ( this.language.setupEngine ) {
+			this.language.setupEngine(esper, this);
+		}
+
+		for ( let hook of esper.hooks.setupEngine ) {
+			hook(esper, this);
+		}
+
 	}
 
+	//get evloop() { return this.generator; }
+	get generator() { return this.evloop; }
+	set generator(v) { return this.evloop = v; } // Supports CrazyJoshMode
+
 	loadLangaugeStartupCode() {
-		let past = this.preprocessAST(this.language.startupCode(),{});
+		let past = this.preprocessAST(this.language.startupCode(), {markNonUser: true});
 		let stdlib_eval = new Evaluator(this.realm, null, this.globalScope);
 		stdlib_eval.frames = [];
 		stdlib_eval.pushAST(past, this.globalScope);
@@ -183,6 +243,17 @@ class Engine {
 		return this.evalASTSync(ast, {source: code});
 	}
 
+	evalDetatched(code) {
+		let ast = this.realm.parser(code);
+		this.loadAST(ast, {source: code});
+		let p = new Promise((res, rej) =&gt; {
+			this.evaluator.onCompletion = res;
+			this.evaluator.onError = rej;
+		});
+		setTimeout(() =&gt; this.run().catch((e) =&gt; { }), 0);
+		return p
+	}
+
 	/**
 	 * Evalute `ast` and return a promise for the result.
 	 *
@@ -195,14 +266,17 @@ class Engine {
 		//console.log(escodegen.generate(ast));
 		this.loadAST(ast, opts);
 		let p = this.run();
-		p.then(() =&gt; delete this.generator);
-		return p;
+		p.then(
+			() =&gt; this.threads = [],
+			() =&gt; this.threads = []
+		);
+		return p
 	}
 
 	evalASTSync(ast, opts) {
 		this.loadAST(ast, opts);
 		let value = this.runSync();
-		delete this.generator;
+		this.threads[0] = [];
 		return value;
 	}
 
@@ -218,7 +292,7 @@ class Engine {
 		this.evaluator.frames = [];
 		this.evaluator.pushAST(past, this.globalScope);
 		this.evaluator.ast = past;
-		this.generator = this.evaluator.generator();
+		this.threads[0] = this.evaluator.generator();
 	}
 
 	load(code) {
@@ -227,8 +301,8 @@ class Engine {
 	}
 
 	step() {
-		if ( !this.generator ) throw new Error(&apos;No code loaded to step&apos;);
-		let value = this.generator.next();
+		if ( this.threads.length &lt; 1 ) throw new Error(&apos;No code loaded to step&apos;);
+		let value = this.evloop.next();
 		return value.done;
 	}
 
@@ -237,20 +311,20 @@ class Engine {
 		let steps = 0;
 		function handler(value) {
 			while ( !value.done ) {
-				value = that.generator.next();
+				value = that.evloop.next();
 				if ( value.value &amp;&amp; value.value.then ) {
 					return value.value.then((v) =&gt; {
-						return {done: false, value: v};
+						return handler({done: false, value: v});
 					});
 				}
 				if ( ++steps &gt; that.options.executionLimit ) throw new Error(&apos;Execution Limit Reached&apos;);
 			}
-			that.generator = undefined;
+			if ( !that.options.runtime ) that.threads = [];
 			return value;
 		}
 		return new Promise(function(resolve, reject) {
 			try {
-				let value = that.generator.next();
+				let value = that.evloop.next();
 				resolve(value);
 			} catch ( e ) {
 				reject(e);
@@ -260,9 +334,9 @@ class Engine {
 
 	runSync() {
 		let steps = 0;
-		let value = this.generator.next();
+		let value = this.evloop.next();
 		while ( !value.done ) {
-			value = this.generator.next();
+			value = this.evloop.next();
 			if ( value.value &amp;&amp; value.value.then ) throw new Error(&apos;Can\&apos;t deal with futures when running in sync mode&apos;);
 			if ( ++steps &gt; this.options.executionLimit ) throw new Error(&apos;Execution Limit Reached&apos;);
 		}
@@ -367,7 +441,7 @@ class Engine {
 		var scope = this.globalScope;
 		var that = this;
 		let evaluator = evalu || this.evaluator;
-		if ( !evaluator ) throw new Error(&quot;Evaluator is falsey&quot;);
+		if ( !evaluator ) throw new Error(&apos;Evaluator is falsey&apos;);
 		if ( !val ) return;
 
 		return function*() {
@@ -395,11 +469,8 @@ class Engine {
 	 * @return {Engine}
 	 */
 	fork() {
-		let engine = new Engine(this.options);
+		let engine = new Engine(this.options, this.realm);
 		var scope = this.globalScope;
-
-		engine.realm = this.realm;
-
 		engine.evaluator = this.makeEvaluatorClone();
 		return engine;
 	}
@@ -424,7 +495,7 @@ class Engine {
 	*filterGenerator(gen, shouldYield, evaluator) {
 		let value = gen.next();
 		let steps = 0;
-		if ( !evaluator ) throw new Error(&quot;Evaluator is falsey&quot;);
+		if ( !evaluator ) throw new Error(&apos;Evaluator is falsey&apos;);
 		while ( !value.done ) {
 			if ( !shouldYield ) yield;
 			else if ( evaluator.topFrame.type == &apos;await&apos; ) {

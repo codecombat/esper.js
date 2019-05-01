@@ -34,6 +34,7 @@
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ASTPreprocessor.js~ASTPreprocessor.html">ASTPreprocessor</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CompletionRecord.js~CompletionRecord.html">CompletionRecord</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/DefaultRuntime.js~DefaultRuntime.html">DefaultRuntime</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Engine.js~Engine.html">Engine</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Evaluator.js~Evaluator.html">Evaluator</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/EvaluatorInstruction.js~EvaluatorInstruction.html">EvaluatorInstruction</a></span></span></li>
@@ -58,6 +59,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/NumberPrototype.js~NumberPrototype.html">NumberPrototype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Object.js~ObjectObject.html">ObjectObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/ObjectPrototype.js~ObjectPrototype.html">ObjectPrototype</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/Proxy.js~ProxyClass.html">ProxyClass</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExp.js~RegExpObject.html">RegExpObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/RegExpPrototype.js~RegExpProtoype.html">RegExpProtoype</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/stdlib/String.js~StringObject.html">StringObject</a></span></span></li>
@@ -116,12 +118,12 @@ class BridgeValue extends Value {
 		return new BridgeValue(native);
 	}
 
-	ref(name) {
+	ref(name, s) {
 		let that = this;
 		let out = Object.create(null);
-		let str = (value) =&gt; that.native[name] = value.toNative();
-		out.getValue = function *() { return that.native[name]; };
-		out.setValue = function *(to) { return str(to); };
+		let doset = (value) =&gt; that.native[name] = value.toNative();
+		out.getValue = function *() { return Value.fromNative(that.native[name]); };
+		out.setValue = function *(to) { doset(to) };
 
 		return out;
 	}
@@ -156,7 +158,7 @@ class BridgeValue extends Value {
 	*gte(other) { return this.makeBridge(this.native &gt;= other.toNative()); }
 	*lte(other) { return this.makeBridge(this.native &lt;= other.toNative()); }
 
-	*inOperator(other) { return this.makeBridge(this.native in other.toNative()); }
+	*inOperator(other) { return this.makeBridge(other.toNative() in this.native); }
 	*instanceOf(other) { return this.makeBridge(this.native instanceof other.toNative()); }
 
 	*unaryPlus() { return this.makeBridge(+this.native); }
@@ -203,6 +205,8 @@ class BridgeValue extends Value {
 	*makeThisForNew() {
 		return this.makeBridge(Object.create(this.native.prototype));
 	}
+
+	*toStringValue() { return this.fromNative(this.native.toString()); }
 
 	get debugString() {
 		return &apos;[Bridge: &apos; + this.native + &apos;]&apos;;
