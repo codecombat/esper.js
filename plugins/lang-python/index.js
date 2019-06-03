@@ -1,6 +1,7 @@
 'use strict';
 
 const skulpty = require('skulpty');
+const PythonRuntime = require('./runtime');
 let esper;
 
 function parser(code, options) {
@@ -75,6 +76,13 @@ let plugin = module.exports = {
 			realm.pythonStringBaseInstance.properties[k] = realm.StringPrototype.properties[map[k]];
 		}
 		realm.loadLangaugeStartupCode(startupCodeAST);
+		realm.PythonRuntime = new PythonRuntime.PythonRuntime(realm);
+		realm.PythonListProto = new PythonRuntime.PythonListProto(realm);
+		realm.PythonList = new PythonRuntime.PythonList(realm);
+		let pr = realm.globalScope.get("__pythonRuntime");
+		let copy = (x,y,z) => pr.getImmediate(x).setImmediate(y, realm.PythonRuntime.getImmediate(z));
+		//copy("ops","subscriptIndex", "subscriptIndex");
+		copy("functions", "str", "str");
 	},
 	startupCode: () => startupCodeAST,
 	makeLiteralValue: function(v, realm, n) {
