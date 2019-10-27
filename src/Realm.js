@@ -244,8 +244,8 @@ class Realm {
 		var printer = EasyNativeFunction.make(this, function*(thiz, args, s) {
 			s.realm.print.apply(s.realm, args.map(x => x.toNative()));
 		});
-		this.intrinsicScope.set('print', printer);
-		this.intrinsicScope.set('log', printer);
+		this.addIntrinsic('print', printer);
+		this.addIntrinsic('log', printer);
 
 		this.intrinsicScope.addConst('NaN', this.fromNative(NaN));
 		this.intrinsicScope.addConst('Infinity', this.fromNative(Infinity));
