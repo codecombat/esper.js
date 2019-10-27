@@ -68,7 +68,7 @@ describe('Misc', () => {
 	});
 
 	describe('Frozen Realms', () => {
-		it('has no unfrozen values', () => {
+		xit('has no unfrozen values', () => {
 			let e = new Engine({frozenRealm: true});
 			let checked = new WeakSet(); 
 			function walk(o, path) {
