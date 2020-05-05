@@ -225,11 +225,10 @@ class Value {
 	 * Indexes the value to get the value of a property.
 	 * i.e. `value[name]`
 	 * @param {String} name
-	 * @param {Realm} realm
 	 * @abstract
 	 * @returns {Value}
 	 */
-	*get(name, realm) {
+	*get(name) {
 		let err = "Can't access get " + name + ' of that type.';
 		return yield CompletionRecord.typeError(err);
 	}
@@ -273,32 +272,29 @@ class Value {
 	/**
 	 * Computes the javascript expression `!(value == other)`
 	 * @param {Value} other - The other value
-	 * @param {Realm} realm - The realm to use when creating resuls.
 	 * @returns {Value}
 	 */
-	*notEquals(other, realm) {
-		var result = yield * this.doubleEquals(other, realm);
+	*notEquals(other) {
+		var result = yield * this.doubleEquals(other);
 		return yield * result.not();
 	}
 
 	/**
 	 * Computes the javascript expression `!(value === other)`
 	 * @param {Value} other - The other value
-	 * @param {Realm} realm - The realm to use when creating resuls.
 	 * @returns {Value}
 	 */
-	*doubleNotEquals(other, realm) {
-		var result = yield * this.tripleEquals(other, realm);
+	*doubleNotEquals(other) {
+		var result = yield * this.tripleEquals(other);
 		return yield * result.not();
 	}
 
 	/**
 	 * Computes the javascript expression `value === other`
 	 * @param {Value} other - The other value
-	 * @param {Realm} realm - The realm to use when creating resuls.
 	 * @returns {Value}
 	 */
-	*tripleEquals(other, realm) {
+	*tripleEquals(other) {
 		return other === this ? Value.true : Value.false;
 	}
 

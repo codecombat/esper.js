@@ -18,9 +18,12 @@ class ObjRefrence {
 		this.name = name;
 		this.ctxthis = ctxthis;
 	}
-	del(s) { return this.object.delete(this.name, s); }
-	getValue(s) { return this.object.get(this.name, this.ctxthis || this.object, s); }
-	setValue(value, s) { return this.object.set(this.name, value, s); }
+	del(s) {
+		if ( s.strict ) return this.object.deleteStrict(this.name)
+		else return this.object.delete(this.name);
+	}
+	getValue() { return this.object.get(this.name, this.ctxthis || this.object); }
+	setValue(value, s) { return this.object.set(this.name, value); }
 }
 
 /**
@@ -51,19 +54,20 @@ class ObjectValue extends Value {
 				isVariable: false,
 				del: alwaysFalse,
 				getValue:  undefinedReturningGenerator,
-				setValue: function(to, s) { return this.object.set(this.name, to, s); }
+				setValue: function(to, s) { return this.object.set(this.name, to); }
 			};
 
 		}
 	}
 
 	//Note: Returns generator by tailcall.
-	set(name, value, s, extra) {
+	set(name, value, extra) {
 		let thiz = this;
 		extra = extra || {};
+
 		if ( !Object.prototype.hasOwnProperty.call(this.properties, name) ) {
 			if ( this.properties[name] && this.properties[name].setter ) {
-				return this.properties[name].setValue(this, value, s);
+				return this.properties[name].setValue(this, value);
 			}
 			if ( !this.extensable ) {
 				//TODO: Should we throw here in strict mode?
@@ -73,10 +77,10 @@ class ObjectValue extends Value {
 			v.enumerable = 'enumerable' in extra ? extra.enumerable : true;
 			this.properties[name] = v;
 
-			return v.setValue(this, value, s);
+			return v.setValue(this, value);
 		}
 
-		return this.properties[name].setValue(this, value, s);
+		return this.properties[name].setValue(this, value);
 
 	}
 
@@ -107,11 +111,18 @@ class ObjectValue extends Value {
 		return name in this.properties;
 	}
 
-	delete(name, s) {
+	delete(name) {
 		let po = this.properties[name];
 		if ( !po.configurable ) {
-			if ( s.strict ) return CompletionRecord.typeError("Can't delete nonconfigurable object");
-			else return false;
+			return false;
+		}
+		return delete this.properties[name];
+	}
+
+	deleteStrict(name) {
+		let po = this.properties[name];
+		if ( !po.configurable ) {
+			return CompletionRecord.typeError("Can't delete nonconfigurable object");
 		}
 		return delete this.properties[name];
 	}
@@ -170,32 +181,34 @@ class ObjectValue extends Value {
 		return this.has(svalue.toNative()) ? Value.true : Value.false;
 	}
 
-	*get(name, realm, ctxthis) {
+	*get(name, ctxthis) {
 		var existing = this.properties[name];
 		if ( !existing ) {
 			// Fast proto lookup can fail if aLinkValue or Proxy
 			// is in the prototype chain.
 			// TODO: Cache if this is needed for speed.
-			if ( this.proto ) return yield * this.proto.get(name, realm, ctxthis);
+			if ( this.proto ) return yield * this.proto.get(name, ctxthis || this);
 			else return Value.undef;
 		}
 		if ( existing.direct ) return existing.value;
 		return yield * existing.getValue(ctxthis || this);
 	}
 
-	getImmediate(name, realm, ctxthis) {
+	getImmediate(name, ctxthis) {
 		var existing = this.properties[name];
 		if ( !existing ) return Value.undef;
 		if ( existing.direct ) return existing.value;
 		return GenDash.syncGenHelper(existing.getValue(ctxthis || this));
 	}
 
-	*instanceOf(other, realm) {
-		return yield * other.constructorOf(this, realm);
+	*instanceOf(other) {
+		if (!other.constructorOf) return Value.false;
+		return yield * other.constructorOf(this);
 	}
 
-	*constructorOf(what, realm) {
+	*constructorOf(what) {
 		let target = yield * this.get('prototype');
+		let realm = yield EvaluatorInstruction.getRealm;
 		let pt = what.getPrototype(realm);
 		let checked = [];
 

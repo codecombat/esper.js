@@ -28,8 +28,8 @@ class BoundFunction extends ObjectValue {
 	}
 
 
-	*constructorOf(other, realm) {
-		return yield * this.func.constructorOf(other, realm);
+	*constructorOf(other) {
+		return yield * this.func.constructorOf(other);
 	}
 
 

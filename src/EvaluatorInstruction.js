@@ -28,5 +28,6 @@ EvaluatorInstruction.waitForFramePop = new EvaluatorInstruction('waitForFramePop
 EvaluatorInstruction.framePushed = new EvaluatorInstruction('framePushed');
 EvaluatorInstruction.getEvaluator = new EvaluatorInstruction('getEvaluator');
 EvaluatorInstruction.getRealm = new EvaluatorInstruction('getRealm');
+EvaluatorInstruction.getScope = new EvaluatorInstruction('getScope');
 EvaluatorInstruction.eventLoopBodyStart = new EvaluatorInstruction('event').mark({event: 'loopBodyStart'});
 module.exports = EvaluatorInstruction;

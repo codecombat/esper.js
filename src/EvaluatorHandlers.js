@@ -474,7 +474,7 @@ function *evaluateForInStatement(e, n, s) {
 	}
 	var gen = function*() {
 		for ( let name of names ) {
-			yield * ref.setValue(name);
+			yield * ref.setValue(name, s);
 			last = yield that.branchFrame('continue', n.body, s, {labels: n.labels});
 		}
 	};
@@ -506,7 +506,7 @@ function *evaluateForOfStatement(e, n, s) {
 
 	var gen = function*() {
 		for ( let name of names ) {
-			yield * ref.setValue(yield * object.get(yield * name.toStringNative()));
+			yield * ref.setValue(yield * object.get(yield * name.toStringNative()), s);
 			last = yield that.branchFrame('continue', n.body, s, {labels: n.labels});
 		}
 	};

@@ -33,8 +33,8 @@ class ProxyValue extends Value {
 			object: this,
 			isVariable: false,
 			del: () => false, //Doesnt support being a generator yet.
-			getValue:  () => this.get(name, s),
-			setValue: function(to, s) { return this.object.set(this.name, to, s); }
+			getValue:  () => this.get(name),
+			setValue: (to) => this.object.set(this.name, to)
 		};
 	}
 

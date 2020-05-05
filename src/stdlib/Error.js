@@ -59,9 +59,9 @@ class ErrorObject extends EasyObjectValue {
 			thiz = this.makeOne();
 		}
 
-		if ( args.length > 0 ) yield * thiz.set('message', args[0], s, {enumerable: false});
-		if ( args.length > 1 ) yield * thiz.set('fileName', args[1], s, {enumerable: false});
-		if ( args.length > 2 ) yield * thiz.set('lineNumber', args[2], s, {enumerable: false});
+		if ( args.length > 0 ) yield * thiz.set('message', args[0], {enumerable: false});
+		if ( args.length > 1 ) yield * thiz.set('fileName', args[1], {enumerable: false});
+		if ( args.length > 2 ) yield * thiz.set('lineNumber', args[2], {enumerable: false});
 
 		return thiz;
 	}

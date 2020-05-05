@@ -3,6 +3,7 @@
 
 const Value = require('../Value');
 const CompletionRecord = require('../CompletionRecord');
+const EvaluatorInstruction = require('../EvaluatorInstruction');
 let StringValue;
 
 /**
@@ -19,19 +20,20 @@ class PrimitiveValue extends Value {
 		//});
 	}
 
-	ref(name, realm) {
+	ref(name) {
 		var that = this;
 		let out = Object.create(null);
-		out.getValue = function *() { return yield * that.get(name, realm); };
-		out.setValue = function *(to) { yield * that.set(name, to, realm); };
+		out.getValue = function *() { return yield * that.get(name); };
+		out.setValue = function *(to) { yield * that.set(name, to); };
 		return out;
 	}
 
-	*get(name, realm) {
-		return yield * this.derivePrototype(realm).get(name, realm, this);
+	*get(name) {
+		let realm = yield EvaluatorInstruction.getRealm;
+		return yield * this.derivePrototype(realm).get(name, this);
 	}
 
-	*set(name, to, realm) {
+	*set(name, to) {
 		//Can't set primative properties.
 	}
 

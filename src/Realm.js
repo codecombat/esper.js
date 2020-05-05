@@ -63,7 +63,10 @@ class EvalFunction extends ObjectValue {
 		} catch ( e ) {
 			var eo;
 			let desc = e.description || e.message;
-			if ( e.name == 'ReferenceError' || /Invalid left-hand side in/.test(desc) ) eo = new ReferenceError(e.description, e.fileName, e.lineNumber);
+			if (
+				e.name == 'ReferenceError' ||
+				(/Invalid left-hand side in/.test(desc) && !/for-in$/.test(desc))
+			) eo = new ReferenceError(e.description, e.fileName, e.lineNumber);
 			else eo = new SyntaxError(desc, e.fileName, e.lineNumber);
 
 			if ( e.stack ) eo.stack = e.stack;

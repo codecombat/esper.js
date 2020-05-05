@@ -60,19 +60,21 @@ class ClosureValue extends ObjectValue {
 			invokeScope.writeTo = this.boundScope.object;
 			invokeScope.thiz = this.thiz || /* thiz ||*/ this.boundScope.thiz;
 		} else {
-			invokeScope = scope.top.createChild();
+			invokeScope = this.scope.createChild();
 			invokeScope.thiz = this.thiz || thiz;
 		}
 
 		if ( this.func.strict === true ) invokeScope.strict = true;
 
 		let obj = this.scope.object;
+		/*
 		if ( this.func.upvars ) {
 			for ( let n in this.func.upvars ) {
 				//TODO: There should be a method that does this.
 				invokeScope.object.rawSetProperty(n, obj.properties[n]);
 			}
 		}
+		*/
 
 		//Do Var Hoisting
 		if ( this.func.vars ) {

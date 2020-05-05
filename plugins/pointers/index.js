@@ -21,16 +21,16 @@ class PointerValue extends esper.ObjectValue {
 		return "[-> " + this.base.properties[this.offset].value.debugString;
 	}
 
-	*get(k, realm) {
+	*get(k) {
 		let nk = parseInt(k);
 		if ( nk === nk ) {
 			let p2 = yield * this.add(esper.Value.fromNative(k));
 			return yield * p2.derefrence();
 		}
-		return yield * super.get(k, realm);
+		return yield * super.get(k);
 	}
 
-	*set(k, v, realm) {
+	*set(k, v) {
 		if ( k === 'value' ) {
 			this.base.properties[this.offset].value = v;
 			return v;
@@ -38,9 +38,9 @@ class PointerValue extends esper.ObjectValue {
 		let nk = parseInt(k);
 		if ( nk === nk ) {
 			let p2 = yield * this.add(esper.Value.fromNative(k));
-			return yield * p2.set("value", v, realm);
+			return yield * p2.set("value", v);
 		}
-		return yield* super.set(k, v, realm);
+		return yield* super.set(k, v);
 	}
 
 	callPrototype(realm) { return realm.PointerPrototype; }

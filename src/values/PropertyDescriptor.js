@@ -3,6 +3,7 @@
 
 const Value = require('../Value');
 const CompletionRecord = require('../CompletionRecord');
+const EvaluatorInstruction = require('../EvaluatorInstruction');
 
 let serial = 0;
 
@@ -27,7 +28,8 @@ class PropertyDescriptor {
 	*getValue(thiz) {
 		thiz = thiz || Value.null;
 		if ( this.getter ) {
-			return yield * this.getter.call(thiz, []);
+			let s = yield EvaluatorInstruction.getScope;
+			return yield * this.getter.call(thiz, [], s);
 		}
 		return this.value;
 	}
@@ -35,6 +37,7 @@ class PropertyDescriptor {
 	*setValue(thiz, to, s) {
 		thiz = thiz || Value.null;
 		if ( this.setter ) {
+			s = s || (yield EvaluatorInstruction.getScope);
 			return yield * this.setter.call(thiz, [to], s);
 		}
 		if ( !this.writable ) {

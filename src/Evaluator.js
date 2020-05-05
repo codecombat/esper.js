@@ -117,6 +117,10 @@ class Evaluator {
 						return this.next(this);
 					case 'getRealm':
 						return this.next(this.realm);
+					case 'getScope':
+						for ( let i = 0; i < frames.length; ++i)
+							if ( frames[i].scope ) return this.next(frames[i].scope);
+						throw new Error('No scope');
 					case 'waitForFramePop':
 						continue;
 					case 'framePushed':
@@ -372,7 +376,7 @@ ${key} => ${vv}`;
 							let aref = s.global.ref(n.name, s);
 							this.setValue = aref.setValue;
 							this.getValue = aref.getValue;
-							this.del = aref.delete;
+							this.del = s.strict ? aref.deleteStrict : aref.delete;
 						};
 					}
 				}
@@ -406,41 +410,45 @@ ${key} => ${vv}`;
 	*partialMemberExpression(left, n, s) {
 		if ( n.computed ) {
 			let right = yield * this.branch(n.property, s);
-			return yield * left.get(right.toNative(), s.realm);
+			return yield * left.get(right.toNative());
 		} else if ( n.property.type == 'Identifier') {
 			if ( !left ) throw `Cant index ${n.property.name} of undefined`;
-			return yield * left.get(n.property.name, s.realm);
+			return yield * left.get(n.property.name);
 		} else {
 			if ( !left ) throw `Cant index ${n.property.value.toString()} of undefined`;
-			return yield * left.get(n.property.value.toString(), s.realm);
+			return yield * left.get(n.property.value.toString());
 		}
 	}
 
 	//NOTE: Returns generator, fast return yield *;
-	doBinaryEvaluation(operator, left, right, realm) {
+	doBinaryEvaluation(operator, left, right) {
 		switch ( operator ) {
-			case '==': return left.doubleEquals(right, realm);
-			case '!=': return left.notEquals(right, realm);
-			case '===': return left.tripleEquals(right, realm);
-			case '!==': return left.doubleNotEquals(right, realm);
-			case '+': return left.add(right, realm);
-			case '-': return left.subtract(right, realm);
-			case '*': return left.multiply(right, realm);
-			case '/': return left.divide(right, realm);
-			case '%': return left.mod(right, realm);
-			case '|': return left.bitOr(right, realm);
-			case '^': return left.bitXor(right, realm);
-			case '&': return left.bitAnd(right, realm);
-			case 'in': return right.inOperator(left, realm);
-			case 'instanceof': return left.instanceOf(right, realm);
-			case '>': return left.gt(right, realm);
-			case '<': return left.lt(right, realm);
-			case '>=': return left.gte(right, realm);
-			case '<=': return left.lte(right, realm);
-			case '<<': return left.shiftLeft(right, realm);
-			case '>>': return left.shiftRight(right, realm);
-			case '>>>': return left.shiftRightZF(right, realm);
-			case '**': return left.pow(right, realm);
+			case '==': return left.doubleEquals(right);
+			case '!=': return left.notEquals(right);
+			case '===': return left.tripleEquals(right);
+			case '!==': return left.doubleNotEquals(right);
+			case '+': return left.add(right);
+			case '-': return left.subtract(right);
+			case '*': return left.multiply(right);
+			case '/': return left.divide(right);
+			case '%': return left.mod(right);
+			case '|': return left.bitOr(right);
+			case '^': return left.bitXor(right);
+			case '&': return left.bitAnd(right);
+			case 'in': return right.inOperator(left);
+			case 'instanceof':
+				if ( !right.call ) {
+					return (function *() { yield CompletionRecord.typeError("Right-hand side of 'instanceof' is not callable"); })();
+				}
+				return left.instanceOf(right);
+			case '>': return left.gt(right);
+			case '<': return left.lt(right);
+			case '>=': return left.gte(right);
+			case '<=': return left.lte(right);
+			case '<<': return left.shiftLeft(right);
+			case '>>': return left.shiftRight(right);
+			case '>>>': return left.shiftRightZF(right);
+			case '**': return left.pow(right);
 			default:
 				throw new Error('Unknown binary operator: ' + operator);
 		}
