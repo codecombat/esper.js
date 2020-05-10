@@ -31,4 +31,6 @@ class ArrayObject extends EasyObjectValue {
 	}
 }
 
+ArrayObject.prototype.wellKnownName = '%Array%';
+
 module.exports = ArrayObject;

@@ -31,6 +31,7 @@ class EsperObject extends EasyObjectValue {
 	}
 }
 
-
+EsperObject.prototype.wellKnownName = '%Esper%';
+EsperObject.prototype.clazz = 'Esper';
 
 module.exports = EsperObject;

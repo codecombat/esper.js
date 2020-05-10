@@ -227,6 +227,24 @@ class ObjectObject extends EasyObjectValue {
 		return ArrayValue.make(result, s.realm);
 	}
 
+	static *values$e(thiz, args, s) {
+		if (args[0] instanceof BridgeValue) {
+			return ArrayValue.make(Object.values(args[0].native), s.realm);
+		}
+		if (args[0] instanceof LinkValue) {
+			let keys = [];
+			for (let o of args[0].observableProperties()) keys.push(args[0][o]);
+			return ArrayValue.make(keys, s.realm);
+		}
+		let target = yield* objOrThrow(args[0]);
+		let result = [];
+		for (let p of Object.keys(target.properties)) {
+			if (!target.properties[p].enumerable) continue;
+			result.push(yield * target.get(p));
+		}
+		return ArrayValue.make(result, s.realm);
+	}
+
 	static *getOwnPropertyNames$e(thiz, args, s) {
 		let target = yield * objOrThrow(args[0], s.realm);
 		return ArrayValue.make(Object.getOwnPropertyNames(target.properties), s.realm);
@@ -245,6 +263,14 @@ class ObjectObject extends EasyObjectValue {
 		let proto = target.getPrototype(s.realm);
 		if ( proto ) return proto;
 		return EasyObjectValue.null;
+	}
+
+	static *setPrototypeOf(thiz, args, s) {
+		let target = EasyObjectValue.undef;
+		if (args.length > 0) target = args[0];
+		if (!target.setPrototype) return yield CompletionRecord.makeTypeError(s.realm, 'No prototype.');
+		target.setPrototype(args[1]);
+		return target;
 	}
 
 	toNativeCounterpart() { return Object; }

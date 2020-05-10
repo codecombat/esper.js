@@ -123,4 +123,6 @@ class JSONObject extends EasyObjectValue {
 
 }
 
+JSONObject.prototype.clazz = 'JSON';
+JSONObject.prototype.wellKnownName = '%JSON%';
 module.exports = JSONObject;

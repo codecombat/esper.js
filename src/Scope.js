@@ -58,7 +58,7 @@ class Scope {
 	}
 
 	addConst(name, value) {
-		this.set(name, value);
+		this.setImmediate(name, value);
 		this.writeToBlock.properties[name].writable = false;
 		this.writeToBlock.properties[name].configurable = false;
 	}
@@ -70,6 +70,9 @@ class Scope {
 	 */
 	set(name, value) {
 		return this.put(name, value);
+	}
+	setImmediate(name, value) {
+		return this.putImmediate(name, value);
 	}
 
 	has(name) {
@@ -85,11 +88,22 @@ class Scope {
 	 * @param {string} name - Identifier to retreive
 	 * @param {Value} value - New vaalue of variable
 	 * @param {Scope} s - Code scope to run setter functions in
+	 * Returns a generator.
 	 */
 	put(name, value, s) {
 		let variable = this.object.properties[name];
 		if ( variable ) {
 			return variable.setValue(this.object, value, s);
+		}
+		var v = new PropertyDescriptor(value, this);
+		this.writeTo.properties[name] = v;
+		return Value.undef.fastGen();
+	}
+
+	putImmediate(name, value, s) {
+		let variable = this.object.properties[name];
+		if ( variable ) {
+			return variable.setValueImmediate(this.object, value, s);
 		}
 		var v = new PropertyDescriptor(value, this);
 		this.writeTo.properties[name] = v;

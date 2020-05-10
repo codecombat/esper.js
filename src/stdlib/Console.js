@@ -25,4 +25,7 @@ class Console extends EasyObjectValue {
 	static *trace(thiz, argz, s) { return yield * proxy('trace', thiz, argz, s); }
 }
 
+Console.prototype.clazz = 'Console';
+Console.prototype.wellKnownName = '%Console%';
+
 module.exports = Console;

@@ -53,4 +53,6 @@ class StringObject extends EasyObjectValue {
 
 }
 
+StringObject.prototype.wellKnownName = '%String%'
+
 module.exports = StringObject;

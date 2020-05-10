@@ -59,7 +59,7 @@ class EvalFunction extends ObjectValue {
 		let ast;
 		try {
 			let oast = scope.realm.parser(code, {loc: true});
-			ast = ASTPreprocessor.process(oast);
+			ast = ASTPreprocessor.process(oast, {source: code});
 		} catch ( e ) {
 			var eo;
 			let desc = e.description || e.message;

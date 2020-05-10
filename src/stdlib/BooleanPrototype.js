@@ -27,4 +27,6 @@ class BooleanPrototype extends EasyObjectValue {
 
 }
 
+BooleanPrototype.prototype.wellKnownName = '%BooleanPrototype%';
+
 module.exports = BooleanPrototype;

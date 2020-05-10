@@ -18,7 +18,7 @@ class ErrorInstance extends ObjectValue {
 			this.native = new NativeClass();
 			if ( !this.native.stack ) {
 				try {
-					throw native;
+					throw this.native;
 				} catch ( e ) {
 					stack = e.stack;
 				}
@@ -47,6 +47,8 @@ class ErrorInstance extends ObjectValue {
 		if ( this.properties['stack'] ) {
 			msg.stack = this.properties['stack'].value.native;
 		}
+
+		out.value = this;
 
 		return out;
 	}

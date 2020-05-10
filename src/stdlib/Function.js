@@ -16,13 +16,12 @@ class FunctionObject extends EasyObjectValue {
 		let ast;
 		try {
 			let oast = scope.realm.parser(code, {loc: true});
-			ast = ASTPreprocessor.process(oast);
+			ast = ASTPreprocessor.process(oast, {source: code});
 		} catch ( e ) {
 			return new CompletionRecord(CompletionRecord.THROW, e);
 		}
 
 		let fn = new ClosureValue(ast.body[0], scope.global);
-		fn.boundScope = scope.global;
 		return fn;
 	}
 

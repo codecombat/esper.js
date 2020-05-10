@@ -4,6 +4,7 @@
 const Value = require('../Value');
 const CompletionRecord = require('../CompletionRecord');
 const EvaluatorInstruction = require('../EvaluatorInstruction');
+const GenDash = require('../GenDash');
 
 let serial = 0;
 
@@ -48,6 +49,10 @@ class PropertyDescriptor {
 		}
 		this.value = to;
 		return this.value;
+	}
+
+	setValueImmediate(thiz, to, s) {
+		return GenDash.syncGenHelper(this.setValue(thiz, to, s));
 	}
 }
 

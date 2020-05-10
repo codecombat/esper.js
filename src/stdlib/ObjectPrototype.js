@@ -5,6 +5,7 @@ const EasyObjectValue = require('../values/EasyObjectValue');
 const Value = require('../Value');
 const NullValue = require('../values/NullValue');
 const UndefinedValue = require('../values/UndefinedValue');
+const CompletionRecord = require('../CompletionRecord');
 
 class ObjectPrototype extends EasyObjectValue {
 	constructor(realm) {
