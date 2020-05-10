@@ -4,13 +4,18 @@ const Value = require('../Value');
 const CompletionRecord = require('../CompletionRecord');
 
 const EasyObjectValue = require('../values/EasyObjectValue');
+const SymbolValue = require('../values/SymbolValue');
 
 function *proxy(op, thiz, args, s) {
 	let realm = s.realm;
 	let printer = realm.print;
 	let strings = new Array(args.length);
 	for ( let i = 0; i < args.length; ++i ) {
-		strings[i] = yield * args[i].toStringNative();
+		if (args[i] instanceof SymbolValue) {
+			strings[i] = Value.fromNative('symbol(' + args[i].name + ')');
+		} else {
+			strings[i] = yield* args[i].toStringNative();
+		}
 	}
 	//console[op].apply(console, strings);
 	printer.apply(realm, strings);

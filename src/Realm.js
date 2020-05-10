@@ -41,7 +41,8 @@ const AssertClass = require('./stdlib/Assert');
 const MathClass = require('./stdlib/Math.js');
 const ConsoleClass = require('./stdlib/Console');
 const JSONClass = require('./stdlib/JSON');
-const ProxyClass = require('./stdlib/Proxy')
+const ProxyClass = require('./stdlib/Proxy');
+const SymbolClass = require('./stdlib/Symbol');
 const esper = require('./index.js');
 
 class EvalFunction extends ObjectValue {
@@ -255,6 +256,7 @@ class Realm {
 
 		this.addIntrinsic('console', this.console);
 		this.addIntrinsic('JSON', new JSONClass(this));
+		this.addIntrinsic('Symbol', this.SymbolObject = new SymbolClass(this));
 
 		if ( options.exposeEsperGlobal ) {
 			scope.set('Esper', this.Esper);
