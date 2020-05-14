@@ -13,6 +13,10 @@ let list = require('../contrib/test-suites/js-corpus/expected.json');
 
 describe('Corpus Tests', function() {
 	for ( let file in list ) {
+		if ( file == "babel.js" && !require('../src/index.js').plugins['babelon'] ) {
+			xit(file, function() {});
+			continue;
+		}
 		it(file, function() {
 			let entry = list[file];
 			let stdout = [];

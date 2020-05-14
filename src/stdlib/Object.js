@@ -109,6 +109,18 @@ class ObjectObject extends EasyObjectValue {
 	callPrototype(realm) { return realm.ObjectPrototype; }
 	//objPrototype(realm) { return realm.Function; }
 
+	static *assign$e(thiz, args, s, ext) {
+		let target = yield * objOrThrow(args[0], s.realm);
+		for ( let i = 1; i < args.length; ++i ) {
+			let source =  yield * objOrThrow(args[i], s.realm);
+			for (let p of Object.keys(source.properties)) {
+				if (!source.properties[p].enumerable) continue;
+				yield * target.set(p, yield * source.get(p));
+			}
+		}
+		return target;
+	}
+
 	static *create$e(thiz, args, s) {
 		let v = new ObjectValue(s.realm);
 		let p = Value.undef;

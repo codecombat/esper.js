@@ -4,7 +4,14 @@
 const Value = require('../Value');
 const CompletionRecord = require('../CompletionRecord');
 const EvaluatorInstruction = require('../EvaluatorInstruction');
+const EmptyValue = require('./EmptyValue');
 let StringValue;
+
+
+function* convert(other) {
+	if ( other instanceof PrimitiveValue ) return other.toNative();
+	return yield * other.toPrimitiveNative();
+}
 
 /**
  * Represents a primitive value.
@@ -90,6 +97,11 @@ class PrimitiveValue extends Value {
 	*unaryPlus() { return Value.fromNative(+this.native); }
 	*unaryMinus() { return Value.fromNative(-this.native); }
 	*not() { return Value.fromNative(!this.native); }
+
+	*gt(other) { return Value.fromNative(this.native > (yield * convert(other))); }
+	*lt(other) { return Value.fromNative(this.native < (yield * convert(other))); }
+	*gte(other) { return Value.fromNative(this.native >= (yield * convert(other))); }
+	*lte(other) { return Value.fromNative(this.native <= (yield * convert(other))); }
 
 	*observableProperties(realm) {
 		yield * this.derivePrototype(realm).observableProperties(realm);

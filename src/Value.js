@@ -316,28 +316,28 @@ class Value {
 	 * @param {Value} other - The other value
 	 * @returns {Value}
 	 */
-	*gt(other) { return Value.fromNative((yield * this.toNumberNative()) > (yield * other.toNumberNative())); }
+	*gt(other) { return Value.fromNative((yield * this.toPrimitiveNative()) > (yield * other.toPrimitiveNative())); }
 
 	/**
 	 * Computes the javascript expression `value < other`
 	 * @param {Value} other - The other value
 	 * @returns {Value}
 	 */
-	*lt(other) { return Value.fromNative((yield * this.toNumberNative()) < (yield * other.toNumberNative())); }
+	*lt(other) { return Value.fromNative((yield * this.toPrimitiveNative()) < (yield * other.toPrimitiveNative())); }
 
 	/**
 	 * Computes the javascript expression `value >= other`
 	 * @param {Value} other - The other value
 	 * @returns {Value}
 	 */
-	*gte(other) { return Value.fromNative((yield * this.toNumberNative()) >= (yield * other.toNumberNative())); }
+	*gte(other) { return Value.fromNative((yield * this.toPrimitiveNative()) >= (yield * other.toPrimitiveNative())); }
 
 	/**
 	 * Computes the javascript expression `value <= other`
 	 * @param {Value} other - The other value
 	 * @returns {Value}
 	 */
-	*lte(other) { return Value.fromNative((yield * this.toNumberNative()) <= (yield * other.toNumberNative())); }
+	*lte(other) { return Value.fromNative((yield * this.toPrimitiveNative()) <= (yield * other.toPrimitiveNative())); }
 
 	/**
 	 * Computes the javascript expression `value - other`
@@ -456,6 +456,10 @@ class Value {
 
 }
 module.exports = Value;
+
+if ( Symbol ) {
+	Value.prototype[Symbol.for('nodejs.util.inspect.custom')] = Value.prototype.inspect;
+}
 
 ObjectValue = require('./values/ObjectValue');
 PrimitiveValue = require('./values/PrimitiveValue');

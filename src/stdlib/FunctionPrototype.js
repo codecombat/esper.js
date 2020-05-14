@@ -44,7 +44,7 @@ class FunctionPrototype extends EasyObjectValue {
 	static get length$ew() { return '?'; }
 	static get name$ew() { return ''; }
 
-	static *apply(thiz, args, s) {
+	static *apply$e(thiz, args, s) {
 		let vthis = args[0];
 		let arga = [];
 		if ( args.length > 1 ) {
@@ -58,7 +58,7 @@ class FunctionPrototype extends EasyObjectValue {
 		return yield * thiz.call(vthis, arga, s);
 	}
 
-	static *bind(thiz, args, s) {
+	static *bind$e(thiz, args, s) {
 		let realm = s.realm;
 		let bthis = realm.globalScope.object; //TODO: is this actually null in scrict mode?
 		if ( args.length > 0 ) {
@@ -75,12 +75,12 @@ class FunctionPrototype extends EasyObjectValue {
 		return out;
 	}
 
-	static *call(thiz, args, s) {
+	static *call$e(thiz, args, s) {
 		let vthis = Value.undef;
 		if ( args.length > 0 ) vthis = args.shift();
 		return yield * thiz.call(vthis, args, s);
 	}
-	static *toString(thiz, args, s) {
+	static *toString$e(thiz, args, s) {
 		let realm = s.realm;
 		if ( thiz instanceof ClosureValue ) {
 			let astsrc = thiz.funcSourceAST.source();

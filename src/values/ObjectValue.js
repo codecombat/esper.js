@@ -168,6 +168,9 @@ class ObjectValue extends Value {
 	*add(other) { return yield * (yield * this.toPrimitiveValue()).add(other); }
 	*doubleEquals(other) {
 		if ( other === this ) return Value.true;
+		if ( other instanceof ObjectValue ) {
+			return Value.false;
+		}
 		if ( other instanceof PrimitiveValue ) {
 			let hint = ( other.jsTypeName == 'string' ? 'string' : 'number' );
 			let pv = yield * this.toPrimitiveValue(hint);
@@ -284,7 +287,7 @@ class ObjectValue extends Value {
 			if ( this.properties[n].getter || this.properties[n].setter ) delim.push(n + ': [Getter/Setter]');
 			else if ( val.specTypeName === 'object' ) delim.push(n + ': [Object]');
 			else if ( val.specTypeName === 'function' ) delim.push(n + ': [Function]');
-			else delim.push(n + ': ' + val.debugString);
+			else delim.push(n + ': ' + val.specTypeName);
 		}
 		strProps.push(delim.join(', '));
 		strProps.push('] }');

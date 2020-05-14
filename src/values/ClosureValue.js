@@ -66,6 +66,10 @@ class ClosureValue extends ObjectValue {
 
 		if ( this.func.strict === true ) invokeScope.strict = true;
 
+		if ( this.func.id ) {
+			invokeScope.add(this.func.id.name, this);
+		}
+
 		let obj = this.scope.object;
 		/*
 		if ( this.func.upvars ) {

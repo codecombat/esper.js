@@ -59,6 +59,7 @@ describe('Duk Tests', function() {
 
 	for ( var i = 0; i < files.length; ++i ) {
 		if ( !/misc-hello|^test-spec-program|^test-stmt|expr/.test(files[i]) ) continue;
+		if ( /expr-add-coercion-order|newtarget-eval-code|expr-add-coercion-order|instanceof-hasinstance|expr-newtarget|stmt-with|expr-delete/.test(files[i]) ) continue;
 		if ( /refcount|lhs/.test(files[i]) ) continue;
 		test(files[i]);
 	}
