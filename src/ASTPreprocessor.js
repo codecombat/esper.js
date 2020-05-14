@@ -172,6 +172,7 @@ class ASTPreprocessor {
 					if ( p === 'parentFunction' ) continue;
 					if ( p === 'funcs' ) continue;
 					if ( n === null ) continue;
+					if ( n === undefined ) continue;
 					if ( typeof n.type !== 'string' ) {
 						continue;
 					}

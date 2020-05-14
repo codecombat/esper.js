@@ -2,23 +2,6 @@
 const babylon = require('babylon');
 let Value;
 
-function *evaluateClassProperty(clazz, proto, e, m, s) {
-	let value = Value.undef;
-	if ( m.value ) value = yield * e.branch(m.value, s);
-
-	let ks;
-	if ( m.computed ) {
-		let k = yield * e.branch(m.key, s);
-		ks = yield * k.toStringNative(e.realm);
-	} else {
-		ks = m.key.name;
-	}
-
-
-	if ( m.static ) clazz.setImmediate(ks, value);
-	else proto.setImmediate(ks, value);
-}
-
 module.exports = {
 	name: 'babylon',
 	babylon: babylon,
@@ -43,6 +26,27 @@ module.exports = {
 	init: function(esper) {
 		Value = esper.Value;
 		esper.languages.javascript = this;
+
+		//TODO: These set on each new object when constructed, not on the prototype
+		function *evaluateClassProperty(clazz, proto, e, m, s) {
+			let value = Value.undef;
+			if ( m.value ) value = yield * e.branch(m.value, s);
+
+			let ks;
+			if ( m.computed ) {
+				let k = yield * e.branch(m.key, s);
+				ks = yield * k.toStringNative(e.realm);
+			} else {
+				ks = m.key.name;
+			}
+
+			let pd = new esper.PropertyDescriptor(value);
+			pd.enumerable = false;
+
+			if ( m.static ) clazz.rawSetProperty(ks, pd);
+			else proto.rawSetProperty(ks, pd);
+		}
+
 		esper.EvaluatorHandlers.classFeatures.ClassProperty = evaluateClassProperty;
 	}
 };

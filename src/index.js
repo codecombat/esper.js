@@ -19,11 +19,14 @@ esper.FutureValue = require('./values/FutureValue');
 esper.SmartLinkValue = require('./values/SmartLinkValue');
 esper.ObjectValue = require('./values/ObjectValue');
 esper.StringValue = require('./values/StringValue');
+esper.ArrayValue = require('./values/ArrayValue');
 esper.EasyNativeFunction = require('./values/EasyNativeFunction');
 esper.EasyObjectValue = require('./values/EasyObjectValue');
 esper.CompletionRecord = require('./CompletionRecord');
 esper.Realm = require('./Realm');
 esper.EvaluatorHandlers = require('./EvaluatorHandlers');
+esper.PropertyDescriptor = require('./values/PropertyDescriptor');
+
 esper.eval = function(source) {
 	return new Engine().evalSync(source).toNative();
 };

@@ -338,7 +338,7 @@ class Engine {
 		};
 	}
 
-	makeFunctionFromClosure(val, shouldYield, evalu) {
+	makeFunctionFromClosureEx(val, shouldYield, evalu) {
 
 		var realm = this.realm;
 		var scope = this.globalScope;
@@ -362,8 +362,15 @@ class Engine {
 			let gen = evaluator.generator();
 
 			let last = yield * that.filterGenerator(gen, shouldYield, evaluator);
-			if ( last ) return last.toNative();
+			return last;
 		};
+	}
+	makeFunctionFromClosure(val, shouldYield, evalu) {
+		let fn = this.makeFunctionFromClosureEx(val, shouldYield, evalu);
+		return function*() {
+			let last = yield* fn.apply(this, arguments)
+			if ( last ) return last.toNative();
+		}
 	}
 
 	/**

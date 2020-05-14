@@ -251,6 +251,7 @@ function* addMethodFnToClass(fx, clazz, proto, e, m, s) {
 				proto.rawSetProperty(ks, pd);
 			}
 		}
+		pd.enumerable = false;
 		switch (m.kind) {
 			case 'set':
 				pd.setter = fx;

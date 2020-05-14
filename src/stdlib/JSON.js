@@ -43,7 +43,7 @@ class JSONUtils {
 		arr.push('{');
 
 		let first = true;
-		for ( let p of Object.keys(o.properties)) {
+		for ( let p of Object.getOwnPropertyNames(o.properties)) {
 			let po = o.properties[p];
 			if ( !po.enumerable ) continue;
 			let v = yield * o.get(p);

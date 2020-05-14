@@ -126,6 +126,7 @@ function tag(name) {
 		case 'withstatement':
 			return 'WithStatement';
 	}
+	return name;
 }
 
 function find(ast, selector, root) {
