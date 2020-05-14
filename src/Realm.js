@@ -238,10 +238,16 @@ class Realm {
 			BooleanPrototype: this.BooleanPrototype,
 			RegExpPrototype: this.RegExpPrototype,
 			FunctionPrototype: this.FunctionPrototype
-		}
+		};
+		this.wellKnownNames = {
+			'%ObjectPrototype%': this.ObjectPrototype,
+			'%ArrayPrototype%': this.ArrayPrototype,
+			'%Esper%': this.Esper
+		};
 
 		let scope = new Scope(this);
 		scope.object.clazz = 'global';
+		scope.object.wellKnownName = '%Global%';
 		scope.strict = options.strict || false;
 		this.intrinsicScope = scope;
 
@@ -282,10 +288,10 @@ class Realm {
 		this.addIntrinsic('URIError', this.URIError = this.Error.makeErrorType(URIError));
 
 
-		this.addIntrinsic('parseInt', EasyNativeFunction.makeForNative(this, parseInt));
-		this.addIntrinsic('parseFloat', EasyNativeFunction.makeForNative(this, parseFloat));
-		this.addIntrinsic('isNaN', EasyNativeFunction.makeForNative(this, isNaN));
-		this.addIntrinsic('isFinite', EasyNativeFunction.makeForNative(this, isFinite));
+		this.addIntrinsic('parseInt', this.parseInt = EasyNativeFunction.makeForNative(this, parseInt));
+		this.addIntrinsic('parseFloat', this.parseFloat = EasyNativeFunction.makeForNative(this, parseFloat));
+		this.addIntrinsic('isNaN', this.isNaN = EasyNativeFunction.makeForNative(this, isNaN));
+		this.addIntrinsic('isFinite', this.isFinite = EasyNativeFunction.makeForNative(this, isFinite));
 
 		//this.addIntrinsic('Date', this.fromNative(Date));
 		this.eval = new EvalFunction(this);
@@ -314,6 +320,10 @@ class Realm {
 	addIntrinsic(name, instance) {
 		this.intrinsics[name] = instance;
 		this.intrinsicScope.set(name, instance);
+		if ( !instance.wellKnownName ) {
+			instance.wellKnownName = '%' + name + '%';
+		}
+		this.wellKnownNames[instance.wellKnownName] = instance;
 	}
 
 	lookupWellKnown(v) {
@@ -335,19 +345,7 @@ class Realm {
 	}
 
 	lookupWellKnownByName(v) {
-		switch ( v ) {
-			case '%Object%':  return this.Object;
-			case '%ObjectPrototype%':  return this.ObjectPrototype;
-			case '%Function%':  return this.Function;
-			case '%FunctionPrototype%':  return this.FunctionPrototype;
-			case '%Math%':  return this.Math;
-			case '%Number%':  return this.Number;
-			case '%NumberPrototype%':  return this.NumberPrototype;
-			case '%Array%':  return this.Array;
-			case '%ArrayPrototype%':  return this.ArrayPrototype;
-			case '%RegExp%':  return this.RegExp;
-			case '%RegExpPrototype%':  return this.RegExpPrototype;
-		}
+		return this.wellKnownNames[v];
 	}
 
 	fromNative(native, x) {

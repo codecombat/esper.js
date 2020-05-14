@@ -50,11 +50,17 @@ class EasyObjectValue extends ObjectValue {
 			} else {
 				if ( d.value.esperLength !== undefined ) length = d.value.esperLength;
 				let rb = EasyNativeFunction.make(realm, d.value, this);
+
 				let rblen = new PropertyDescriptor(Value.fromNative(length));
 				rblen.configurable = false;
 				rblen.writable = false;
 				rblen.enumerable = false;
 				rb.properties['length'] = rblen;
+
+				if (clazz.wellKnownName && !rb.wellKnownName) {
+					rb.wellKnownName = clazz.wellKnownName + "#" + name;
+				}
+
 				v.value = rb;
 			}
 			if ( flags.indexOf('e') !== -1 ) v.enumerable = false;

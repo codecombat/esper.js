@@ -74,5 +74,6 @@ MathObject.max = wrapMathFunction('max');
 
 
 MathObject.prototype.clazz = 'Math';
+MathObject.prototype.wellKnownName = '%Math%';
 
 module.exports = MathObject;
