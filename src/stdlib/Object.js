@@ -10,19 +10,19 @@ const EmptyValue = require('../values/EmptyValue');
 const BridgeValue = require('../values/BridgeValue');
 const LinkValue = require('../values/LinkValue');
 
-function *defObjectProperty(obj, name, desc, realm) {
+function *defObjectProperty(obj, name, desc) {
 	if ( name instanceof Value ) {
 		name = (yield * name.toStringNative());
 	}
 
-	let value = yield * desc.get('value', realm);
+	let value = yield * desc.get('value');
 
 
 	let v = new PropertyDescriptor(value);
 
 
 	if ( desc.has('enumerable') ) {
-		let enu = yield * desc.get('enumerable', realm);
+		let enu = yield * desc.get('enumerable');
 		if ( !(enu instanceof EmptyValue) ) {
 			v.enumerable = enu.truthy;
 		}
@@ -31,7 +31,7 @@ function *defObjectProperty(obj, name, desc, realm) {
 	}
 
 	if ( desc.has('writable') ) {
-		let wri = yield * desc.get('writable', realm);
+		let wri = yield * desc.get('writable');
 		if ( !(wri instanceof EmptyValue) ) {
 			v.writable = wri.truthy;
 		}
@@ -40,7 +40,7 @@ function *defObjectProperty(obj, name, desc, realm) {
 	}
 
 	if ( desc.has('configurable') ) {
-		let conf = yield * desc.get('configurable', realm);
+		let conf = yield * desc.get('configurable');
 		if ( !(conf instanceof EmptyValue) ) {
 			v.writable = conf.truthy;
 		}
@@ -50,14 +50,14 @@ function *defObjectProperty(obj, name, desc, realm) {
 
 
 	if ( desc.has('get') ) {
-		let get = yield * desc.get('get', realm);
+		let get = yield * desc.get('get');
 		if ( !(get instanceof EmptyValue) ) {
 			v.getter = get;
 		}
 	}
 
 	if ( desc.has('set') ) {
-		let set = yield * desc.get('set', realm);
+		let set = yield * desc.get('set');
 		if ( !(set instanceof EmptyValue) ) {
 			v.setter = set;
 		}
@@ -110,9 +110,9 @@ class ObjectObject extends EasyObjectValue {
 	//objPrototype(realm) { return realm.Function; }
 
 	static *assign$e(thiz, args, s, ext) {
-		let target = yield * objOrThrow(args[0], s.realm);
+		let target = yield * objOrThrow(args[0]);
 		for ( let i = 1; i < args.length; ++i ) {
-			let source =  yield * objOrThrow(args[i], s.realm);
+			let source =  yield * objOrThrow(args[i]);
 			for (let p of Object.keys(source.properties)) {
 				if (!source.properties[p].enumerable) continue;
 				yield * target.set(p, yield * source.get(p));
@@ -139,7 +139,7 @@ class ObjectObject extends EasyObjectValue {
 			for ( let p of propsobj.observableProperties(s.realm) ) {
 				let strval = p.native;
 				let podesc = yield * propsobj.get(strval, s.realm);
-				yield * defObjectProperty(v, p, podesc, s.realm);
+				yield * defObjectProperty(v, p, podesc);
 			}
 		}
 		return v;
@@ -149,7 +149,7 @@ class ObjectObject extends EasyObjectValue {
 		let target = yield * objOrThrow(args[0]);
 		let name = yield * args[1].toStringNative();
 		let desc = args[2];
-		yield * defObjectProperty(target, name, desc, s.realm);
+		yield * defObjectProperty(target, name, desc);
 		return Value.true;
 	}
 
@@ -162,8 +162,8 @@ class ObjectObject extends EasyObjectValue {
 
 		for ( let p of propsobj.observableProperties(s.realm) ) {
 			let strval = p.native;
-			let podesc = yield * propsobj.get(strval, s.realm);
-			yield * defObjectProperty(target, p, podesc, s.realm);
+			let podesc = yield * propsobj.get(strval);
+			yield * defObjectProperty(target, p, podesc);
 		}
 		return Value.true;
 	}
@@ -258,14 +258,14 @@ class ObjectObject extends EasyObjectValue {
 	}
 
 	static *getOwnPropertyNames$e(thiz, args, s) {
-		let target = yield * objOrThrow(args[0], s.realm);
+		let target = yield * objOrThrow(args[0]);
 		return ArrayValue.make(Object.getOwnPropertyNames(target.properties), s.realm);
 	}
 
 	static *getOwnPropertyDescriptor(thiz, args, s) {
 		let target = yield * objOrThrow(args[0]);
 		let name = yield * args[1].toStringNative();
-		return yield * getDescriptor(target, name);
+		return yield * getDescriptor(target, name, s.realm);
 	}
 
 	static *getPrototypeOf(thiz, args, s) {
