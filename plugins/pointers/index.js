@@ -3,6 +3,7 @@
 const esper = require('../..');
 const Value = esper.Value;
 const CompletionRecord = esper.CompletionRecord;
+const ArrayValue = esper.ArrayValue;
 
 const debug = () => {};
 //const debug = console.log.bind(console);
@@ -55,7 +56,11 @@ class PointerValue extends esper.ObjectValue {
 		if ( this.base.jsTypeName !== 'object' ) {
 			return yield * this.base.get(this.offset);
 		}
-		return this.base.properties[this.offset].value;
+		let found = this.base.properties[this.offset];
+		if ( !found ) {
+			return CompletionRecord.makeRangeError(realm, "Segmentation Fault " + this.offset);
+		}
+		return found.value;
 	}
 
 }
@@ -109,11 +114,20 @@ class DerefrenceFunction extends esper.ObjectValue {
 	}
 }
 
+class AllocFunction extends esper.ObjectValue {
+	*call(thiz, args, scope, ext) {
+		if ( args.length < 1 ) return CompletionRecord.makeTypeError(scope.realm, "No argument to alloc.");
+		let object = ArrayValue.make(args, scope.realm);
+		return new PointerValue(object, 0, scope.realm);
+	}
+}
+
 class PointerObjValue extends esper.EasyObjectValue {
 	constructor(realm) {
 		super(realm);
 		this.setImmediate("refrence", new RefrenceFunction(realm));
 		this.setImmediate("derefrence", new DerefrenceFunction(realm));
+		this.setImmediate("alloc", new AllocFunction(realm));
 	}
 }
 
@@ -125,5 +139,6 @@ let plugin = module.exports = {
 	},
 	init: function() {
 		esper.hooks.setupEngine.push(this.setupEngine);
-	}
+	},
+	PointerValue: PointerValue
 };
