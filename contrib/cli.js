@@ -57,6 +57,7 @@ let engine = new Engine({
 	compile: program.compile || 'pre',
 	language: program.language || 'javascript',
 	esposeESHostGlobal: true,
+	esRealms: true,
 });
 
 

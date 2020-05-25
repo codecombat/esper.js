@@ -22,7 +22,7 @@ function *evaluateArrayExpression(e, n, s) {
 		}
 	}
 	if ( e.yieldPower >= 3 ) yield EvaluatorInstruction.stepMinor;
-	return ArrayValue.make(result, e.realm);
+	return ArrayValue.make(result, s.realm);
 }
 
 function *evaluateAssignmentExpression(e, n, s) {

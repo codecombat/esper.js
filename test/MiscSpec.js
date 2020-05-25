@@ -67,6 +67,55 @@ describe('Misc', () => {
 		});
 	});
 
+	describe('ES Realms', () => {
+		function test(name, s) {
+			it(name, () => new Engine({esRealms: true}).evalSync(s));
+		}
+
+		test('basic', `
+			let r = new Realm();
+			assert(!!r);
+			x = 3;
+			r.eval("x = 10");
+			assert(r.global.x == 10);
+			assert(x == 3);
+			assert(typeof r !== "undefined");
+			assert(typeof r.global.r === "undefined");
+		`);
+
+		test('function in', `
+			let r = new Realm();
+			assert(!!r);
+			x = 3;
+			r.global.f = function() { return x = 10; };
+			assert(typeof f === "undefined");
+			y = r.eval("f()");
+			assert(y == 10);
+			assert(typeof r.globalThis.x == 'undefined');
+			assert(x == 10);
+		`);
+
+		test('function out', `
+			let r = new Realm();
+			r.eval('function f(a) { n = a }');
+			assert(typeof f == 'undefined');
+			assert(typeof n == 'undefined');
+			r.globalThis.f(44);
+			assert(typeof n == 'undefined');
+			assert(r.globalThis.n == 44);
+		`);
+
+		test('examples', `
+			const globalOne = globalThis;
+			const globalTwo = new Realm().globalThis;
+
+			let a1 = globalOne.eval('[1,2,3]');
+			let a2 = globalTwo.eval('[1,2,3]');
+			assert(Object.getPrototypeOf(a1) !== Object.getPrototypeOf(a2));
+		`);
+
+	});
+
 	describe('Frozen Realms', () => {
 		xit('has no unfrozen values', () => {
 			let e = new Engine({frozenRealm: true});

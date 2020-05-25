@@ -43,12 +43,15 @@ const ConsoleClass = require('./stdlib/Console');
 const JSONClass = require('./stdlib/JSON');
 const ProxyClass = require('./stdlib/Proxy');
 const SymbolClass = require('./stdlib/Symbol');
+const RealmClass = require('./stdlib/Realm');
+
 const esper = require('./index.js');
 
 class EvalFunction extends ObjectValue {
 
 	constructor(realm) {
 		super(realm);
+		this.realm = realm;
 		this.setPrototype(realm.FunctionPrototype);
 	}
 
@@ -75,7 +78,8 @@ class EvalFunction extends ObjectValue {
 		}
 
 		//TODO: Dont run in the parent scope if we are called indirectly
-		let bak = yield EvaluatorInstruction.branch('eval', ast, scope);
+		let ts = this.realm === scope.realm ? scope : this.realm.globalScope;
+		let bak = yield EvaluatorInstruction.branch('eval', ast, ts);
 		//console.log("EVALED: ", bak);
 		return bak;
 	}
@@ -308,10 +312,16 @@ class Realm {
 		if ( options.esposeESHostGlobal ) {
 			this.addIntrinsic("$", new (require('./stdlib/ESHostDollarsign'))(this));
 		}
+
+		if ( options.esRealms ) {
+			this.addIntrinsic("Realm", new RealmClass(this));
+		}
+
 		scope.thiz = scope.object;
 		this.importCache = new WeakMap();
 		/** @type {Scope} */
 		this.globalScope = scope;
+		this.globalScope.put("globalThis", scope.thiz);
 
 		let lang = esper.languages[this.language];
 		if ( lang && lang.setupRealm ) lang.setupRealm(this);

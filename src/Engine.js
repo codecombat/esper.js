@@ -29,7 +29,9 @@ let defaultOptions = {
 	compile: 'pre',
 	language: 'javascript',
 	runtime: false,
-	rotateThreads: false 
+	rotateThreads: false,
+	esposeESHostGlobal: false,
+	esRealms: false
 };
 
 /**
