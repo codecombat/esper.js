@@ -2,8 +2,10 @@
 
 const EasyObjectValue = require('../values/EasyObjectValue');
 const CompletionRecord = require('../CompletionRecord');
+const Value = require('../Value');
 const EmptyValue = require('../values/EmptyValue');
 const ArrayValue = require('../values/ArrayValue');
+const RegExpValue = require('../values/RegExpValue');
 const _g = require('../GenDash');
 
 function wrapStringPrototype(name) {
@@ -54,12 +56,51 @@ class StringPrototype extends EasyObjectValue {
 		return realm.fromNative(out);
 	}
 
-	//TODO: Replacement arg can be a regex.
 	static *replace$e(thiz, args, realm) {
+		if ( thiz.jsTypeName === "object" || thiz.jsTypeName === "undefined" ) {
+			return yield CompletionRecord.typeError("Wrong type");
+		}
+
 		let base = yield * thiz.toStringNative();
-		let realArgs = yield * _g.map(args, function*(v) { return yield * v.toStringNative(); });
-		let out = String.prototype.replace.apply(base, realArgs);
-		return realm.fromNative(out);
+		if ( args.length === 0 ) return thiz;
+		let target = args[0];
+		let replace = realm.fromNative('undefined');
+
+		if  ( args.length > 1 ) replace = args[1];
+
+		if ( replace.jsTypeName !== "function" ) {
+			let rn;
+			if ( target instanceof RegExpValue ) rn = target.regexp;
+			else rn = yield * target.toStringNative();
+			console.log(target, rn, replace);
+			return realm.fromNative(base.replace(rn, yield * replace.toStringNative()));
+		}
+
+		return yield CompletionRecord.typeError("Replace with callbacks not written yet");
+	}
+
+	static *match$e(thiz, args, realm) {
+		if ( thiz.jsTypeName === "object" || thiz.jsTypeName === "undefined" ) {
+			return yield CompletionRecord.typeError("Wrong type");
+		}
+
+		let base = yield * thiz.toStringNative();
+		let target = args.length < 1 ? Value.fromNative("") : args[0];
+
+		if ( target.jsTypeName == "undefined" ) target = Value.fromNative("");
+
+		let rn;
+		if ( target instanceof RegExpValue ) rn = target.regexp;
+		else rn = yield * target.toStringNative();
+
+		let result = base.match(rn);
+		if ( result === null ) return Value.null;
+		let wraped = yield * _g.map(result, function *(c) { return realm.fromNative(c, realm); });
+
+		let out = ArrayValue.make(wraped, realm);
+		yield * out.set('index', realm.fromNative(result.index));
+		yield * out.set('input', realm.fromNative(result.input));
+		return out;
 	}
 
 	static *padEnd$e(thiz, args, realm) {
@@ -111,6 +152,8 @@ StringPrototype.toLocaleUpperCase$e = wrapStringPrototype('toLocaleUpperCase');
 StringPrototype.toLowerCase$e = wrapStringPrototype('toLowerCase');
 StringPrototype.toLocaleLowerCase$e = wrapStringPrototype('toLocaleLowerCase');
 StringPrototype.localeCompare$e = wrapStringPrototype('localeCompare');
+StringPrototype.codePointAt$e = wrapStringPrototype('codePointAt');
+StringPrototype.repeat$e = wrapStringPrototype('repeat');
 
 
 module.exports = StringPrototype;
