@@ -6,6 +6,7 @@ const ObjectValue = require('../values/ObjectValue');
 const PrimitiveValue = require('../values/PrimitiveValue');
 const ArrayValue = require('../values/ArrayValue');
 const CompletionRecord = require('../CompletionRecord');
+const NullValue = require('../values/NullValue');
 
 class JSONUtils {
 	static *genJSONTokens(arr, o, map, str, strincr) {
@@ -19,6 +20,12 @@ class JSONUtils {
 		if ( map.has(o) ) {
 			return arr.push('[Circular]');
 		}
+
+		if ( o instanceof NullValue ) {
+			arr.push("null");
+			return;
+		}
+
 		map.set(o, true);
 
 		if ( o instanceof ArrayValue ) {
@@ -43,6 +50,7 @@ class JSONUtils {
 		arr.push('{');
 
 		let first = true;
+		if (o.properties)
 		for ( let p of Object.getOwnPropertyNames(o.properties)) {
 			let po = o.properties[p];
 			if ( !po.enumerable ) continue;

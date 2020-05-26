@@ -129,6 +129,7 @@ class StringPrototype extends EasyObjectValue {
 function strPad(base, length, pad, left) {
 	if ( length <= base.length ) return base;
 	let extra = length - base.length;
+	if ( extra < 1 || isNaN(extra) ) return base;
 	let padding = new Array(1 + Math.ceil(extra / pad.length)).join(pad).substr(0, extra);
 	return left ? padding + base : base + padding;
 
@@ -146,14 +147,27 @@ StringPrototype.slice$e = wrapStringPrototype('slice');
 StringPrototype.lastIndexOf$e = wrapStringPrototype('lastIndexOf');
 StringPrototype.indexOf$e = wrapStringPrototype('indexOf');
 StringPrototype.search$e = wrapStringPrototype('search');
-StringPrototype.trim$e = wrapStringPrototype('trim');
 StringPrototype.toUpperCase$e = wrapStringPrototype('toUpperCase');
 StringPrototype.toLocaleUpperCase$e = wrapStringPrototype('toLocaleUpperCase');
 StringPrototype.toLowerCase$e = wrapStringPrototype('toLowerCase');
 StringPrototype.toLocaleLowerCase$e = wrapStringPrototype('toLocaleLowerCase');
 StringPrototype.localeCompare$e = wrapStringPrototype('localeCompare');
-StringPrototype.codePointAt$e = wrapStringPrototype('codePointAt');
-StringPrototype.repeat$e = wrapStringPrototype('repeat');
+
+for ( let k of [
+	'codePointAt',
+	'endsWith',
+	'includes',
+	'normalize',
+	'repeat',
+	'startsWith',
+	'trim',
+	'trimEnd',
+	'trimLeft',
+	'trimRight',
+	'trimStart'
+] ) {
+	if ( String.prototype[k] ) StringPrototype[k + '$e'] = wrapStringPrototype(k);
+}
 
 
 module.exports = StringPrototype;
