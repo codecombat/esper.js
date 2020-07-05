@@ -53,6 +53,16 @@ class StringValue extends PrimitiveValue {
 		return false;
 	}
 
+	*iterateAll() {
+		let len = this.native.length;
+		let idx = 0;
+		let result = new Array(len);
+		for ( let ii = 0; ii < len; ++ii ) {
+			result[idx++] = Value.fromNative(this.native[ii]);
+		}
+		return result;
+	}
+
 }
 
 module.exports = StringValue;

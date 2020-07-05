@@ -94,6 +94,22 @@ describe('Plugin: Dehydrate', function() {
 			print(c.up());
 		`);
 
+
+		roundtrip(`
+			function counter(n) {
+				return {
+					up: () => ++n,
+					double: () => n *= 2
+				}
+			}
+			let a = counter(3);
+			let b = counter(5);
+		`,`
+			print(a.up());
+			print(b.double());
+			print(a.up());
+		`);
+
 		roundtrip(`Math.one = 1`, `print(Math.one); print(typeof Math.one);`);
 
 		roundtrip(`
@@ -107,6 +123,31 @@ describe('Plugin: Dehydrate', function() {
 		`)
 
 		roundtrip(`let x = new Function('y', 'return 2*y');`, `print(x(7))`)
+
+		roundtrip(`
+			a=7;
+			let r = new Realm();
+			r.eval("a = 10");
+		`,`
+			print(a);
+			print(r.globalThis.a);
+		`)
+
+		roundtrip(`
+			t=0;
+			let r = new Realm();
+			r.eval("function setZ(v) { z = v; }");
+			r.globalThis.setZ(3);
+		`,`
+			print(t, "/", r.globalThis.z);
+			//r.globalThis.setZ(7);
+			r.eval('setZ(7)');
+			print(t, "/", r.globalThis.z);
+			r.eval('z = 9');
+			print(t, "/", r.globalThis.z);
+		`)
+
+
 	});
 });
 

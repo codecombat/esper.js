@@ -112,6 +112,16 @@ class ArrayValue extends ObjectValue {
 		}
 		return '[' + r.join(', ') + ( loop < length ? '...' : '' ) + ']';
 	}
+
+	*iterateAll() {
+		let len = this.getLengthSync();
+		let idx = 0;
+		let result = new Array(len);
+		for ( let ii = 0; ii < len; ++ii ) {
+			result[idx++] = yield * this.get(ii);
+		}
+		return result;
+	}
 }
 
 ArrayValue.prototype.clazz = 'Array';

@@ -16,9 +16,19 @@ const EvaluatorInstruction = require('./EvaluatorInstruction');
 function *evaluateArrayExpression(e, n, s) {
 	//let result = new ObjectValue();
 	let result = new Array(n.elements.length);
+	let idx = 0;
 	for ( let i = 0; i < n.elements.length; ++i ) {
 		if ( n.elements[i] ) {
-			result[i] = yield * e.branch(n.elements[i], s);
+			if ( n.elements[i].type === 'SpreadElement' ) {
+				let val = yield * e.branch(n.elements[i].argument, s);
+				if ( !val.iterateAll ) {
+					return CompletionRecord.makeTypeError(s.realm, `${n.elements[i].argument.srcName} is not iterable.`);
+				}
+				let itr = yield * val.iterateAll();
+				for ( let e of itr ) result[idx++] = e;
+			} else {
+				result[idx++] = yield * e.branch(n.elements[i], s);
+			}
 		}
 	}
 	if ( e.yieldPower >= 3 ) yield EvaluatorInstruction.stepMinor;
@@ -128,8 +138,18 @@ function *evaluateBreakStatement(e, n, s) {
 function *evaluateCallExpression(e, n, s) {
 	return yield * doCall(e, n, n.callee, s, function*() {
 		let args = new Array(n.arguments.length);
+		let idx = 0;
 		for ( let i = 0; i < n.arguments.length; ++i ) {
-			args[i] = yield * e.branch(n.arguments[i], s);
+			if (n.arguments[i].type === 'SpreadElement' ) {
+				let val = yield * e.branch(n.arguments[i].argument, s);
+				if ( !val.iterateAll ) {
+					return CompletionRecord.makeTypeError(s.realm, `${n.arguments[i].argument.srcName} is not iterable.`);
+				}
+				let itr = yield * val.iterateAll();
+				for ( let e of itr ) args[idx++] = e;
+			} else {
+				args[idx++] = yield * e.branch(n.arguments[i], s);
+			}
 		}
 		return args;
 	});
@@ -837,11 +857,7 @@ function *evaluateUnaryExpression(e, n, s) {
 function *evaluateVariableDeclaration(e, n, s) {
 	let kind = n.kind;
 	if ( e.yieldPower >= 3 ) yield EvaluatorInstruction.stepMajor;
-	for ( let decl of n.declarations ) {
-		let value = Value.undef;
-		let name  = decl.id.name;
-		if ( decl.init ) value = yield * e.branch(decl.init, s);
-
+	let add = (name, decl, value) => {
 		if ( kind === 'const' ) {
 			if ( s.has(name) ) {
 				return CompletionRecord.makeSyntaxError(e.realm, `Identifier '${name}' has already been declared`);
@@ -853,8 +869,47 @@ function *evaluateVariableDeclaration(e, n, s) {
 			}
 			s.addBlock(name, value);
 		} else {
-			if ( !decl.init && s.has(name) ) continue;
-			s.add(name, value);
+			if ( !decl.init && s.has(name) ) {}
+			else { s.add(name, value); }
+		}
+		return false;
+	};
+
+	for ( let decl of n.declarations ) {
+		if ( decl.id.type == 'Identifier' ) {
+			let value = Value.undef;
+			let name  = decl.id.name;
+			if ( decl.init ) value = yield * e.branch(decl.init, s);
+
+			let r = add(name, decl, value);
+			if ( r ) return r;
+
+		} else if ( decl.id.type == 'ObjectPattern' ) {
+			let value = Value.undef;
+			if ( decl.init ) value = yield * e.branch(decl.init, s);
+			for ( let prop of decl.id.properties ) {
+				let r = add(prop.value.name, decl, yield * value.get(prop.key.name));
+				if ( r ) return r;
+			}
+		} else if ( decl.id.type == 'ArrayPattern' ) {
+			let value = Value.undef;
+			if ( decl.init ) value = yield * e.branch(decl.init, s);
+			let idx = 0;
+			for ( let prop of decl.id.elements ) {
+				if ( prop.type === 'RestElement' ) {
+					let len = (yield * value.get('length')).toNative();
+					let rest = [];
+					while ( idx < len ) rest.push(yield * value.get(idx++));
+
+					return add(prop.argument.name, decl, ArrayValue.make(rest, s.realm));
+				} else {
+					let r = add(prop.name, decl, yield * value.get(idx));
+					if ( r ) return r;
+					++idx;
+				}
+			}
+		} else {
+			return yield CompletionRecord.typeError(`Couldnt resolve declarations component: ${decl.id.type}`);
 		}
 	}
 	return Value.undef;

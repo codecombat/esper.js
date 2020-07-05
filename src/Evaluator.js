@@ -401,7 +401,26 @@ ${key} => ${vv}`;
 
 				this.topFrame.ast = oldAST;
 				return ref.ref(idx, s);
-
+			case 'ArrayPattern':
+				let refs = [];
+				//TODO: This should take an iterable
+				for ( let e of n.elements ) refs.push(yield * this.resolveRef(e, s));
+				return {
+					setValue: function *(v) {
+						let idx = 0;
+						for ( let r of refs ) {
+							if ( !v.has(idx) ) break;
+							yield * r.setValue(yield * v.get(idx));
+							++idx;
+						}
+					}
+				}
+			case 'AssignmentPattern':
+				let rref = yield * this.resolveRef(n.left, s);
+				let def = yield * this.branch(n.right, s);
+				//TODO: This assignemnt should be elided
+				yield * rref.setValue(def);
+				return rref;
 			default:
 				return yield CompletionRecord.typeError(`Couldnt resolve ref component: ${n.type}`);
 		}
