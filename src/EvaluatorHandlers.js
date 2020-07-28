@@ -29,6 +29,8 @@ function *evaluateArrayExpression(e, n, s) {
 			} else {
 				result[idx++] = yield * e.branch(n.elements[i], s);
 			}
+		} else {
+			++idx;
 		}
 	}
 	if ( e.yieldPower >= 3 ) yield EvaluatorInstruction.stepMinor;
@@ -416,7 +418,8 @@ function *evaluateIdentifier(e, n, s) {
 		yield * err.addExtra({code: 'UndefinedVariable', when: 'read', ident: n.name, strict: s.strict});
 		return yield err;
 	}
-	return s.get(n.name);
+	let r = s.ref(n.name);
+	return yield * r.getValue();
 }
 
 function *evaluateIfStatement(e, n, s) {
@@ -1004,8 +1007,97 @@ function findNextStep(type) {
 	}
 }
 
+function *doResolveRef(n, s, create, branch) {
+	switch (n.type) {
+		case 'Identifier':
+			let iref = s.ref(n.name, s.realm);
+			if ( !iref ) {
+				iref = {
+					getValue: function*() {
+						let err = CompletionRecord.makeReferenceError(s.realm, `${n.name} is not defined`);
+						yield * err.addExtra({code: 'UndefinedVariable', when: 'read', ident: n.name, strict: s.strict});
+						return yield err;
+					},
+					del: function() {
+						return true;
+					}
+				};
+				if ( !create || s.strict ) {
+					iref.setValue = function *() {
+						let err = CompletionRecord.makeReferenceError(s.realm, `${n.name} is not defined`);
+						yield * err.addExtra({code: 'UndefinedVariable', when: 'write', ident: n.name, strict: s.strict});
+						return yield err;
+					};
+				} else {
+					iref.setValue = function *(value) {
+						s.global.set(n.name, value, s);
+						let aref = s.global.ref(n.name, s);
+						this.setValue = aref.setValue;
+						this.getValue = aref.getValue;
+						this.del = s.strict ? aref.deleteStrict : aref.delete;
+					};
+				}
+			}
+			
+			return iref;
+		case 'MemberExpression':
+			let idx;
+			let ref = yield * branch(n.object, s);
+			if ( n.computed ) {
+				idx = (yield * branch(n.property, s)).toNative();
+			} else {
+				idx = n.property.name;
+			}
+
+			if ( !ref ) {
+				return yield CompletionRecord.typeError(`Can't write property of undefined: ${idx}`);
+			}
+
+			if ( !ref.ref ) {
+				return yield CompletionRecord.typeError(`Can't write property of non-object type: ${idx}`);
+			}
+			return ref.ref(idx, s);
+		case 'ArrayPattern':
+			let refs = [];
+			//TODO: This should take an iterable
+			for ( let e of n.elements ) refs.push(yield * doResolveRef(e, s, false, branch));
+			return {
+				setValue: function *(v) {
+					let idx = 0;
+					for ( let r of refs ) {
+						if ( !v.has(idx) ) break;
+						yield * r.setValue(yield * v.get(idx));
+						++idx;
+					}
+				}
+			}
+		case 'ObjectPattern':
+			let orefs = {};
+			for ( let e of n.properties ) {
+				orefs[e.key.name] = yield * doResolveRef(e.value, s, false, branch);
+			}
+			return {
+				setValue: function *(v) {
+					for ( let k in orefs ) {
+						if ( !v.has(k) ) break;
+						yield * orefs[k].setValue(yield * v.get(k));
+					}
+				}
+			}
+		case 'AssignmentPattern':
+			let rref = yield * doResolveRef(n.left, s, false, branch);
+			let def = yield * branch(n.right, s);
+			//TODO: This assignemnt should be elided
+			yield * rref.setValue(def);
+			return rref;
+		default:
+			return yield CompletionRecord.typeError(`Couldnt resolve ref component: ${n.type}`);
+	}
+}
+
 module.exports = {
 	evaluateIdentifier,
 	findNextStep,
-	classFeatures
+	classFeatures,
+	doResolveRef
 };

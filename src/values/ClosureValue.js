@@ -6,6 +6,8 @@ const PropertyDescriptor = require('./PropertyDescriptor');
 const ObjectValue = require('./ObjectValue');
 const ArrayValue = require('./ArrayValue');
 const EvaluatorInstruction = require('../EvaluatorInstruction');
+let EvaluatorHandlers;
+
 
 /**
  * Represents a value that maps directly to an untrusted local value.
@@ -108,7 +110,7 @@ class ClosureValue extends ObjectValue {
 
 		let argn = Math.max(args.length, this.func.params.length);
 		let argvars = new Array(argn);
-		let argsObj = new ObjectValue(scope.realm);
+		let argsObj = new ObjectValue(invokeScope.realm);
 		argsObj.clazz = 'Arguments';
 
 		for ( let i = 0; i < argn; ++i ) {
@@ -126,34 +128,46 @@ class ClosureValue extends ObjectValue {
 		}
 
 		if ( !invokeScope.strict ) {
-			let calleeProp = new PropertyDescriptor(scope.realm.fromNative(args.length));
+			let calleeProp = new PropertyDescriptor(invokeScope.realm.fromNative(args.length));
 			calleeProp.enumerable = false;
 			argsObj.rawSetProperty('callee', calleeProp);
 			yield * argsObj.set('callee', this);
 		}
 
-		let lengthProp = new PropertyDescriptor(scope.realm.fromNative(args.length));
+		let lengthProp = new PropertyDescriptor(invokeScope.realm.fromNative(args.length));
 		lengthProp.enumerable = false;
 		argsObj.rawSetProperty('length', lengthProp);
 
 		invokeScope.add('arguments', argsObj);
 
+
 		for ( let i = 0; i < this.func.params.length; ++i ) {
-			if ( this.func.params[i].type == 'RestElement' ) {
+			let p = this.func.params[i];
+			if ( p.type === "AssignmentPattern" ) {
+					p = p.left;
+					//TODO: Calculate default value
+			}
+			if ( p.type === 'RestElement' ) {
 				let name = this.func.params[i].argument.name;
 				let rest = args.slice(i);
 				invokeScope.add(name, ArrayValue.make(rest, scope.realm));
 			} else {
-				let p = this.func.params[i];
-				if ( p.type == "Identifier" ) p = {id: p};
-				let name = p.id.name;
+				let def = Value.undef;
+				if ( p.type === "Identifier" ) {
+					p = {id: p};
+					if (!p.id) console.log("Wrong P", Object.keys(this.func.vars), p);
+					let name = p.id ? p.id.name : undefined;
 
-				if ( scope.strict ) {
-					//Scope is strict, so we make a copy for the args variable
-					invokeScope.add(name, i < args.length ? args[i] : Value.undef);
+					if ( scope.strict ) {
+						//Scope is strict, so we make a copy for the args variable
+						invokeScope.add(name, i < args.length ? args[i] : def);
+					} else {
+						//Scope isnt strict, magic happens.
+						invokeScope.object.rawSetProperty(name, argvars[i]);
+					}
 				} else {
-					//Scope isnt strict, magic happens.
-					invokeScope.object.rawSetProperty(name, argvars[i]);
+					let ref = yield * EvaluatorHandlers.doResolveRef(p, invokeScope);
+					yield * ref.setValue( args.length ? args[i] : def);
 				}
 			}
 		}
@@ -179,3 +193,5 @@ class ClosureValue extends ObjectValue {
 ClosureValue.prototype.clazz = 'Function';
 
 module.exports = ClosureValue;
+
+EvaluatorHandlers = require('../EvaluatorHandlers');

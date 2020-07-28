@@ -347,6 +347,21 @@ class EsperASTInstructions {
 			a.addHiddenProperty('nonUserCode', true);
 		}
 
+		let apply = (o) => {
+			if (o.type === 'ObjectPattern') {
+				for ( let p of o.properties ) {
+					apply(p.value)
+				}
+			} else if ( o.type == 'ArrayPattern' ) {
+				for ( let p of o.elements ) {
+					apply(p)
+				};
+			} else if ( o.type == 'Identifier' ) {
+				scope[o.name] = a;
+				a.vars[o.name] = a;
+			}
+		}
+
 		for ( let o of a.params ) {
 			if ( o.type == 'Identifier' ) {
 				scope[o.name] = a;
@@ -354,6 +369,12 @@ class EsperASTInstructions {
 			} else if ( o.type == 'RestElement' ) {
 				scope[o.argument.name] = a;
 				a.vars[o.argument.name] = a;
+			} else if ( o.type == 'ObjectPattern' ) {
+				apply(o);
+			} else if ( o.type == 'ArrayPattern' ) {
+				apply(o);
+			} else {
+				throw `Unsupport paramater type ${o.type}`;
 			}
 		}
 

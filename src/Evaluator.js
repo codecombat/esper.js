@@ -350,80 +350,9 @@ ${key} => ${vv}`;
 	*resolveRef(n, s, create) {
 		let oldAST = this.topFrame.ast;
 		this.topFrame.ast = n;
-		switch (n.type) {
-			case 'Identifier':
-				let iref = s.ref(n.name, s.realm);
-				if ( !iref ) {
-					iref = {
-						getValue: function*() {
-							let err = CompletionRecord.makeReferenceError(s.realm, `${n.name} is not defined`);
-							yield * err.addExtra({code: 'UndefinedVariable', when: 'read', ident: n.name, strict: s.strict});
-							return yield err;
-						},
-						del: function() {
-							return true;
-						}
-					};
-					if ( !create || s.strict ) {
-						iref.setValue = function *() {
-							let err = CompletionRecord.makeReferenceError(s.realm, `${n.name} is not defined`);
-							yield * err.addExtra({code: 'UndefinedVariable', when: 'write', ident: n.name, strict: s.strict});
-							return yield err;
-						};
-					} else {
-						iref.setValue = function *(value) {
-							s.global.set(n.name, value, s);
-							let aref = s.global.ref(n.name, s);
-							this.setValue = aref.setValue;
-							this.getValue = aref.getValue;
-							this.del = s.strict ? aref.deleteStrict : aref.delete;
-						};
-					}
-				}
-				this.topFrame.ast = oldAST;
-				return iref;
-			case 'MemberExpression':
-				let idx;
-				let ref = yield * this.branch(n.object, s);
-				if ( n.computed ) {
-					idx = (yield * this.branch(n.property, s)).toNative();
-				} else {
-					idx = n.property.name;
-				}
-
-				if ( !ref ) {
-					return yield CompletionRecord.typeError(`Can't write property of undefined: ${idx}`);
-				}
-
-				if ( !ref.ref ) {
-					return yield CompletionRecord.typeError(`Can't write property of non-object type: ${idx}`);
-				}
-
-				this.topFrame.ast = oldAST;
-				return ref.ref(idx, s);
-			case 'ArrayPattern':
-				let refs = [];
-				//TODO: This should take an iterable
-				for ( let e of n.elements ) refs.push(yield * this.resolveRef(e, s));
-				return {
-					setValue: function *(v) {
-						let idx = 0;
-						for ( let r of refs ) {
-							if ( !v.has(idx) ) break;
-							yield * r.setValue(yield * v.get(idx));
-							++idx;
-						}
-					}
-				}
-			case 'AssignmentPattern':
-				let rref = yield * this.resolveRef(n.left, s);
-				let def = yield * this.branch(n.right, s);
-				//TODO: This assignemnt should be elided
-				yield * rref.setValue(def);
-				return rref;
-			default:
-				return yield CompletionRecord.typeError(`Couldnt resolve ref component: ${n.type}`);
-		}
+		let r = yield * Evaluator.doResolveRef(n, s, create, this.branch.bind(this));
+		this.topFrame.ast = oldAST;
+		return r;
 	}
 
 	*partialMemberExpression(left, n, s) {
@@ -565,6 +494,8 @@ ${key} => ${vv}`;
 	set insterment(v) { this.instrument = v; }
 }
 
+
+Evaluator.doResolveRef = require('./EvaluatorHandlers').doResolveRef;
 Evaluator.prototype.findNextStep = require('./EvaluatorHandlers').findNextStep;
 
 module.exports = Evaluator;

@@ -32,3 +32,10 @@ function fn(a, ...b) {
 
 console.log(fn(1,2,3,4));
 console.log(fn(...j));
+
+
+function f3({a,b, x:[c, d]}, e) {
+	console.log(a,b,c,d,e);
+}
+f3({a: 1, b:2, x:[3,4]}, 5);
+
