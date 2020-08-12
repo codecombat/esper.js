@@ -9,6 +9,8 @@ const ObjectValue = require('../../src/values/ObjectValue');
 const ArrayValue = require('../../src/values/ArrayValue');
 const PropertyDescriptor = require('../../src/values/PropertyDescriptor');
 const ASTPreprocessor = require('../../src/ASTPreprocessor');
+const RealmClass = require('../../src/stdlib/Realm');
+const Scope = require('../../src/Scope');
 
 function dehydrate(realm, value) {
 	let state = {
@@ -17,58 +19,93 @@ function dehydrate(realm, value) {
 
 	let val = _dehydrate(realm, value, state);
 	return {root: val, references: state.references};
-
 }
 
 function _dehydrate(realm, value, state) {
 	if ( !value ) return {'$hole': true};
+
+	if ( value instanceof Scope ) {
+		let ss = {
+			'$t': 'scope',
+			object: _dehydrate(realm, value.object, state),
+			realm: _dehydrate(realm, value.realm.realmObject, state)
+		};
+		return ss;
+	}
 	if ( value.wellKnownName ) return {'$s': value.wellKnownName};
 	if ( value instanceof PrimitiveValue ) {
 		if (typeof value.native === "number" && isNaN(value.native)) {
 			return {'$t': 'NaN'};
 		}
+		if (typeof value.native == "string" && value.native.length > 50) {
+			state.references[value.serial] = {
+				'$v': value.native
+			};
+			return {'$ref': value.serial};
+		}
 		return {'$v': value.native};
 	}
+
 	if ( value === Value.null ) return {'$t': 'null'};
 	if ( value === Value.undef ) return {'$t': 'undefined'};
-	if ( !(value.serial in state.references) ) {
+
+	if ( value.serial in state.references ) {
+		return {'$ref': value.serial};
+	}
+
+	if ( value.targetRealm ) {
 		let ref = {
-			'$t': value.isCallable ? 'function' : 'object',
-			'prop': {}
+			'$t': 'realm'
 		};
 		state.references[value.serial] = ref;
-		ref.proto = _dehydrate(realm, value.getPrototype(realm) || Value.null, state);
-		if ( value instanceof EasyNativeFunction ) {
-			if (value.wellKnownName) return {'$s':value.wellKnownName};
-		} else if ( value instanceof LinkValue ) {
-			ref.$link = true;
-			let map = value.getPropertyValueMap();
-			for ( let k in map ) {
-				ref.prop[k] = {
-					v: _dehydrate(realm, map[k], state)
-				};
-			}
-		} else {
-			if ( value.wellKnownName ) ref['$s'] = value.wellKnownName;
-			for ( let k in value.properties ) {
-				if ( !Object.prototype.hasOwnProperty.call(value.properties, k) ) continue;
-				let prop = value.properties[k];
-				ref.prop[k] = {
-					v: _dehydrate(realm, prop.value, state),
-					f: (prop.enumerable ? 'e' : '') + (prop.writable ? 'w' : '') + (prop.configurable ? 'c' : '')
-				};
-			}
-		}
+		ref.globalThis = _dehydrate(value.targetRealm, value.targetRealm.globalScope.object, state);
+		return {$ref: value.serial};
+	}
 
-		if ( value instanceof ClosureValue ) {
-			ref.src = value.funcSourceAST.source();
-			ref.upvars = {};
-			for ( let n of Object.keys(value.func.upvars) ) {
-				ref.upvars[n] = _dehydrate(realm, value.scope.object, state);
+	let ref = {
+		'$t': value.isCallable ? 'function' : 'object',
+		prop: {}
+	};
+	state.references[value.serial] = ref;
+	ref.proto = _dehydrate(realm, value.getPrototype(realm) || Value.null, state);
+	if ( value instanceof EasyNativeFunction ) {
+		if (value.wellKnownName) return {'$s':value.wellKnownName};
+	} else if ( value instanceof LinkValue ) {
+		ref.$link = true;
+		let map = value.getPropertyValueMap();
+		for ( let k in map ) {
+			ref.prop[k] = {
+				v: _dehydrate(realm, map[k], state)
+			};
+		}
+	} else {
+		if ( value.wellKnownName ) ref['$s'] = value.wellKnownName;
+		for ( let k in value.properties ) {
+			if ( !Object.prototype.hasOwnProperty.call(value.properties, k) ) continue;
+			let prop = value.properties[k];
+
+			ref.prop[k] = {
+				f: (prop.enumerable ? 'e' : '') + (prop.writable ? 'w' : '') + (prop.configurable ? 'c' : '')
+			};
+			if ( prop.value ) {
+				ref.prop[k].v = _dehydrate(realm, prop.value, state);
+			}
+			if ( prop.getter ) {
+				ref.prop[k].get = _dehydrate(realm, prop.getter, state);
 			}
 		}
 	}
-	return {'$ref': value.serial};
+
+	if ( value instanceof ClosureValue ) {
+		ref.src = value.funcSourceAST.source();
+		ref.upvars = {};
+		ref.scope =  _dehydrate(realm, value.scope, state);
+		for ( let n of Object.keys(value.func.upvars) ) {
+			ref.upvars[n] = ref.scope;
+		}
+	}
+
+	return {$ref: value.serial};
 }
 
 function hydrate(realm, o) {
@@ -86,6 +123,27 @@ function _hydrate(realm, value, state, ref) {
 
 	if ( value.$t == 'undefined' ) {
 		return Value.undef;
+	}
+
+	if ( value.$t == 'NaN' ) {
+		return Value.nan;
+	}
+
+	if ( value.$t == 'realm' ) {
+		let r = realm.realmClass.createFrom(realm);
+		state.resolved[ref] = r;
+		r.targetRealm.globalScope.object = _hydrate(r.targetRealm, value.globalThis, state);
+		return r;
+	}
+
+	if ( value.$t === 'scope' ) {
+		let targetRealm = realm;
+		if ( value.realm ) {
+			targetRealm = _hydrate(realm, value.realm, state).targetRealm;
+		}
+		let ss = targetRealm.globalScope.createChild();
+		ss.object = _hydrate(targetRealm, value.object, state);
+		return ss;
 	}
 
 	if ( value.$s ) {
@@ -106,7 +164,7 @@ function _hydrate(realm, value, state, ref) {
 
 	if ( value.$t == 'function' ) {
 		let f;
-		if ( value.src)  {
+		if ( value.src )  {
 			let o = realm.parser(value.src, {loc: true});
 			let ast = ASTPreprocessor.process(o, {source: value.src});
 			f = ast.body[0];
@@ -116,26 +174,32 @@ function _hydrate(realm, value, state, ref) {
 			let ast = ASTPreprocessor.process(o);
 			f = ast.body[0].expression;
 		}
+		let v = new ClosureValue(f, realm.globalScope.createChild());
+		state.resolved[ref] = v;
 
-		let s = realm.globalScope;
-		let ss = s.createChild();
-		let v = new ClosureValue(f, ss);
+		if ( value.scope ) {
+			let ss = _hydrate(realm, value.scope, state);
+			v.scope = ss.createChild();
+		}
+
 
 		if ( f.type === 'ArrowFunctionExpression' ) {
-			v.thiz = s.thiz;
+			v.thiz = v.scope.thiz;
 			if ( f.expression ) v.returnLastValue = true;
 		}
+
+		let scopeRef = value.scope;
+
 
 		if ( value.upvars ) {
 			for ( let k in value.upvars ) {
 				let v = value.upvars[k];
 				if (f.freevars[k]) delete f.freevars[k];
 				f.upvars[k] = true;
-				let so = _hydrate(realm, v, state);
-				//console.log("S", so, state.references[v.$ref], so.getImmediate(k));
-				ss.object.properties[k] = so.properties[k];
+				if (!scopeRef) scopeRef = value.upvars[k];
 			}
 		}
+
 		return v;
 	}
 
@@ -144,6 +208,8 @@ function _hydrate(realm, value, state, ref) {
 
 function hydrateInto(realm, target, value, state) {
 	if (value.$ref) {
+		if (!state.references[value.$ref]) throw new Error(`Missing refrence ${value.$ref}`);
+
 		return hydrateInto(realm, target, state.references[value.$ref], state);
 	}
 	if(value.$t == "object" || value.$t == "function") {
@@ -154,7 +220,7 @@ function hydrateInto(realm, target, value, state) {
 			if ( Object.prototype.hasOwnProperty.call(target.properties, k) ) {
 				//console.log("T", k, typeof target.properties, );
 			} else {
-				let v = _hydrate(realm, d.v, state);
+				let v = d.v ? _hydrate(realm, d.v, state) : Value.undef;
 				target.properties[k] = new PropertyDescriptor(v);
 			}
 		}

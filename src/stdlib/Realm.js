@@ -7,16 +7,31 @@ const CompletionRecord = require('../CompletionRecord');
 
 
 class RealmClass extends EasyObjectValue {
-	*call(thiz, args, s) {
-		let proto = thiz.getPrototype(s.realm);
-		if ( !(proto instanceof RealmPrototype) ) {
-			return yield CompletionRecord.typeError("Realm prototype not realm.");
-		}		
+	constructor(realm) {
+		super(realm);
+	}
 
-		let zeRealm = s.realm.options.frozenRealm ? require('../ShallowRealm') : require('../Realm');
-		thiz.targetRealm = new zeRealm(s.realm.options, s.realm.engine);
-		thiz.targetRealm.thisIsRightRealm = true;
+	*call(thiz, args, s) {
+		return this.createFrom(s.realm);
+	}
+
+	createFrom(realm) {
+		let zeRealm = realm.options.frozenRealm ? require('../ShallowRealm') : require('../Realm');
+		let targetRealm = new zeRealm(realm.options, realm.engine);
+		targetRealm.print = function() {
+			realm.print.apply(realm, arguments);
+		}
+		return targetRealm.realmObject;
+	}
+
+	make(realm) {
+		let thiz = new ObjectValue(realm, this.callPrototype());
+		thiz.targetRealm = realm;
 		return thiz;
+	}
+
+	objPrototype(realm) {
+		return new RealmPrototype(realm);
 	}
 	
 	callPrototype(realm) { return new RealmPrototype(this); }
@@ -35,6 +50,7 @@ class RealmPrototype extends EasyObjectValue {
 
 		return thiz.targetRealm.globalScope.object;
 	}
+
 	static *globalThis$ge(thiz, args, s) {
 		let proto = thiz.getPrototype(s.realm);
 		if ( !(proto instanceof RealmPrototype) ) {

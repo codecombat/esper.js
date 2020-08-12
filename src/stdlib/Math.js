@@ -1,6 +1,7 @@
 'use strict';
 
 const EasyObjectValue = require('../values/EasyObjectValue');
+const EvaluatorInstruction = require('../EvaluatorInstruction');
 const Value = require('../Value');
 
 function makeNumber(num) {
@@ -24,8 +25,6 @@ function wrapMathFunction(name) {
 }
 
 class MathObject extends EasyObjectValue {
-
-
 	static get E$cew() { return Math.E; }
 	static get LN10$cew() { return Math.LN10; }
 	static get LN2$cew() { return Math.LN2; }
@@ -34,6 +33,11 @@ class MathObject extends EasyObjectValue {
 	static get PI$cew() { return Math.PI; }
 	static get SQRT1_2$cew() { return Math.SQRT1_2; }
 	static get SQRT2$cew() { return Math.SQRT2; }
+
+	static *random$cew() {
+		let realm = yield EvaluatorInstruction.getRealm;
+		return Value.fromNative(realm.random());
+	}
 }
 
 MathObject.sqrt = wrapMathFunction('sqrt');
@@ -62,7 +66,6 @@ MathObject.asin = wrapMathFunction('asin');
 MathObject.ceil = wrapMathFunction('ceil');
 MathObject.atan = wrapMathFunction('atan');
 MathObject.cosh = wrapMathFunction('cosh');
-MathObject.random = wrapMathFunction('random');
 MathObject.log1p = wrapMathFunction('log1p');
 MathObject.imul = wrapMathFunction('imul');
 MathObject.hypot = wrapMathFunction('hypot');

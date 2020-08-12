@@ -7,28 +7,38 @@ function roundtrip(what, test) {
 	let m = (v) => {
 		return String(v);
 	};
+	let config = {frozenRealm: true, esRealms: true};
 
-	it(name, function() {
-		let source = new esper.Engine({frozenRealm: true});
-		source.evalSync(what);
+	describe(name, () => {
+		for (let pass of ['once', 'twice'])
+		it(pass, function() {
+			let source = new esper.Engine(config);
+			source.evalSync(what);
 
-		let expected = [];
-		source.realm.print = (...rest) => expected.push(rest.map(m).join(' '));
-		let data = esper.plugin('dehydrate').dehydrateRealm(source.realm);
+			let expected = [];
+			source.realm.print = (...rest) => expected.push(rest.map(m).join(' '));
+			let data = esper.plugin('dehydrate').dehydrateRealm(source.realm);
 
-		source.load(test);
-		source.runSync();
+			source.load(test);
+			source.runSync();
 
-		let actual = [];
-		let dest = new esper.Engine({frozenRealm: true});
-		dest.realm.print = (...rest) => actual.push(rest.map(m).join(' '));
-		esper.plugin('dehydrate').hydrateRealm(dest.realm, data);
-		dest.load(test);
-		dest.runSync();
 
-		//console.log(actual,expected);
+			let actual = [];
+			let dest = new esper.Engine(config);
+			esper.plugin('dehydrate').hydrateRealm(dest.realm, data);
 
-		expect(actual.join('\n')).to.equal(expected.join('\n'));
+			if ( pass == 'twice' ) {
+				data = esper.plugin('dehydrate').dehydrateRealm(dest.realm);
+				dest = new esper.Engine(config);
+				esper.plugin('dehydrate').hydrateRealm(dest.realm, data);
+			}
+
+			dest.realm.print = (...rest) => actual.push(rest.map(m).join(' '));
+			dest.load(test);
+			dest.runSync();
+
+			expect(actual.join('\n')).to.equal(expected.join('\n'));
+		});
 	});
 }
 

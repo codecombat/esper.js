@@ -6,13 +6,15 @@ const Realm = require('./Realm');
 const esper = require('./index.js');
 
 
+
 let immutableRealmSingeltons = {};
 
 function MakeDeepImmutable(o) {
 	o.makeImmutable();
 	if ( o.easyRef ) {
 		for ( let p in o.properties ) {
-			o.properties[p].value.makeImmutable();
+			if (o.properties[p].value)
+				o.properties[p].value.makeImmutable();
 		}
 	}
 }
@@ -20,6 +22,9 @@ function MakeDeepImmutable(o) {
 class ShallowRealm {
 	print() {
 		console.log.apply(console, arguments);
+	}
+	random() {
+		return Math.random();
 	}
 
 	constructor(options, engine) {
@@ -41,19 +46,34 @@ class ShallowRealm {
 		this.options = options || {};
 
 
-
 		let scope = new Scope(this);
 		scope.object.clazz = 'global';
 		scope.strict = this.options.strict || false;
 		this.intrinsicScope = scope;
 		scope.thiz = scope.object;
 		this.importCache = new WeakMap();
-		this.globalScope = scope;
+
 		Object.assign(scope.object.properties, immutableRealmSingelton.globalScope.object.properties);
+		delete scope.object.properties.globalThis;
+		delete scope.object.properties.eval;
+		delete scope.object.properties.Realm;
+
+		this.globalScope = scope;
 
 		if ( options.exposeEsperGlobal ) {
 			this.addIntrinsic('Esper', this.Esper);
 		}
+
+		if ( options.esRealms ) {
+			let RealmClass = require('./stdlib/Realm');
+			this.realmClass = new RealmClass(this);
+			this.addIntrinsic("Realm", this.realmClass);
+			this.realmObject = this.realmClass.make(this);
+		}
+
+		scope.put("globalThis", scope.object);
+		this.eval = new Realm.EvalFunction(this);
+		this.addIntrinsic('eval', this.eval);
 
 		
 	}

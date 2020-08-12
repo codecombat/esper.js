@@ -37,6 +37,7 @@ class PropertyDescriptor {
 
 	*setValue(thiz, to, s) {
 		thiz = thiz || Value.null;
+
 		if ( this.setter ) {
 			s = s || (yield EvaluatorInstruction.getScope);
 			return yield * this.setter.call(thiz, [to], s);

@@ -110,6 +110,13 @@ class Scope {
 		return Value.undef.fastGen();
 	}
 
+	removeImmediate(name, s) {
+		if ( Object.prototype.hasOwnProperty.call(this.object.properties, name) )
+			this.object.delete(name, s)
+		if ( this.parent )
+			this.parent.removeImmediate(name, s);
+	}
+
 	createChild() {
 		let child = new Scope(this.realm);
 		child.object.eraseAndSetPrototype(this.object);

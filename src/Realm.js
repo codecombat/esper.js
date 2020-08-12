@@ -43,7 +43,6 @@ const ConsoleClass = require('./stdlib/Console');
 const JSONClass = require('./stdlib/JSON');
 const ProxyClass = require('./stdlib/Proxy');
 const SymbolClass = require('./stdlib/Symbol');
-const RealmClass = require('./stdlib/Realm');
 
 const esper = require('./index.js');
 
@@ -164,6 +163,9 @@ class ClearTimeoutFunction extends ObjectValue {
 class Realm {
 	print() {
 		console.log.apply(console, arguments);
+	}
+	random() {
+		return Math.random();
 	}
 
 	write() {
@@ -314,7 +316,10 @@ class Realm {
 		}
 
 		if ( options.esRealms ) {
-			this.addIntrinsic("Realm", new RealmClass(this));
+			let RealmClass = require('./stdlib/Realm');
+			this.realmClass = new RealmClass(this);
+			this.addIntrinsic("Realm", this.realmClass);
+			this.realmObject = this.realmClass.make(this);
 		}
 
 		scope.thiz = scope.object;
@@ -408,6 +413,7 @@ class Realm {
 	}
 }
 
+Realm.EvalFunction = EvalFunction;
 Realm.prototype.makeForForeignObject = Realm.prototype.import;
 
 module.exports = Realm;
