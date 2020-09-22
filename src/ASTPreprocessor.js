@@ -373,6 +373,8 @@ class EsperASTInstructions {
 				apply(o);
 			} else if ( o.type == 'ArrayPattern' ) {
 				apply(o);
+			} else if ( o.type == 'VariableDeclarator' ) {
+				apply(o.id);
 			} else {
 				throw `Unsupport paramater type ${o.type}`;
 			}

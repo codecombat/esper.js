@@ -1090,6 +1090,9 @@ function *doResolveRef(n, s, create, branch) {
 			//TODO: This assignemnt should be elided
 			yield * rref.setValue(def);
 			return rref;
+		case 'VariableDeclarator':
+			// Wrapped in type definition apparelty. -- TODO Move?
+			return yield * doResolveRef(n.id, s, create, branch);
 		default:
 			return yield CompletionRecord.typeError(`Couldnt resolve ref component: ${n.type}`);
 	}
