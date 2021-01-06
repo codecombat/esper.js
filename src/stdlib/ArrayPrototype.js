@@ -298,6 +298,10 @@ class ArrayPrototype extends EasyObjectValue {
 		return thiz;
 	}
 
+    // static *size$e(thiz){
+    //     return yield * getLength(thiz);
+    // }
+
 	static *reduce$e(thiz, args, s) {
 		let l = yield * getLength(thiz);
 		let acc;
