@@ -55,7 +55,7 @@ class SmartLinkValue extends LinkValue {
 	static make(native, realm) {
 		let wellKnown = realm.lookupWellKnown(native);
 		if ( wellKnown ) return wellKnown;
-		
+
 		if ( Array.isArray(native) ) {
 			var ia = new Array(native.length);
 			for ( let i = 0; i < native.length; ++i ) {
