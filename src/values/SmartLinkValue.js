@@ -107,7 +107,7 @@ class SmartLinkValue extends LinkValue {
 		}
 
 		if ( !this.allowRead(name, evaluator) ) {
-			return yield CompletionRecord.typeError(realm, "Can't read protected property: " + name);
+			return yield CompletionRecord.typeError("Can't read protected property: " + name);
 		}
 
 		return yield * super.get(name, realm, origional);
