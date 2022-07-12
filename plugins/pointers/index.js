@@ -58,7 +58,9 @@ class PointerValue extends esper.ObjectValue {
 		}
 		let found = this.base.properties[this.offset];
 		if ( !found ) {
-			return CompletionRecord.makeRangeError(realm, "Segmentation Fault " + this.offset);
+			let err = CompletionRecord.makeRangeError(realm, "Segmentation Fault " + this.offset);
+			yield * err.addExtra({code:"SegmentationFault", i18nParams: {offset: this.offset}});
+			return err;
 		}
 		return found.value;
 	}
@@ -75,7 +77,12 @@ class PointerPrototypeValue extends esper.EasyObjectValue {
 class RefrenceFunction extends esper.ObjectValue {
 
 	*rawCall(n, evalu, scope) {
-		if ( n.arguments.length == 0 ) return CompletionRecord.makeTypeError(realm, "No argument to refrence.");
+		if ( n.arguments.length == 0 ) {
+			let err = CompletionRecord.makeTypeError(realm, "No argument to refrence.");
+			// why `refrence` here ? typo or mean to ?
+			yield * err.addExtra({code: "NoArgToReference"});
+			return err;
+		}
 		let a1 = n.arguments[0];
 		let ref = null;
 
@@ -88,35 +95,57 @@ class RefrenceFunction extends esper.ObjectValue {
 				if ( a1.computed ) offset = (yield * evalu.branch(a1.property, scope)).toNative();
 				else if ( a1.property.type == 'Identifier') offset = a1.property.name;
 				else if ( a1.property.type == 'Literal' ) offset = yield * evalu.branch(a1.property, scope).toNative();
-				else return CompletionRecord.makeTypeError(scope.realm, "Unimplemented property type");
+				else {
+					let err = CompletionRecord.makeTypeError(scope.realm, "Unimplemented property type");
+					yield * err.addExtra({code: "UnimplementedProperty"});
+					return err;
+				}
 				return new PointerValue(base, offset, scope.realm);
 			default:
-				return CompletionRecord.makeTypeError(scope.realm, "Unimplemented");
+				let err = CompletionRecord.makeTypeError(scope.realm, "Unimplemented");
+				yield * err.addExtra({code: "Unimplemented"});
+				return err;
 		}
 	}
 
 	*call(thiz, args, scope, ext) {
 		let val = Value.undef;
-		if ( args.length < 1 ) return CompletionRecord.makeTypeError(scope.realm, "No argument to refrence.");
-		return CompletionRecord.makeTypeError(scope.realm, "Can't call refrence like that.");
+		if ( args.length < 1 ) {
+			let err = CompletionRecord.makeTypeError(scope.realm, "No argument to refrence.");
+			yield * err.addExtra({code: "NoArgToReference"});
+			return err;
+		}
+		let err = CompletionRecord.makeTypeError(scope.realm, "Can't call refrence like that.");
+		yield * err.addExtra({code: 'CantCallReference'});
+		return err;
 	}
 }
 
 class DerefrenceFunction extends esper.ObjectValue {
 	*call(thiz, args, scope, ext) {
 		let val = Value.undef;
-		if ( args.length < 1 ) return CompletionRecord.makeTypeError(scope.realm, "No argument to derefrence.");
+		if ( args.length < 1 ) {
+			let err = CompletionRecord.makeTypeError(scope.realm, "No argument to derefrence.");
+			yield * err.addExtra({code: "NoArgToDereference"});
+			return err;
+		}
 		if ( args[0] instanceof PointerValue ) {
 			return yield * args[0].derefrence();
 		} else {
-			return CompletionRecord.makeTypeError(scope.realm, "Tried to derefrence non pointer");
+			let err = CompletionRecord.makeTypeError(scope.realm, "Tried to derefrence non pointer");
+			yield * err.addExra({code: 'TryDereferenceNon'});
+			return err;
 		}
 	}
 }
 
 class AllocFunction extends esper.ObjectValue {
 	*call(thiz, args, scope, ext) {
-		if ( args.length < 1 ) return CompletionRecord.makeTypeError(scope.realm, "No argument to alloc.");
+		if ( args.length < 1 ) {
+			let err = CompletionRecord.makeTypeError(scope.realm, "No argument to alloc.");
+			yield * err.addExtra({code: "NoArgToAlloc"});
+			return err;
+		}
 		let object = ArrayValue.make(args, scope.realm);
 		return new PointerValue(object, 0, scope.realm);
 	}

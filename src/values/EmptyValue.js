@@ -37,7 +37,7 @@ class EmptyValue extends Value {
 		let str = 'Cannot read property \'' + name + '\' of ' + this.specTypeName;
 		let realm = yield EvaluatorInstruction.getRealm;
 		let err = CompletionRecord.makeTypeError(realm, str);
-		yield * err.addExtra({code: 'IndexEmpty', target: this, prop: name});
+		yield * err.addExtra({code: 'IndexEmpty', target: this, prop: name, i18nParams: {name, specTypeName: this.specTypeName}});
 		return err;
 	}
 

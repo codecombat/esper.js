@@ -12,7 +12,7 @@ function wrapStringPrototype(name) {
 	let fx = String.prototype[name];
 	let genfx = function *(thiz, args, s) {
 		if ( thiz instanceof EmptyValue ) {
-			return yield CompletionRecord.typeError('called String function on null or undefined?');
+			return yield CompletionRecord.typeError('called String function on null or undefined?', {code: "CallStringOnNull"});
 		}
 		let sv = yield * thiz.toStringValue(s.realm);
 		var argz = new Array(args.length);
@@ -58,7 +58,7 @@ class StringPrototype extends EasyObjectValue {
 
 	static *replace$e(thiz, args, realm) {
 		if ( thiz.jsTypeName === "object" || thiz.jsTypeName === "undefined" ) {
-			return yield CompletionRecord.typeError("Wrong type");
+			return yield CompletionRecord.typeError("Wrong type", {code: "WrongType"});
 		}
 
 		let base = yield * thiz.toStringNative();
@@ -76,12 +76,12 @@ class StringPrototype extends EasyObjectValue {
 			return realm.fromNative(base.replace(rn, yield * replace.toStringNative()));
 		}
 
-		return yield CompletionRecord.typeError("Replace with callbacks not written yet");
+		return yield CompletionRecord.typeError("Replace with callbacks not written yet", {code: "ReplaceCallbackNotWritten"});
 	}
 
 	static *match$e(thiz, args, realm) {
 		if ( thiz.jsTypeName === "object" || thiz.jsTypeName === "undefined" ) {
-			return yield CompletionRecord.typeError("Wrong type");
+			return yield CompletionRecord.typeError("Wrong type", {code: "WrongType"});
 		}
 
 		let base = yield * thiz.toStringNative();

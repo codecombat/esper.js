@@ -230,7 +230,7 @@ class Value {
 	 */
 	*get(name) {
 		let err = "Can't access get " + name + ' of that type.';
-		return yield CompletionRecord.typeError(err);
+		return yield CompletionRecord.typeError(err, {code: "CantAccessGet", i18nParams: {name}});
 	}
 
 	getImmediate(name) {

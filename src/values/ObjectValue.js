@@ -122,7 +122,7 @@ class ObjectValue extends Value {
 	deleteStrict(name) {
 		let po = this.properties[name];
 		if ( !po.configurable ) {
-			return CompletionRecord.typeError("Can't delete nonconfigurable object");
+			return CompletionRecord.typeError("Can't delete nonconfigurable object", {code: "DeleteNonconfigurableObject"});
 		}
 		return delete this.properties[name];
 	}
@@ -315,7 +315,7 @@ class ObjectValue extends Value {
 				if ( res.specTypeName !== 'object' ) return res;
 			}
 		}
-		return yield CompletionRecord.typeError('Cannot convert object to primitive value');
+		return yield CompletionRecord.typeError('Cannot convert object to primitive value', {code: "ConvertObjectToPrimitive"});
 	}
 
 	*toNumberValue() {

@@ -10,7 +10,7 @@ class ArrayObject extends EasyObjectValue {
 		if ( args.length === 1 && args[0].jsTypeName === 'number' ) {
 			let len = args[0].toNative();
 			if ( len != len>>0 ) {
-				return yield CompletionRecord.rangeError("Invalid array length");
+				return yield CompletionRecord.rangeError("Invalid array length", {code: "InvalidArrayLength"});
 			}
 			let result = ArrayValue.make([], s.realm);
 			yield * result.set('length', args[0]);

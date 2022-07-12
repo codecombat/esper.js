@@ -18,10 +18,10 @@ class SymbolValue extends Value {
 
 	*toPrimitiveValue(preferedType) { return this; }
 	*toNumberValue() {
-        return yield CompletionRecord.typeError("Cannot convert a Symbol value to a number");
+        return yield CompletionRecord.typeError("Cannot convert a Symbol value to a number", {code: "ConvertValueFailed", i18nParams: {orig: 'Symbol', new: 'Number'}});
     }
 	*toStringValue() {
-        return yield CompletionRecord.typeError("Cannot convert a Symbol value to a string");
+        return yield CompletionRecord.typeError("Cannot convert a Symbol value to a string", {code: "ConvertValueFailed", i18nParams: {orig: 'Symbol', new: 'String'}});
     }
 
 	get debugString() { return 'Symbol(' + this.name + ')'; }

@@ -177,6 +177,7 @@ class Evaluator {
 	processCompletionValueMeaning(val) {
 		if ( val.type === CompletionRecord.THROW_STD ) {
 			let msg = val.value[1];
+			let extra = val.value[2];
 			switch ( val.value[0] ) {
 				case "TypeError":
 					val = CompletionRecord.makeTypeError(this.realm, msg);
@@ -190,6 +191,11 @@ class Evaluator {
 				case "SyntaxError":
 					val = CompletionRecord.makeSyntaxError(this.realm, msg);
 					break;
+			}
+			if(extra) {
+				let it = val.addExtra(extra)
+				let v;
+				while(!(v = it.next()).done);
 			}
 		}
 		if ( !(val.value instanceof Value) ) {
@@ -386,7 +392,7 @@ ${key} => ${vv}`;
 			case 'in': return right.inOperator(left);
 			case 'instanceof':
 				if ( !right.call ) {
-					return (function *() { yield CompletionRecord.typeError("Right-hand side of 'instanceof' is not callable"); })();
+					return (function *() { yield CompletionRecord.typeError("Right-hand side of 'instanceof' is not callable", {code: "RightHandSideNotCallable", i18nParams: {name: 'instanceof'}}); })();
 				}
 				return left.instanceOf(right);
 			case '>': return left.gt(right);

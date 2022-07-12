@@ -10,7 +10,7 @@ const _g = require('../GenDash');
 
 function *toRegexp(x) {
 	if ( !x.regexp ) {
-		return yield CompletionRecord.typeError('Calling regex method on non regex.');
+		return yield CompletionRecord.typeError('Calling regex method on non regex.', {code: "RgexOnNonRegex"});
 	}
 	return x.regexp;
 }

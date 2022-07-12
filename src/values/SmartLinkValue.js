@@ -84,7 +84,7 @@ class SmartLinkValue extends LinkValue {
 		let evaluator = yield EvaluatorInstruction.getEvaluator;
 		let native = this.native;
 		if ( name in this.native ) {
-			if ( !this.allowWrite(name, evaluator) ) return yield CompletionRecord.typeError("Can't write to protected property: " + name);
+			if ( !this.allowWrite(name, evaluator) ) return yield CompletionRecord.typeError("Can't write to protected property: " + name, {code: "WriteProtectedProperty", i18nParams: {name}});
 		} else {
 			if ( !native.apiUserProperties ) native.apiUserProperties = [];
 
@@ -107,7 +107,7 @@ class SmartLinkValue extends LinkValue {
 		}
 
 		if ( !this.allowRead(name, evaluator) ) {
-			return yield CompletionRecord.typeError("Can't read protected property: " + name);
+			return yield CompletionRecord.typeError("Can't read protected property: " + name, {code: "ReadProtectedProperty", i18nParams: {name}});
 		}
 
 		return yield * super.get(name, realm, origional);

@@ -163,7 +163,7 @@ class ArrayPrototype extends EasyObjectValue {
 		let fx = Value.undef;
 		let targ = Value.undef;
 		if ( args.length > 0 ) fx = args[0];
-		if ( !fx.isCallable ) return yield CompletionRecord.typeError('Arg2 not calalble.');
+		if ( !fx.isCallable ) return yield CompletionRecord.typeError('Arg2 not callalble.', {code: 'Arg2NotCallable'});
 
 		if ( args.length > 1 ) targ = args[1];
 
@@ -304,7 +304,7 @@ class ArrayPrototype extends EasyObjectValue {
 		let fx = args[0];
 
 		if ( args.length < 1 || !fx.isCallable ) {
-			return yield CompletionRecord.typeError('First argument to reduce must be a function.');
+			return yield CompletionRecord.typeError('First argument to reduce must be a function.', {code: 'FirstArgumentToBeFunction', i18nParams: {fun: 'reduce'}});
 		}
 
 		if ( args.length > 1 ) {
@@ -320,7 +320,7 @@ class ArrayPrototype extends EasyObjectValue {
 			}
 			acc = yield * fx.call(thiz, [acc, lv], s);
 		}
-		if ( !acc ) return yield CompletionRecord.typeError('Reduce an empty array with no initial value.');
+		if ( !acc ) return yield CompletionRecord.typeError('Reduce an empty array with no initial value.', {code: 'ReduceEmptyArrayWithoutInit'});
 		return acc;
 	}
 
@@ -331,7 +331,7 @@ class ArrayPrototype extends EasyObjectValue {
 		let fx = args[0];
 
 		if ( args.length < 1 || !fx.isCallable ) {
-			return yield CompletionRecord.typeError('First argument to reduceRight must be a function.');
+			return yield CompletionRecord.typeError('First argument to reduceRight must be a function.', {code: "FirstArgumentToBeFunction", i18nParams: {fun: 'reduceRight'}});
 		}
 
 		if ( args.length > 1 ) {
@@ -348,7 +348,7 @@ class ArrayPrototype extends EasyObjectValue {
 			acc = yield * fx.call(thiz, [acc, lv], s);
 		}
 
-		if ( !acc ) return yield CompletionRecord.typeError('Reduce an empty array with no initial value.');
+		if ( !acc ) return yield CompletionRecord.typeError('Reduce an empty array with no initial value.', {code: "ReduceEmptyArrayWithoutInit"});
 		return acc;
 	}
 
@@ -451,7 +451,7 @@ class ArrayPrototype extends EasyObjectValue {
 
 		if ( args.length > 0 ) {
 			let fx = args[0];
-			if ( !fx.isCallable ) return yield CompletionRecord.typeError('Arg2 not calalble.');
+			if ( !fx.isCallable ) return yield CompletionRecord.typeError('Arg2 not calalble.', {code: "Arg2NotCallable"});
 			comp = function *(left, right) {
 				let res = yield * fx.call(Value.undef, [left, right], s);
 				return ( yield * res.lt(Value.fromNative(0)) ).truthy;
