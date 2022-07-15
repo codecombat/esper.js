@@ -207,6 +207,7 @@ function *doCall(e, n, c, s, argProvider) {
 		let err = CompletionRecord.makeTypeError(e.realm, '' + name + ' is not a function');
 		yield * err.addExtra({
 			code: 'CallNonFunction',
+			i18nParams: {name},
 			target: callee,
 			targetAst: c,
 			targetName: name,
