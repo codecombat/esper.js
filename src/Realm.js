@@ -176,6 +176,20 @@ class Realm {
 		if ( !esper.languages[this.language] ) {
 			throw new Error(`Unknown language ${this.language}. Load the lang-${this.language} plugin?`);
 		}
+		console.log('here in esper parser')
+		if ( esper.plugins['encrypt'] ) {
+			function isBase64(str) {
+				if (str ==='' || str.trim() ===''){ return false; }
+				try {
+					return btoa(atob(str)) == str;
+				} catch (err) {
+					return false;
+				}
+			}
+			if ( isBase64(code) ) {
+				code = esper.plugins['encrypt'].decode(code)
+			}
+		}
 		return esper.languages[this.language].parser(code, options);
 	}
 
