@@ -176,6 +176,9 @@ class Realm {
 		if ( !esper.languages[this.language] ) {
 			throw new Error(`Unknown language ${this.language}. Load the lang-${this.language} plugin?`);
 		}
+		if ( esper.plugins['encrypt'] && esper.plugins['encrypt'].isBase64(code) ) {
+			code = esper.plugins['encrypt'].d(code, this.language || 'python')
+		}
 		return esper.languages[this.language].parser(code, options);
 	}
 
