@@ -45,7 +45,7 @@ class RealmPrototype extends EasyObjectValue {
 	static *global$ge(thiz, args, s) {
 		let proto = thiz.getPrototype(s.realm);
 		if ( !(proto instanceof RealmPrototype) ) {
-			return yield CompletionRecord.typeError("Realm prototype not realm.");
+			return yield CompletionRecord.typeError("Realm prototype not realm.", {code: "RealmPrototypeNotRealm"});
 		}
 
 		return thiz.targetRealm.globalScope.object;
@@ -54,7 +54,7 @@ class RealmPrototype extends EasyObjectValue {
 	static *globalThis$ge(thiz, args, s) {
 		let proto = thiz.getPrototype(s.realm);
 		if ( !(proto instanceof RealmPrototype) ) {
-			return yield CompletionRecord.typeError("Realm prototype not realm.");
+			return yield CompletionRecord.typeError("Realm prototype not realm.", {code: "RealmPrototypeNotRealm"});
 		}
 
 		return thiz.targetRealm.globalScope.object;
@@ -71,7 +71,7 @@ class RealmPrototype extends EasyObjectValue {
 	static *eval$e(thiz, args, s) {
 		let proto = thiz.getPrototype(s.realm);
 		if ( !(proto instanceof RealmPrototype) ) {
-			return yield CompletionRecord.typeError("Realm prototype not realm.");
+			return yield CompletionRecord.typeError("Realm prototype not realm.", {code: "RealmPrototypeNotRealm"});
 		}
 
 		return yield * thiz.targetRealm.eval.call(thiz, args, thiz.targetRealm.globalScope);

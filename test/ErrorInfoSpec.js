@@ -1,6 +1,7 @@
 'use strict';
 var expect = require('chai').expect;
 var Engine = require('../src/index.js').Engine;
+var Languages = require('../src/index.js').languages;
 
 var FutureValue = require('../src/values/FutureValue');
 var Value = require('../src/Value');
@@ -89,4 +90,14 @@ describe('Extra Error Info', () => {
 		}
 		expect(engine.globalScope.get('pi').toNative()).to.equal(3.14);
 	});
+
+	it('CompletionRecord typeError with code and i18nParams',  () => {
+		try {
+			new Engine({extraErrorInfo: true}).evalSync('var b = undefined; b.x = 3;');
+			expect(false).to.be.true;
+		} catch (e) {
+			expect(e.code).to.equal('CantWritePropertyToNonObj') // why nonobj instead of undefined ?
+			expect(e.i18nParams.idx).to.equal('x')
+		}
+	})
 });

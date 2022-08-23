@@ -46,7 +46,7 @@ class PropertyDescriptor {
 			if ( !s || !s.strict ) {
 				return this.value;
 			}
-			return yield CompletionRecord.typeError("Can't write to non-writable value.");
+			return yield CompletionRecord.typeError("Can't write to non-writable value.", {code: "WriteNonWritable"});
 		}
 		this.value = to;
 		return this.value;

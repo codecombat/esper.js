@@ -73,7 +73,9 @@ class EvalFunction extends ObjectValue {
 			else eo = new SyntaxError(desc, e.fileName, e.lineNumber);
 
 			if ( e.stack ) eo.stack = e.stack;
-			return new CompletionRecord(CompletionRecord.THROW, Value.fromNative(eo, scope.realm));
+			let err = new CompletionRecord(CompletionRecord.THROW, Value.fromNative(eo, scope.realm));
+			yield * err.addExtra({i18nParams: {key: 'idontknow'}})
+			return err;
 		}
 
 		//TODO: Dont run in the parent scope if we are called indirectly

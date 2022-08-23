@@ -89,11 +89,11 @@ function *objOrThrow(i) {
 	let val = i ? i : Value.undef;
 
 	if ( val instanceof EmptyValue ) {
-		return yield CompletionRecord.typeError('Cannot convert undefined or null to object');
+		return yield CompletionRecord.typeError('Cannot convert undefined or null to object', {code: 'CantConvertNull'});
 	}
 
 	if ( !(val instanceof ObjectValue) ) {
-		return yield CompletionRecord.typeError('Need an object');
+		return yield CompletionRecord.typeError('Need an object', {code: 'NeedObject'});
 	}
 	return val;
 }
@@ -129,7 +129,9 @@ class ObjectObject extends EasyObjectValue {
 		}
 
 		if ( p.jsTypeName !== 'object' && p.jsTypeName !== 'function' ) {
-			return yield CompletionRecord.makeTypeError(s.realm, 'Object prototype may only be an Object or null');
+			let err = CompletionRecord.makeTypeError(s.realm, 'Object prototype may only be an Object or null');
+			yield * err.addExtra({code: "IllegalObjectPrototype"})
+			return yield err;
 		}
 
 		v.setPrototype(p);
@@ -271,7 +273,11 @@ class ObjectObject extends EasyObjectValue {
 	static *getPrototypeOf(thiz, args, s) {
 		let target = EasyObjectValue.undef;
 		if ( args.length > 0 ) target = args[0];
-		if ( !target.getPrototype ) return yield CompletionRecord.makeTypeError(s.realm, 'No prototype.');
+		if ( !target.getPrototype ) {
+			let err = CompletionRecord.makeTypeError(s.realm, 'No prototype.');
+			yield * err.addExtra({code: 'NoPrototype'})
+			return yield err
+		}
 		let proto = target.getPrototype(s.realm);
 		if ( proto ) return proto;
 		return EasyObjectValue.null;
@@ -280,7 +286,11 @@ class ObjectObject extends EasyObjectValue {
 	static *setPrototypeOf(thiz, args, s) {
 		let target = EasyObjectValue.undef;
 		if (args.length > 0) target = args[0];
-		if (!target.setPrototype) return yield CompletionRecord.makeTypeError(s.realm, 'No prototype.');
+		if (!target.setPrototype) {
+			let err = CompletionRecord.makeTypeError(s.realm, 'No prototype.');
+			yield * err.addExtra({code: 'NoPrototype'})
+			return yield err
+		}
 		target.setPrototype(args[1]);
 		return target;
 	}

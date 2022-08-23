@@ -44,8 +44,8 @@ class CompletionRecord {
 		return new CompletionRecord(CompletionRecord.THROW, err);
 	}
 
-	static typeError(msg) {
-		return new CompletionRecord(CompletionRecord.THROW_STD, ['TypeError',msg]);
+	static typeError(msg, extra) {
+		return new CompletionRecord(CompletionRecord.THROW_STD, ['TypeError', msg, extra]);
 	}
 
 	static referenceError(msg) {
@@ -56,8 +56,8 @@ class CompletionRecord {
 		return new CompletionRecord(CompletionRecord.THROW_STD, ['SyntaxError',msg]);
 	}
 
-	static rangeError(msg) {
-		return new CompletionRecord(CompletionRecord.THROW_STD, ['RangeError',msg]);
+	static rangeError(msg, extra) {
+		return new CompletionRecord(CompletionRecord.THROW_STD, ['RangeError', msg, extra]);
 	}
 
 	/**

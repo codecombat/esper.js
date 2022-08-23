@@ -22,7 +22,9 @@ function *evaluateArrayExpression(e, n, s) {
 			if ( n.elements[i].type === 'SpreadElement' ) {
 				let val = yield * e.branch(n.elements[i].argument, s);
 				if ( !val.iterateAll ) {
-					return CompletionRecord.makeTypeError(s.realm, `${n.elements[i].argument.srcName} is not iterable.`);
+					let err = CompletionRecord.makeTypeError(s.realm, `${n.elements[i].argument.srcName} is not iterable.`);
+					yield * err.addExtra({code: 'NotIterable', i18nParams: {var: n.elements[i].argument.srcName}});
+					return err;
 				}
 				let itr = yield * val.iterateAll();
 				for ( let e of itr ) result[idx++] = e;
@@ -43,7 +45,9 @@ function *evaluateAssignmentExpression(e, n, s) {
 	let ref = yield * e.resolveRef(n.left, s, n.operator === '=');
 
 	if ( !ref && s.strict ) {
-		return CompletionRecord.makeReferenceError(s.realm, `Invalid refrence in assignment.`);
+		let err = CompletionRecord.makeReferenceError(s.realm, `Invalid refrence in assignment.`);
+		yield * err.addExtra({code: 'AssignmentInvalid'})
+		return err
 	}
 
 	let cur = n.operator == '=' ? Value.undef : yield * ref.getValue();
@@ -145,7 +149,9 @@ function *evaluateCallExpression(e, n, s) {
 			if (n.arguments[i].type === 'SpreadElement' ) {
 				let val = yield * e.branch(n.arguments[i].argument, s);
 				if ( !val.iterateAll ) {
-					return CompletionRecord.makeTypeError(s.realm, `${n.arguments[i].argument.srcName} is not iterable.`);
+					let err = CompletionRecord.makeTypeError(s.realm, `${n.arguments[i].argument.srcName} is not iterable.`);
+					yield * err.addExtra({code: 'NotIterable', i18nParams: {var: n.elements[i].argument.srcName}});
+					return err;
 				}
 				let itr = yield * val.iterateAll();
 				for ( let e of itr ) args[idx++] = e;
@@ -201,6 +207,7 @@ function *doCall(e, n, c, s, argProvider) {
 		let err = CompletionRecord.makeTypeError(e.realm, '' + name + ' is not a function');
 		yield * err.addExtra({
 			code: 'CallNonFunction',
+			i18nParams: {name},
 			target: callee,
 			targetAst: c,
 			targetName: name,
@@ -224,7 +231,9 @@ function *doCall(e, n, c, s, argProvider) {
 
 	if ( typeof callResult.next !== 'function' ) {
 		console.log('Generator Failure', callResult);
-		return CompletionRecord.makeTypeError(e.realm, '' + name + ' didnt make a generator');
+		let err = CompletionRecord.makeTypeError(e.realm, '' + name + ' didnt make a generator');
+		yield * err.addExtra({code: "DidntMakeGenerator", i18nParams: {name}})
+		return err;
 	}
 
 	let result = yield * callResult;
@@ -415,7 +424,7 @@ function *evaluateIdentifier(e, n, s) {
 		// Allow undeclared varibles to be null?
 		if ( false ) return Value.undef;
 		let err = CompletionRecord.makeReferenceError(e.realm, `${n.name} is not defined`);
-		yield * err.addExtra({code: 'UndefinedVariable', when: 'read', ident: n.name, strict: s.strict});
+		yield * err.addExtra({code: 'UndefinedVariable', when: 'read', ident: n.name, strict: s.strict, i18nParams: {name: n.name}});
 		return yield err;
 	}
 	let r = s.ref(n.name);
@@ -491,7 +500,11 @@ function *evaluateForInStatement(e, n, s) {
 		ref = s.ref(n.left.name, s);
 	}
 	if ( !ref ) {
-		if ( s.strict ) return CompletionRecord.makeReferenceError(s.realm, `${n.left.name} is not defined`);
+		if ( s.strict ) {
+			let err = CompletionRecord.makeReferenceError(e.realm, `${n.left.name} is not defined`);
+			yield * err.addExtra({code: 'UndefinedVariable', when: 'read', ident: n.left.name, strict: s.strict, i18nParams: {name: n.leftname}});
+			return yield err;
+		}
 		//Create an var in global scope if varialbe doesnt exist and not in strict mode.
 		s.global.add(n.left.name, Value.undef)
 		ref = s.ref(n.left.name);
@@ -863,12 +876,16 @@ function *evaluateVariableDeclaration(e, n, s) {
 	let add = (name, decl, value) => {
 		if ( kind === 'const' ) {
 			if ( s.has(name) ) {
-				return CompletionRecord.makeSyntaxError(e.realm, `Identifier '${name}' has already been declared`);
+				let err = CompletionRecord.makeSyntaxError(e.realm, `Identifier '${name}' has already been declared`);
+				err.addExtra({code: 'DeclaredIdentifier', i18nParams: {name}});
+				return err;
 			}
 			s.addConst(name, value);
 		} else if ( kind == 'let') {
 			if ( s.blockHas(name) ) {
-				return CompletionRecord.makeSyntaxError(e.realm, `Identifier '${name}' has already been declared`);
+				let err = CompletionRecord.makeSyntaxError(e.realm, `Identifier '${name}' has already been declared`);
+				err.addExtra({code: 'DeclaredIdentifier', i18nParams: {name}});
+				return err;
 			}
 			s.addBlock(name, value);
 		} else {
@@ -912,7 +929,7 @@ function *evaluateVariableDeclaration(e, n, s) {
 				}
 			}
 		} else {
-			return yield CompletionRecord.typeError(`Couldnt resolve declarations component: ${decl.id.type}`);
+			return yield CompletionRecord.typeError(`Couldnt resolve declarations component: ${decl.id.type}`, {code: 'DeclarationsCantResolve', i18nParams: {type: decl.id.type}});
 		}
 	}
 	return Value.undef;
@@ -936,7 +953,11 @@ function *evaluateWhileStatement(e, n, s) {
 
 function *evaluateWithStatement(e, n, s) {
 	if ( e.yieldPower > 0 ) yield EvaluatorInstruction.stepMajor;
-	if ( s.strict ) return CompletionRecord.makeSyntaxError(e.realm, 'Strict mode code may not include a with statement');
+	if ( s.strict ) {
+		let err = CompletionRecord.makeSyntaxError(e.realm, 'Strict mode code may not include a with statement');
+		yield * err.addExtra({code: 'StrictNoStatement'})
+		return err;
+	}
 	let o = yield * e.branch(n.object, s);
 	let ns = s.createBlockChild();
 	if ( o instanceof ObjectValue ) {
@@ -1015,7 +1036,7 @@ function *doResolveRef(n, s, create, branch) {
 				iref = {
 					getValue: function*() {
 						let err = CompletionRecord.makeReferenceError(s.realm, `${n.name} is not defined`);
-						yield * err.addExtra({code: 'UndefinedVariable', when: 'read', ident: n.name, strict: s.strict});
+						yield * err.addExtra({code: 'UndefinedVariable', when: 'read', ident: n.name, strict: s.strict, i18nParams: {name: n.name}});
 						return yield err;
 					},
 					del: function() {
@@ -1025,7 +1046,7 @@ function *doResolveRef(n, s, create, branch) {
 				if ( !create || s.strict ) {
 					iref.setValue = function *() {
 						let err = CompletionRecord.makeReferenceError(s.realm, `${n.name} is not defined`);
-						yield * err.addExtra({code: 'UndefinedVariable', when: 'write', ident: n.name, strict: s.strict});
+						yield * err.addExtra({code: 'UndefinedVariable', when: 'write', ident: n.name, strict: s.strict, i18nParams: {name: n.name}});
 						return yield err;
 					};
 				} else {
@@ -1050,11 +1071,11 @@ function *doResolveRef(n, s, create, branch) {
 			}
 
 			if ( !ref ) {
-				return yield CompletionRecord.typeError(`Can't write property of undefined: ${idx}`);
+				return yield CompletionRecord.typeError(`Can't write property of undefined: ${idx}`, {code: 'CantWritePropertyToUndefined', i18nParams: {idx}});
 			}
 
 			if ( !ref.ref ) {
-				return yield CompletionRecord.typeError(`Can't write property of non-object type: ${idx}`);
+				return yield CompletionRecord.typeError(`Can't write property of non-object type: ${idx}`, {code: 'CantWritePropertyToNonObj', i18nParams: {idx}});
 			}
 			return ref.ref(idx, s);
 		case 'ArrayPattern':
@@ -1094,7 +1115,7 @@ function *doResolveRef(n, s, create, branch) {
 			// Wrapped in type definition apparelty. -- TODO Move?
 			return yield * doResolveRef(n.id, s, create, branch);
 		default:
-			return yield CompletionRecord.typeError(`Couldnt resolve ref component: ${n.type}`);
+			return yield CompletionRecord.typeError(`Couldnt resolve ref component: ${n.type}`, {code: 'CantResolveRefComponent', i18nParams: {type: n.type}});
 	}
 }
 

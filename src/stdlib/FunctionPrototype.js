@@ -93,7 +93,7 @@ class FunctionPrototype extends EasyObjectValue {
 		} else if ( thiz instanceof EasyObjectValue && thiz.call ) {
 			return realm.fromNative('function() { [native code] }');
 		}
-		return yield CompletionRecord.typeError('Function.prototype.toString is not generic');
+		return yield CompletionRecord.typeError('Function.prototype.toString is not generic', {code: "FunctionTostringNotGeneric"});
 
 	}
 
