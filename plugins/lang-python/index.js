@@ -79,10 +79,6 @@ let plugin = module.exports = {
 		realm.PythonRuntime = new PythonRuntime.PythonRuntime(realm);
 		realm.PythonListProto = new PythonRuntime.PythonListProto(realm);
 		realm.PythonList = new PythonRuntime.PythonList(realm);
-		let pr = realm.globalScope.get("__pythonRuntime");
-		let copy = (x,y,z) => pr.getImmediate(x).setImmediate(y, realm.PythonRuntime.getImmediate(z));
-		//copy("ops","subscriptIndex", "subscriptIndex");
-		copy("functions", "str", "str");
 	},
 	startupCode: () => startupCodeAST,
 	makeLiteralValue: function(v, realm, n) {
