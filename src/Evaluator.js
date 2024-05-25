@@ -162,7 +162,7 @@ class Evaluator {
 				}
 
 				if ( frames.length === 0 ) {
-					if ( this.debug ) {
+					if ( this.debug && this.profile ) {
 						this.dumpProfilingInformation();
 					}
 					if ( this.onCompletion ) this.onCompletion(result.value);
